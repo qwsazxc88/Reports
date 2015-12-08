@@ -154,7 +154,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public object CopyAppointmentReport(int AppointmentNumber, int AppointmentReportId)
         {
-            var apps=AppointmentDao.Find(x => x.Number == AppointmentNumber);
+            var apps=AppointmentDao.QueryExpression(x => x.Number == AppointmentNumber);
             if (apps != null && apps.Any())
             {
                 var app = apps.First();
@@ -845,7 +845,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             try//ЗАПЛАТКА
             {
-                var mr=ManualRoleRecordDao.Find(x => x.User.Id == CurrentUser.Id && dep.Path.Contains(x.TargetDepartment.Path));
+                var mr=ManualRoleRecordDao.QueryExpression(x => x.User.Id == CurrentUser.Id && dep.Path.Contains(x.TargetDepartment.Path));
                 if (mr != null && mr.Any()) return true;
             }
             catch (Exception e) { }
@@ -1243,7 +1243,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             int id = 0;
             int secondnumber = 0;
-            var reports = AppointmentReportDao.Find(x => x.Appointment.Id == entity.Id);
+            var reports = AppointmentReportDao.QueryExpression(x => x.Appointment.Id == entity.Id);
             if (reports != null && reports.Any())
             {
                 foreach (var el in reports)
@@ -2232,7 +2232,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ValidationException(string.Format(CannotCreateReport));*/
             //return CreateAppointmentReport(entity.Appointment/*,entity.Appointment.AcceptStaff*/);
             int secondnumber = 0;
-            var reports = AppointmentReportDao.Find(x => x.Appointment.Id == entity.Appointment.Id);
+            var reports = AppointmentReportDao.QueryExpression(x => x.Appointment.Id == entity.Appointment.Id);
             if (reports != null && reports.Any())
             {
                 foreach (var el in reports)

@@ -19,6 +19,42 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Constants
         #endregion
         #region Dao
+        protected IStaffEstablishedPostChargeLinksDao staffEstablishedPostChargeLinksDao;
+        public IStaffEstablishedPostChargeLinksDao StaffEstablishedPostChargeLinksDao
+        {
+            get { return Validate.Dependency(staffEstablishedPostChargeLinksDao); }
+            set { staffEstablishedPostChargeLinksDao = value; }
+        }
+        protected IStaffExtraChargesDao staffExtraChargesDao;
+        public IStaffExtraChargesDao StaffExtraChargesDao
+        {
+            get { return Validate.Dependency(staffExtraChargesDao); }
+            set { staffExtraChargesDao = value; }
+        }
+        protected IStaffExtraChargeActionsDao staffExtraChargeActionsDao;
+        public IStaffExtraChargeActionsDao StaffExtraChargeActionsDao
+        {
+            get { return Validate.Dependency(staffExtraChargeActionsDao); }
+            set { staffExtraChargeActionsDao = value; }
+        }
+        protected IStaffPostChargeLinksDao staffPostChargeLinksDao;
+        public IStaffPostChargeLinksDao StaffPostChargeLinksDao
+        {
+            get { return Validate.Dependency(staffPostChargeLinksDao); }
+            set { staffPostChargeLinksDao = value; }
+        }
+        protected IStaffEstablishedPostUserLinksDao staffEstablishedPostUserLinksDao;
+        public IStaffEstablishedPostUserLinksDao StaffEstablishedPostUserLinksDao
+        {
+            get { return Validate.Dependency(staffEstablishedPostUserLinksDao); }
+            set { staffEstablishedPostUserLinksDao = value; }
+        }
+        protected IStaffEstablishedPostDao staffEstablishedPostDao;
+        public IStaffEstablishedPostDao StaffEstablishedPostDao
+        {
+            get { return Validate.Dependency(staffEstablishedPostDao); }
+            set { staffEstablishedPostDao = value; }
+        }
         protected IExtraChargesDao extraChargesDao;
         public IExtraChargesDao ExtraChargesDao
         {
@@ -159,6 +195,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 var entity = StaffMovementsDao.Load(model.Id);
                 #region Стандартные поля заявки
+
+                model.UserLinkId = entity.TargetStaffEstablishedPostRequest.Id;                
                 model.StatusId = entity.Status.Id;
                 model.Status = entity.Status.Name;
                 model.Creator.Id = entity.Creator.Id;
@@ -265,6 +303,50 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             //Подгружаем данные о сотруднике
             LoadUserData(model.User);
+            var usertomove = UserDao.Load(model.User.Id);
+            var userlinks=StaffEstablishedPostUserLinksDao.QueryExpression(x=>x.IsUsed && x.User.Id==model.User.Id);
+            model.RegionCoefficient = StaffMovementsDao.GetUserRegionCoeff(model.User.Id);
+            model.Casing = StaffMovementsDao.GetUserSalary(model.User.Id);
+            model.Salary = usertomove.Rate.HasValue?usertomove.Rate.Value:0;
+            //Подгружаем надбавки
+            model.ActiveAdditions = StaffPostChargeLinksDao.QueryExpression(x => x.IsActive && x.Staff.Id==model.User.Id)
+                .Select(x => 
+                    new AdditionsDto { 
+                        Action = x.ExtraChargeActions.Id, 
+                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name }, 
+                        Value = x.Salary 
+                    })
+                .ToList();
+            if (model.Id > 0)
+            {
+                model.AdditionsToEdit = StaffPostChargeLinksDao.QueryExpression(x => x.StaffMovements.Id==model.Id)
+                .Select(x =>
+                    new AdditionsDto
+                    {
+                        Action = x.ExtraChargeActions.Id,
+                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
+                        Value = x.Salary
+                    })
+                .ToList();
+            }
+            else
+            {
+                model.AdditionsToEdit = StaffPostChargeLinksDao.QueryExpression(x => x.IsActive && x.Staff.Id == model.User.Id)
+                .Select(x =>
+                    new AdditionsDto
+                    {
+                        Action = x.ExtraChargeActions.Id,
+                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
+                        Value = x.Salary
+                    })
+                .ToList();
+                var charges=StaffExtraChargesDao.LoadAll();
+                foreach (var charge in charges)
+                {
+                    if (!model.AdditionsToEdit.Any(x => x.Type.Id == charge.Id))
+                        model.AdditionsToEdit.Add(new AdditionsDto { Action = 4, Value = 0, Type = new IdNameDto { Id = charge.Id, Name = charge.Name } });
+                }
+            }
             //Заполняем справочники
             LoadDictionaries(model);
             //Подгружаем данные о создателе заявки
@@ -276,6 +358,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.TargetDepartmentName = model.User.Dep7Name;
                     model.TargetPositionId = model.User.PositionId;
                     model.TargetPositions = GetPositionsForDepartment(model.TargetDepartmentId);
+                    model.UserLinkId = userlinks.First().Id;
+                    model.UserLinks = GetPositionsForDepartment(model.TargetDepartmentId);
                 }
                 model.Creator = new StandartUserDto();
                 model.Creator.Id = CurrentUser.Id;
@@ -320,6 +404,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.AdditionActions.Add(new IdNameDto { Id = 2, Name = "Изменить" });
             model.AdditionActions.Add(new IdNameDto { Id = 3, Name = "Не изменять" });
             model.AdditionActions.Add(new IdNameDto { Id = 4, Name = "Прекратить" });
+            if (model.TargetDepartmentId > 0)
+            {
+                model.UserLinks = GetPositionsForDepartment(model.TargetDepartmentId);
+                if (model.UserLinks == null) model.UserLinks = new List<IdNameDto>();
+                if ( model.UserLinkId>0 && !model.UserLinks.Any(x => x.Id == model.UserLinkId))
+                {
+                    var link = StaffEstablishedPostUserLinksDao.Load(model.UserLinkId);
+                    model.UserLinks.Add(new IdNameDto { Name= link.StaffEstablishedPost.Position.Name, Id=link.Id});
+                }
+            }
+            else model.UserLinks = new List<IdNameDto>();
         }
         public void SaveModel(StaffMovementsEditModel model)
         {
@@ -655,6 +750,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //Статус // сначала черновик
                 entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Temp);
                 //Данные исходной позиции
+                var sourcelink = StaffEstablishedPostUserLinksDao.QueryExpression(x => x.User.Id == entity.User.Id && x.IsUsed);
+                entity.SourceStaffEstablishedPostRequest = sourcelink.First();
                 entity.SourcePosition = entity.User.Position;
                 entity.SourceDepartment = entity.User.Department;
                 entity.SourceManager = GetManagerForDepartment(entity.SourceDepartment);
@@ -667,12 +764,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (!model.IsPositionEditable)
                 {
                     entity.TargetPosition = entity.SourcePosition;
+                    entity.TargetStaffEstablishedPostRequest = entity.SourceStaffEstablishedPostRequest;
                 } 
                 //Тип заявки
                 entity.Type = StaffMovementsTypesDao.Load(model.RequestType);
                 //Данные заявки, создаём и сохраняем
                 entity.Data = new StaffMovementsData();
                 StaffMovementsDataDao.SaveAndFlush(entity.Data);
+                //Сохраняем надбавки
+                SaveAdditions(entity, model);
+                
                 //Документы, создаём сразу все.
                 var docs=new List<StaffMovementsDocs>();
                 docs.Add(new StaffMovementsDocs { DocType = (int)StaffMovementsDocsTypes.AdditionalAgreementDoc, Request=entity });
@@ -697,8 +798,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.TargetManager = GetManagerForDepartment(entity.TargetDepartment);
             }
             if (model.IsPositionEditable)
-            {
-                entity.TargetPosition = PositionDao.Load(model.TargetPositionId);
+            {                
+                entity.TargetStaffEstablishedPostRequest = StaffEstablishedPostUserLinksDao.Load(model.UserLinkId);
+                entity.TargetPosition = entity.TargetStaffEstablishedPostRequest.StaffEstablishedPost.Position;
             }       
             #endregion
             #region Общее
@@ -738,6 +840,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     StaffMovementsDocsDao.Update(x => x.Request.Id == entity.Id && x.DocType == (int)StaffMovementsDocsTypes.RequirementsOrderDoc, y => y.IsRequired = model.RequirementsOrderDocIsRequired);
                     StaffMovementsDocsDao.Update(x => x.Request.Id == entity.Id && x.DocType == (int)StaffMovementsDocsTypes.ServiceOrderDoc, y => y.IsRequired = model.ServiceOrderDocIsRequired);
                 }
+                //Сохраняем надбавки
+                SaveAdditions(entity, model);
             }
             #endregion
             
@@ -812,9 +916,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsAcceptButtonPressed && model.IsTargetManagerAcceptAvailable)
                     {
-                        //Если согласовано принимающим руководителем
+                        //Если согласовано принимающим руководителем, в таком случае нужну забронировать вакансию
                         entity.TargetManagerAccept = DateTime.Now;
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
+                        entity.TargetStaffEstablishedPostRequest.DocId = entity.Id;
+                        entity.TargetStaffEstablishedPostRequest.ReserveType =(int) StaffReserveTypeEnum.StaffMovements;                        
                     }
                     break;
                 case 4:                    
@@ -928,6 +1034,34 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             #endregion
         }
+        private void SaveAdditions(StaffMovements entity, StaffMovementsEditModel model)
+        {
+            foreach (var addition in model.AdditionsToEdit)
+            {
+                if (!entity.Additions.Any(x => x.ExtraCharges!=null && x.ExtraCharges.Id == addition.Type.Id))
+                {
+                    entity.Additions.Add(new StaffPostChargeLinks
+                    {
+                        CreateDate = DateTime.Now,
+                        Creator = UserDao.Load(CurrentUser.Id),
+                        EditDate = DateTime.Now,
+                        Editor = UserDao.Load(CurrentUser.Id),
+                        ExtraChargeActions = StaffExtraChargeActionsDao.Load(addition.Action),
+                        ExtraCharges = StaffExtraChargesDao.Load(addition.Type.Id),
+                        IsActive = false,
+                        Salary = addition.Value,
+                        Staff = UserDao.Load(model.User.Id),
+                        StaffMovements = entity
+                    });
+                }
+                else
+                {
+                    var ad = entity.Additions.Where(x => x.ExtraCharges.Id == addition.Type.Id).First();
+                    ad.Salary = addition.Value;
+                    ad.ExtraChargeActions = StaffExtraChargeActionsDao.Load(addition.Action);
+                }
+            }
+        }
         /// <summary>
         /// Возвращаем заявку в черновик
         /// </summary>
@@ -949,13 +1083,21 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns>список должностей</returns>
         public IList<IdNameDto> GetPositionsForDepartment(int id)
         {
-            var users = UserDao.Find(x => (x.Department!=null && x.Department.Id == id && x.Position != null));
+            var positions = StaffEstablishedPostDao.GetStaffEstablishedArrangements(id);
+            if (positions != null && positions.Any())
+            {
+                return positions.Select(x => new IdNameDto { Id = x.Id, Name = x.PositionName }).ToList();
+            }
+            else return new List<IdNameDto>();
+            #region depricated
+            /*var users = UserDao.Find(x => (x.Department!=null && x.Department.Id == id && x.Position != null));
             if (users != null && users.Any())
             {
                 var positions = users.Select(x => x.Position).Distinct();
                 return (positions!=null && positions.Any())?positions.Select(x=>new IdNameDto { Id=x.Id, Name = x.Name}).ToList():new List<IdNameDto>();
             }
-            else return new List<IdNameDto>();
+            else return new List<IdNameDto>();*/
+            #endregion
             #region Оставлено до лучших времен(появление штатного рассписания), если не наступят - удалить.
             //var positions=StaffEstablishedPostRequestDao.Find(x => x.Department.Id == id);
             //if (positions != null && positions.Any())
@@ -1230,7 +1372,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }*/
         public bool CheckMovementsExist(DateTime date, int UserId, int id)
         {
-            var res= StaffMovementsDao.Find(x => x.MovementDate == date && x.User.Id == UserId && x.Id != id && x.Status.Id != (int)Reports.Core.Enum.StaffMovementsStatus.Canceled);
+            var res= StaffMovementsDao.QueryExpression(x => x.MovementDate == date && x.User.Id == UserId && x.Id != id && x.Status.Id != (int)Reports.Core.Enum.StaffMovementsStatus.Canceled);
             if (res != null && res.Any())
                 return true;
             else return false;

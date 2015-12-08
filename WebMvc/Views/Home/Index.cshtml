@@ -62,8 +62,8 @@
                             @Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)
                     </div> 
                     
-                    @*<div @if (Model.menuId == 2)
-                    </div>*@
+                    <div id="liStaffMovements" class="mainMenuItem">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
+                    </div> 
                  }
                 
                 @if(UserDto.IsStaffDepartmentAvailable(dto))

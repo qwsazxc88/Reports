@@ -7,6 +7,8 @@ using Reports.Core.Dao;
 using Reports.Core.Services;
 using Reports.Core.Utils;
 using NHibernate.Linq;
+using NHibernate.Transform;
+using NHibernate;
 namespace Reports.Core.Dao.Impl
 {
     public class StaffMovementsDao: DefaultDao<StaffMovements>,IStaffMovementsDao
@@ -16,9 +18,25 @@ namespace Reports.Core.Dao.Impl
         {
             
         }
+        public decimal GetUserSalary(int UserId)
+        {
+            var query = Session.CreateSQLQuery(String.Format("select Salary from vwStaffPostSalary where userid={0}", UserId));
+            //query.AddScalar("Salary", NHibernateUtil.Decimal);
+            return query.UniqueResult<Decimal>();            
+        }
+        public decimal GetUserRegionCoeff(int UserId)
+        {
+            var query = Session.CreateSQLQuery(String.Format("select Regional from vwStaffPostSalary where userid={0}", UserId));
+            return query.UniqueResult<Decimal>();  
+            /*query.AddScalar("Regional", NHibernateUtil.Decimal);
+            var result = query.SetResultTransformer(Transformers.AliasToBean(typeof(decimal))).List<decimal>();
+            if (result != null && result.Any())
+                return result.First();
+            return 0;*/
+        }
         public IList<StaffMovements> GetDocuments(int UserId, UserRole role, int DepartmentId, string UserName, int Number, int Status)
         {
-            var CurrentUser = UserDao.Load(UserId);
+            var CurrentUser = UserDao.Load(UserId);            
             var mandepts=Session.Query<ManualRoleRecord>()
                 .Where(x => x.Role.Id == 1 && x.TargetDepartment != null && x.User.Id == UserId )
                 .Select(x => x.TargetDepartment).Distinct()

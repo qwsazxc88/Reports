@@ -105,7 +105,7 @@ namespace Reports.Core
             switch (role)
             {
                 case UserRole.Manager:
-                    List<Department> deps = Ioc.Resolve<IManualRoleRecordDao>().Find(x => x.User.Id == user.Id && x.TargetDepartment != null).Select(x => x.TargetDepartment).ToList();
+                    List<Department> deps = Ioc.Resolve<IManualRoleRecordDao>().QueryExpression(x => x.User.Id == user.Id && x.TargetDepartment != null).Select(x => x.TargetDepartment).ToList();
                     if (deps == null) deps = new List<Department>();
                     deps.Add(user.Department);
                     foreach (var d in deps)

@@ -18,7 +18,8 @@ namespace Reports.Presenters.UI.ViewModel
         #region Служебное
         public bool IsDepartmentEditable { get; set; }
         public bool IsPositionEditable { get; set; }
-
+        public int UserLinkId { get; set; }
+        public IList<IdNameDto> UserLinks { get; set; }
         public bool IsManagerEditable { get; set; }
         public bool IsPersonnelManagerEditable { get; set; }
         public bool IsSourceManagerAcceptAvailable { get; set; }
@@ -101,7 +102,9 @@ namespace Reports.Presenters.UI.ViewModel
         [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal Casing { get; set; }
         [Display(Name="Условия перевода")]
-        public string MovementCondition { get; set; }      
+        public string MovementCondition { get; set; }
+        public IList<AdditionsDto> ActiveAdditions { get; set; }
+        public IList<AdditionsDto> AdditionsToEdit { get; set; }
         /// <summary>
         /// Временно
         /// </summary>
@@ -146,7 +149,8 @@ namespace Reports.Presenters.UI.ViewModel
         public string MovementReason { get; set; }
         [Display(Name="Группа доступа")]
         public int AccessGroup { get; set; }
-        public IList<IdNameDto> AccessGroupsList { get; set; }       
+        public IList<IdNameDto> AccessGroupsList { get; set; }   
+    
         #endregion
         #region Files
         public HttpPostedFileBase MovementNote { get; set; }

@@ -91,11 +91,12 @@
                 @if (!Model.IsPositionEditable)
                 {
                   @Html.HiddenFor(m=>m.TargetPositionId)   
+                  @Html.HiddenFor(m => m.UserLinkId)  
                 }
-                <select width="300px" name="TargetPositionId" id="TargetPositionId"  @(Model.IsPositionEditable ? "" : "disabled=\"disabled\"")}>
-                @if (Model.TargetPositions != null)
+                <select width="300px" name="UserLinkId" id="UserLinkId"  @(Model.IsPositionEditable ? "" : "disabled=\"disabled\"")}>
+                @if (Model.UserLinks != null)
                 {
-                    foreach (var el in Model.TargetPositions)
+                    foreach (var el in Model.UserLinks)
                     { 
                     <option value="@el.Id">@el.Name</option>
                     }
@@ -108,7 +109,7 @@
                     <td>
                     @Html.LabelFor(m => m.MovementDate)
                     </td>
-                    <td>@Html.EditorFor(m => m.MovementDate, (Model.StatusId<=1 || Model.IsPersonnelManagerBankAcceptAvailable || Model.IsManagerEditable || Model.IsPersonnelManagerEditable) ? null : (object)new { disabled = "disabled" })</td>
+                    <td>@Html.EditorFor(m => m.MovementDate, (Model.StatusId <= 1 || Model.IsPersonnelManagerBankAcceptAvailable || Model.IsManagerEditable || Model.IsPersonnelManagerEditable) ? null : (object)new { disabled = "disabled" })</td>
                 </tr>         
                 
                 <tr>
@@ -118,12 +119,8 @@
                             <li><a href="#tabs-1">Данные по переводу</a></li>
                             @if (Model.IsManagerVisible)
                             {
-                            <li><a href="#tabs-2">Руководитель</a></li>
-                            }
-                            @if (Model.IsPersonnelVisible)
-                            {
-                            <li><a href="#tabs-3">Кадры</a></li>
-                            }
+                            <li><a href="#tabs-2">Данные заявки</a></li>
+                            }                            
                             @if (Model.IsDocsVisible)
                             {
                             <li><a href="#tabs-4">Документы</a></li>
@@ -189,7 +186,7 @@
                             </table>
                             </fieldset>
                           }
-                            @if (Model.RequestType == 2 && Model.TargetManager!=null)
+                            @if (Model.RequestType == 2 && Model.TargetManager != null)
                             {
                             <fieldset class="bordered doc-wrap-blue panel" >
                             <legend title='Реквизиты принимающего руководителя' class="bordered">Реквизиты принимающего руководителя</legend>
@@ -298,43 +295,40 @@
                                 <tr>
                                     <td>@Html.LabelFor(m => m.User.Personnels)</td>
                                     <td>
-                                        @(Model.User.Personnels!=null?Model.User.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next):"")
+                                        @(Model.User.Personnels != null ? Model.User.Personnels.Aggregate("", (all, next) => all + (all.Length > 0 ? ", " : "") + next) : "")
                                     </td>
                                 </tr>
                                 <tr>
+                                <td>Оклад:</td>
+                                <td>@Model.Casing</td>
+                                </tr>
+                                <tr>
+                                <td>Ставка:</td>
+                                <td>@Model.Salary</td>
+                                </tr>
+                                <tr>
+                                <td>Районный коэффициент:</td>
+                                <td>@Model.RegionCoefficient</td>
+                                </tr>
+                                <tr>
                                     <td colspan="2">
-                                      @* <div class="portlet">
-                                            <div class="portlet-header">@Html.LabelFor(m => m.User.Charges)</div>
-                                            <div class="portlet-content">
-                                                <table class="grid">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Надбавка</th>
-                                                            <th>Сумма</th>
-                                                            <th>%</th>
-                                                        </tr>
-                                                    <//thead>
-                                                    @{ int i = 1; }
-                                                    @foreach (var item in Model.User.Charges)
-                                                    {
-                                                        <tr>
-                                                            <td>
-                                                                @Html.HiddenFor(m => m.User.Charges[i - 1].Id)
-                                                                @Html.HiddenFor(m => m.User.Charges[i - 1].ChargeId)
-                                                                @Html.HiddenFor(m => m.User.Charges[i - 1].SEPRequestId)
-                                                                @Html.HiddenFor(m => m.User.Charges[i - 1].SEPId)
-                                                                @Html.HiddenFor(m => m.User.Charges[i - 1].ChargeName)
-                                                                @item.ChargeName
-                                                    
-                                                            </td>
-                                                            <td style="text-align:center;">@Html.TextBoxFor(m => m.User.Charges[i - 1].Amount, new { style = "width:70px;" }) @Html.ValidationMessageFor(m => m.User.Charges[i - 1].Amount)</td>
-                                                            <td style="text-align:center;">@Html.TextBoxFor(m => m.User.Charges[i - 1].AmountProc, new { style = "width:70px;" }) @Html.ValidationMessageFor(m => m.User.Charges[i - 1].AmountProc)</td>
-                                                        </tr>
-                                                        { i++; }
-                                                    }
-                                                </table>
-                                            </div>
-                                        </div>*@
+                                      <table class="grid">
+                                      <thead>
+                                        <tr>
+                                            <th>Надбавка</th><th>Значение</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                      @for(int i=0;i<Model.ActiveAdditions.Count;i++)
+                                      {
+                                          <tr>
+                                            <td>@Model.ActiveAdditions[i].Type.Name)
+                                            </td>
+                                            <td>@Model.ActiveAdditions[i].Value</td>
+                                          </tr>
+                                      }
+                                      </tbody>
+                                      </table>
                                     </td>
                                 </tr>
                             </table>
@@ -350,13 +344,13 @@
                                     <div id="IsTempMovingContainer" class="formfield clear">
                                         
                                         @Html.RadioButtonFor(m => m.IsTempMoving, false, new { @id = "IsTempMovingFalse" })<label for="IsTempMovingFalse" id="lblIsTempMovingFalse" @if (!Model.IsTempMoving)
-                                                                                                                                                                  {<text>style="border-color:#248BAD;"</text>}
-                                                                                                                                                                  else
-                                                                                                                                                                  {<text> style="border-color:none;"</text>}>Постоянно</label>
+                                                                                                                                                                                    {<text>style="border-color:#248BAD;"</text>}
+                                                                                                                                                                                    else
+                                                                                                                                                                                    {<text> style="border-color:none;"</text>}>Постоянно</label>
                                         @Html.RadioButtonFor(m => m.IsTempMoving, true, new { @id = "IsTempMovingTrue" })<label for="IsTempMovingTrue" id="lblIsTempMovingTrue" @if (Model.IsTempMoving)
-                                                                                                                                                              {<text>style="border-color:#248BAD;"</text>}
-                                                                                                                                                              else
-                                                                                                                                                              {<text> style="border-color:none;"</text>}>Временно</label>
+                                                                                                                                                                                {<text>style="border-color:#248BAD;"</text>}
+                                                                                                                                                                                else
+                                                                                                                                                                                {<text> style="border-color:none;"</text>}>Временно</label>
                                     </div>
                                     </td>
                                 </tr>
@@ -365,13 +359,13 @@
                                     <div id="ConjunctionContainer" class="formfield clear">
                                         
                                         @Html.RadioButtonFor(m => m.Conjunction, false, new { @id = "IsConjunctionFalse" })<label for="IsConjunctionFalse" id="lblIsConjunctionFalse" @if (!Model.Conjunction)
-                                                                                                                                                                  {<text>style="border-color:#248BAD;"</text>}
-                                                                                                                                                                  else
-                                                                                                                                                                  {<text> style="border-color:none;"</text>}>Основная</label>
+                                                                                                                                                                                      {<text>style="border-color:#248BAD;"</text>}
+                                                                                                                                                                                      else
+                                                                                                                                                                                      {<text> style="border-color:none;"</text>}>Основная</label>
                                         @Html.RadioButtonFor(m => m.Conjunction, true, new { @id = "IsConjunctionTrue" })<label for="IsConjunctionTrue" id="lblIsConjunctionTrue" @if (Model.Conjunction)
-                                                                                                                                                              {<text>style="border-color:#248BAD;"</text>}
-                                                                                                                                                              else
-                                                                                                                                                              {<text> style="border-color:none;"</text>}>По совместительству</label>
+                                                                                                                                                                                  {<text>style="border-color:#248BAD;"</text>}
+                                                                                                                                                                                  else
+                                                                                                                                                                                  {<text> style="border-color:none;"</text>}>По совместительству</label>
                                     </div>
                                     </td>
                                 </tr>
@@ -379,105 +373,21 @@
                                 <td>
                                 @Html.LabelFor(m => m.MovementTempTo)
                                 </td>
-                                <td>@Html.EditorFor(m => m.MovementTempTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                            </tr>
-                            <tr class="TempMovingContainer">
-                                <td>
-                                @Html.LabelFor(m => m.MovementTempReason)
-                                </td>
-                                <td>@Html.EditorFor(m => m.MovementTempReason, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                            </tr>
+                                <td>@Html.EditorFor(m => m.MovementTempTo, Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                            </tr>                            
                             <tr>
                                 <td>@Html.LabelFor(m => m.MovementCondition)</td>
-                                <td>@Html.TextBoxFor(m => m.MovementCondition, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                <td>@Html.TextBoxFor(m => m.MovementCondition, Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                             </tr>
                             <tr>
-                                <td>@Html.LabelFor(m => m.TargetSalary)</td>
-                                <td>@Html.TextBoxNewFor(m => m.TargetSalary, "{0:F2}", Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                            </tr>
-                            <tr>
-                                <td>@Html.LabelFor(m => m.TargetCasing)</td>
-                                <td>@Html.TextBoxNewFor(m => m.TargetCasing,"{0:F2}" ,Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                            </tr>
-                            <tr>
-                                <td>@Html.LabelFor(m => m.AdditionPersonnel)</td>
-                                <td><div class="formfield">@Html.TextBoxNewFor(m => m.AdditionPersonnel, "{0:F2}", Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
-                                <div class="TempMovingContainer formfield">
-                                 @Html.LabelFor(m => m.AdditionPersonnelTo)
-                                 @Html.TextBoxFor(m => m.AdditionPersonnelTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })                                 
-                                 </div>
-                                 @Html.LabelFor(m=>m.AdditionPersonnelAction)
-                                 @Html.DropDownListFor(m => m.AdditionPersonnelAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
-                              </td>
-                            </tr>
-                            @*<tr>
-                                <td>@Html.LabelFor(m => m.AdditionPosition)</td>
-                                <td><div class="formfield">@Html.TextBoxNewFor(m => m.AdditionPosition, "{0:F2}", Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
-                                <div class="TempMovingContainer formfield">
-                                @Html.LabelFor(m => m.AdditionPositionTo)
-                                @Html.TextBoxFor(m => m.AdditionPositionTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
-                                
-                                </div>
-                                @Html.LabelFor(m=>m.AdditionPositionAction)
-                                @Html.DropDownListFor(m => m.AdditionPositionAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
-                              </td>
-                            </tr>*@
-                            <tr>
-                                <td>@Html.LabelFor(m => m.AdditionQuality)</td>
-                                <td><div class="formfield">@Html.TextBoxNewFor(m => m.AdditionQuality, "{0:F2}", Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })</div>
-                                <div class="TempMovingContainer formfield">
-                                @Html.LabelFor(m => m.AdditionQualityTo)
-                                @Html.TextBoxNewFor(m => m.AdditionQualityTo, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
-                                
-                                </div>
-                                @Html.LabelFor(m=>m.AdditionQualityAction)
-                                @Html.DropDownListFor(m => m.AdditionQualityAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
-                                </td>
-                            </tr>
-                          </table>
-                          </fieldset>
-                          </div>
-                          }
-                          @if (Model.IsPersonnelVisible)
-                          {
-                          <div id="tabs-3">
-                             <fieldset class="bordered doc-wrap-blue panel">
-                            <table>
-                                <tr>
-                                    <td> 
-                                    <table>
-                                        <tr>
-                                        <td>@Html.LabelFor(m => m.OrderDate)</td>
-                                        <td>@Html.TextBoxFor(m => m.OrderDate, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                                        </tr>
-                                        <tr>
-                                        <td>@Html.LabelFor(m => m.AdditionalAgreementDate)</td>
-                                        <td>@Html.TextBoxFor(m => m.AdditionalAgreementDate, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                                        </tr>
-                                    </table>
-                                    </td>
-                                    <td>
-                                    <table>
-                                        <tr>
-                                        <td>@Html.LabelFor(m => m.OrderNumber)</td>
-                                        <td>@Html.TextBoxFor(m => m.OrderNumber, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                                        </tr>
-                                        <tr>
-                                        <td>@Html.LabelFor(m => m.AdditionalAgreementNumber)</td>
-                                        <td>@Html.TextBoxFor(m => m.AdditionalAgreementNumber, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                                        </tr>
-                                    </table>
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>
                                     <div id="IsHourlyContainer" class="formfield clear">
                                         
-                                        @Html.RadioButtonFor(m => m.IsHourly, false, new { @id = "IsHourlyFalse" })<label for="IsHourlyFalse" id="lblHourlyFalse" @if (!Model.IsHourly)
+                                        @Html.RadioButtonFor(m => m.TargetCasingType, false, new { @id = "IsHourlyFalse" })<label for="IsHourlyFalse" id="lblHourlyFalse" @if (!Model.TargetCasingType)
                                                                                                                                                                   {<text>style="border-color:#248BAD;"</text>}
                                                                                                                                                                   else
                                                                                                                                                                   {<text> style="border-color:none;"</text>}>Оклад по дням</label>
-                                        @Html.RadioButtonFor(m => m.IsHourly, true, new { @id = "IsHourlyTrue" })<label for="IsHourlyTrue" id="lblHourlyTrue" @if (Model.IsHourly)
+                                        @Html.RadioButtonFor(m => m.TargetCasingType, true, new { @id = "IsHourlyTrue" })<label for="IsHourlyTrue" id="lblHourlyTrue" @if (Model.TargetCasingType)
                                                                                                                                                               {<text>style="border-color:#248BAD;"</text>}
                                                                                                                                                               else
                                                                                                                                                               {<text> style="border-color:none;"</text>}>Оклад по часам</label>
@@ -485,183 +395,48 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.RegionCoefficient)</td>
-                                    <td>@Html.TextBoxNewFor(m => m.RegionCoefficient, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                                </tr>
-                                <tr>
-                                    <td>@Html.LabelFor(m => m.AdditionTerritory)</td>
-                                    <td>@Html.TextBoxNewFor(m => m.AdditionTerritory, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
-                                        @Html.LabelFor(m=>m.AdditionTerritoryAction)
-                                        @Html.DropDownListFor(m=>m.AdditionTerritoryAction,new SelectList(Model.AdditionActions,"Id","Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>@Html.LabelFor(m => m.AdditionTraveling)</td>
-                                    <td>@Html.TextBoxNewFor(m => m.AdditionTraveling, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
-                                    @Html.LabelFor(m => m.AdditionTravelingAction)
-                                        @Html.DropDownListFor(m => m.AdditionTravelingAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>@Html.LabelFor(m => m.AdditionFront)</td>
-                                    <td><div class="formfield">@Html.TextBoxNewFor(m => m.AdditionFront, "{0:F2}", Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</div>
-                                
-                                    <div class="TempMovingContainer formfield">
-                                        @Html.LabelFor(m => m.AdditionFrontTo)
-                                        @Html.TextBoxFor(m => m.AdditionFrontTo, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
-
-                                    </div>
-                                    @Html.LabelFor(m => m.AdditionFrontAction)
-                                        @Html.DropDownListFor(m => m.AdditionFrontAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>@Html.LabelFor(m => m.Grade)</td>
-                                    <td>@Html.TextBoxFor(m => m.Grade, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    <td>@Html.TextBoxFor(m => m.Grade, Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.HoursType)</td>
-                                    <td>@Html.DropDownListFor(m => m.HoursType, new SelectList(Model.HoursTypes, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                                </tr>
-                                <tr>
-                                    <td>@Html.LabelFor(m => m.NorthFactor)</td>
-                                    <td>
-                                       @*<div class="formfield"> @Html.DropDownListFor(m => m.NorthFactor, new SelectList(Model.NorthFactors, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</div>
-                                        <div id="NorthFactor_2" class = "formfield">
-                                            @Html.LabelFor(m => m.NorthFactorOrder)
-                                            @Html.DropDownListFor(m => m.NorthFactorOrder, new SelectList(Model.NorthFactorOrders, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
-                                        </div>
-                                        <div id="NorthFactor_3" class = "formfield">
-                                            @Html.LabelFor(m => m.NorthFactorYear)
-                                            @Html.TextBoxFor(m => m.NorthFactorYear)
-                                            @Html.LabelFor(m => m.NorthFactorMonth)
-                                            @Html.TextBoxFor(m => m.NorthFactorMonth)
-                                            @Html.LabelFor(m => m.NorthFactorDay)
-                                            @Html.TextBoxFor(m => m.NorthFactorDay)
-                                            @Html.LabelFor(m => m.NorthFactorAddition)
-                                            @Html.TextBoxNewFor(m => m.NorthFactorAddition,"{0:F2}" )
-                                        </div>*@
-                                        @Html.LabelFor(m => m.NorthFactorAdditionAction)
-                                        @Html.DropDownListFor(m => m.NorthFactorAdditionAction, new SelectList(Model.AdditionActions, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
-                                     </td>
-                                    
-                                </tr>
-                                @*<tr>
-                                    <td>@Html.LabelFor(m => m.ChangesToAgreementEnties)</td>
-                                    <td>@Html.TextBoxFor(m => m.ChangesToAgreementEnties, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                                </tr>*@
-                                <tr>
-                                    <td>@Html.LabelFor(m => m.ChangesToAgreement)</td>
-                                    <td>@Html.TextBoxFor(m => m.ChangesToAgreement, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                                </tr>
-                                <tr>
-                                    <td>@Html.LabelFor(m => m.AgreementDate)</td>
-                                    <td>@Html.TextBoxFor(m => m.AgreementDate, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                                </tr>
-                                @*<tr>
-                                    <td>@Html.LabelFor(m => m.AdditionalAgreementEnties)</td>
-                                    <td>@Html.TextBoxFor(m => m.AdditionalAgreementEnties, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                                </tr>*@
-                                <tr>
-                                    <td colspan='2'>
-                                    Пункты Дополнительного соглашения
-                                    <table>
-                                    <tr style='border:1px solid lightgray;'>
-                                        <td>@Html.LabelFor(m=>m.AgreementEntry1_2)
-                                        @Html.DropDownListFor(m => m.AgreementEntry1_2,new SelectList(Model.AgreementEntry1_2List,"Id","Name"))</td>
-                                        <td>
-                                            <div id="AgreementEntry1_2var1" class="HiddenObject">
-                                            Работник переводится, с его согласия, с должности <span class="M_SourcePositionName">@Html.DisplayFor(m=>m.SourcePositionName)</span> <span class="M_SourceDepartment">@Html.DisplayFor(m=>m.SourceDepartment)</span> на должность <span class="M_TargetPositionName">@Html.DisplayFor(m=>m.TargetPositionName)</span>  <span class="M_TargetDepartment">@Html.DisplayFor(m => m.TargetDepartmentName)</span>  с <span class="M_MovementDate">@Html.DisplayFor(m=>m.MovementDate)</span> г.
-                                            </div>
-                                            <div id="AgreementEntry1_2var2" class="HiddenObject">
-                                            Работник переводится, с его согласия, с должности <span class="M_SourcePositionName">@Html.DisplayFor(m=>m.SourcePositionName)</span> <span class="M_SourceDepartment">@Html.DisplayFor(m=>m.SourceDepartment)</span> на должность <span class="M_TargetPositionName">@Html.DisplayFor(m=>m.TargetPositionName)</span>  <span class="M_TargetDepartment">@Html.DisplayFor(m=>m.TargetDepartmentName)</span>  с <span class="M_MovementDate">@Html.DisplayFor(m=>m.MovementDate)</span> г. временно @Html.TextBoxFor(m=>m.AgreementField1_2[0])
-                                            </div>
-                                            <div id="AgreementEntry1_2var3" class="HiddenObject">
-                                            Работник переводится, с его согласия,  с временной должности <span class="M_SourcePositionName">@Html.DisplayFor(m=>m.SourcePositionName)</span> @Html.TextBoxFor(m=>m.AgreementField1_2[1]) <span class="M_SourceDepartment">@Html.DisplayFor(m=>m.SourceDepartment)</span> на постоянную должность <span class="M_TargetPositionName">@Html.DisplayFor(m=>m.TargetPositionName)</span> <span class="M_TargetDepartment">@Html.DisplayFor(m=>m.TargetDepartmentName)</span> с <span class="M_MovementDate">@Html.DisplayFor(m=>m.MovementDate)</span> г.
-                                            </div>
-                                            <div id="AgreementEntry1_2var4" class="HiddenObject">
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr style='border:1px solid lightgray;'>
-                                        <td>@Html.LabelFor(m=>m.AgreementEntry1_6)
-                                        @Html.DropDownListFor(m => m.AgreementEntry1_6,new SelectList(Model.AgreementEntry1_6List,"Id","Name"))</td>
-                                        <td>
-                                            <div id="AgreementEntry1_6var1" class="HiddenObject">
-                                            Фактическое место работы Работника: @Html.TextBoxFor(m=>m.AgreementField1_6[0])
-                                            </div>
-                                            <div id="AgreementEntry1_6var2" class="HiddenObject">
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr style='border:1px solid lightgray;'>
-                                        <td>@Html.LabelFor(m=>m.AgreementEntry2_2_1)
-                                        @Html.DropDownListFor(m => m.AgreementEntry2_2_1, new SelectList(Model.AgreementEntry2_2_1List, "Id", "Name"))</td>
-                                        <td>
-                                            <div id="AgreementEntry2_2_1var1" class="HiddenObject">
-                                            Должностные обязанности изменяются согласно должностной инструкции <span class="M_TargetPositionName">@Html.DisplayFor(m=>m.TargetPositionName)</span>  <span class="M_TargetDepartment">@Html.DisplayFor(m=>m.TargetDepartmentName)</span>
-                                            </div>
-                                            <div id="AgreementEntry2_2_1var2" class="HiddenObject">
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr style='border:1px solid lightgray;'>
-                                        <td>@Html.LabelFor(m=>m.AgreementEntry4_2)
-                                        @Html.DropDownListFor(m => m.AgreementEntry4_2, new SelectList(Model.AgreementEntry4_2List, "Id", "Name"))</td>
-                                        <td>
-                                            <div id="AgreementEntry4_2var1" class="HiddenObject">
-                                            РАБОТНИКУ устанавливается c <span class="M_MovementDate">@Html.DisplayFor(m=>m.MovementDate)</span> г. <br />- базовый должностной оклад в размере <span class="M_TargetCasing">@Html.DisplayFor(m => m.TargetCasing)</span> рублей в месяц;
-                                            </div>
-                                            <div id="AgreementEntry4_2var2" class="HiddenObject">
-                                            РАБОТНИКУ устанавливается c <span class="M_MovementDate">@Html.DisplayFor(m=>m.MovementDate)</span> г. <br />- базовый должностной оклад в размере <span class="M_TargetCasing">@Html.DisplayFor(m=>m.TargetCasing)</span> рублей в месяц;<br />
-                                            Оплата труда производится пропорционально отработанному времени, исходя из оклада, что составляет @Html.TextBoxFor(m=>m.AgreementField4_2[0]) рублей в месяц
-                                            </div>
-                                            <div id="AgreementEntry4_2var3" class="HiddenObject">
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr style='border:1px solid lightgray;'>
-                                        <td>@Html.LabelFor(m=>m.AgreementEntry5_1)
-                                        @Html.DropDownListFor(m => m.AgreementEntry5_1, new SelectList(Model.AgreementEntry5_1List, "Id", "Name"))</td>
-                                        <td>
-                                            <div id="AgreementEntry5_1var1" class="HiddenObject">
-                                            РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 8 часов.
-                                            </div>
-                                            <div id="AgreementEntry5_1var2" class="HiddenObject">
-                                            РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период квартал.
-                                            </div>
-                                            <div id="AgreementEntry5_1var3" class="HiddenObject">
-                                            РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период 1 календарный год.
-                                            </div>
-                                            <div id="AgreementEntry5_1var4" class="HiddenObject">
-                                            РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 4 часа.
-                                            </div>
-                                            <div id="AgreementEntry5_1var5" class="HiddenObject">
-                                            @Html.TextBoxFor(m=>m.AgreementField5_1[0])
-                                            </div>
-                                            <div id="AgreementEntry5_1var6" class="HiddenObject">
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>@Html.LabelFor(m => m.MovementReasonOrder)</td>
-                                    <td>@Html.TextBoxFor(m => m.MovementReasonOrder, Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    <td>@Html.DropDownListFor(m => m.HoursType, new SelectList(Model.HoursTypes, "Id", "Name"), Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                                 </tr>                                
                                 <tr>
                                     <td>@Html.LabelFor(m => m.AccessGroup)</td>
-                                    <td>@Html.DropDownListFor(m => m.AccessGroup, new SelectList(Model.AccessGroupsList, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    <td>@Html.DropDownListFor(m => m.AccessGroup, new SelectList(Model.AccessGroupsList, "Id", "Name"), Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                                 </tr>
-                                <tr>
-                                    <td>@Html.LabelFor(m => m.SignatoryName)</td>
-                                    <td>@Html.DropDownListFor(m => m.SignatoryId, new SelectList(Model.SignatoryList, "Id", "Name"), Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                                </tr>
-                            </table>
-                            </fieldset>
+                            <tr>    
+                                <td colspan="2">Надбавки
+                                <table class="grid">
+                                      <thead>
+                                        <tr>
+                                            <th>Надбавка</th><th>Значение</th><th>Действие</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                      @for(int i=0;i<Model.AdditionsToEdit.Count;i++)
+                                      {
+                                          <tr>
+                                            <td>@Model.AdditionsToEdit[i].Type.Name)
+                                                @Html.HiddenFor(m=>m.AdditionsToEdit[i].Type.Id)
+                                                @Html.HiddenFor(m=>m.AdditionsToEdit[i].Type.Name)
+                                            </td>
+                                            <td>@Html.TextBoxFor(x=>x.AdditionsToEdit[i].Value, Model.IsManagerEditable || Model.IsPersonnelManagerEditable?null:(object) new {disabled="disabled"})</td>
+                                            <td>
+                                                @Html.CreateDropdown(x => x.AdditionsToEdit[i].Action, new SelectList(Model.AdditionActions, "Id", "Name", Model.AdditionsToEdit[i].Action),Model.IsManagerEditable || Model.IsPersonnelManagerEditable)
+                                            </td>
+                                          </tr>
+                                      }
+                                      </tbody>
+                                      </table>
+                                </td>
+                            </tr>
+                          </table>
+                          </fieldset>
                           </div>
                           }
+                          
                           @if (Model.IsDocsVisible)
                           {
                           <div id="tabs-4">
@@ -688,40 +463,6 @@
                                 }
                               </td>
                               <td>@Html.CheckBoxFor(m => m.MovementNoteIsRequired, (object)new { disabled = "disabled" })</td>
-                            </tr>
-                            <tr>
-                              <td>
-                              Дополнительное соглашение
-                              </td>
-                              <td><a target="_blank" class="button" href="/StaffMovements/GetPrintModel/?Id=@(Model.Id)&Type=2">Печать</a></td>
-                              <td>
-                               @if (Model.AdditionalAgreementDocDto != null && !string.IsNullOrEmpty(Model.AdditionalAgreementDocDto.FileName))
-                               {
-                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AdditionalAgreementDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.AdditionalAgreementDocDto.FileName</a>
-                               }
-                                @if (Model.IsDocsAddAvailable && Model.AdditionalAgreementDocIsRequired)
-                                {
-                                    <input type="file" name="AdditionalAgreementDoc" />                               
-                                }
-                              </td>
-                              <td>@Html.CheckBoxFor(m => m.AdditionalAgreementDocIsRequired, Model.IsDocsEditable ? null : (object)new { disabled = "disabled" })</td>
-                            </tr>
-                            <tr>
-                              <td>
-                              Приказ о переводе
-                              </td>
-                              <td> </td>
-                              <td>
-                                @if (Model.MovementOrderDocDto != null && !string.IsNullOrEmpty(Model.MovementOrderDocDto.FileName))
-                                {
-                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MovementOrderDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.MovementOrderDocDto.FileName</a>
-                                }
-                                @if (Model.IsDocsAddAvailable && Model.MovementOrderDocIsRequired)
-                                {
-                                    <input type="file" name="MovementOrderDoc" />
-                                }
-                              </td>
-                              <td>@Html.CheckBoxFor(m => m.MovementOrderDocIsRequired, Model.IsDocsEditable ? null : (object)new { disabled = "disabled" })</td>
                             </tr>
                             <tr>
                               <td>
@@ -774,11 +515,7 @@
                               </td>
                               <td>@Html.CheckBoxFor(m => m.ServiceOrderDocIsRequired, Model.IsDocsEditable ? null : (object)new { disabled = "disabled" })</td>
                           </tr>
-                          </table>
-                          @*if (Model.IsDocsEditable && Model.Id > 0)
-                          {
-                            <input type="button" onclick="SaveDocs()" value="Сохранить требования к документам" />
-                          }*@
+                          </table>                          
                           </fieldset>
                           </div>
                           }
@@ -982,10 +719,10 @@ label { font-size:1.1em; }
             addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
             result = false;
         }
-        clearControlErrors($("#TargtePositionId"));
-        if($("#TargtePositionId").val() == 0)
+        clearControlErrors($("#UserLinkId"));
+        if($("#UserLinkId").val() == 0)
         {
-            addControlError($("#TargtePositionId"),'Необходимо выбрать должность');
+            addControlError($("#UserLinkId"),'Необходимо выбрать должность');
             result = false;
         }
         
@@ -1004,88 +741,12 @@ label { font-size:1.1em; }
                 addControlError($("#MovementCondition"),'Необходимо заполнить условие перевода');
                 addControlError($("#JSError"),'Необходимо заполнить условие перевода');
                 result = false;
-            }
-            clearControlErrors($("#TargetSalary"));
-            if($("#TargetSalary").val() == '' || $("#TargetSalary").val() <= 0)
-            {
-                addControlError($("#TargetSalary"),'Необходимо заполнить ставку');
-                addControlError($("#JSError"),'Необходимо заполнить ставку');
-                result = false;
-            }
-            clearControlErrors($("#TargetCasing"));
-            if($("#TargetCasing").val() == '' || $("#TargetCasing").val() <= 0)
-            {
-                addControlError($("#TargetCasing"),'Необходимо заполнить оклад');
-                addControlError($("#JSError"),'Необходимо заполнить оклад');
-                result = false;
-            }
-           /*clearControlErrors($("#AdditionPersonnel"));
-            if($("#AdditionPersonnel").val() == '')
-            {
-                addControlError($("#AdditionPersonnel"),'Необходимо заполнить персональную надбавку');
-                addControlError($("#JSError"),'Необходимо заполнить персональную надбавку');
-                result = false;
-            }*/
+            }          
+           
         </text>
         }
         @if (Model.IsPersonnelManagerEditable)
-        {<text>
-            clearControlErrors($("#OrderDate"));
-            if($("#OrderDate").val() == '')
-            {
-                addControlError($("#OrderDate"),'Необходимо заполнить дату приказа о переводе');
-                addControlError($("#JSError"),'Необходимо заполнить дату приказа о переводе');
-                result = false;
-            }
-            clearControlErrors($("#AdditionalAgreementDate"));
-            if($("#AdditionalAgreementDate").val() == '')
-            {
-                addControlError($("#AdditionalAgreementDate"),'Необходимо заполнить дату дополнительного соглашения');
-                addControlError($("#JSError"),'Необходимо заполнить дату дополнительного соглашения');
-                result = false;
-            }
-            clearControlErrors($("#OrderNumber"));
-            if($("#OrderNumber").val() == '')
-            {
-                addControlError($("#OrderNumber"),'Необходимо заполнить номер приказа');
-                addControlError($("#JSError"),'Необходимо заполнить номер приказа');
-                result = false;
-            }
-            clearControlErrors($("#AdditionalAgreementNumber"));
-            if($("#AdditionalAgreementNumber").val() == '')
-            {
-                addControlError($("#AdditionalAgreementNumber"),'Необходимо заполнить номер доп. соглашения');
-                addControlError($("#JSError"),'Необходимо заполнить номер доп. соглашения');
-                result = false;
-            }
-            clearControlErrors($("#RegionCoefficient"));
-            if($("#RegionCoefficient").val() == '')
-            {
-                addControlError($("#RegionCoefficient"),'Необходимо заполнить региональный коэффициент');
-                addControlError($("#JSError"),'Необходимо заполнить региональный коэффициент');
-                result = false;
-            }
-            clearControlErrors($("#AdditionTerritory"));
-            if($("#AdditionTerritory").val() == '')
-            {
-                addControlError($("#AdditionTerritory"),'Необходимо заполнить территориальную надбавку');
-                addControlError($("#JSError"),'Необходимо заполнить территориальную надбавку');
-                result = false;
-            }
-            clearControlErrors($("#AdditionTraveling"));
-            if($("#AdditionTraveling").val() == '')
-            {
-                addControlError($("#AdditionTraveling"),'Необходимо заполнить надбавку за разъездной характер работы');
-                addControlError($("#JSError"),'Необходимо заполнить надбавку за разъездной характер работы');
-                result = false;
-            }
-            clearControlErrors($("#AdditionFront"));
-            if($("#AdditionFront").val() == '')
-            {
-                addControlError($("#AdditionFront"),'Необходимо заполнить надбавку за стаж работы специалистом фронт-офиса');
-                addControlError($("#JSError"),'Необходимо заполнить надбавку за стаж работы специалистом фронт-офиса');
-                result = false;
-            }
+        {<text>            
             clearControlErrors($("#Grade"));
             if($("#Grade").val() == '')
             {
@@ -1100,60 +761,11 @@ label { font-size:1.1em; }
                 addControlError($("#JSError"),'Необходимо заполнить график работы');
                 result = false;
             }
-            @*clearControlErrors($("#NorthFactor"));
-            if($("#NorthFactor").val() == '' || $("#NorthFactor").val() ==0)
-            {
-                addControlError($("#NorthFactor"),'Необходимо заполнить северный стаж');
-                addControlError($("#JSError"),'Необходимо заполнить северный стаж');
-                result = false;
-            }*@
-            clearControlErrors($("#ChangesToAgreementEnties"));
-            if($("#ChangesToAgreementEnties").val() == '' )
-            {
-                addControlError($("#ChangesToAgreementEnties"),'Необходимо заполнить Пункты Дополнительного соглашения');
-                addControlError($("#JSError"),'Необходимо заполнить Пункты Дополнительного соглашения');
-                result = false;
-            }
-            clearControlErrors($("#ChangesToAgreement"));
-            if($("#ChangesToAgreement").val() == '' )
-            {
-                addControlError($("#ChangesToAgreement"),'Необходимо заполнить Внести изменения в пункты ТД');
-                addControlError($("#JSError"),'Необходимо заполнить Внести изменения в пункты ТД');
-                result = false;
-            }
-            clearControlErrors($("#AgreementDate"));
-            if($("#AgreementDate").val() == '' )
-            {
-                addControlError($("#AgreementDate"),'Необходимо заполнить Дату ТД');
-                addControlError($("#JSError"),'Необходимо заполнить дату ТД');
-                result = false;
-            }
-            clearControlErrors($("#AdditionalAgreementEnties"));
-            if($("#AdditionalAgreementEnties").val() == '' )
-            {
-                addControlError($("#AdditionalAgreementEnties"),'Необходимо заполнить Пункты Дополнительного соглашения');
-                addControlError($("#JSError"),'Необходимо заполнить Пункты Дополнительного соглашения');
-                result = false;
-            }
-            clearControlErrors($("#MovementReasonOrder"));
-            if($("#MovementReasonOrder").val() == '' )
-            {
-                addControlError($("#MovementReasonOrder"),'Необходимо заполнить Основание для приказа о переводе');
-                addControlError($("#JSError"),'Необходимо заполнить Основание для приказа о переводе');
-                result = false;
-            }
             clearControlErrors($("#AccessGroup"));
             if($("#AccessGroup").val() == '' || $("#AccessGroup").val() ==0)
             {
                 addControlError($("#AccessGroup"),'Необходимо заполнить группу доступа');
                 addControlError($("#JSError"),'Необходимо заполнить группу доступа');
-                result = false;
-            }
-            clearControlErrors($("#SignatoryId"));
-            if($("#SignatoryId").val() == '' || $("#SignatoryId").val() ==0)
-            {
-                addControlError($("#SignatoryId"),'Необходимо выбрать подписанта');
-                addControlError($("#JSError"),'Необходимо выбрать подписанта');
                 result = false;
             }
         </text>
@@ -1183,28 +795,21 @@ label { font-size:1.1em; }
     {
         $("#MovementDate, #AdditionFrontTo, #AdditionQualityTo, #AdditionPositionTo, #AdditionPersonnelTo,  #MovementTempTo, #AdditionalAgreementDate, #OrderDate, #AgreementDate").datepicker({changeMonth: true, changeYear: true});
         $("#MovementDate").change(function(){$('.M_MovementDate').text($(this).val());});
-        $("#TargetCasing").change(function(){$('.M_TargetCasing').text($(this).val());});
         $("#TargetDepartmentId").change(function(){$('.M_TargetDepartment').text($('#TargetDepartmentNameLabel').text());});
-        $( "select[name^='TargetPositionId']" ).change(function()
+        $( "select[name^='UserLinkId']" ).change(function()
         {
-            $('.M_TargetPositionName').text($("select[name^='TargetPositionId'] option:selected").text());
+            $('.M_TargetPositionName').text($("select[name^='UserLinkId'] option:selected").text());
         });
-        $( "select[name^='AgreementEntry']" ).change(
-        function ()
-        {
-            var element=$(this);
-            var val=element.val();
-            var fieldname = element.attr('name');
-            var objs=$( "div[id^='"+fieldname+"var']" ).removeClass( "HiddenObject" ).addClass( "HiddenObject" );
-            var obj=$( '#'+fieldname+"var"+val ).removeClass( "HiddenObject" );
-        }   );   
-        $( "select[name^='AgreementEntry']" ).change();
-        $('#IsHourlyContainer').buttonset(@if(!Model.IsPersonnelManagerEditable){<text>{disabled: true}</text>});
-        $('#IsTempMovingContainer').buttonset(@if(!Model.IsManagerEditable){<text>{disabled: true}</text>});
-        $('#ConjunctionContainer').buttonset(@if(!Model.IsManagerEditable){<text>{disabled: true}</text>});
+        
+        $('#IsHourlyContainer').buttonset(@if (!Model.IsPersonnelManagerEditable)
+                                          {<text>{disabled: true}</text>});
+        $('#IsTempMovingContainer').buttonset(@if (!Model.IsManagerEditable)
+                                              {<text>{disabled: true}</text>});
+        $('#ConjunctionContainer').buttonset(@if (!Model.IsManagerEditable)
+                                             {<text>{disabled: true}</text>});
         $(':button, :input[type=button], :input[type=submit], .button').button();
         $(':input[type=text]').addClass("widget");
-        @if(Model.IsManagerEditable)
+        @if (Model.IsManagerEditable)
         {<text>
         $("#IsConjunctionTrue").click(function(){
             $("#lblIsConjunctionTrue").css("border-color", "#248BAD");
@@ -1226,7 +831,7 @@ label { font-size:1.1em; }
         });
         </text>
         }
-        @if(Model.IsPersonnelManagerEditable)
+        @if (Model.IsPersonnelManagerEditable)
         {<text>
         $("#IsHourlyTrue").click(function(){
             $("#lblHourlyTrue").css("border-color", "#248BAD");
@@ -1236,53 +841,24 @@ label { font-size:1.1em; }
             $("#lblHourlyTrue").css("border-color", "silver");
             $("#lblHourlyFalse").css("border-color", "#248BAD");
         });
-        </text>}
-        $("#NorthFactor").change(function()
-        {
-            $("[id^='NorthFactor_']").hide();
-            if($("#NorthFactor").val()==2)
-                $("#NorthFactor_2").show("highlight");
-            if($("#NorthFactor").val()==3)
-            {
-                $("#NorthFactor_2").show("highlight");
-                $("#NorthFactor_3").show("highlight");
-            }
-        });
+        </text>}        
         $("#TargetDepartmentId").change(function ()
         {
             var url = "/StaffMovements/GetPositionsForDepartment/"+$("#TargetDepartmentId").val();
             $.getJSON(url,
                 function (result) {
-                    setOptionsToDropdown("TargetPositionId", result);                    
+                    setOptionsToDropdown("UserLinkId", result);                    
                 });
         });
-        if(@(Model.IsTempMoving?"true":"false"))
+        if(@(Model.IsTempMoving ? "true" : "false"))
         {
             $(".TempMovingContainer").show();
         }
         else
         {
             $(".TempMovingContainer").hide();
-        }
-        $("#NorthFactor").change();
-       var tabs= $("#tabs").tabs();
-        tabs.find( ".ui-tabs-nav" ).sortable({
-                      axis: "x",
-                      stop: function() {
-                        tabs.tabs( "refresh" );
-                      }
-                    });
-        $(".portlet")
-            .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
-            .find(".portlet-header")
-            .addClass("ui-state-default ui-corner-all")
-            .prepend("<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
-
-        $(".portlet-toggle").click(function () {
-            var icon = $(this);
-            icon.toggleClass("ui-icon-minusthick ui-icon-plusthick");
-            icon.closest(".portlet").find(".portlet-content").toggle();
-        });
+        }        
+       var tabs= $("#tabs").tabs();       
     }
     function GetAgreementDoc()
     {
@@ -1303,7 +879,7 @@ label { font-size:1.1em; }
         'type': 'hidden'
     })).append(jQuery('<input>', {
         'name': 'TargetPosition',
-        'value': $("select[name^='TargetPositionId'] option:selected").text(),
+        'value': $("select[name^='UserLinkId'] option:selected").text(),
         'type': 'hidden'
     })).append(jQuery('<input>', {
         'name': 'TargetDepartment',

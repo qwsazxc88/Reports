@@ -827,6 +827,7 @@
     <Compile Include="Dto\StaffList\StaffDepartmentOperationLinksDto.cs" />
     <Compile Include="Dto\StaffList\StaffDepartmentOperationsDto.cs" />
     <Compile Include="Dto\StaffList\StaffDepartmentSoftGroupDto.cs" />
+    <Compile Include="Dto\StaffMovements\AdditionsDto.cs" />
     <Compile Include="Dto\StaffMovements\StaffMovementsDto.cs" />
     <Compile Include="Dto\StandartUserDto.cs" />
     <Compile Include="Dto\StaffList\DepartmentRequestListDto.cs" />
