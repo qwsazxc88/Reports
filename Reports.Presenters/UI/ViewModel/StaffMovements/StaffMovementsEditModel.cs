@@ -43,6 +43,8 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsManagerVisible { get; set; }
         public bool IsDocsVisible { get; set; }
         public bool IsPersonnelVisible { get; set; }
+
+        public bool IsForTemporaryVacancy { get; set; }
         #endregion
         #region Общее
         public IList<IdNameDto> RequestTypes { get; set; }
