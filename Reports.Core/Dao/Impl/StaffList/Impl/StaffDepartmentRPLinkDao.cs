@@ -123,5 +123,29 @@ namespace Reports.Core.Dao.Impl
 
             return Code;
         }
+
+        /// <summary>
+        /// Достаем структуру финграда для нашего подразделения
+        /// </summary>
+        /// <param name="DepartmentId">Id подразделения 6 уровня</param>
+        /// <returns></returns>
+        public StaffDepartmentFingradStructureDto GetFingradStructureForDeparment(int DepartmentId)
+        {
+            IQuery query = Session.CreateSQLQuery(@"SELECT Id, Name, RPLinkCode, RPLinkName, BGCode, BGName, AdminCode, AdminName, ManagementCode, ManagementName
+                                                    FROM dbo.fnGetFingradStructureForDeparment(:DepartmentId)")
+                 .AddScalar("Id", NHibernateUtil.Int32)
+                 .AddScalar("Name", NHibernateUtil.String)
+                 .AddScalar("RPLinkCode", NHibernateUtil.String)
+                 .AddScalar("RPLinkName", NHibernateUtil.String)
+                 .AddScalar("BGCode", NHibernateUtil.String)
+                 .AddScalar("BGName", NHibernateUtil.String)
+                 .AddScalar("AdminCode", NHibernateUtil.String)
+                 .AddScalar("AdminName", NHibernateUtil.String)
+                 .AddScalar("ManagementCode", NHibernateUtil.String)
+                 .AddScalar("ManagementName", NHibernateUtil.String)
+                 .SetInt32("DepartmentId", DepartmentId);
+
+            return query.SetResultTransformer(Transformers.AliasToBean<StaffDepartmentFingradStructureDto>()).UniqueResult<StaffDepartmentFingradStructureDto>();
+        }
     }
 }

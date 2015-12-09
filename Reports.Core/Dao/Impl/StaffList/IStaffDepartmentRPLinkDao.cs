@@ -36,5 +36,11 @@ namespace Reports.Core.Dao
         /// <param name="BusinessGroup">Бизнес-группа</param>
         /// <returns></returns>
         string GetNewRPLinkCode(StaffDepartmentBusinessGroup BusinessGroup);
+        /// <summary>
+        /// Достаем структуру финграда для нашего подразделения
+        /// </summary>
+        /// <param name="DepartmentId">Id подразделения 6 уровня</param>
+        /// <returns></returns>
+        StaffDepartmentFingradStructureDto GetFingradStructureForDeparment(int DepartmentId);
     }
 }

@@ -253,7 +253,11 @@ FROM StaffEstablishedPost
 
 
 --заполняем таблицу связей сотрудника и надбавок
-SELECT B.Id as UserId, C.Id as StaffExtraChargeId, A.Amount as Salary, D.Id as ActionId,  1 as IsActive, A.GUID, A.ChargeName--A.*
+SELECT B.Id as UserId, C.Id as StaffExtraChargeId, A.Amount as Salary, D.Id as ActionId,  
+			 case when A.ActionName = 'Начать' then 1 
+						when A.ActionName = 'Изменить' then 2 
+						when A.ActionName = 'Не изменять' then 3 
+						else 4 end as IsActive, A.GUID, A.ChargeName--A.*
 INTO #TMP
 FROM UserExtraCharges as A
 INNER JOIN Users as B ON B.Code = A.UserCode

@@ -1127,7 +1127,7 @@ namespace WebMvc.Controllers
         {
             if (model.IsDraft)
             {
-                if (model.RequestTypeId == 2 && model.QuantityOld > model.Quantity)
+                if (model.RequestTypeId == 2 && model.QuantityPrev > model.Quantity)
                     ModelState.AddModelError("Quantity", "Изменение количества штатной единицы в меньшую сторону является сокращением! Создайте заявку на сокращение штатной единицы!");
             }
             else
