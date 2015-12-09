@@ -92,6 +92,30 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Признак действующей заявки")]
         public bool IsUsed { get; set; }
+
+        [Display(Name = "Дирекция")]
+        public string ManagementName { get; set; }
+
+        [Display(Name = "ID Дирекции")]
+        public string ManagementCode { get; set; }
+
+        [Display(Name = "Управление")]
+        public string AdminName { get; set; }
+
+        [Display(Name = "ID Управления")]
+        public string AdminCode { get; set; }
+
+        [Display(Name = "Бизнес-группа")]
+        public string BGName { get; set; }
+
+        [Display(Name = "ID Бизнес-группы")]
+        public string BGCode { get; set; }
+
+        [Display(Name = "РП-привязка")]
+        public string RPLInkName { get; set; }
+
+        [Display(Name = "ID РП-привязки")]
+        public string RPLInkCode { get; set; }
         #endregion
 
         #region Налоговые реквизиты
@@ -121,7 +145,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Количество банкоматов всего")]
         public int ATMCountTotal { get; set; }
 
-        [Display(Name = "Количество запущенных банкоматов с функцией кэшин")]
+        [Display(Name = "Кол-во запущенных кэшинов")]
         public int ATMCashInStarted { get; set; }
 
         [Display(Name = "Количество банкоматов с функцией кэшин")]
@@ -149,7 +173,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Id управленческих реквизитов")]
         public int DMDetailId { get; set; }
         //поля с кодами для Финграда есть в таблице, но сюда их пока не вносил
-        [Display(Name = "Краткое название подразделения")]
+        [Display(Name = "Сокращенное наименование")]
         public string NameShort { get; set; }
 
         [Display(Name = "Код подразделения")]

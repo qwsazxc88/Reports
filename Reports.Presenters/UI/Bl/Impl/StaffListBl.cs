@@ -466,6 +466,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepNextId = 0;
                 model.IsPlan = false;
 
+                StaffDepartmentFingradStructureDto FinStructure = StaffDepartmentRPLinkDao.GetFingradStructureForDeparment(model.ParentId);
+                if (FinStructure != null)
+                {
+                    model.ManagementCode = FinStructure.ManagementCode;
+                    model.ManagementName = FinStructure.ManagementName;
+                    model.AdminCode = FinStructure.AdminCode;
+                    model.AdminName = FinStructure.AdminName;
+                    model.BGCode = FinStructure.BGCode;
+                    model.BGName = FinStructure.BGName;
+                    model.RPLInkCode = FinStructure.RPLinkCode;
+                    model.RPLInkName = FinStructure.RPLinkName;
+                }
+
+
                 //налоговые реквизиты
                 model.KPP = string.Empty;
                 model.OKTMO = string.Empty;
@@ -573,6 +587,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepNextName = entity.DepNext != null ? entity.DepNext.Name : string.Empty;
                 model.IsPlan = entity.IsPlan;
                 model.IsUsed = entity.IsUsed;
+
+                StaffDepartmentFingradStructureDto FinStructure = StaffDepartmentRPLinkDao.GetFingradStructureForDeparment(model.ParentId);
+                if (FinStructure != null)
+                {
+                    model.ManagementCode = FinStructure.ManagementCode;
+                    model.ManagementName = FinStructure.ManagementName;
+                    model.AdminCode = FinStructure.AdminCode;
+                    model.AdminName = FinStructure.AdminName;
+                    model.BGCode = FinStructure.BGCode;
+                    model.BGName = FinStructure.BGName;
+                    model.RPLInkCode = FinStructure.RPLinkCode;
+                    model.RPLInkName = FinStructure.RPLinkName;
+                }
 
                 //налоговые реквизиты
                 if (entity.Department != null)
@@ -2458,7 +2485,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PositionId = entity.Position != null ? entity.Position.Id : 0;
                 model.PositionName = entity.Position != null ? entity.Position.Name : string.Empty;
                 model.Quantity = entity.Quantity;
-                model.QuantityOld = entity.Quantity;
+                model.QuantityPrev = entity.Quantity;
                 model.Salary = entity.Salary;
                 model.SalaryPrev = PrevEntity != null ? PrevEntity.Salary : 0;
                 model.ReasonId = entity.Reason == null ? 0 : entity.Reason.Id;
@@ -2507,8 +2534,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Department = model.DepartmentId != 0 ? DepartmentDao.Get(model.DepartmentId) : null,
                     Schedule = model.ScheduleId != 0 ? ScheduleDao.Get(model.ScheduleId) : null,
                     WorkingCondition = model.WCId != 0 ? StaffWorkingConditionsDao.Get(model.WCId) : null,
-                    Quantity = model.Quantity,
-                    Salary = model.Salary,
+                    Quantity = model.RequestTypeId != 3 ? model.Quantity : model.QuantityPrev,
+                    Salary = model.RequestTypeId != 3 ? model.Salary : model.SalaryPrev,
                     BeginAccountDate = model.BeginAccountDate,
                     IsUsed = false,
                     IsDraft = true,
@@ -2628,6 +2655,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 }
             }
+
             User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
 
             entity.RequestType = StaffEstablishedPostRequestTypesDao.Load(model.RequestTypeId);
@@ -2637,8 +2665,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Department = model.DepartmentId != 0 ? DepartmentDao.Get(model.DepartmentId) : null;
             entity.Schedule = model.ScheduleId != 0 ? ScheduleDao.Get(model.ScheduleId) : null;
             entity.WorkingCondition = model.WCId != 0 ? StaffWorkingConditionsDao.Get(model.WCId) : null;
-            entity.Quantity = model.Quantity;
-            entity.Salary = model.Salary;
+            if (model.RequestTypeId != 3)
+            {
+                entity.Quantity = model.Quantity;
+                entity.Salary = model.Salary;
+            }
             entity.BeginAccountDate = model.BeginAccountDate;
             entity.Reason = model.ReasonId.HasValue ? AppointmentReasonDao.Get(model.ReasonId.Value) : null;
             entity.IsDraft = entity.IsUsed ? false : model.IsDraft; 
