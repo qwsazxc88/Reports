@@ -1309,11 +1309,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PositionName = model.PositionItems != null && model.PositionId != 0 ? model.PositionItems.Where(x => x.Value == model.PositionId.ToString()).Single().Text : "";
                 model.ProbationaryPeriod = entity.ProbationaryPeriod;
                 model.RequestNumber = entity.RequestNumber;
+                //оклад и надбавки
                 model.SalaryBasis = entity.SalaryBasis;
                 model.SalaryMultiplier = entity.SalaryMultiplier;
+                model.AreaMultiplier = entity.Candidate.PersonnelManagers.AreaMultiplier;
+                model.PersonalAddition = entity.Candidate.PersonnelManagers.PersonalAddition;
+                model.PositionAddition = entity.Candidate.PersonnelManagers.PositionAddition;
+                model.AreaAddition = entity.Candidate.PersonnelManagers.AreaAddition;
+                model.TravelRelatedAddition = entity.Candidate.PersonnelManagers.TravelRelatedAddition;
+                model.CompetenceAddition = entity.Candidate.PersonnelManagers.CompetenceAddition;
+                model.FrontOfficeExperienceAddition = entity.Candidate.PersonnelManagers.FrontOfficeExperienceAddition;
+
                 model.WorkCity = entity.WorkCity;
                 model.RegistrationDate = entity.RegistrationDate;
-
+                
                 model.ApprovingManagerName = entity.ApprovingManager != null ? entity.ApprovingManager.Name : string.Empty;
                 model.ApprovingHigherManagerName = entity.ApprovingHigherManager != null ? entity.ApprovingHigherManager.Name : string.Empty;
                 model.ManagerApprovalDate = entity.ManagerApprovalDate;
@@ -1410,12 +1419,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsPyrusDialogVisible = AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || AuthenticationService.CurrentUser.UserRole == UserRole.Manager ? true : false;
 
 
-            LoadDictionaries(model);
-
             StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByDocId(entity.Candidate.Id, (int)StaffReserveTypeEnum.Employment);
 
             if (PostUserLink != null)
                 model.UserLinkId = PostUserLink.Id;
+
+            LoadDictionaries(model);
 
             return model;
         }
@@ -2965,10 +2974,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PositionItems = GetPositions();
             model.ApprovalStatuses = GetApprovalStatuses();
             model.PostUserLinks = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId)
-                .Where(x => x.IsVacation)
+                .Where(x => x.IsVacation || (x.IsReserve && x.Id == model.UserLinkId))
                 .ToList()
                 .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") });
             model.PostUserLinks.Insert(0, new IdNameDto { Id = 0, Name = "" });
+           
         }
         public void LoadDictionaries(PersonnelManagersModel model)
         {
@@ -3208,14 +3218,30 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return null;
             }
 
-            //проверяем соответствие ТД
-            bool IsSTD = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId)
-                .Where(x => x.IsVacation && x.Id == model.UserLinkId)
-                .Single().IsSTD;
-            if (IsSTD && !model.IsFixedTermContract)
+            //проверяем, чтобы не спали при создании кандидата
+            if (StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId)
+                .Where(x => x.IsVacation).Count() == 0)
             {
-                error = "На данную вакансию можно принять сотрудника только по срочному трудовому договору!";
+                error = "В данном подразделении нет свободных вакансий!";
                 return null;
+            }
+            else
+            {
+                StaffEstablishedPostDto Vacation = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId)
+                .Where(x => x.IsVacation && x.Id == model.UserLinkId)
+                .FirstOrDefault();
+                if (Vacation.IsReserve)
+                {
+                    error = "На данную вакансию нельзя принять сотрудника, так как данная вакансия зарезервирована " + (Vacation.ReserveType == 1 ? "штатным перемещением" : "другим кандидатом") + "!";
+                    return null;
+                }
+
+                //проверяем соответствие ТД
+                if (Vacation.IsSTD && !model.IsFixedTermContract)
+                {
+                    error = "На данную вакансию можно принять сотрудника только по срочному трудовому договору!";
+                    return null;
+                }
             }
 
 
@@ -3395,26 +3421,33 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
 
-                //для вкладки руководителей сохраняем резервирование
-                if (model.GetType().Name == "ManagersModel")
-                {
-                    ManagersModel m = model as ManagersModel;
-                    Managers e = entity as Managers;
-                    if (m.UserLinkId.HasValue && m.UserLinkId.Value != 0)
-                    {
-                        StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(m.UserLinkId.Value);
-                        //резервируем место в штатной расстановке
-                        PostUserLink.DocId = e.Candidate.Id;
-                        PostUserLink.ReserveType = (int)StaffReserveTypeEnum.Employment;
-                        PostUserLink.Editor = currentUser;
-                        PostUserLink.EditDate = DateTime.Now;
+                ////для вкладки руководителей сохраняем резервирование
+                //if (model.GetType().Name == "ManagersModel")
+                //{
+                //    ManagersModel m = model as ManagersModel;
+                //    Managers e = entity as Managers;
 
-                        //для вкладки руководителя
-                        e.Position = PostUserLink.StaffEstablishedPost.Position;
+                //    //убираем резервирование
+                //    if (!RemoveStaffPostReserve(e.Candidate.Id, currentUser))
+                //        return false;
+    
+                //    //резервируем
+                //    if (m.UserLinkId != 0)
+                //    {
+                //        StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(m.UserLinkId);
+                //        //резервируем место в штатной расстановке
+                //        PostUserLink.DocId = e.Candidate.Id;
+                //        PostUserLink.ReserveType = (int)StaffReserveTypeEnum.Employment;
+                //        PostUserLink.Editor = currentUser;
+                //        PostUserLink.EditDate = DateTime.Now;
 
-                        StaffEstablishedPostUserLinksDao.SaveAndFlush(PostUserLink);
-                    }
-                }
+                //        //для вкладки руководителя
+                //        e.Position = PostUserLink.StaffEstablishedPost.Position;
+                //        e.Department = PostUserLink.StaffEstablishedPost.Department;
+
+                //        StaffEstablishedPostUserLinksDao.SaveAndFlush(PostUserLink);
+                //    }
+                //}
 
                 EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
 
@@ -4995,12 +5028,44 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.SalaryMultiplier = viewModel.SalaryMultiplier;
             entity.WorkCity = viewModel.WorkCity;
             entity.MentorName = viewModel.MentorName;
+
+            //надбавки
+            entity.Candidate.PersonnelManagers.AreaMultiplier = viewModel.AreaMultiplier;
+            entity.Candidate.PersonnelManagers.PersonalAddition = viewModel.PersonalAddition;
+            entity.Candidate.PersonnelManagers.PositionAddition = viewModel.PositionAddition;
+            entity.Candidate.PersonnelManagers.AreaAddition = viewModel.AreaAddition;
+            entity.Candidate.PersonnelManagers.TravelRelatedAddition = viewModel.TravelRelatedAddition;
+            entity.Candidate.PersonnelManagers.CompetenceAddition = viewModel.CompetenceAddition;
+            entity.Candidate.PersonnelManagers.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
+
             if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
             {
                 entity.RegistrationDate = viewModel.RegistrationDate;
                 entity.Candidate.PersonnelManagers.EmploymentDate = viewModel.RegistrationDate;
             }
-            
+
+
+            //убираем резервирование
+            if (!RemoveStaffPostReserve(entity.Candidate.Id, currentUser))
+                return false;
+
+            //резервируем
+            if (viewModel.UserLinkId != 0)
+            {
+                StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(viewModel.UserLinkId);    
+                //резервируем место в штатной расстановке
+                PostUserLink.DocId = entity.Candidate.Id;
+                PostUserLink.ReserveType = (int)StaffReserveTypeEnum.Employment;
+                PostUserLink.Editor = currentUser;
+                PostUserLink.EditDate = DateTime.Now;
+
+                //для вкладки руководителя
+                entity.Position = PostUserLink.StaffEstablishedPost.Position;
+                entity.Department = PostUserLink.StaffEstablishedPost.Department;
+
+                StaffEstablishedPostUserLinksDao.SaveAndFlush(PostUserLink);
+            }
+
             return true;
         }
 
@@ -5692,7 +5757,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.WorkCity = viewModel.WorkCity;
                         entity.MentorName = viewModel.MentorName;
                         entity.IsSecondaryJob = viewModel.IsSecondaryJob;
-                        entity.IsExternalPTWorker = !viewModel.IsSecondaryJob ? false : viewModel.IsExternalPTWorker; 
+                        entity.IsExternalPTWorker = !viewModel.IsSecondaryJob ? false : viewModel.IsExternalPTWorker;
+
+                        //надбавки
+                        entity.Candidate.PersonnelManagers.AreaMultiplier = viewModel.AreaMultiplier;
+                        entity.Candidate.PersonnelManagers.PersonalAddition = viewModel.PersonalAddition;
+                        entity.Candidate.PersonnelManagers.PositionAddition = viewModel.PositionAddition;
+                        entity.Candidate.PersonnelManagers.AreaAddition = viewModel.AreaAddition;
+                        entity.Candidate.PersonnelManagers.TravelRelatedAddition = viewModel.TravelRelatedAddition;
+                        entity.Candidate.PersonnelManagers.CompetenceAddition = viewModel.CompetenceAddition;
+                        entity.Candidate.PersonnelManagers.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
 
                         if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
                         {
@@ -6801,15 +6875,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.IsSP)
             {
                 model.PostUserLinks = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId)
-                .Where(x => x.IsVacation)
+                .Where(x => x.IsVacation || (x.IsReserve && x.Id == model.UserLinkId))
                 .ToList()
                 .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") });
                 model.PostUserLinks.Insert(0, new IdNameDto { Id = 0, Name = "" });
             }
             else //по Id строки штатной расстановки достаем данные по вакансии
             {
-                StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId.Value);
+                StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId);
+                //оклад штатной единицы
                 model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
+                //районный коэффициент
+                if (PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Count() != 0)
+                    model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Single().Amount;
+                else
+                    model.AreaMultiplier = 0;
             }
         }
     }

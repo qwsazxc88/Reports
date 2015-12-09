@@ -1564,7 +1564,7 @@ namespace WebMvc.Controllers
             if (model.IsSP)
                 return Json(new { ok = result, msg = error, model.PostUserLinks });
             else
-                return Json(new { ok = result, msg = error, model.SalaryBasis });
+                return Json(new { ok = result, msg = error, model.SalaryBasis, model.AreaMultiplier });
         }
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.ConsultantOutsourcing)]
@@ -2448,7 +2448,7 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("MessageStr", "У вас нет прав для редактирования данных!");
             }
 
-            if (!model.UserLinkId.HasValue || model.UserLinkId.Value == 0)
+            if (model.UserLinkId == 0)
             {
                 ModelState.AddModelError("UserLinkId", "Выберите штатную единицу!");
             }
