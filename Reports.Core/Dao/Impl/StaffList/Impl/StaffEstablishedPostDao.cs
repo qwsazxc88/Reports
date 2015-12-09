@@ -51,15 +51,13 @@ namespace Reports.Core.Dao.Impl
         /// Список сотрудников с должностями к подразделению.
         /// </summary>
         /// <param name="DepartmentId">Id подразделения</param>
-        /// <param name="SEPId">Id штатной единицы.</param>
         /// <returns></returns>
-        public IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId, int SEPId)
+        public IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId)
         {
-            string sqlWhere = SEPId == 0 ? "" : " WHERE SEPId = " + SEPId.ToString();
-            string sqlQuery = (string.Format(@"SELECT Id, SEPId, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, ReserveType, Reserve, DocId
+            string sqlQuery = (@"SELECT Id, SEPId, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, ReserveType, Reserve, DocId
                                               ,IsReserve, IsPregnant, IsVacation, IsSTD, IsDismiss, IsDismissal
                                               ,SalaryPersonnel, Regional, Personnel, Territory, Front, Drive, North, Qualification, TotalSalary
-                                       FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId) {0}",  sqlWhere));
+                                       FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId)");
             return Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("SEPId", NHibernateUtil.Int32)
