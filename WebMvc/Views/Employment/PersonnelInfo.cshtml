@@ -371,8 +371,59 @@
         });
     }
 
+    function GetSPDetails(IsSP)
+    {
+        $("#IsSP").val(IsSP);
+        var url = "@Url.Action("GetStaffEstablishmentPostDetails", "Employment")";
+        var dataToSend = $("#ManagerForm").serialize();
+        ShowFlash(true);    //это диалоговое окно находится на родительской странице
+        $.post(url, dataToSend, function(data){
+            if (data.ok == true){
+                if(IsSP){
+                    RefreshDropDownListData("UserLinkId", data);
+                }
+                else{
+                    $("#SalaryBasis").val(data.SalaryBasis);
+                    $("#AreaMultiplier").val(data.AreaMultiplier);
+                }
+                
+                ShowFlash(false);
+            }
+            else{
+                ShowFlash(false);
+                alert(data.msg);
+            }
+        }, "json")
+    };
+
+    function RefreshDropDownListData(ControlName, data)
+    {
+        //var Value = $("#" + ControlName).val();
+
+        var optionsValues = '<select id="' + ControlName + '" name="' + ControlName + '" onchange = "GetSPDetails(false);">';
+        //optionsValues += '<option value="0"></option>';
+
+        
+
+        $.each(data.PostUserLinks, function (item, data) {
+            //console.log(data.Id);
+            //console.log(data.Name);
+            optionsValues += '<option value="' + data.Id + '">' + data.Name + '</option>';
+        });
+
+        
+        optionsValues += '</select>';
+        var options = $('#' + ControlName );
+        options.replaceWith(optionsValues);
+
+        //$("#" + ControlName).val(Value);
+
+    }
+
+
 
     $(document).ready(function () {
+
         setActiveMenuItem("empRoster");
 
         ShowFlash(true);
@@ -1167,12 +1218,25 @@
                     //$("#TabIndex").val(10);
                     AjaxFormRequest("tabs11", "ManagersReadOnly", "/Employment/ManagersReadOnly?Id=@Model.CandidateID", "GET");
                     $("#tabs11").ajaxStop(function () {
+                        $("#DepartmentId").change(function(){ 
+                            if($("#divDepartmentDialog").length == 1){
+                                GetSPDetails(true);
+                                $("#divDepartmentDialog").remove();
+                            }
+                        });
+
+                        
+//                        $("#UserLinkId").change(function(e){ 
+//                            console.log(e);
+//                            GetSPDetails(false);
+//                        });
+
                         UIHelpers.attachDatepickerToInputs($('#RegistrationDate'), "-1:+1", true);
                         $('#isSecondaryJobContainer').buttonset();
                         $('#isFrontContainer').buttonset();
                         $('#isExternalWorkContainer').buttonset();
                         $('#IsLiableContainer').buttonset();
-                        $('#btnChangeDep').click(function(){DepartmentTree.changeDepartment();});
+                        //$('#btnChangeDep').click(function(){DepartmentTree.changeDepartment();});
 
                         if($("#IsSecondaryJob").val() == 'True'){$('#isExternalWorkContainer').show();}
                         else {$('#isExternalWorkContainer').hide();}
@@ -1227,6 +1291,8 @@
                         
                         //if($('#IsSecondaryJob').val() == 'True'){$('#isExternalWorkContainer').show();}
                         //else {$('#isExternalWorkContainer').hide();}
+
+                       
 
                         //автозаполнение должностей
                         $(function () 

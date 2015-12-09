@@ -17,21 +17,19 @@
     @Html.HiddenFor(m => m.SendTo1C)
     @Html.HiddenFor(m => m.IsPyrusDialogVisible)
     @Html.HiddenFor(m => m.IsVolga)
+    @Html.HiddenFor(m => m.IsSP)
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Руководители</legend>
+@*
+старый вариант без штатного расписания
         <div class="formfield clear">
             @Html.LabelFor(m => m.PositionId):
             <input type="text" name="PositionName" id="PositionName" value="@Model.PositionName" onchange=" changePosition(); " style="width:600px" data-autocomplete-source="@Url.Action("AutocompletePositionSearch", "Employment")" />
             <input type="hidden" id="PositionId" name="PositionId" value="@Model.PositionId"/>
-            @*<input type="hidden" id="PositionName" name="PositionName" value="@Model.PositionName"/>*@
             @Html.ValidationMessageFor(model => model.PositionId)
-            @*
-            @Html.LabelFor(m => m.PositionId)&nbsp;@Html.ValidationMessageFor(m => m.PositionId)<br />
-            @Html.DropDownListFor(m => m.PositionId, Model.PositionItems)
-            *@
         </div>
-        
+*@        
         <div class="formfield clear">
             @Html.LabelFor(m => m.DepartmentName):
         </div>
@@ -41,7 +39,14 @@
             @Html.HiddenFor(m => m.DepartmentId)
         </div>
         <div class="formfield clear">
-            <input id="btnChangeDep" type="button" value="Выбрать" onclick="changeDepartment();"/>
+            <input id="btnChangeDep" type="button" value="Выбрать" onclick="changeDepartment(7);"/>
+        </div>
+
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.UserLinkId)<br />
+            @Html.DropDownListFor(m => m.UserLinkId, new SelectList(Model.PostUserLinks, "Id", "Name"), new { onchange = "GetSPDetails(false);" })
+
+            <br />@Html.ValidationMessageFor(m => m.UserLinkId)
         </div>
 
         <div class="formfield clear">
@@ -84,13 +89,44 @@
         
         <div class="formfield clear">
             @Html.LabelFor(m => m.SalaryBasis)@Html.ValidationMessageFor(m => m.SalaryBasis)<br />
-            @Html.TextBoxFor(m => m.SalaryBasis, new { @class = "calc" })
+            @Html.TextBoxFor(m => m.SalaryBasis, new { @class = "calc", @readonly = "readonly" })
         </div>
-        
         <div class="formfield">
             @Html.LabelFor(m => m.SalaryMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.SalaryMultiplier)<br />
             @Html.TextBoxFor(m => m.SalaryMultiplier, new { @class = "calc halfwidth" })
         </div>
+
+
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PersonalAddition)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAddition)<br />
+            @Html.TextBoxFor(m => m.PersonalAddition, new { @class = "calc halfwidth" })
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.PositionAddition)&nbsp;@Html.ValidationMessageFor(m => m.PositionAddition)<br />
+            @Html.TextBoxFor(m => m.PositionAddition, new { @class = "calc halfwidth" })
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.AreaMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.AreaMultiplier)<br />
+            @Html.TextBoxFor(m => m.AreaMultiplier, new { @class = "calc halfwidth", @readonly = "readonly" })
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.AreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.AreaAddition)<br />
+            @Html.TextBoxFor(m => m.AreaAddition, new { @class = "calc halfwidth" })
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.TravelRelatedAddition)&nbsp;@Html.ValidationMessageFor(m => m.TravelRelatedAddition)<br />
+            @Html.TextBoxFor(m => m.TravelRelatedAddition, new { @class = "calc halfwidth" })
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.CompetenceAddition)&nbsp;@Html.ValidationMessageFor(m => m.CompetenceAddition)<br />
+            @Html.TextBoxFor(m => m.CompetenceAddition, new { @class = "calc halfwidth" })
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.FrontOfficeExperienceAddition)&nbsp;@Html.ValidationMessageFor(m => m.FrontOfficeExperienceAddition)<br />
+            @Html.TextBoxFor(m => m.FrontOfficeExperienceAddition, new { @class = "calc halfwidth" })
+        </div>
+
+
         <div class="formfield clear">
             @Html.LabelFor(m => m.WorkCity)&nbsp;@Html.ValidationMessageFor(m => m.WorkCity)<br />
             @Html.EditorFor(m => m.WorkCity)
@@ -314,6 +350,17 @@
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
 
     $(document).ready(function () {
+//        $("#DepartmentId").change(function(){ 
+//            $("#IsSP").val(true);
+//            GetSPDetails();
+//        });
+
+//        $("#UserLinkId").change(function(){ 
+//            $("#IsSP").val(false);
+//            GetSPDetails();
+//        });
+
+        
         setActiveMenuItem("empManagers");
         UIHelpers.attachDatepickerToInputs($('#RegistrationDate'), "-1:+1", true);
         $('#isSecondaryJobContainer').buttonset();
@@ -323,6 +370,7 @@
 
         $("#btnManagerDraft").click(function(){
             $("#IsDraftM").val(true);
+            $("#IsSP").val(false);
             $("#ManagerForm").submit();
         });
 
@@ -455,5 +503,23 @@
         if ($("#PositionName").val() == ""){$("#PositionId").val('0');}
     }
 
+//    function GetSPDetails(IsSP)
+//    {
+//        $("#IsSP").val(IsSP);
+//        var url = "@Url.Action("GetStaffEstablishmentPostDetails", "Employment")";
+//        var dataToSend = $("#ManagerForm").serialize();
+//        ShowFlash(true);    //это диалоговое окно находится на родительской странице
+//        $.post(url, dataToSend, function(data){
+//            if (data.ok == true){
+//                //FillBranchTableData(data);
+//                
+//                ShowFlash(false);
+//            }
+//            else{
+//                ShowFlash(false);
+//                alert(data.msg);
+//            }
+//        }, "json")
+//    };
     
 </script>

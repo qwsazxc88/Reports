@@ -2,8 +2,8 @@
     //пришлось ввести переменную, так как понадобилось вызывать окно из нескольких мест на одной странице, чтобы разделить выбранные подразделения
     createDepartmentDialog(SelType);
 }
-function createDepartmentDialog(SelType) 
-{
+function createDepartmentDialog(SelType) {
+
     var elem = document.createElement('div');
     elem.id = "divDepartmentDialog";
     var newDiv = $(elem);
@@ -21,6 +21,9 @@ function createDepartmentDialog(SelType)
     //Кадровые перемещения
     if (SelType == 4) { departmentId = $("#SourceDepartmentId").val(); }
     if (SelType == 5) { departmentId = $("#TargetDepartmentId").val(); }
+
+    //прием
+    if (SelType == 7) { departmentId = $("#DepartmentId").val(); }
     //var typeId = $("#RequestTypeId").val();
 
     var title =  "Выбор структурного подразделения";
@@ -157,6 +160,13 @@ function SaveDepartment(SelType) {
         $('#TargetDepartmentName').val("");
         $('#TargetDepartmentNameLabel').text("");
     }
+
+    //прием
+    if (SelType == 7) {
+        $('#DepartmentId').val("0");
+        $('#DepartmentName').val("");
+        $('#DepartmentNameLabel').text("");
+    }
     return;
 }
 function setDepartmentValues(control, SelType) {
@@ -204,6 +214,13 @@ function setDepartmentValues(control, SelType) {
         $('#TargetDepartmentName').val($('#' + control + ' option:selected').text());
         $('#TargetDepartmentNameLabel').text($('#' + control + ' option:selected').text());
         $('#TargetDepartmentId').change();
+    }
+    //прием
+    if (SelType == 7) {
+        $('#DepartmentId').val($('#' + control).val());
+        $('#DepartmentName').val($('#' + control + ' option:selected').text());
+        $('#DepartmentNameLabel').text($('#' + control + ' option:selected').text());
+        $('#DepartmentId').change();
     }
 }
 function Level2IDChange() {

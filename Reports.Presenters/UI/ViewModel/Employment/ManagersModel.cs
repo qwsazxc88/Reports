@@ -115,6 +115,35 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsCancelApproveHigherAvailale { get; set; }//для показа консультатнам кнопки для отмены согласования
         public bool IsPyrusDialogVisible { get; set; }
 
+        public bool IsSP { get; set; }//сабмитимся для заполнения списка штатных единиц
+        [Display(Name = "Штатная единица")]
+        public int UserLinkId { get; set; }
+        public IList<IdNameDto> PostUserLinks { get; set; }
+
+        #region Надбавки
+        //только для чтения
+        [Display(Name = "Районный коэффициент (%)")]
+        public decimal? AreaMultiplier { get; set; }
+
+        [Display(Name = "Персональная надбавка")]
+        public decimal? PersonalAddition { get; set; } //ok
+
+        [Display(Name = "Должностная надбавка")]
+        public decimal? PositionAddition { get; set; } //ok
+
+        [Display(Name = "Территориальная надбавка (руб)")]
+        public decimal? AreaAddition { get; set; }
+
+        [Display(Name = "Надбавка за разъездной характер работы (руб)")]
+        public decimal? TravelRelatedAddition { get; set; }
+
+        [Display(Name = "Надбавка за квалификацию (руб)")]
+        public decimal? CompetenceAddition { get; set; }
+
+        [Display(Name = "Надбавка за стаж работы специалистом фронт-офиса (руб)")]
+        public decimal? FrontOfficeExperienceAddition { get; set; }
+        #endregion
+
         public ManagersModel()
         {
             this.Version = 0;
