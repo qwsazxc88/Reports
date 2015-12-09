@@ -401,10 +401,6 @@
                                 <tr>
                                     <td>@Html.LabelFor(m => m.HoursType)</td>
                                     <td>@Html.DropDownListFor(m => m.HoursType, new SelectList(Model.HoursTypes, "Id", "Name"), Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
-                                </tr>                                
-                                <tr>
-                                    <td>@Html.LabelFor(m => m.AccessGroup)</td>
-                                    <td>@Html.DropDownListFor(m => m.AccessGroup, new SelectList(Model.AccessGroupsList, "Id", "Name"), Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                                 </tr>
                             <tr>    
                                 <td colspan="2">Надбавки
@@ -417,14 +413,19 @@
                                       <tbody>
                                       @for(int i=0;i<Model.AdditionsToEdit.Count;i++)
                                       {
-                                          <tr>
+                                          <tr @if(!Model.AdditionsToEdit[i].IsVisible){ <text>style="display:none;"</text>}>
                                             <td>@Model.AdditionsToEdit[i].Type.Name)
                                                 @Html.HiddenFor(m=>m.AdditionsToEdit[i].Type.Id)
                                                 @Html.HiddenFor(m=>m.AdditionsToEdit[i].Type.Name)
                                             </td>
-                                            <td>@Html.TextBoxFor(x=>x.AdditionsToEdit[i].Value, Model.IsManagerEditable || Model.IsPersonnelManagerEditable?null:(object) new {disabled="disabled"})</td>
+                                            <td>@Html.TextBoxFor(x => x.AdditionsToEdit[i].Value, Model.AdditionsToEdit[i].IsEditable && Model.AdditionsToEdit[i].IsValueEditable? null : (object)new { disabled = "disabled" })</td>
                                             <td>
-                                                @Html.CreateDropdown(x => x.AdditionsToEdit[i].Action, new SelectList(Model.AdditionActions, "Id", "Name", Model.AdditionsToEdit[i].Action),Model.IsManagerEditable || Model.IsPersonnelManagerEditable)
+                                                @Html.DropDownListFor(x => x.AdditionsToEdit[i].Action, new SelectList(Model.AdditionActions, "Id", "Name", Model.AdditionsToEdit[i].Action), Model.AdditionsToEdit[i].IsEditable ? null : (object)new { disabled = "disabled" })
+                                                @if (!Model.AdditionsToEdit[i].IsEditable)
+                                                {
+                                                    @Html.HiddenFor(m => m.AdditionsToEdit[i].Action)
+                                                    @Html.HiddenFor(m => m.AdditionsToEdit[i].Value)
+                                                }
                                             </td>
                                           </tr>
                                       }
@@ -759,13 +760,6 @@ label { font-size:1.1em; }
             {
                 addControlError($("#HoursType"),'Необходимо заполнить график работы');
                 addControlError($("#JSError"),'Необходимо заполнить график работы');
-                result = false;
-            }
-            clearControlErrors($("#AccessGroup"));
-            if($("#AccessGroup").val() == '' || $("#AccessGroup").val() ==0)
-            {
-                addControlError($("#AccessGroup"),'Необходимо заполнить группу доступа');
-                addControlError($("#JSError"),'Необходимо заполнить группу доступа');
                 result = false;
             }
         </text>

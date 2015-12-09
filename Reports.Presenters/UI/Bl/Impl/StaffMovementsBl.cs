@@ -142,6 +142,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.User = new StandartUserDto();
                 model.Creator = new StandartUserDto();
+                SetModelAdditions(model);
                 SetFlagState(model);
             }
             else
@@ -309,44 +310,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Casing = StaffMovementsDao.GetUserSalary(model.User.Id);
             model.Salary = usertomove.Rate.HasValue?usertomove.Rate.Value:0;
             //Подгружаем надбавки
-            model.ActiveAdditions = StaffPostChargeLinksDao.QueryExpression(x => x.IsActive && x.Staff.Id==model.User.Id)
-                .Select(x => 
-                    new AdditionsDto { 
-                        Action = x.ExtraChargeActions.Id, 
-                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name }, 
-                        Value = x.Salary 
-                    })
-                .ToList();
-            if (model.Id > 0)
-            {
-                model.AdditionsToEdit = StaffPostChargeLinksDao.QueryExpression(x => x.StaffMovements.Id==model.Id)
-                .Select(x =>
-                    new AdditionsDto
-                    {
-                        Action = x.ExtraChargeActions.Id,
-                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
-                        Value = x.Salary
-                    })
-                .ToList();
-            }
-            else
-            {
-                model.AdditionsToEdit = StaffPostChargeLinksDao.QueryExpression(x => x.IsActive && x.Staff.Id == model.User.Id)
-                .Select(x =>
-                    new AdditionsDto
-                    {
-                        Action = x.ExtraChargeActions.Id,
-                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
-                        Value = x.Salary
-                    })
-                .ToList();
-                var charges=StaffExtraChargesDao.LoadAll();
-                foreach (var charge in charges)
-                {
-                    if (!model.AdditionsToEdit.Any(x => x.Type.Id == charge.Id))
-                        model.AdditionsToEdit.Add(new AdditionsDto { Action = 4, Value = 0, Type = new IdNameDto { Id = charge.Id, Name = charge.Name } });
-                }
-            }
+            SetModelAdditions(model);
             //Заполняем справочники
             LoadDictionaries(model);
             //Подгружаем данные о создателе заявки
@@ -370,6 +334,50 @@ namespace Reports.Presenters.UI.Bl.Impl
             }            
             LoadUserData(model.Creator);
             SetFlagState(model);
+        }
+        private void SetModelAdditions(StaffMovementsEditModel model)
+        {
+            model.ActiveAdditions = StaffPostChargeLinksDao.QueryExpression(x => x.IsActive && x.Staff.Id==model.User.Id)
+                .Select(x => 
+                    new AdditionsDto { 
+                        Action = x.ExtraChargeActions.Id, 
+                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
+                        guid = x.ExtraCharges.GUID,
+                        Value = x.Salary 
+                    })
+                .ToList();
+            if (model.Id > 0)
+            {
+                model.AdditionsToEdit = StaffPostChargeLinksDao.QueryExpression(x => x.StaffMovements.Id==model.Id)
+                .Select(x =>
+                    new AdditionsDto
+                    {
+                        Action = x.ExtraChargeActions.Id,
+                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
+                        guid = x.ExtraCharges.GUID,
+                        Value = x.Salary
+                    })
+                .ToList();
+            }
+            else
+            {
+                model.AdditionsToEdit = StaffPostChargeLinksDao.QueryExpression(x => x.IsActive && x.Staff.Id == model.User.Id)
+                .Select(x =>
+                    new AdditionsDto
+                    {
+                        Action = x.ExtraChargeActions.Id,
+                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
+                        guid = x.ExtraCharges.GUID,
+                        Value = x.Salary
+                    })
+                .ToList();
+                var charges=StaffExtraChargesDao.LoadAll();
+                foreach (var charge in charges)
+                {
+                    if (!model.AdditionsToEdit.Any(x => x.Type.Id == charge.Id))
+                        model.AdditionsToEdit.Add(new AdditionsDto { Action = 4, Value = 0, Type = new IdNameDto { Id = charge.Id, Name = charge.Name }, guid=charge.GUID });
+                }
+            }
         }
         private void LoadDictionaries(StaffMovementsEditModel model)
         {            
@@ -617,6 +625,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     model.IsConfirmButtonAvailable = false;//Кнопка утверждения документов                   
                     model.IsStopButtonAvailable = false;//Конпка приостановки  
+                    SetAdditionFlags(model.AdditionsToEdit, CurrentUser.UserRole, false);
                     break;
                 case UserRole.Employee:
                     model.IsDocsVisible = true;
@@ -635,7 +644,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsChiefAcceptAvailable = false;//Утверждение вышестоящим руководителем                    
 
                     model.IsConfirmButtonAvailable = false;//Кнопка утверждения документов                   
-                    model.IsStopButtonAvailable = false;//Конпка приостановки                 
+                    model.IsStopButtonAvailable = false;//Конпка приостановки 
+                    SetAdditionFlags(model.AdditionsToEdit, CurrentUser.UserRole, false);
                     break;
                 case UserRole.Manager:
                     model.IsDocsVisible = true;
@@ -662,6 +672,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsConfirmButtonAvailable = false;//Кнопка утверждения документов                   
                     model.IsStopButtonAvailable = false;//Конпка приостановки        
                     model.IsPositionEditable = model.IsPositionEditable && (model.Id==0 || model.IsTargetManagerAcceptAvailable || model.IsSourceManagerAcceptAvailable);
+                    SetAdditionFlags(model.AdditionsToEdit, CurrentUser.UserRole, model.IsManagerEditable);
                     break;
                 case UserRole.ConsultantPersonnel:
                     model.IsDocsVisible = false;
@@ -682,6 +693,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     model.IsConfirmButtonAvailable = false;//Кнопка утверждения документов                   
                     model.IsStopButtonAvailable = true;//Конпка приостановки  
+                    SetAdditionFlags(model.AdditionsToEdit, CurrentUser.UserRole, false);
                     break;
                 case UserRole.PersonnelManager:
                     model.IsDocsVisible = true;
@@ -702,13 +714,74 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsChiefAcceptAvailable = false;//Утверждение вышестоящим руководителем                    
 
                     model.IsConfirmButtonAvailable = model.IsConfirmButtonAvailable && true;//Кнопка утверждения документов                   
-                    model.IsStopButtonAvailable = false;//Конпка приостановки  
+                    model.IsStopButtonAvailable = false;//Конпка приостановки 
+                    SetAdditionFlags(model.AdditionsToEdit, CurrentUser.UserRole, model.IsPersonnelManagerEditable);
                     break;
             }
             model.IsSaveAvailable = (model.StatusId == 1 && (model.Creator.Id==CurrentUser.Id || model.User.Id==CurrentUser.Id) )  
                 || model.IsManagerEditable 
                 || model.IsPersonnelManagerEditable
                 || model.IsDocsAddAvailable;
+        }
+        private void SetAdditionFlags(IList<AdditionsDto> additions, UserRole role, bool isEditable)
+        {
+            var ShowAllToRoles = UserRole.PersonnelManager | UserRole.OutsourcingManager;
+            foreach (var element in additions)
+            {
+                switch (element.guid)
+                {
+                        //Районный коэф.
+                    case "66f08438-f006-44e8-b9ee-32a8dcf557ba":
+                        element.IsEditable = false;
+                        break;
+                        //Оклад
+                    case "35c7a5dd-d8e9-4aa0-8378-2a7e501d846a":
+                        element.IsEditable = false;
+                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        break;
+                        //Оклад
+                    case "537ff7ed-5e51-48d1-bf5e-4f680cb3e1b7":
+                        element.IsEditable = false;
+                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        break;
+                        //Северная автомат
+                    case "1f076cf3-1ebb-11e4-80c8-002590d1e727":
+                        element.IsValueEditable = false;
+                        element.IsEditable = (role & UserRole.PersonnelManager) > 0 && isEditable;
+                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        break;
+                        //Северная руч.
+                    case "a5ceb324-a745-11de-b733-003048359abd":
+                        element.IsValueEditable = false;
+                        element.IsEditable = (role & UserRole.PersonnelManager) > 0 && isEditable;
+                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        break; 
+                        //Отпуск по уходу за ребенком без оплаты
+                    case "9e6ec242-49f2-4320-a5aa-024c5d607aa3":
+                        element.IsEditable = false;
+                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        break;
+                        //Пособие по уходу за ребёнком до 1.5 лет#1502
+                    case "1671e1b6-0281-489c-b191-50e6fb241e75":
+                        element.IsEditable=false;
+                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        break;
+                        //Пособие по уходу за ребёнком до 3 лет#1503
+                    case "db5cc88b-4080-4061-8bba-42f22b500bb4":
+                        element.IsEditable=false;
+                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        break;
+                        //Доплата за совмещение
+                    case "91a004fc-d13e-11dd-b086-00308d000000":
+                        element.IsEditable=false;
+                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        break;
+                    default:
+                        element.IsVisible = true;
+                        element.IsEditable = isEditable;
+                        break;
+                }
+            }
         }
         /// <summary>
         /// Меняем поля сущности. Все сохранения зависят от флагов(нельзя - значит нельзя.)
@@ -816,7 +889,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.IsTempMoving = model.IsTempMoving;
                 entity.Data.MovementCondition = model.MovementCondition;//Условие перевода
-                entity.Data.Conjunction = model.Conjunction;                
+                entity.Data.Conjunction = model.Conjunction;
+                SaveAdditions(entity, model);
             }
             #endregion
             #region Для кадров
@@ -1035,7 +1109,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             #endregion
         }
         private void SaveAdditions(StaffMovements entity, StaffMovementsEditModel model)
-        {
+        {            
             foreach (var addition in model.AdditionsToEdit)
             {
                 if (!entity.Additions.Any(x => x.ExtraCharges!=null && x.ExtraCharges.Id == addition.Type.Id))
