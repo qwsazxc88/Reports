@@ -91,10 +91,13 @@
             @Html.LabelFor(m => m.PersonalAddition)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAddition)<br />
             @Html.TextBoxFor(m => m.PersonalAddition, new { @class = "calc halfwidth", @readonly = "readonly" })
         </div>
+        @*
+        не нужно
         <div class="formfield">
             @Html.LabelFor(m => m.PositionAddition)&nbsp;@Html.ValidationMessageFor(m => m.PositionAddition)<br />
-            @Html.TextBoxFor(m => m.PositionAddition, new { @class = "calc halfwidth", @readonly = "readonly" })
+            @Html.TextBoxFor(m => m.PositionAddition, new { @class = "calc halfwidth" })
         </div>
+        *@
         
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.AreaMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.AreaMultiplier)<br />

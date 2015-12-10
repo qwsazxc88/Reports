@@ -2060,7 +2060,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PostUserLinks = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId)
                 .Where(x => x.IsVacation)
                 .ToList()
-                .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "")});
+                .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") + (x.ReplacedId != 0 ? " - " + x.ReplacedName : "") });
             return model;
         }
 
@@ -2976,7 +2976,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PostUserLinks = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId)
                 .Where(x => x.IsVacation || (x.IsReserve && x.Id == model.UserLinkId))
                 .ToList()
-                .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") });
+                .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") + (x.ReplacedId != 0 ? " - " + x.ReplacedName : "") });
             model.PostUserLinks.Insert(0, new IdNameDto { Id = 0, Name = "" });
            
         }
@@ -3211,6 +3211,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             User PersonnelUser = UserDao.Load(model.PersonnelId);
             Department department = DepartmentDao.Load(model.DepartmentId);
             StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId.Value);
+
+            if(department.ItemLevel != 7)
+            {
+                error = "Укажите подразделение 7 уровня!";
+                return null;
+            }
 
             if ((currentUser.UserRole & (UserRole.Manager | UserRole.Chief | UserRole.Director)) == 0 && onBehalfOfManager == null)
             {
@@ -4993,7 +4999,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
 
             User currentUser = UserDao.Get(AuthenticationService.CurrentUser.Id);
-            Department department = DepartmentDao.Get(viewModel.DepartmentId);            
+            Department department = DepartmentDao.Get(viewModel.DepartmentId);
+
+            StaffEstablishedPostDto Vacation = StaffEstablishedPostDao.GetStaffEstablishedArrangements(viewModel.DepartmentId)
+                .Where(x => x.IsVacation && x.Id == viewModel.UserLinkId)
+                .FirstOrDefault();
+            //проверяем соответствие ТД
+            if (Vacation.IsSTD && entity.Candidate.User.IsFixedTermContract.HasValue && !entity.Candidate.User.IsFixedTermContract.Value)
+            {
+                error = "На данную вакансию можно принять сотрудника только по срочному трудовому договору!";
+                return false;
+            }
 
             // Проверка прав руководителя на подразделение
             if (currentUser.UserRole == UserRole.Manager)
@@ -6877,7 +6893,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PostUserLinks = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId)
                 .Where(x => x.IsVacation || (x.IsReserve && x.Id == model.UserLinkId))
                 .ToList()
-                .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") });
+                .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") + (x.ReplacedId != 0 ? " - " + x.ReplacedName : "")  });
                 model.PostUserLinks.Insert(0, new IdNameDto { Id = 0, Name = "" });
             }
             else //по Id строки штатной расстановки достаем данные по вакансии
