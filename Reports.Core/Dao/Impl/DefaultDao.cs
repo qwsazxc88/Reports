@@ -344,7 +344,11 @@ namespace Reports.Core.Dao.Impl
 								    from Users manager 
 								    inner JOIN Department userd on userd.Id=isnull(ur.DepartmentId, u.DepartmentId)
 								    INNER JOIN Department d on manager.DepartmentId=d.Id and userd.Path like d.Path+'%'
-								    where manager.IsActive=1 and manager.RoleId&4>0 and u.Email!=manager.Email order by manager.Level desc, manager.IsMainManager desc 
+								    where manager.IsActive=1 and manager.RoleId&4>0 and u.Email!=manager.Email 
+                                          and manager.level < case when ur.id is not null and isnull(ur.IsMainManager, 0) = 1 
+                                                                   then ur.level 
+                                                                   when ur.id is not null and isnull(ur.IsMainManager, 0) = 0 then ur.level + 6 else 7 end
+                                    order by manager.Level desc, manager.IsMainManager desc 
 								) as ManagerName,
                                 '{3}' as Name,
                                 {2} as Date,  
