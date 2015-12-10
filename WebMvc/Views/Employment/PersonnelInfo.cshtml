@@ -1231,6 +1231,20 @@
 //                            GetSPDetails(false);
 //                        });
 
+                        $(".portlet")
+                            .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
+                            .find(".portlet-header")
+                            .addClass("ui-state-default ui-corner-all")
+                            .prepend("<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
+
+                        $(".portlet-toggle").click(function () {
+                            var icon = $(this);
+                            icon.toggleClass("ui-icon-minusthick ui-icon-plusthick");
+                            icon.closest(".portlet").find(".portlet-content").toggle();
+                        });
+                        //$( ".portlet-toggle" ).click();//чтобы по умолчанию быо закрыто
+                        //$("#DivSalary").toggle();//раскрываем оклад
+
                         UIHelpers.attachDatepickerToInputs($('#RegistrationDate'), "-1:+1", true);
                         $('#isSecondaryJobContainer').buttonset();
                         $('#isFrontContainer').buttonset();
