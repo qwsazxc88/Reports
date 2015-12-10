@@ -1243,7 +1243,8 @@
                             icon.closest(".portlet").find(".portlet-content").toggle();
                         });
                         //$( ".portlet-toggle" ).click();//чтобы по умолчанию быо закрыто
-                        //$("#DivSalary").toggle();//раскрываем оклад
+                        //$("#DivSalary").toggle().open();//раскрываем оклад
+                        //$("#DivAdditional").toggle().close();//раскрываем оклад
 
                         UIHelpers.attachDatepickerToInputs($('#RegistrationDate'), "-1:+1", true);
                         $('#isSecondaryJobContainer').buttonset();

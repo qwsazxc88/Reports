@@ -113,8 +113,9 @@
         <div class="clear">
             <div class="portlet">
                 <div class="portlet-header">Персональные надбавки</div>
-                <div class="portlet-content">
+                <div id="DivAdditional" class="portlet-content">
                     <table>
+                        <tr><td colspan="2" style="background-color:#FFCCCC;">Персональная надбавка согласовывается УКДиУ и Заместителем председателя правления банка.</td></tr>
                         <tr>
                             <td>@Html.LabelFor(m => m.PersonalAddition)</td>
                             <td>@Html.TextBoxFor(m => m.PersonalAddition, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.PersonalAddition)</td>
@@ -134,6 +135,11 @@
                         <tr>
                             <td>@Html.LabelFor(m => m.FrontOfficeExperienceAddition)</td>
                             <td>@Html.TextBoxFor(m => m.FrontOfficeExperienceAddition, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.FrontOfficeExperienceAddition)</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <button type="button" style="float:right;">Согласовать</button>
+                            </td>
                         </tr>
                     </table>
                 </div>
