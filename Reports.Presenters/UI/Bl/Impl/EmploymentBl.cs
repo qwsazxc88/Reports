@@ -5722,6 +5722,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
 
 
+                    //если дата приема стоит прошлым месяцем относительно текущей даты, то можно принять только до 5 числа текущего месяца (Экспресс-Волга до 8 числа)
+                    if (entity.RegistrationDate.Value.Year != DateTime.Today.Year || entity.RegistrationDate.Value.Month != DateTime.Today.Month)
+                    {
+                        if (entity.RegistrationDate.Value.AddMonths(1).Year == DateTime.Today.Year && entity.RegistrationDate.Value.AddMonths(1).Month == DateTime.Today.Month && DateTime.Today.Day > 5/*(model.IsVolga ? 8 : 5)*/)
+                        {
+                            error = "Прием сотрудника в прошлом периоде запрещен!";
+                            return false;
+                        }
+                    }
+
                     if (!IsCurrentUserChiefForCreator(current, entity.Candidate.AppointmentCreator))
                     {
                         error = "Кандидата может согласовать только руководитель, являющийся вышестоящим для создателя заявки на подбор персонала.";
