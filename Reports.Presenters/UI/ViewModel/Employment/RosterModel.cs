@@ -64,6 +64,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int PersonnelId { get; set; }
         public IList<CandidatePersonnelDto> Personnels { get; set; }
 
+        [Display(Name = "Наличие персональных надбавок")]
+        public int? AdditionId { get; set; }
+        public IEnumerable<SelectListItem> Additions { get; set; }
+
         // Перевод списком на бессрочный ТД
         public bool IsBulkChangeContractToIndefiniteAvailable { get; set; }
 
@@ -74,6 +78,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsBulkApproveByHigherManagerAvailable { get; set; }
         //Метки для оригиналов документов
         public bool IsMarkDocOriginal { get; set; }
+        
         
         public RosterModel()
         {

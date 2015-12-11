@@ -3,13 +3,12 @@
 @using Reports.Core           
 @{
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    //Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Руководители";
 }
 
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.MessageStr)</span>
-
 
 @using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", Id = "ManagerForm" }))
 {
@@ -31,6 +30,7 @@
             @Html.ValidationMessageFor(model => model.PositionId)
         </div>
 *@        
+
         <div class="formfield clear">
             @Html.LabelFor(m => m.DepartmentName):
         </div>
@@ -84,49 +84,95 @@
         </div>
 
         <div class="formfield ">
-            @Html.LabelFor(m => m.ProbationaryPeriod)&nbsp;@Html.ValidationMessageFor(m => m.ProbationaryPeriod)<br />
+            @Html.LabelFor(m => m.ProbationaryPeriod)&nbsp;@Html.ValidationMessageFor(m => m.ProbationaryPeriod)
             @Html.EditorFor(m => m.ProbationaryPeriod)
         </div>
         
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.SalaryBasis)@Html.ValidationMessageFor(m => m.SalaryBasis)<br />
-            @Html.TextBoxFor(m => m.SalaryBasis, new { @class = "calc", @readonly = "readonly" })
+        <div class="clear">
+            <div class="portlet">
+                <div class="portlet-header">Оклад</div>
+                <div id="DivSalary" class="portlet-content">
+                    <table>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.SalaryBasis)</td>
+                            <td>@Html.TextBoxFor(m => m.SalaryBasis, new { @class = "calc halfwidth", @readonly = "readonly" })&nbsp;@Html.ValidationMessageFor(m => m.SalaryBasis)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.SalaryMultiplier)</td>
+                            <td>@Html.TextBoxFor(m => m.SalaryMultiplier, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.SalaryMultiplier)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.AreaMultiplier)</td>
+                            <td>@Html.TextBoxFor(m => m.AreaMultiplier, new { @class = "calc halfwidth", @readonly = "readonly" })&nbsp;@Html.ValidationMessageFor(m => m.AreaMultiplier)</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
-        <div class="formfield">
-            @Html.LabelFor(m => m.SalaryMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.SalaryMultiplier)<br />
-            @Html.TextBoxFor(m => m.SalaryMultiplier, new { @class = "calc halfwidth" })
+        
+        <div class="clear">
+            <div class="portlet">
+                <div class="portlet-header">Персональные надбавки</div>
+                <div id="DivAdditional" class="portlet-content">
+                    <table>
+                        <tr><td colspan="2" style="background-color:#FFCCCC;">Персональные(ная) надбавки(а) должны быть согласованы в системе Pyrus.</td></tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.PersonalAddition)</td>
+                            <td>@Html.TextBoxFor(m => m.PersonalAddition, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.PersonalAddition)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.AreaAddition)</td>
+                            <td>@Html.TextBoxFor(m => m.AreaAddition, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.AreaAddition)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.TravelRelatedAddition)</td>
+                            <td>@Html.TextBoxFor(m => m.TravelRelatedAddition, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.TravelRelatedAddition)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.CompetenceAddition)</td>
+                            <td>@Html.TextBoxFor(m => m.CompetenceAddition, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.CompetenceAddition)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.FrontOfficeExperienceAddition)</td>
+                            <td>@Html.TextBoxFor(m => m.FrontOfficeExperienceAddition, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.FrontOfficeExperienceAddition)</td>
+                        </tr>
+                        @if (Model.IsConsultant && !string.IsNullOrEmpty(Model.PyrusNumber) && !string.IsNullOrWhiteSpace(Model.PyrusNumber))
+                        {
+                            <tr>
+                                <td>@Html.LabelFor(m => m.PyrusNumber)</td>
+                                <td>@Html.TextBoxFor(m => m.PyrusNumber, new { @class = "calc" })&nbsp;@Html.ValidationMessageFor(m => m.PyrusNumber)</td>
+                            </tr>
+                        }
+                        <tr>
+                            @if (!string.IsNullOrEmpty(Model.PyrusNumber) && !string.IsNullOrWhiteSpace(Model.PyrusNumber))
+                            {
+                                <td colspan="2">
+                                    <a href="@("https://pyrus.com/t#id" + Model.PyrusNumber)" target="_blank">Задача в системе Pyrus</a><br />
+                                </td>
+                            }
+                            else
+                            {
+                                <td>@Html.LabelFor(m => m.PyrusNumber)</td>
+                                <td>@Html.TextBoxFor(m => m.PyrusNumber, new { @class = "calc" })&nbsp;@Html.ValidationMessageFor(m => m.PyrusNumber)</td>
+                            }
+                        </tr>
+                    </table>
+                    <a href="https://pyrus.com/" target="_blank">Для создания задачи перейдите по ссылке</a>
+                </div>
+            </div>
         </div>
 
-
         <div class="formfield clear">
-            @Html.LabelFor(m => m.PersonalAddition)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAddition)<br />
-            @Html.TextBoxFor(m => m.PersonalAddition, new { @class = "calc halfwidth" })
+            @Html.LabelFor(m => m.SalaryTotal)&nbsp;@Html.DisplayFor(m => m.SalaryTotal)
         </div>
+
+        @*
+        не нужно
         <div class="formfield">
             @Html.LabelFor(m => m.PositionAddition)&nbsp;@Html.ValidationMessageFor(m => m.PositionAddition)<br />
             @Html.TextBoxFor(m => m.PositionAddition, new { @class = "calc halfwidth" })
         </div>
-        <div class="formfield">
-            @Html.LabelFor(m => m.AreaMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.AreaMultiplier)<br />
-            @Html.TextBoxFor(m => m.AreaMultiplier, new { @class = "calc halfwidth", @readonly = "readonly" })
-        </div>
-        <div class="formfield">
-            @Html.LabelFor(m => m.AreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.AreaAddition)<br />
-            @Html.TextBoxFor(m => m.AreaAddition, new { @class = "calc halfwidth" })
-        </div>
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.TravelRelatedAddition)&nbsp;@Html.ValidationMessageFor(m => m.TravelRelatedAddition)<br />
-            @Html.TextBoxFor(m => m.TravelRelatedAddition, new { @class = "calc halfwidth" })
-        </div>
-        <div class="formfield">
-            @Html.LabelFor(m => m.CompetenceAddition)&nbsp;@Html.ValidationMessageFor(m => m.CompetenceAddition)<br />
-            @Html.TextBoxFor(m => m.CompetenceAddition, new { @class = "calc halfwidth" })
-        </div>
-        <div class="formfield">
-            @Html.LabelFor(m => m.FrontOfficeExperienceAddition)&nbsp;@Html.ValidationMessageFor(m => m.FrontOfficeExperienceAddition)<br />
-            @Html.TextBoxFor(m => m.FrontOfficeExperienceAddition, new { @class = "calc halfwidth" })
-        </div>
-
+        *@
 
         <div class="formfield clear">
             @Html.LabelFor(m => m.WorkCity)&nbsp;@Html.ValidationMessageFor(m => m.WorkCity)<br />
@@ -183,7 +229,6 @@
         }
         
     </fieldset>
-    
     
     
     <div class="clear">
@@ -317,6 +362,7 @@
     {
         <label for="IssuedBy" style="display:block;">@Html.LabelFor(m => m.Comment)</label>@Html.TextAreaFor(m => m.Comment) @Html.ValidationMessageFor(m => m.Comment)
         <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+        
     }
 </div>
 
@@ -360,6 +406,18 @@
 //            $("#IsSP").val(false);
 //            GetSPDetails();
 //        });
+
+        $(".portlet")
+            .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
+            .find(".portlet-header")
+            .addClass("ui-state-default ui-corner-all")
+            .prepend("<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
+
+        $(".portlet-toggle").click(function () {
+            var icon = $(this);
+            icon.toggleClass("ui-icon-minusthick ui-icon-plusthick");
+            icon.closest(".portlet").find(".portlet-content").toggle();
+        });
 
         
         setActiveMenuItem("empManagers");

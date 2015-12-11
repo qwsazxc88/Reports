@@ -2476,6 +2476,18 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError("SalaryMultiplier", "Ставка не может быть больше единицы!");
             }
 
+            //проверка на задачу в пайрусе
+            if (((model.PersonalAddition.HasValue && model.PersonalAddition.Value != 0)
+                || (model.PositionAddition.HasValue && model.PositionAddition.Value != 0)
+                || (model.AreaAddition.HasValue && model.AreaAddition.Value != 0)
+                || (model.TravelRelatedAddition.HasValue && model.TravelRelatedAddition.Value != 0)
+                || (model.CompetenceAddition.HasValue && model.CompetenceAddition.Value != 0)
+                || (model.FrontOfficeExperienceAddition.HasValue && model.FrontOfficeExperienceAddition.Value != 0)) 
+                && (string.IsNullOrEmpty(model.PyrusNumber) || string.IsNullOrWhiteSpace(model.PyrusNumber)))
+            {
+                ModelState.AddModelError("PyrusNumber", "Введите номер задачи в системе Pyrus!");
+            }
+            //model.PyrusNumber;
             
             if (!model.SendTo1C.HasValue)
             {
