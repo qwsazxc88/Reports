@@ -44,6 +44,8 @@ BEGIN
 		SELECT null, null, 1, 5, null, null, null, null, 0
 		UNION ALL
 		SELECT null, null, 1, 6, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 1, 7, null, null, null, null, 0
 		--для кассы
 		UNION ALL
 		SELECT null, null, 2, 7, null, null, null, null, 0

@@ -118,7 +118,7 @@ BEGIN
 				 ,I.SNILS_Admin--СНИЛС_Управляющего_Управление_Дирекции
 				 ,D.OperationModeATM--Режим_работы_Банкомата
 				 ,D.OperationModeCashIn--Режим_работы_Cash_in
-				 ,null as DepositPointCode --Код_депозитной_точки (null)
+				 ,T.FingradCode as DepositPointCode --Код_депозитной_точки (null)
 				 ,null as Front_Back1--Front_Back1 (Front/Back/null)
 				 ,I.ManagementCode--ID_Дирекции
 				 ,I.AdminCode--ID_Управления_Дирекции_Управление_Дирекции
@@ -197,6 +197,8 @@ BEGIN
 	--установленное ПО
 	LEFT JOIN #Soft as R ON R.SoftGroupId = D.SoftGroupId
 	LEFT JOIN #WorkDays as S ON S.DMDetailId = D.Id
+	--депозитное подразделение
+	LEFT JOIN Department as T ON T.Id = B.DepDepositId
 	WHERE A.FingradCode is not null
 END
 --dbo.CreateDataForFingrad 1

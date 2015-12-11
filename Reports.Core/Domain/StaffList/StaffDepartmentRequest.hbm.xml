@@ -20,6 +20,7 @@
     <property name="IsTaxAdminAccount" not-null="false"/>
     <property name="IsEmployeAvailable" not-null="false"/>
     <many-to-one name="DepNext" class="Department" column="DepNextId" foreign-key="FK_StaffDepartmentRequest_DepartmentNext" index="StaffDepartmentRequest_DepartmentNext" not-null="false"/>
+    <many-to-one name="DepDeposit" class="Department" column="DepDepositId" foreign-key="FK_StaffDepartmentRequest_DepartmentDeposit" index="StaffDepartmentRequest_DepartmentDeposit" not-null="false"/>
     <property name="IsPlan" not-null="false"/>
     <property name="IsUsed" not-null="false"/>
     <property name="IsDraft" not-null="false"/>

@@ -211,6 +211,18 @@
                         </td>
                     </tr>
                     <tr>
+                            <td>
+                                @Html.LabelFor(m => m.DepDepositId)<br />
+                                <input type="button" value="Выбрать" title="Выбрать подразделение" onclick="changeDepartment(8);"/>
+                            </td>
+                            <td colspan="2">
+                                <label id="DepDepositNameLabel">@Model.DepDepositName</label>
+                                @Html.HiddenFor(m => m.DepDepositId)
+                                @Html.HiddenFor(m => m.DepDepositName)
+                                @Html.ValidationMessageFor(model => model.DepDepositId)
+                            </td>
+                        </tr>
+                    <tr>
                         <td>
                             @Html.LabelFor(m => m.IsPlan)
                         </td>

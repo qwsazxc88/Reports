@@ -93,6 +93,10 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Признак действующей заявки")]
         public bool IsUsed { get; set; }
 
+        [Display(Name = "Депозитное подразделение:")]
+        public int DepDepositId { get; set; }
+        public string DepDepositName { get; set; }
+
         [Display(Name = "Дирекция")]
         public string ManagementName { get; set; }
 
