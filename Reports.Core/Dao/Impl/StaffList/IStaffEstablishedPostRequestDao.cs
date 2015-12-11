@@ -31,8 +31,15 @@ namespace Reports.Core.Dao
         /// <summary>
         /// Достаем Id действующей заявки для данной штатной единицы.
         /// </summary>
-        /// <param name="Id">Id штатной единицы.</param>
+        /// <param name="SEPId">Id штатной единицы.</param>
         /// <returns></returns>
         int GetCurrentRequestId(int SEPId);
+        /// <summary>
+        /// Достаем предыдущую утвержденную заявку для данной штатной единицы.
+        /// </summary>
+        /// <param name="SEPId">Id штатной единицы.</param>
+        /// <param name="Id">Id заявки, для которой ищем предыдущее состояние.</param>
+        /// <returns></returns>
+        StaffEstablishedPostRequest GetPrevEstablishedPostRequest(int SEPId, int Id);
     }
 }
