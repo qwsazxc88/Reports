@@ -585,6 +585,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsEmployeAvailable = entity.IsEmployeAvailable;
                 model.DepNextId = entity.DepNext != null ? entity.DepNext.Id : 0;
                 model.DepNextName = entity.DepNext != null ? entity.DepNext.Name : string.Empty;
+                model.DepDepositId = entity.DepDeposit != null ? entity.DepDeposit.Id : 0;
+                model.DepDepositName = entity.DepDeposit != null ? entity.DepDeposit.Name : string.Empty;
                 model.IsPlan = entity.IsPlan;
                 model.IsUsed = entity.IsUsed;
 
@@ -725,6 +727,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Department = model.DepartmentId == 0 ? null : DepartmentDao.Get(model.DepartmentId),
                     ParentDepartment = model.ParentId == 0 ? null : DepartmentDao.Load(model.ParentId),
                     DepNext = model.DepNextId == 0 ? null : DepartmentDao.Load(model.DepNextId),
+                    DepDeposit = model.DepDepositId == 0 ? null : DepartmentDao.Load(model.DepDepositId),
                     ItemLevel = model.ItemLevel.Value,
                     Name = model.Name,
                     DepartmentAccessory = model.BFGId == 0 ? null : StaffDepartmentAccessoryDao.Load(model.BFGId),
@@ -1020,6 +1023,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.EditDate = DateTime.Now;
             entity.ParentDepartment = model.ParentId == 0 ? null : DepartmentDao.Load(model.ParentId);
             entity.DepNext = model.DepNextId == 0 ? null : DepartmentDao.Load(model.DepNextId);
+            entity.DepDeposit = model.DepDepositId == 0 ? null : DepartmentDao.Load(model.DepDepositId);
 
             //юридический адрес
             RefAddresses la = null;

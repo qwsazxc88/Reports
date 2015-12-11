@@ -20,6 +20,7 @@ function createDepartmentDialog(SelType)
     if (SelType == 2) { departmentId = $("#DepCachinId").val(); }
     if (SelType == 3) { departmentId = $("#DepATMId").val(); }
     if (SelType == 6) { departmentId = $("#ParentId").val(); }
+    if (SelType == 8) { departmentId = $("#DepDepositId").val(); }
 
 
     //Кадровые перемещения
@@ -149,6 +150,13 @@ function SaveDepartment(SelType) {
         $('#DepParentNameLabel').text("");
     }
 
+    //для штатного расписания
+    if (SelType == 8) {
+        $('#DepDepositId').val("0");
+        $('#DepDepositName').val("");
+        $('#DepDepositNameLabel').text("");
+    }
+
     //для кадровых перемещений
     if (SelType == 4) {
         $('#SourceDepartmentId').val("0");
@@ -196,6 +204,14 @@ function setDepartmentValues(control, SelType) {
         $('#DepParentName').val($('#' + control + ' option:selected').text());
         $('#DepParentNameLabel').text($('#' + control + ' option:selected').text());
     }
+
+    //для штатного расписания
+    if (SelType == 8) {
+        $('#DepDepositId').val($('#' + control).val());
+        $('#DepDepositName').val($('#' + control + ' option:selected').text());
+        $('#DepDepositNameLabel').text($('#' + control + ' option:selected').text());
+    }
+
     //для кадровых перемещений
     if (SelType == 4) {
         $('#SourceDepartmentId').val($('#' + control).val());
