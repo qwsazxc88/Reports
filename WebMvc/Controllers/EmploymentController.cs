@@ -1793,21 +1793,6 @@ namespace WebMvc.Controllers
             return Json(new { ok = result, roster });
         }
 
-        [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.ConsultantOutsourcing)]
-        public ActionResult PersonnelInfo(int ID, bool IsCandidateInfoAvailable, bool IsBackgroundCheckAvailable, bool IsManagersAvailable, bool IsPersonalManagersAvailable, int TabIndex)
-        {
-            PersonnelInfoModel model = new PersonnelInfoModel();
-            model.CandidateID = ID;
-            model.IsCandidateInfoAvailable = IsCandidateInfoAvailable;
-            model.IsBackgroundCheckAvailable = IsBackgroundCheckAvailable;
-            model.IsManagersAvailable = IsManagersAvailable;
-            model.IsPersonalManagersAvailable = IsPersonalManagersAvailable;
-            model.TabIndex = TabIndex;
-            model = EmploymentBl.GetPersonnelInfoModel(model);
-            return View(model);
-        }
-
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.Chief | UserRole.Director)]
         public ActionResult RosterBulkApprove(IList<CandidateApprovalDto> roster)
@@ -1999,6 +1984,41 @@ namespace WebMvc.Controllers
         }
         #endregion 
 
+        #region PersonnelInfo
+        #endregion
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.ConsultantOutsourcing)]
+        public ActionResult PersonnelInfo(int ID, bool IsCandidateInfoAvailable, bool IsBackgroundCheckAvailable, bool IsManagersAvailable, bool IsPersonalManagersAvailable, int TabIndex)
+        {
+            PersonnelInfoModel model = new PersonnelInfoModel();
+            model.CandidateID = ID;
+            model.IsCandidateInfoAvailable = IsCandidateInfoAvailable;
+            model.IsBackgroundCheckAvailable = IsBackgroundCheckAvailable;
+            model.IsManagersAvailable = IsManagersAvailable;
+            model.IsPersonalManagersAvailable = IsPersonalManagersAvailable;
+            model.TabIndex = TabIndex;
+            model = EmploymentBl.GetPersonnelInfoModel(model);
+            return View(model);
+        }
+
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Security | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing)]
+        public ActionResult PersonnelInfoSendEmail(int CandidateId, int ToUserId, string Subject, string EmailMessage)
+        {
+            PersonnelInfoModel model = new PersonnelInfoModel();
+            model.CandidateID = CandidateId;
+            model.ToUserId = ToUserId;
+            model.Subject = Subject;
+            model.EmailMessage = EmailMessage;
+            
+            string error = String.Empty;
+            bool result = EmploymentBl.EmploymentProccedRegistrationSendEmail(model, out error);
+
+            if (result)
+                model = EmploymentBl.GetPersonnelInfoModel(model);
+            
+            return Json(new { ok = result, msg = error, EmailMessageStr = model.EmailMessage });
+        }
         #endregion
 
         #region Model Validation
@@ -2334,7 +2354,7 @@ namespace WebMvc.Controllers
         {
             ValidateFileLength(model.PersonalDataProcessingScanFile, "PersonalDataProcessingScanFile", 0.5);
             ValidateFileLength(model.InfoValidityScanFile, "InfoValidityScanFile", 0.5);
-            ValidateFileLength(model.EmploymentFile, "EmploymentFile", 2);
+            ValidateFileLength(model.EmploymentFile, "EmploymentFile", 4);
             ValidateFileLength(model.EmploymentFile, "IsValidate", 2);
 
             if (!model.IsBGDraft)
@@ -2427,8 +2447,8 @@ namespace WebMvc.Controllers
                     {
                         if (model.RegistrationDate.Value.Year != DateTime.Today.Year || model.RegistrationDate.Value.Month != DateTime.Today.Month)
                         {
-                            //если дата приема стоит прошлым месяцем относительно текущей даты, то можно принять только до 5 числа текущего месяца
-                            if (model.RegistrationDate.Value.AddMonths(1).Year == DateTime.Today.Year && model.RegistrationDate.Value.AddMonths(1).Month == DateTime.Today.Month && DateTime.Today.Day > 5)
+                            //если дата приема стоит прошлым месяцем относительно текущей даты, то можно принять только до 5 числа текущего месяца (Экспресс-Волга до 8 числа)
+                            if (model.RegistrationDate.Value.AddMonths(1).Year == DateTime.Today.Year && model.RegistrationDate.Value.AddMonths(1).Month == DateTime.Today.Month && DateTime.Today.Day > 5/*(model.IsVolga ? 8 : 5)*/)
                             {
                                 ModelState.AddModelError("RegistrationDate", "Прием сотрудника в прошлом периоде запрещен!");
                             }

@@ -263,7 +263,8 @@
                     Выбрать скан для загрузки <br />
                     (Если вы принимаетесь на работу <br /> 
                      впервые, вам необходимо прикрепить <br />
-                    скан заявления на выдачу трудовой книжки)
+                    скан заявления на выдачу трудовой книжки.<br />
+                    Бланк заявления доступен <a href = "@Url.Content("~/Templates/zayavlenie_ob_oformlenii_trudovoy.doc")" target="_blank">тут</a>)
                     <br /><input type="file" name="WorkBookScanFile" id="WorkBookScanFile" @if (!string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename) || Model.IsScanFinal)
                                                                                                                     {<text>style="display:none;"</text>} /> @Html.ValidationMessageFor(m => m.WorkBookScanFile)
 
