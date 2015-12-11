@@ -466,6 +466,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepNextId = 0;
                 model.IsPlan = false;
 
+                StaffDepartmentFingradStructureDto FinStructure = StaffDepartmentRPLinkDao.GetFingradStructureForDeparment(model.ParentId);
+                if (FinStructure != null)
+                {
+                    model.ManagementCode = FinStructure.ManagementCode;
+                    model.ManagementName = FinStructure.ManagementName;
+                    model.AdminCode = FinStructure.AdminCode;
+                    model.AdminName = FinStructure.AdminName;
+                    model.BGCode = FinStructure.BGCode;
+                    model.BGName = FinStructure.BGName;
+                    model.RPLInkCode = FinStructure.RPLinkCode;
+                    model.RPLInkName = FinStructure.RPLinkName;
+                }
+
+
                 //налоговые реквизиты
                 model.KPP = string.Empty;
                 model.OKTMO = string.Empty;
@@ -571,8 +585,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsEmployeAvailable = entity.IsEmployeAvailable;
                 model.DepNextId = entity.DepNext != null ? entity.DepNext.Id : 0;
                 model.DepNextName = entity.DepNext != null ? entity.DepNext.Name : string.Empty;
+                model.DepDepositId = entity.DepDeposit != null ? entity.DepDeposit.Id : 0;
+                model.DepDepositName = entity.DepDeposit != null ? entity.DepDeposit.Name : string.Empty;
                 model.IsPlan = entity.IsPlan;
                 model.IsUsed = entity.IsUsed;
+
+                StaffDepartmentFingradStructureDto FinStructure = StaffDepartmentRPLinkDao.GetFingradStructureForDeparment(model.ParentId);
+                if (FinStructure != null)
+                {
+                    model.ManagementCode = FinStructure.ManagementCode;
+                    model.ManagementName = FinStructure.ManagementName;
+                    model.AdminCode = FinStructure.AdminCode;
+                    model.AdminName = FinStructure.AdminName;
+                    model.BGCode = FinStructure.BGCode;
+                    model.BGName = FinStructure.BGName;
+                    model.RPLInkCode = FinStructure.RPLinkCode;
+                    model.RPLInkName = FinStructure.RPLinkName;
+                }
 
                 //налоговые реквизиты
                 if (entity.Department != null)
@@ -698,6 +727,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Department = model.DepartmentId == 0 ? null : DepartmentDao.Get(model.DepartmentId),
                     ParentDepartment = model.ParentId == 0 ? null : DepartmentDao.Load(model.ParentId),
                     DepNext = model.DepNextId == 0 ? null : DepartmentDao.Load(model.DepNextId),
+                    DepDeposit = model.DepDepositId == 0 ? null : DepartmentDao.Load(model.DepDepositId),
                     ItemLevel = model.ItemLevel.Value,
                     Name = model.Name,
                     DepartmentAccessory = model.BFGId == 0 ? null : StaffDepartmentAccessoryDao.Load(model.BFGId),
@@ -993,6 +1023,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.EditDate = DateTime.Now;
             entity.ParentDepartment = model.ParentId == 0 ? null : DepartmentDao.Load(model.ParentId);
             entity.DepNext = model.DepNextId == 0 ? null : DepartmentDao.Load(model.DepNextId);
+            entity.DepDeposit = model.DepDepositId == 0 ? null : DepartmentDao.Load(model.DepDepositId);
 
             //юридический адрес
             RefAddresses la = null;
@@ -2412,6 +2443,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.Id == 0)
                 model.Id = StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId);
 
+                        
             //заполняем заявку на все случаи жизни
             if (model.Id == 0)
             {
@@ -2433,6 +2465,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
+                StaffEstablishedPostRequest PrevEntity = new StaffEstablishedPostRequest(); //для заявок на изменение нужно показать предыдущий оклад
 
                 StaffEstablishedPostRequest entity = StaffEstablishedPostRequestDao.Get(model.Id);
                 if (entity == null) //если нет заявки с таким идентификатором, грузим новую заявку на создание штатной единицы
@@ -2440,6 +2473,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.Id = 0;
                     return GetEstablishedPostRequest(model);
                 }
+
+                if (model.SEPId != 0)
+                    PrevEntity = StaffEstablishedPostRequestDao.GetPrevEstablishedPostRequest(model.SEPId, entity.Id);
 
                 if (!IsRequestExists)
                 {
@@ -2453,8 +2489,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PositionId = entity.Position != null ? entity.Position.Id : 0;
                 model.PositionName = entity.Position != null ? entity.Position.Name : string.Empty;
                 model.Quantity = entity.Quantity;
-                model.QuantityOld = entity.Quantity;
+                model.QuantityPrev = entity.Quantity;
                 model.Salary = entity.Salary;
+                model.SalaryPrev = PrevEntity != null ? PrevEntity.Salary : 0;
                 model.ReasonId = entity.Reason == null ? 0 : entity.Reason.Id;
                 model.ScheduleId = entity.Schedule == null ? 0 : entity.Schedule.Id;
                 model.WCId = entity.WorkingCondition == null ? 0 : entity.WorkingCondition.Id;
@@ -2466,6 +2503,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //кнопки
                 model.IsDraftButtonAvailable = true;
                 model.IsAgreeButtonAvailable = !entity.DateAccept.HasValue;
+
 
             }
 
@@ -2500,8 +2538,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Department = model.DepartmentId != 0 ? DepartmentDao.Get(model.DepartmentId) : null,
                     Schedule = model.ScheduleId != 0 ? ScheduleDao.Get(model.ScheduleId) : null,
                     WorkingCondition = model.WCId != 0 ? StaffWorkingConditionsDao.Get(model.WCId) : null,
-                    Quantity = model.Quantity,
-                    Salary = model.Salary,
+                    Quantity = model.RequestTypeId != 3 ? model.Quantity : model.QuantityPrev,
+                    Salary = model.RequestTypeId != 3 ? model.Salary : model.SalaryPrev,
                     BeginAccountDate = model.BeginAccountDate,
                     IsUsed = false,
                     IsDraft = true,
@@ -2526,6 +2564,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Creator = curUser,
                         CreateDate = DateTime.Now
                     });
+                }
+
+                //при сокращении ставим метки в расстановке
+                if (entity.RequestType.Id == 3)
+                {
+                    foreach (StaffEstablishedPostUserLinks ul in entity.StaffEstablishedPost.EstablishedPostUserLinks)
+                    {
+                        if (model.Personnels.Where(x => x.Id == ul.Id).Count() != 0)
+                        {
+                            ul.IsDismissal = model.Personnels.Where(x => x.Id == ul.Id).Single().IsDismissal;
+                            ul.Editor = curUser;
+                            ul.EditDate = DateTime.Now;
+                        }
+                    }
                 }
 
 
@@ -2607,6 +2659,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 }
             }
+
             User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
 
             entity.RequestType = StaffEstablishedPostRequestTypesDao.Load(model.RequestTypeId);
@@ -2616,14 +2669,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Department = model.DepartmentId != 0 ? DepartmentDao.Get(model.DepartmentId) : null;
             entity.Schedule = model.ScheduleId != 0 ? ScheduleDao.Get(model.ScheduleId) : null;
             entity.WorkingCondition = model.WCId != 0 ? StaffWorkingConditionsDao.Get(model.WCId) : null;
-            entity.Quantity = model.Quantity;
-            entity.Salary = model.Salary;
+            if (model.RequestTypeId != 3)
+            {
+                entity.Quantity = model.Quantity;
+                entity.Salary = model.Salary;
+            }
             entity.BeginAccountDate = model.BeginAccountDate;
             entity.Reason = model.ReasonId.HasValue ? AppointmentReasonDao.Get(model.ReasonId.Value) : null;
             entity.IsDraft = entity.IsUsed ? false : model.IsDraft; 
             entity.Editor = curUser;
             entity.EditDate = DateTime.Now;
             entity.BeginAccountDate = model.BeginAccountDate;
+
 
             //создаем запись в справочнике штатных единиц.
             if (!model.IsDraft)
@@ -2675,6 +2732,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 
             }
 
+            //при сокращении ставим метки в расстановке (до начала согласования)
+            if (entity.RequestType.Id == 3 && !entity.DateSendToApprove.HasValue)
+            {
+                foreach (StaffEstablishedPostUserLinks ul in entity.StaffEstablishedPost.EstablishedPostUserLinks)
+                {
+                    if (model.Personnels.Where(x => x.Id == ul.Id && x.IsDismissal != ul.IsDismissal).Count() != 0)
+                    {
+                        ul.IsDismissal = model.Personnels.Where(x => x.Id == ul.Id).Single().IsDismissal;
+                        ul.Editor = curUser;
+                        ul.EditDate = DateTime.Now;
+                    }
+                }
+            }
 
             //надбавки 
             //сохраняем только при открытии и изменении до отправки на согласование
@@ -2768,7 +2838,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             //изменилось количество изменяем количество связей
-            if (!SaveStaffEstablishedPostChangeLinks(entity, sep, curUser, out error))
+            if (!SaveStaffEstablishedPostChangeUserLinks(entity, sep, curUser, out error))
             {
                 return false;
             }
@@ -2833,14 +2903,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             return true;
         }
         /// <summary>
-        /// Меняем количество связей татной единицы с сотрудниками.
+        /// Меняем количество связей штатной единицы с сотрудниками.
         /// </summary>
         /// <param name="entity">Заявка</param>
         /// <param name="sep">Штатная единица</param>
         /// <param name="curUser">Текущий пользователь</param>
         /// <param name="error">Для сообщений</param>
         /// <returns></returns>
-        protected bool SaveStaffEstablishedPostChangeLinks(StaffEstablishedPostRequest entity, StaffEstablishedPost sep, User curUser, out string error)
+        protected bool SaveStaffEstablishedPostChangeUserLinks(StaffEstablishedPostRequest entity, StaffEstablishedPost sep, User curUser, out string error)
         {
             error = string.Empty;
             int CountLinks = 0;
@@ -2865,23 +2935,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
-            ////если количество штатных единиц уменьшилось
-            //if (entity.Quantity < sep.Quantity)
-            //пока решили, что в заявках на изменение количество не меняется
+
+            //сокращение
             if (entity.RequestType.Id == 3)
             {
-                //CountLinks = sep.Quantity - entity.Quantity;
-
                 foreach (var item in sep.EstablishedPostUserLinks
-                    .Where(x => x.IsUsed))
+                    .Where(x => x.IsUsed && x.IsDismissal))
                 {
-                    if (CountLinks == 0) break;
-
                     item.IsUsed = false;
                     item.Editor = curUser;
                     item.EditDate = DateTime.Now;
-
-                    //CountLinks -= 1;
                 }
             }
             return true;
@@ -4786,6 +4849,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             GetDepRequestInfo(model);
 
+
+            model.Personnels = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId).Where(x => x.SEPId == model.SEPId).ToList();
 
             //согласование - расстановка флажков и т.д.
             StaffEstablishedPostRequest entity = StaffEstablishedPostRequestDao.Get(model.Id);

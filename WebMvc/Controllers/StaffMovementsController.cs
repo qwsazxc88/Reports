@@ -76,30 +76,30 @@ namespace WebMvc.Controllers
             return View("StaffMovementsEdit", model);
 
         }
-        /*public ActionResult GetPrintModel(int id, int type)
-        {
-            StaffMovementsPrintModel model=StaffMovementsBl.GetPrintModel(id);
-            string view = "";
-            switch (type)
-            {
-                case 1:
-                    view = "~/Views/StaffMovements/Templates/MaterialLiabilityDoc.cshtml";
-                    break;
-                case 2:
-                    view = "~/Views/StaffMovements/Templates/Addition.cshtml";
-                    break;
-                case 3:
-                    view = "~/Views/StaffMovements/Templates/Addition2.cshtml";
-                    break;
-                case 4:
-                    view = "~/Views/StaffMovements/Templates/Prilozhenie1.cshtml";
-                    break;
-                case 5:
-                    view = "~/Views/StaffMovements/Templates/prilozhenie2.cshtml";
-                    break;
-            }
-            return View(view, model);
-        }*/
+        //public ActionResult GetPrintModel(int id, int type)
+        //{
+        //    StaffMovementsPrintModel model=StaffMovementsBl.GetPrintModel(id);
+        //    string view = "";
+        //    switch (type)
+        //    {
+        //        case 1:
+        //            view = "~/Views/StaffMovements/Templates/MaterialLiabilityDoc.cshtml";
+        //            break;
+        //        case 2:
+        //            view = "~/Views/StaffMovements/Templates/Addition.cshtml";
+        //            break;
+        //        case 3:
+        //            view = "~/Views/StaffMovements/Templates/Addition2.cshtml";
+        //            break;
+        //        case 4:
+        //            view = "~/Views/StaffMovements/Templates/Prilozhenie1.cshtml";
+        //            break;
+        //        case 5:
+        //            view = "~/Views/StaffMovements/Templates/prilozhenie2.cshtml";
+        //            break;
+        //    }
+        //    return View(view, model);
+        //}
         public ContentResult GetPositionsForDepartment(int id)
         {
             var positions = StaffMovementsBl.GetPositionsForDepartment(id);

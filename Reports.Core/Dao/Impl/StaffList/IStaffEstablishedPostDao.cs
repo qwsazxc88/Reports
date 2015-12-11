@@ -19,7 +19,7 @@ namespace Reports.Core.Dao
         /// <summary>
         /// Список сотрудников с должностями к подразделению.
         /// </summary>
-        /// <param name="DepartmentId"></param>
+        /// <param name="DepartmentId">Id подразделения</param>
         /// <returns></returns>
         IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId);
         /// <summary>

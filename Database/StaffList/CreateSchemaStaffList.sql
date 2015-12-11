@@ -286,8 +286,8 @@ IF OBJECT_ID ('FK_StaffDepartmentRequest_RefAddresses', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffDepartmentRequest] DROP CONSTRAINT [FK_StaffDepartmentRequest_RefAddresses]
 GO
 
-IF OBJECT_ID ('FK_StaffDepartmentRequest_RefAddresses', 'F') IS NOT NULL
-	ALTER TABLE [dbo].[StaffDepartmentRequest] DROP CONSTRAINT [FK_StaffDepartmentRequest_RefAddresses]
+IF OBJECT_ID ('FK_StaffDepartmentRequest_DepartmentDeposit', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffDepartmentRequest] DROP CONSTRAINT [FK_StaffDepartmentRequest_DepartmentDeposit]
 GO
 
 IF OBJECT_ID ('FK_StaffDepartmentRequest_DepartmentParent', 'F') IS NOT NULL
@@ -418,12 +418,16 @@ IF OBJECT_ID ('FK_DepartmentArchive_CreatorUser', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[DepartmentArchive] DROP CONSTRAINT [FK_DepartmentArchive_CreatorUser]
 GO
 
-IF OBJECT_ID ('FK_StaffPostChargeLinks_StaffExtraCharges', 'F') IS NOT NULL
-	ALTER TABLE [dbo].[StaffPostChargeLinks] DROP CONSTRAINT [FK_StaffPostChargeLinks_StaffExtraCharges]
+IF OBJECT_ID ('FK_StaffPostChargeLinks_StaffMovements', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostChargeLinks] DROP CONSTRAINT [FK_StaffPostChargeLinks_StaffMovements]
 GO
 
 IF OBJECT_ID ('FK_StaffPostChargeLinks_StaffExtraCharges', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffPostChargeLinks] DROP CONSTRAINT [FK_StaffPostChargeLinks_StaffExtraCharges]
+GO
+
+IF OBJECT_ID ('FK_StaffPostChargeLinks_StaffExtraChargeActions', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostChargeLinks] DROP CONSTRAINT [FK_StaffPostChargeLinks_StaffExtraChargeActions]
 GO
 
 IF OBJECT_ID ('FK_StaffPostChargeLinks_Staff', 'F') IS NOT NULL
@@ -785,6 +789,7 @@ CREATE TABLE [dbo].[StaffDepartmentRequest](
 	[IsTaxAdminAccount] [bit] NULL,
 	[IsEmployeAvailable] [bit] NULL,
 	[DepNextId] [int] NULL,
+	[DepDepositId] [int] NULL,
 	[IsPlan] [bit] NULL,
 	[IsUsed] [bit] NULL,
 	[IsDraft] [bit] NULL,
@@ -982,6 +987,8 @@ CREATE TABLE [dbo].[StaffPostChargeLinks](
 	[StaffExtraChargeId] [int] NULL,
 	[Salary] [numeric](18, 2) NULL,
 	[ActionId] [int] NULL,
+	[StaffMovementsId] [int] NULL,
+	[IsActive] [bit] NOT NULL,
 	[CreatorID] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorID] [int] NULL,
@@ -1458,6 +1465,7 @@ CREATE TABLE [dbo].[StaffEstablishedPostUserLinks](
 	[IsUsed] [bit] NULL,
 	[ReserveType] [int] NULL,
 	[DocId] [int] NULL,
+	[IsDismissal] [bit] NULL,
 	[CreatorId] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorId] [int] NULL,
@@ -1509,6 +1517,9 @@ REFERENCES [dbo].[StaffUnitReference] ([Id])
 GO
 
 ALTER TABLE [dbo].[StaffExtraCharges] CHECK CONSTRAINT [FK_StaffExtraCharges_StaffUnitReference]
+GO
+
+ALTER TABLE [dbo].[StaffEstablishedPostUserLinks] ADD  CONSTRAINT [DF_StaffEstablishedPostUserLinks_IsDissmisial]  DEFAULT ((0)) FOR [IsDismissal]
 GO
 
 ALTER TABLE [dbo].[StaffEstablishedPostUserLinks] ADD  CONSTRAINT [DF_StaffEstablishedPostUserLinks_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
@@ -1983,6 +1994,13 @@ GO
 ALTER TABLE [dbo].[StaffDepartmentRequest] CHECK CONSTRAINT [FK_StaffDepartmentRequest_DepartmentParent]
 GO
 
+ALTER TABLE [dbo].[StaffDepartmentRequest]  WITH CHECK ADD  CONSTRAINT [FK_StaffDepartmentRequest_DepartmentDeposit] FOREIGN KEY([DepDepositId])
+REFERENCES [dbo].[Department] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentRequest] CHECK CONSTRAINT [FK_StaffDepartmentRequest_DepartmentDeposit]
+GO
+
 ALTER TABLE [dbo].[StaffPostChargeLinks] ADD  CONSTRAINT [DF_StaffPostChargeLinks_Salary]  DEFAULT ((0)) FOR [Salary]
 GO
 
@@ -2022,6 +2040,13 @@ REFERENCES [dbo].[StaffExtraCharges] ([Id])
 GO
 
 ALTER TABLE [dbo].[StaffPostChargeLinks] CHECK CONSTRAINT [FK_StaffPostChargeLinks_StaffExtraCharges]
+GO
+
+ALTER TABLE [dbo].[StaffPostChargeLinks]  WITH CHECK ADD  CONSTRAINT [FK_StaffPostChargeLinks_StaffMovements] FOREIGN KEY([StaffMovementsId])
+REFERENCES [dbo].[StaffMovements] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffPostChargeLinks] CHECK CONSTRAINT [FK_StaffPostChargeLinks_StaffMovements]
 GO
 
 ALTER TABLE [dbo].[DepartmentArchive] ADD  CONSTRAINT [DF_DepartmentArchive_IsUsed]  DEFAULT ((1)) FOR [IsUsed]
@@ -2513,6 +2538,9 @@ GO
 
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id депозитного подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'DepDepositId'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffExtraChargeActions', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 
@@ -2550,6 +2578,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Тип бронирован
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id документа/заявки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'DocId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак сокращения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'IsDismissal'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'CreatorId'
@@ -3081,6 +3112,12 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Оклад' , @leve
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id действия с надбавкой' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostChargeLinks', @level2type=N'COLUMN',@level2name=N'ActionId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id заявки на кадровое перемещение' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostChargeLinks', @level2type=N'COLUMN',@level2name=N'StaffMovementsId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Надбавка активна в данный момент' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostChargeLinks', @level2type=N'COLUMN',@level2name=N'IsActive'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostChargeLinks', @level2type=N'COLUMN',@level2name=N'CreatorID'
@@ -3976,6 +4013,53 @@ LEFT JOIN Department as K ON K.Id = B.DepNextId
 WHERE A.IsUsed = 1
 GO
 
+IF OBJECT_ID ('vwStaffPostSalary', 'V') IS NOT NULL
+	DROP VIEW [dbo].[vwStaffPostSalary]
+GO
+
+--представление дает раскладку для сотрудника по его зарплате
+CREATE VIEW [dbo].[vwStaffPostSalary]
+AS
+SELECT UserId
+			,sum(A.Salary) as Salary
+			,sum(Regional) as Regional
+			,sum(Personnel) as Personnel
+			,sum(Territory) as Territory
+			,sum(Front) as Front
+			,sum(Drive) as Drive
+			,sum(NorthAuto) as NorthAuto
+			,sum(North) as North
+			,sum(Qualification) as Qualification
+			,((sum(A.Salary) * B.Rate) + sum(Personnel) + sum(Territory) + sum(Front) + sum(Drive) + sum(Qualification)) +
+			 (((sum(A.Salary) * B.Rate) + sum(Personnel) + sum(Territory) + sum(Front) + sum(Drive) + sum(Qualification)) * (sum(Regional) / 100)) +
+			 (((sum(A.Salary) * B.Rate) + sum(Personnel) + sum(Territory) + sum(Front) + sum(Drive) + sum(Qualification)) * (case when sum(NorthAuto) = 0 then sum(North) else sum(NorthAuto) end / 100))
+			as TotalSalary
+FROM (--персональные надбваки
+			SELECT UserId, 0 as Salary, 0 as Regional
+						,case when StaffExtraChargeId = 4 then Salary else 0 end as Personnel	--персональная надбавка
+						,case when StaffExtraChargeId = 5 then Salary else 0 end as Territory	--территориальная надбавка
+						,case when StaffExtraChargeId = 10 then Salary else 0 end as Front	--фронт надбавка
+						,case when StaffExtraChargeId = 3 then Salary else 0 end as Drive	--разъездная надбавка
+						,case when StaffExtraChargeId = 7 then Salary else 0 end as NorthAuto	--северная автомат надбавка
+						,case when StaffExtraChargeId = 16 then Salary else 0 end as North	--северная ручная надбавка
+						,case when StaffExtraChargeId = 2 then Salary else 0 end as Qualification	--квалификация надбавка
+			FROM StaffPostChargeLinks
+			WHERE IsActive = 1
+			UNION ALL
+			--оклад и должностные надбавки
+			SELECT C.UserId, A.Salary, isnull(B.Amount, 0) as Regional, 0 as Personnel, 0 as Territory, 0 as Front, 0 as Drive, 0 as NorthAuto, 0 as North, 0 as Qualification
+			FROM StaffEstablishedPost as A
+			LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.SEPId = A.Id
+			INNER JOIN StaffEstablishedPostUserLinks as C ON C.SEPId = A.Id and C.IsUsed = 1
+			INNER JOIN Users as D ON D.Id = C.UserId and D.IsActive = 1
+			INNER JOIN StaffEstablishedPostRequest as E ON E.SEPId = A.Id and E.IsUsed = 1
+			WHERE A.IsUsed = 1) as A
+INNER JOIN Users as B ON B.Id = A.UserId
+GROUP BY A.UserId, B.Rate
+
+--select * from vwStaffPostSalary
+GO
+
 
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
 --StaffExtraChargeActions
@@ -4219,8 +4303,9 @@ INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES
 INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'd9cd6dfe-b4b0-11de-b733-003048359abd', N'Надбавка за разъездной характер работы#1116', 0, 3, 0)
 INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'784efe28-3634-11dd-b8e4-00304861d218', N'Надбавка Персональная#1117', 0, 3, 0)
 INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'c693b11a-ec98-11df-aabb-003048ba0538', N'Надбавка территориальная#1123', 0, 3, 0)
-INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'66f08438-f006-44e8-b9ee-32a8dcf557ba', N'Районный коэффициент#1301', 1, 3, 0)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'66f08438-f006-44e8-b9ee-32a8dcf557ba', N'Районный коэффициент#1301', 1, 1, 0)
 INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, IsNeeded) VALUES(N'1f076cf3-1ebb-11e4-80c8-002590d1e727', N'Северная надбавка (автомат) 1#1302', 0, 1)
+INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'a5ceb324-a745-11de-b733-003048359abd', N'Северная надбавка (руч.) 1#1302', 0, 3, 0)
 INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'91a004fc-d13e-11dd-b086-00308d000000', N'Доплата за совмещение (суммой)#1113', 0, 3, 0)
 INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'521ba992-ef7d-11e2-8985-003048ba0538', N'Надбавка за стаж работы специалистам фронт-офиса#1128', 0, 3, 0)
 INSERT INTO StaffExtraCharges([GUID], Name, IsPostOnly, UnitId, IsNeeded) VALUES(N'9e6ec242-49f2-4320-a5aa-024c5d607aa3', N'Отпуск по уходу за ребенком без оплаты#1802', 0, 3, 0)
@@ -4388,6 +4473,8 @@ BEGIN
 		SELECT null, null, 1, 5, null, null, null, null, 0
 		UNION ALL
 		SELECT null, null, 1, 6, null, null, null, null, 0
+		UNION ALL
+		SELECT null, null, 1, 7, null, null, null, null, 0
 		--для кассы
 		UNION ALL
 		SELECT null, null, 2, 7, null, null, null, null, 0
@@ -4438,10 +4525,17 @@ BEGIN
 	END
 
 
+	
+	
+--select * from dbo.fnGetDepartmentOperationModes(36) order by WeekDay
+
 	RETURN 
 END
 
 GO
+
+
+
 
 
 
@@ -4560,7 +4654,7 @@ IF OBJECT_ID ('fnGetStaffEstablishedArrangements', 'TF') IS NOT NULL
 	DROP FUNCTION [dbo].[fnGetStaffEstablishedArrangements]
 GO
 
---функция достает штатную расстановку по выбранному подразделению
+--функция достает штатную расстановку по выбранному подразделению + текущее состояние надбавок 
 CREATE FUNCTION [dbo].[fnGetStaffEstablishedArrangements]
 (
 	@DepartmentId int
@@ -4583,11 +4677,24 @@ RETURNS
 	,ReplacedId int
 	,ReplacedName nvarchar(500)
 	,ReserveType int
+	,Reserve nvarchar(50)
 	,DocId int
 	,IsReserve bit	--признак бронирования вакансии
 	,IsPregnant bit
 	,IsVacation bit	--вакансия
 	,IsSTD bit			--вакансия по срочному договору
+	,IsDismiss bit
+	,IsDismissal bit
+	--оклад и надбавки
+	,SalaryPersonnel numeric(18, 2)	--оклад (из представления)
+	,Regional numeric(18, 2)
+	,Personnel numeric(18, 2)
+	,Territory numeric(18, 2)
+	,Front numeric(18, 2)
+	,Drive numeric(18, 2)
+	,North numeric(18, 2)
+	,Qualification numeric(18, 2)
+	,TotalSalary numeric(18, 2)
 )
 AS
 BEGIN
@@ -4600,12 +4707,25 @@ BEGIN
 				 case when E.IsPregnant = 1 then E.Id else G.ReplacedId end as ReplacedId
 				 ,case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, E.Id), E.Name)  else isnull(dbo.fnGetReplacedName(F.Id, null), H.Name) end as ReplacedName
 				 ,F.ReserveType
+				 ,case when F.ReserveType = 1 then N'Перемещение' when F.ReserveType = 2 then N'Прием' end as Reserve
 				 ,F.DocId
-				 ,cast(case when F.DocId is null then 0 else 1 end as bit) as IsReserve
+				 ,cast(case when isnull(F.DocId, 0) = 0 then 0 else 1 end as bit) as IsReserve
 				 ,E.IsPregnant
-				 ,case when (case when E.IsPregnant = 1 then null else E.Id end) is null or F.UserId is null then 1 else 0 end as IsVacation
+				 ,case when (isnull(E.IsPregnant, 0) = 1 or F.UserId is null) and isnull(F.ReserveType, 0) = 0 then 1 else 0 end as IsVacation
 				 --,case when (case when E.IsPregnant = 1 then null else E.Id end) is null and H.Id is not null then 1 else 0 end as IsSTD
-				 ,case when F.UserId is null then 0 else (case when (case when E.IsPregnant = 1 then null else E.Id end) is null or H.Id is not null then 1 else 0 end) end as IsSTD
+				 ,case when F.UserId is null then 0 else (case when isnull(E.IsPregnant, 0) = 1 or H.Id is not null then 1 else 0 end) end as IsSTD
+				 ,case when J.UserId is null then 0 else 1 end as IsDismiss	--увольнение
+				 ,F.IsDismissal		--сокращение
+				 --оклад и надбавки
+				 ,I.Salary as SalaryPersonnel
+				 ,I.Regional
+				 ,I.Personnel
+				 ,I.Territory
+				 ,I.Front
+				 ,I.Drive
+				 ,case when I.NorthAuto = 0 then I.North else I.NorthAuto end as North
+				 ,I.Qualification
+				 ,isnull(I.TotalSalary, A.Salary) as TotalSalary	--если вакансия, то надо показать оклад штатной единицы
 	FROM StaffEstablishedPost as A
 	INNER JOIN Position as B ON B.Id = A.PositionId
 	INNER JOIN Department as C ON C.Id = A.DepartmentId
@@ -4615,17 +4735,101 @@ BEGIN
 	LEFT JOIN Users as E ON E.Id = F.UserId and E.IsActive = 1 and E.RoleId & 2 > 0 --and E.IsPregnant = 0
 	LEFT JOIN StaffPostReplacement as G ON G.UserLinkId = F.Id and F.IsUsed = 1
 	LEFT JOIN Users as H ON H.Id = G.ReplacedId
+	LEFT JOIN vwStaffPostSalary as I ON I.UserId = E.Id
+	LEFT JOIN (SELECT UserId FROM Dismissal 
+						 WHERE UserDateAccept is not null and DeleteDate is null
+						 GROUP BY UserId) as J ON J.UserId = E.Id
 	WHERE A.DepartmentId = @DepartmentId /*and A.PositionId = 356*/ and A.IsUsed = 1 
 				--замещенных убираем из списка этим условием
 				--and not exists (SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and ReplacedId = E.Id)
 	ORDER BY A.Priority
 
+		
 --select * from dbo.fnGetStaffEstablishedArrangements(7924) 
 
 	RETURN 
 END
 
 GO
+
+
+
+IF OBJECT_ID ('fnGetFingradStructureForDeparment', 'TF') IS NOT NULL
+	DROP FUNCTION [dbo].[fnGetFingradStructureForDeparment]
+GO
+
+--функция достает структуру финграда для подразделения
+CREATE FUNCTION [dbo].[fnGetFingradStructureForDeparment]
+(
+	@DepartmentId int	--родительское подразделение
+)
+RETURNS 
+@ReturnTable TABLE 
+(
+	 Id int 
+	,Name nvarchar(250)
+	,RPLinkCode nvarchar(20)
+	,RPLinkName nvarchar(250)
+	,BGCode nvarchar(20)
+	,BGName nvarchar(250)
+	,AdminCode nvarchar(20)
+	,AdminName nvarchar(250)
+	,ManagementCode nvarchar(20)
+	,ManagementName nvarchar(250)
+)
+AS
+BEGIN
+DECLARE 
+	@ItemLevel int
+	
+	SELECT @ItemLevel = ItemLevel FROM Department WHERE Id = @DepartmentId
+
+	IF @ItemLevel = 6
+		INSERT INTO @ReturnTable
+		SELECT A.Id, A.Name, B.Code as RPLinkCode, B.Name as RPLinkName, C.Code as BGCode, C.Name as BGName, D.Code as AdminCode, D.Name as AdminName, E.Code as ManagementCode, E.Name as ManagementName
+		FROM Department as A
+		LEFT JOIN StaffDepartmentRPLink as B ON B.DepartmentId = A.Id
+		LEFT JOIN StaffDepartmentBusinessGroup as C ON C.Id = B.BGId
+		LEFT JOIN StaffDepartmentAdministration as D ON D.Id = C.AdminId
+		LEFT JOIN StaffDepartmentManagement as E ON E.Id = D.ManagementId
+		WHERE A.Id = @DepartmentId
+
+
+	IF @ItemLevel = 5
+		INSERT INTO @ReturnTable
+		SELECT A.Id, A.Name, null as RPLinkCode, null as RPLinkName, C.Code as BGCode, C.Name as BGName, D.Code as AdminCode, D.Name as AdminName, E.Code as ManagementCode, E.Name as ManagementName
+		FROM Department as A
+		LEFT JOIN StaffDepartmentBusinessGroup as C ON C.DepartmentId = A.Id
+		LEFT JOIN StaffDepartmentAdministration as D ON D.Id = C.AdminId
+		LEFT JOIN StaffDepartmentManagement as E ON E.Id = D.ManagementId
+		WHERE A.Id = @DepartmentId
+
+
+	IF @ItemLevel = 4
+		INSERT INTO @ReturnTable
+		SELECT A.Id, A.Name, null as RPLinkCode, null as RPLinkName, null as BGCode, null as BGName, D.Code as AdminCode, D.Name as AdminName, E.Code as ManagementCode, E.Name as ManagementName
+		FROM Department as A
+		LEFT JOIN StaffDepartmentAdministration as D ON D.DepartmentId = A.Id
+		LEFT JOIN StaffDepartmentManagement as E ON E.Id = D.ManagementId
+		WHERE A.Id = @DepartmentId
+
+
+	IF @ItemLevel = 3
+		INSERT INTO @ReturnTable
+		SELECT A.Id, A.Name, null as RPLinkCode, null as RPLinkName, null as BGCode, null as BGName, null as AdminCode, null as AdminName, E.Code as ManagementCode, E.Name as ManagementName
+		FROM Department as A
+		LEFT JOIN StaffDepartmentManagement as E ON E.DepartmentId = A.Id
+		WHERE A.Id = @DepartmentId		
+--select * from dbo.fnGetFingradStructureForDeparment(4839) 
+
+	RETURN 
+END
+
+GO
+
+
+
+
 
 
 

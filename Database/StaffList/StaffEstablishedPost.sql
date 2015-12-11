@@ -252,6 +252,36 @@ SELECT Id
 FROM StaffEstablishedPost
 
 
+--заполняем таблицу связей сотрудника и надбавок
+SELECT B.Id as UserId, C.Id as StaffExtraChargeId, A.Amount as Salary, D.Id as ActionId,  
+			 case when A.ActionName = 'Начать' then 1 
+						when A.ActionName = 'Изменить' then 2 
+						when A.ActionName = 'Не изменять' then 3 
+						else 4 end as IsActive, A.GUID, A.ChargeName--A.*
+INTO #TMP
+FROM UserExtraCharges as A
+INNER JOIN Users as B ON B.Code = A.UserCode
+INNER JOIN StaffExtraCharges as C ON C.GUID = A.GUID
+INNER JOIN StaffExtraChargeActions as D ON D.Name = A.ActionName
+
+--исключаем оклады и районный коэффициент
+INSERT INTO StaffPostChargeLinks(UserId, StaffExtraChargeId, Salary, ActionId, IsActive)
+SELECT UserId, StaffExtraChargeId, Salary, ActionId, IsActive FROM #TMP
+WHERE GUID not in ('35c7a5dd-d8e9-4aa0-8378-2a7e501d846a', '537ff7ed-5e51-48d1-bf5e-4f680cb3e1b7', '66f08438-f006-44e8-b9ee-32a8dcf557ba')
+ORDER BY UserId, ChargeName
+
+
+--удаляем все кроме районого коэффициента
+DELETE FROM #TMP WHERE GUID not in ('66f08438-f006-44e8-b9ee-32a8dcf557ba')
+
+--заносим надбавки к штатным единицам
+INSERT INTO StaffEstablishedPostChargeLinks(Version, SEPRequestId, SEPId, StaffExtraChargeId, Amount, ActionId)
+SELECT 1 as Version, C.Id as SEPRequestId, B.SEPId, A.StaffExtraChargeId, A.Salary as Amount, A.ActionId
+FROM #TMP as A
+INNER JOIN StaffEstablishedPostUserLinks as B ON B.UserId = A.UserId
+INNER JOIN StaffEstablishedPostRequest as C ON C.SEPId = B.SEPId
+GROUP BY C.Id, B.SEPId, A.StaffExtraChargeId, A.Salary, A.ActionId
+
 --проставляем Id штатной единицы для пользователей по текущим данным
 --UPDATE Users SET SEPId = B.Id
 --FROM Users as A
@@ -266,3 +296,4 @@ FROM StaffEstablishedPost
 
 drop table #Users
 drop table #Vacation
+drop table #TMP
