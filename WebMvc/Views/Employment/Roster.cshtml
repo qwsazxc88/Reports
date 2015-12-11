@@ -127,6 +127,14 @@
                                                 </td>
                                             </tr>
                                             <tr>
+                                                <td>
+                                                    @Html.LabelFor(m => m.AdditionId):
+                                                </td>
+                                                <td>
+                                                    @Html.DropDownListFor(model => model.AdditionId, Model.Additions, string.Empty)
+                                                </td>
+                                            </tr>
+                                            <tr>
                                                 <td colspan="2">
                                                     @Html.LabelFor(m => m.BeginDate):
                                                     @Html.EditorFor(model => model.BeginDate) 
@@ -223,6 +231,9 @@
         </th>
         <th>
             <div id="sort4"><a href="#" onclick = "SortColumnChanged(4);">Должность</a></div>
+        </th>        
+        <th>
+            <div id="sort26"><a href="#" onclick = "SortColumnChanged(26);">Есть<br />надбав-<br />ка</a></div>
         </th>        
         <th>
             <div id="sort5"><a href="#" onclick = "SortColumnChanged(5);">Структурное<br />подразделение<br />3 ур.</a></div>
@@ -359,6 +370,11 @@
                 <td>
                     &nbsp;@candidate.Position
                 </td>        
+
+                <td>
+                    &nbsp;@candidate.AdditionAvailable
+                </td>
+
                 <td>
                     &nbsp;@candidate.Department3
                 </td>

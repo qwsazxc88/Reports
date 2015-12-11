@@ -2017,6 +2017,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.AppointmentReportNumber : null,
                     filters != null ? (filters.AppointmentNumber.HasValue ? filters.AppointmentNumber.Value : 0) : 0,
                     filters != null ? filters.PersonnelId : 0,
+                    filters != null ? (filters.AdditionId.HasValue ? filters.AdditionId.Value : 0) : 0,
                     filters.SortBy,
                     filters.SortDescending);
 
@@ -2919,6 +2920,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.AppointmentReportNumber : null,
                     filters != null ? (filters.AppointmentNumber.HasValue ? filters.AppointmentNumber.Value : 0) : 0,
                     filters != null ? filters.PersonnelId : 0,
+                    filters != null ? (filters.AdditionId.HasValue ? filters.AdditionId.Value : 0) : 0,
                     filters.SortBy,
                     filters.SortDescending);
             }
@@ -3005,6 +3007,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.Statuses = GetEmploymentStatuses();
             model.Personnels = EmploymentCandidateDao.GetPersonnels();
+            model.Additions = GetAdditionAvailable();
         }
         public void LoadDictionaries(SignersModel model)
         {
@@ -3158,6 +3161,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Выгружено в 1С", Value = "8"},
                 new SelectListItem {Text = "Отклонен", Value = "9"},
                 new SelectListItem {Text = "Временно заблокирован", Value = "-1"}
+            };
+        }
+
+        public IEnumerable<SelectListItem> GetAdditionAvailable()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem {Text = "Да", Value = "1"},
+                new SelectListItem {Text = "Нет", Value = "2"},
             };
         }
 
