@@ -46,6 +46,7 @@ namespace Reports.Core.Domain
         public virtual User RejectingChief { get; set; }
         public virtual string ChiefRejectionReason { get; set; }
         public virtual string MentorName { get; set; }
+        public virtual string PyrusNumber { get; set; }
 
         #endregion
 
