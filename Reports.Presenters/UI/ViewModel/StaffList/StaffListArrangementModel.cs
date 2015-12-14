@@ -14,5 +14,6 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public IList<StaffEstablishedPostDto> EstablishedPosts { get; set; } //штатные единицы
         public string DepId { get; set; }
         public int PositionCount { get; set; }
+        //public StandartUserDto UserId { get; set; }
     }
 }

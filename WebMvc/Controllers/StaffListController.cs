@@ -10,6 +10,7 @@ using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Dao;
 using Reports.Presenters.UI.ViewModel.StaffList;
+using Reports.Presenters.UI.ViewModel;
 using System.Web.Script.Serialization;
 
 namespace WebMvc.Controllers
@@ -386,6 +387,18 @@ namespace WebMvc.Controllers
             StaffListArrangementModel model = StaffListBl.GetDepartmentStructureWithStaffArrangement(DepId);
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
+        }
+
+        /// <summary>
+        /// Всплывающее окно для выбора типа заявки в кадровом перемещении.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult SelectMovementType(int UserId)
+        {
+            SelectMovementTypeModel model = StaffListBl.GetSelectMovementTypeModel(UserId);
+            return PartialView(model);
         }
         #endregion
 

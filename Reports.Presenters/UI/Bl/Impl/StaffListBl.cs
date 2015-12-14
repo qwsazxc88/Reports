@@ -308,6 +308,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(staffextraChargeActionsDao); }
             set { staffextraChargeActionsDao = value; }
         }
+
+        protected IrefStaffMovementsTypesDao refstaffmovementsTypesDao;
+        public IrefStaffMovementsTypesDao refStaffMovementsTypesDao
+        {
+            get { return Validate.Dependency(refstaffmovementsTypesDao); }
+            set { refstaffmovementsTypesDao = value; }
+        }
+        
         #endregion
 
         #region Штатное расписание.
@@ -4788,6 +4796,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId);
             }
 
+            return model;
+        }
+        /// <summary>
+        /// Вызов формы для выбора типа заявки в штатном перемещении.
+        /// </summary>
+        /// <param name="UserId">Id сотрудника.</param>
+        /// <returns></returns>
+        public SelectMovementTypeModel GetSelectMovementTypeModel(int UserId)
+        {
+            SelectMovementTypeModel model = new SelectMovementTypeModel();
+            model.UserId = UserId;
+            model.RequestTypes = refStaffMovementsTypesDao.LoadAll();
             return model;
         }
         #endregion
