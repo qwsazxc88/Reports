@@ -8730,6 +8730,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     model.IsCreateButtonVisible = true;
                     break;
+                case UserRole.Admin:
+                    model.IsEditable = true;
+                    break;
             }
             model.IsSaveAvailable = model.IsEditable;
         }
@@ -8833,6 +8836,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             if ((current.UserRole & UserRole.Accountant) > 0 ||
                 (current.UserRole & UserRole.Estimator)>0||
+                (current.UserRole & UserRole.Admin) > 0 ||
                (current.UserRole & UserRole.OutsourcingManager) > 0)
                 return true;
             return false;
@@ -8927,6 +8931,51 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             DeductionDao.CommitTran();
             return true;
+        }
+        public void SaveDeductionEditAdminModel(DeductionEditModel model)
+        {
+            //try {
+            IUser current = AuthenticationService.CurrentUser;
+            if (!CheckDeductionUserRights(current))
+                throw new ArgumentException("Доступ запрещен.");
+            Deduction deduction = DeductionDao.Load(model.Id);
+            if (deduction.Version != model.Version)
+                throw new ArgumentException("Заявка была изменена другим пользователем.");
+            ChangeEntityProperties(deduction, model);
+            DeductionDao.SaveAndFlush(deduction);
+            ReloadDictionariesToModel(model);
+            SetHiddenFields(model);
+#region Other checks commented
+            /*
+             if (deduction.Version != model.Version)
+                {
+                deduction.EditDate = DateTime.Now;
+                deduction.Editor = UserDao.Load(current.Id);
+                if (EnableSendEmail)
+                    SendEmailToUser(model, deduction);
+                DeductionDao.SaveAndFlush(deduction);
+                }
+                if (deduction.DeleteDate.HasValue)
+                    model.IsDeleted = true;
+		
+                model.DocumentNumber = deduction.Number.ToString();
+                model.Version = deduction.Version;
+		
+                SetFlagsState(deduction.Id, deduction, model);
+		
+                }
+                catch (Exception ex)
+                {
+                DeductionDao.RollbackTran();
+                Log.Error("Error on SaveDeductionEditModel:", ex);
+                }
+                finally
+                {
+                ReloadDictionariesToModel(model);
+                SetHiddenFields(model);
+                }
+             */
+#endregion
         }
         public bool SaveDeductionEditModel(DeductionEditModel model, bool EnableSendEmail, out string error)
         {

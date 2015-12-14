@@ -129,6 +129,11 @@
                                 {
                                     <input type="button" value="Печать" onclick="return onPrintClick();"/>                                                                                   
                                 }
+                                @if ((((ReportPrincipal)HttpContext.Current.User).UserRole & UserRole.Admin) > 0)
+                                {
+                                    <input type="text" id="gotoDeductionEditAdmin" />
+                                    <input type="button" value="gotoDeductionEditAdmin" onclick="location.href='DeductionEditAdmin/' + $('#gotoDeductionEditAdmin').val()" />
+                                }
                             </td>
                         </tr>
               </table>  
