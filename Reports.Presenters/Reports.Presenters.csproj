@@ -286,6 +286,7 @@
     <Compile Include="UI\ViewModel\SicklistEditModel.cs" />
     <Compile Include="UI\ViewModel\SicklistListModel.cs" />
     <Compile Include="UI\ViewModel\SortableModel.cs" />
+    <Compile Include="UI\ViewModel\StaffList\SelectMovementTypeModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentInstallSoftModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentOperationGroupsModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentOperationLinksModel.cs" />

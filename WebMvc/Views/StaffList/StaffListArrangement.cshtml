@@ -269,6 +269,7 @@
                                     "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
                                     "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
                                     "<td>" + (result.EstablishedPosts[i].Rate != null ? result.EstablishedPosts[i].Rate : "") + "</td>" +
+                                        
                                         "<td>" + (result.EstablishedPosts[i].Regional != null ? result.EstablishedPosts[i].Regional : "") + "</td>" +
                                         "<td>" + (result.EstablishedPosts[i].Personnel != null ? result.EstablishedPosts[i].Personnel : "") + "</td>" +
                                         "<td>" + (result.EstablishedPosts[i].Territory != null ? result.EstablishedPosts[i].Territory : "") + "</td>" +
@@ -280,7 +281,9 @@
                                         //красим увольняющихся
                                         if(!result.EstablishedPosts[i].IsDismiss && !result.EstablishedPosts[i].IsDismissal)
                                         {
-                                            tblStr += "<td>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>"
+                                            tblStr += "<td><a href='#' onclick='GetStaffMovementRequest(" + result.EstablishedPosts[i].UserId + ");'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</a></td>"
+                                            //"<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
+                                            //GetStaffMovementRequest(UserId)
                                         }
                                         else
                                         {
@@ -365,6 +368,69 @@
         actionUrl += "?DepId=" + DepCode + "&IsParentDepOnly=true";
         location.href = actionUrl;
     }
+
+
+    //переходим в создание заявки на перемещение
+    function GetStaffMovementRequest(UserId)
+    {
+        var elem = document.createElement('div');
+        elem.id = "divSelectTypeDialog";
+        var newDiv = $(elem);
+
+        var actionDetailDialogUrl = "@Url.Action("SelectMovementType", "StaffList")";
+        actionDetailDialogUrl += "?UserId=" + UserId;
+
+        var title = "Выбор типа заявки";
+        
+
+        $(newDiv).text('Подождите, идет загрузка данных ...');
+        $.ajaxSetup({ cache: false });
+        $(newDiv).load(actionDetailDialogUrl + " #SelectMovementType"
+            , function (response, status, xhr) {
+                if (status == "error") {
+                    var msg = "Произошла ошибка: ";
+                    $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                }
+            }
+        );
+                $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: false,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true,
+            draggable: false,
+            resizable: false,
+            width: "auto",
+            height: "auto",
+            closeOnEscape: true,
+            close: function (event, ui) {
+                //$("SelectMovementType").submit();
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+//                "OK": function () {
+//                    $(this).dialog("close");
+//                }
+//                ,
+//                "Отмена": function () {
+//                    $(this).dialog("close");
+//                }
+            }
+        });
+
+        $(newDiv).dialog("open");
+    }
+    /*
+    для выхода на создание заявки по кадровому перемещению
+    User.Id,
+RequestType
+
+action = Edit
+    */
+    
 </script>
 
 
