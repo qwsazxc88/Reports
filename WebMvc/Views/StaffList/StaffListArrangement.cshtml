@@ -269,6 +269,7 @@
                                         "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
                                         "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
                                         "<td>" + (result.EstablishedPosts[i].Rate != null ? result.EstablishedPosts[i].Rate : "") + "</td>" +
+                                        
                                         "<td>" + (result.EstablishedPosts[i].Regional != null ? result.EstablishedPosts[i].Regional : "") + "</td>" +
                                         "<td>" + (result.EstablishedPosts[i].Personnel != null ? result.EstablishedPosts[i].Personnel : "") + "</td>" +
                                         "<td>" + (result.EstablishedPosts[i].Territory != null ? result.EstablishedPosts[i].Territory : "") + "</td>" +
@@ -280,7 +281,9 @@
                                         //красим увольняющихся
                                         if(!result.EstablishedPosts[i].IsDismiss && !result.EstablishedPosts[i].IsDismissal)
                                         {
-                                            tblStr += "<td>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>"
+                                            tblStr += "<td><a href='#' onclick='GetStaffMovementRequest(" + result.EstablishedPosts[i].UserId + ");'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</a></td>"
+                                            //"<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
+                                            //GetStaffMovementRequest(UserId)
                                         }
                                         else
                                         {
@@ -365,6 +368,41 @@
         actionUrl += "?DepId=" + DepCode + "&IsParentDepOnly=true";
         location.href = actionUrl;
     }
+
+
+    //переходим в создание заявки на перемещение
+    function GetStaffMovementRequest(UserId)
+    {//ПЕРЕДЕЛАТЬ НА ВЫЗОВ ИЗ МОДАЛЬНОГО ОКНА
+        var actionUrl="@Url.Action("Edit", "StaffMovements")";
+        actionUrl += "?Id=" + UserId + "&RequestType=1";
+        //location.href = actionUrl;
+        var dataToSend = $("#StaffListArrangementForm").serialize();
+
+        jQuery.ajax({
+                url: actionUrl,
+                type: 'POST',
+                dataType: 'json',
+                data: dataToSend,
+                async: true,
+                success: function(result){
+                },
+                error: function(e, str1){
+                    if(str1 == "parsererror")
+                        alert("Доступ запрещен!.");
+                    else
+                        alert("При загрузке данных произошла ошибка.");
+
+                }
+            });
+    }
+    /*
+    для выхода на создание заявки по кадровому перемещению
+    User.Id,
+RequestType
+
+action = Edit
+    */
+    
 </script>
 
 
