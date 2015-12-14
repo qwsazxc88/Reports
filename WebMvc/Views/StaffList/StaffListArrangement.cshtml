@@ -372,28 +372,56 @@
 
     //переходим в создание заявки на перемещение
     function GetStaffMovementRequest(UserId)
-    {//ПЕРЕДЕЛАТЬ НА ВЫЗОВ ИЗ МОДАЛЬНОГО ОКНА
-        var actionUrl="@Url.Action("Edit", "StaffMovements")";
-        actionUrl += "?Id=" + UserId + "&RequestType=1";
-        //location.href = actionUrl;
-        var dataToSend = $("#StaffListArrangementForm").serialize();
+    {
+        var elem = document.createElement('div');
+        elem.id = "divSelectTypeDialog";
+        var newDiv = $(elem);
 
-        jQuery.ajax({
-                url: actionUrl,
-                type: 'POST',
-                dataType: 'json',
-                data: dataToSend,
-                async: true,
-                success: function(result){
-                },
-                error: function(e, str1){
-                    if(str1 == "parsererror")
-                        alert("Доступ запрещен!.");
-                    else
-                        alert("При загрузке данных произошла ошибка.");
+        var actionDetailDialogUrl = "@Url.Action("SelectMovementType", "StaffList")";
+        actionDetailDialogUrl += "?UserId=" + UserId;
 
+        var title = "Выбор типа заявки";
+        
+
+        $(newDiv).text('Подождите, идет загрузка данных ...');
+        $.ajaxSetup({ cache: false });
+        $(newDiv).load(actionDetailDialogUrl + " #SelectMovementType"
+            , function (response, status, xhr) {
+                if (status == "error") {
+                    var msg = "Произошла ошибка: ";
+                    $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
                 }
-            });
+            }
+        );
+                $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: false,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true,
+            draggable: false,
+            resizable: false,
+            width: "auto",
+            height: "auto",
+            closeOnEscape: true,
+            close: function (event, ui) {
+                //$("SelectMovementType").submit();
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+//                "OK": function () {
+//                    $(this).dialog("close");
+//                }
+//                ,
+//                "Отмена": function () {
+//                    $(this).dialog("close");
+//                }
+            }
+        });
+
+        $(newDiv).dialog("open");
     }
     /*
     для выхода на создание заявки по кадровому перемещению
