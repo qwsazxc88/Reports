@@ -296,6 +296,7 @@
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentSoftGroupModel.cs" />
     <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsCreateRequestModel.cs" />
     <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsEditModel.cs" />
+    <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsFactListModel.cs" />
     <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsListModel.cs" />
     <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsPrintModel.cs" />
     <Compile Include="UI\ViewModel\StandartEditModel.cs" />

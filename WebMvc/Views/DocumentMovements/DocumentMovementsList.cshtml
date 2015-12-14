@@ -16,7 +16,7 @@
                 "../../Scripts/angular-modules/DataService.js",
                 "../../Scripts/DocumentMovements/DocumentMovementsList.js")
                 <style>table{height:100%;}#grid{height:100%;}form{height:100%;}</style>
-@using (Html.BeginBlock("block-wrap", "ng-app='DocumentMovementsList'", "ng-controller='DocumentMovementsListController'"))
+@using (Html.BeginBlock("block-wrap", "ng-app='DocumentMovementsList'", "ng-controller='DocumentMovementsListController'","adjust-height"))
 {
     using (Html.BeginBlock("filter-wrap"))
     {
@@ -47,15 +47,15 @@
         }
         if (Model.IsAddAvailable)
         {
-        @Html.CreateLink("/DocumentMovements/DocumentMovementsEdit/0", "Создать заявку", "button")
+            @Html.CreateLink("/DocumentMovements/DocumentMovementsEdit/0", "Создать заявку", "button")
             if ((dto.UserRole & UserRole.PersonnelManager) > 0)
             {
             <input type="button" value="Создать новую заявку о получении" onclick="location.href='@Url.Action("CreateWithoutSend", "DocumentMovements")'"/>  
             }
         }
-    }
-    
-    <div  ui-grid="GridOptions"  ui-grid-expandable ui-grid-resize-columns ></div>
-    
+    }  
+    <div id="changes-height">
+    <div ui-grid="GridOptions" class="full-height" ui-grid-expandable ui-grid-resize-columns ></div>
+    </div>
     <div class="page-buffer"></div>   
 }

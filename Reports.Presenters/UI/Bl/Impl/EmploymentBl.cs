@@ -2704,7 +2704,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     });
                 }
                 model.IsMarried = candidate.Family.FamilyMembers.Any(fm => fm.RelationshipId == FamilyRelationship.SPOUSE);
-                if (EmploymentFamilyDao.GetFamilyStatuses() != null && EmploymentFamilyDao.GetFamilyStatuses().ToList().Count != 0)
+                if (EmploymentFamilyDao.GetFamilyStatuses() != null && EmploymentFamilyDao.GetFamilyStatuses().ToList().Count != 0 && candidate.Family.FamilyStatusId != null)
                     model.FamilyStatusName = EmploymentFamilyDao.GetFamilyStatuses().Where(x => x.Id == candidate.Family.FamilyStatusId).Single().Name;
 
             } 

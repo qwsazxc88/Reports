@@ -1,0 +1,28 @@
+﻿@using Reports.Presenters.UI.ViewModel
+@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using WebMvc.Helpers
+@model StaffMovementsFactListModel
+@{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    ViewBag.Title = "Кадровые перемещения - реестр перемещений";
+    Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";
+}
+@using (Html.BeginBlock("block-wrap"))
+{
+    using (Html.BeginBlock("filter-wrap"))
+    {
+        @Html.CreateField(m => m.UserName)
+        @Html.CreateField(m => m.StaffMovementsId)
+        @Html.CreateField(m => m.StaffEstablishedPostRequestId)
+        @Html.CreateField(m => m.MovemntDate)
+    }
+    using (Html.BeginBlock("toolbar ui-widget-header ui-corner-all"))
+    {
+        @Html.CreateButton(false, true, "Выбрать", new Dictionary<string, object> { { "ng-click", "'GetData()'" } }, "")
+        @Html.CreateButton(false, true, "Очистить", new Dictionary<string, object> { { "ng-click", "'ClearForm()'" } }, "")
+    }
+    <div id="changes-height">
+        <div ui-grid="GridOptions" class="full-height" ui-grid-expandable ui-grid-resize-columns ></div>
+    </div>
+}

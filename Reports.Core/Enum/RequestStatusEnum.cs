@@ -206,7 +206,9 @@
         MissionOrder = 4,
         MissionCertificate = 5,
         ChildVacation = 6,
-        ServiceRequest = 7  //инфоуслуги
+        ServiceRequest = 7,  //инфоуслуги
+        StaffMovementsAgreement =8,
+        StaffMovementsAgreementAddition = 9
     }
     public enum DeductionTypeEnum
     {

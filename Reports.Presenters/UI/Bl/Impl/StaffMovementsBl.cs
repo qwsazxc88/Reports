@@ -19,6 +19,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Constants
         #endregion
         #region Dao
+        protected IStaffMovementsFactDao staffMovementsFactDao;
+        public IStaffMovementsFactDao StaffMovementsFactDao
+        {
+            get { return Validate.Dependency(staffMovementsFactDao); }
+            set { staffMovementsFactDao = value; }
+        }
         protected IStaffEstablishedPostChargeLinksDao staffEstablishedPostChargeLinksDao;
         public IStaffEstablishedPostChargeLinksDao StaffEstablishedPostChargeLinksDao
         {
@@ -135,6 +141,25 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
         #region Methods
+        public StaffMovementsFactListModel GetFactListModel()
+        {
+            return new StaffMovementsFactListModel();
+        }
+        public List<StaffMovementsFactDto> GetFactDocuments(StaffMovementsFactListModel model)
+        {
+            var user = UserDao.Load(CurrentUser.Id);
+            var query= QueryCreator.Create<StaffMovementsFact, StaffMovementsFactListModel>(model, user, CurrentUser.UserRole);
+            var data = StaffMovementsFactDao.QueryExpression(query);
+            return data.Select(x => new StaffMovementsFactDto
+            {
+                Id = x.Id,
+                StaffMovementsId = x.StaffMovements.Id,
+                SendTo1C = x.SendTo1C,
+                UserToMove = new StandartUserDto { Id = x.User.Id },
+                StaffEstablishedPostRequestId = x.StaffEstablishedPostRequest.Id,
+                Additions = GetUserActualAddition(x.User.Id)
+            }).ToList();
+        }
         public StaffMovementsEditModel GetEditModel(int id)
         {
             var model = new StaffMovementsEditModel();
@@ -335,17 +360,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadUserData(model.Creator);
             SetFlagState(model);
         }
+        private List<AdditionsDto> GetUserActualAddition(int userId)
+        {
+            return StaffPostChargeLinksDao.QueryExpression(x => x.IsActive && x.Staff.Id == userId)
+                            .Select(x =>
+                                new AdditionsDto
+                                {
+                                    Action = x.ExtraChargeActions.Id,
+                                    Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
+                                    guid = x.ExtraCharges.GUID,
+                                    Value = x.Salary
+                                })
+                            .ToList();
+        }
         private void SetModelAdditions(StaffMovementsEditModel model)
         {
-            model.ActiveAdditions = StaffPostChargeLinksDao.QueryExpression(x => x.IsActive && x.Staff.Id==model.User.Id)
-                .Select(x => 
-                    new AdditionsDto { 
-                        Action = x.ExtraChargeActions.Id, 
-                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
-                        guid = x.ExtraCharges.GUID,
-                        Value = x.Salary 
-                    })
-                .ToList();
+            model.ActiveAdditions = GetUserActualAddition(model.User.Id);
             if (model.Id > 0)
             {
                 model.AdditionsToEdit = StaffPostChargeLinksDao.QueryExpression(x => x.StaffMovements.Id==model.Id)
@@ -1160,7 +1190,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             var positions = StaffEstablishedPostDao.GetStaffEstablishedArrangements(id);
             if (positions != null && positions.Any())
             {
-                return positions.Select(x => new IdNameDto { Id = x.Id, Name = x.PositionName }).ToList();
+                return positions.Where(x=>x.IsVacation).Select(x => new IdNameDto { Id = x.Id, Name = x.PositionName+" -"+ (x.IsSTD?" СТД ":" ")+x.ReplacedName }).ToList();
             }
             else return new List<IdNameDto>();
             #region depricated

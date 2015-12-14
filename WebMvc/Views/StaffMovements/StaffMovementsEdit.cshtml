@@ -338,7 +338,15 @@
                           {
                           <div id="tabs-2">
                           <fieldset class="bordered doc-wrap-blue panel">
-                          <table>                            
+                          <table>            
+                           <tr>
+                            <td>@Html.LabelFor(m=>m.TargetCasing)</td>
+                            <td>@Html.TextBoxFor(m => m.TargetCasing, new { disabled="disabled" })</td>
+                           </tr> 
+                           <tr>
+                            <td>@Html.LabelFor(m=>m.TargetRegion)</td>
+                            <td>@Html.TextBoxFor(m => m.TargetRegion, new { disabled = "disabled" })</td>
+                           </tr>               
                             <tr>
                                     <td>
                                     <div id="IsTempMovingContainer" class="formfield clear">
@@ -794,7 +802,15 @@ label { font-size:1.1em; }
         {
             $('.M_TargetPositionName').text($("select[name^='UserLinkId'] option:selected").text());
         });
-        
+        $('#UserLinkId').change(function(){
+            $.ajax({
+              type: "POST",
+              url: '/Employment/GetStaffEstablishmentPostDetails',
+              data: { IsSP:false, DepartmentId:$('#TargetDepartmentId').val(),UserLinkId:$('#UserLinkId').val()},
+              success: function(data){ $('#TargetSalary').val(data.model.SalaryBasis);$('#TargetRegion').val(data.model.AreaMultiplier);}
+              
+            });
+        });
         $('#IsHourlyContainer').buttonset(@if (!Model.IsPersonnelManagerEditable)
                                           {<text>{disabled: true}</text>});
         $('#IsTempMovingContainer').buttonset(@if (!Model.IsManagerEditable)
