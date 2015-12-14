@@ -807,7 +807,7 @@ label { font-size:1.1em; }
               type: "POST",
               url: '/Employment/GetStaffEstablishmentPostDetails',
               data: { IsSP:false, DepartmentId:$('#TargetDepartmentId').val(),UserLinkId:$('#UserLinkId').val()},
-              success: function(data){ $('#TargetSalary').val(data.model.SalaryBasis);$('#TargetRegion').val(data.model.AreaMultiplier);}
+              success: function(data){ $('#TargetSalary').val(data.SalaryBasis);$('#TargetRegion').val(data.AreaMultiplier);}
               
             });
         });
