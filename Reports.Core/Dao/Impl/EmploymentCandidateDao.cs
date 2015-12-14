@@ -128,6 +128,12 @@ namespace Reports.Core.Dao.Impl
                 ,candidate.TKReceivedDate
                 ,isnull(candidate.IsTDReceived, 0) as IsTDReceived
                 ,candidate.TDReceivedDate
+                ,case when isnull(personnelManagers.PersonalAddition, 0) + isnull(personnelManagers.AreaAddition, 0) + isnull(personnelManagers.TravelRelatedAddition, 0) + isnull(personnelManagers.CompetenceAddition, 0) + 
+                           isnull(personnelManagers.FrontOfficeExperienceAddition, 0) <> 0
+                      then '1' else '2' end as AdditionAvailableId
+                ,case when isnull(personnelManagers.PersonalAddition, 0) + isnull(personnelManagers.AreaAddition, 0) + isnull(personnelManagers.TravelRelatedAddition, 0) + isnull(personnelManagers.CompetenceAddition, 0) + 
+                           isnull(personnelManagers.FrontOfficeExperienceAddition, 0) <> 0
+                      then 'Да' else 'Нет' end as AdditionAvailable
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
                 left join dbo.Dismissal dis on candidate.UserId=dis.UserId and dis.SendTo1C is not null
@@ -197,6 +203,7 @@ namespace Reports.Core.Dao.Impl
                 string AppointmentReportNumber,
                 int AppointmentNumber,
                 int PersonnelId,
+                int AdditionId,
                 int sortBy,
                 bool? sortDescending)
         {
@@ -208,6 +215,7 @@ namespace Reports.Core.Dao.Impl
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
             whereString = GetPersonnelWhere(whereString, PersonnelId);
+            whereString = GetAdditionWhere(whereString, AdditionId);
             whereString = GetContractNumber1CWhere(whereString, ContractNumber1C);
             whereString = GetAppointmentWhere(whereString, AppointmentReportNumber, AppointmentNumber);
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
@@ -415,6 +423,19 @@ namespace Reports.Core.Dao.Impl
             return whereString;
         }
 
+        public string GetAdditionWhere(string whereString, int AdditionId)
+        {
+            if (AdditionId != 0)
+            {
+                whereString = string.Format(@"{0} case when isnull(personnelManagers.PersonalAddition, 0) + isnull(personnelManagers.AreaAddition, 0) + isnull(personnelManagers.TravelRelatedAddition, 0) + isnull(personnelManagers.CompetenceAddition, 0) + 
+                           isnull(personnelManagers.FrontOfficeExperienceAddition, 0) <> 0
+                      then '1' else '2' end = " + AdditionId.ToString(),
+                    (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+            }
+
+            return whereString;
+        }
+
         public string GetContractNumber1CWhere(string whereString, string ContractNumber1C)
         {
             if (!string.IsNullOrEmpty(ContractNumber1C))
@@ -530,6 +551,9 @@ namespace Reports.Core.Dao.Impl
                 case 25:
                     orderBy = "TDReceivedDate";
                     break;
+                case 26:
+                    orderBy = "AdditionAvailable";
+                    break;
                 default:
                     orderBy = "candidate.Id desc";
                     break;
@@ -596,6 +620,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("TKReceivedDate", NHibernateUtil.DateTime)
                 .AddScalar("IsTDReceived", NHibernateUtil.Boolean)
                 .AddScalar("TDReceivedDate", NHibernateUtil.DateTime)
+                .AddScalar("AdditionAvailable", NHibernateUtil.String)
                 ;
 
             return query;
