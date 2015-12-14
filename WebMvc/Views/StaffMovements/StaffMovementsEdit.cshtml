@@ -805,7 +805,7 @@ label { font-size:1.1em; }
         $('#UserLinkId').change(function(){
             $.ajax({
               type: "POST",
-              url: '/StaffList/GetStaffEstablishmentPostDetails',
+              url: '/Employment/GetStaffEstablishmentPostDetails',
               data: { IsSP:false, DepartmentId:$('#TargetDepartmentId').val(),UserLinkId:$('#UserLinkId').val()},
               success: function(data){ $('#TargetSalary').val(data.model.SalaryBasis);$('#TargetRegion').val(data.model.AreaMultiplier);}
               
