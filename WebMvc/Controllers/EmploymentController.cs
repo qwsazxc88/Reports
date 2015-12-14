@@ -1548,7 +1548,7 @@ namespace WebMvc.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing | UserRole.Employee | UserRole.OutsourcingManager)]
         public ActionResult GetStaffEstablishmentPostDetails(bool IsSP, int DepartmentId, int UserLinkId)
         {
             string error = String.Empty;
