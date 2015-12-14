@@ -135,6 +135,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
         #region Methods
+        public StaffMovementsFactListModel GetFactListModel()
+        {
+            return new StaffMovementsFactListModel();
+        }
         public StaffMovementsEditModel GetEditModel(int id)
         {
             var model = new StaffMovementsEditModel();
@@ -1160,7 +1164,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             var positions = StaffEstablishedPostDao.GetStaffEstablishedArrangements(id);
             if (positions != null && positions.Any())
             {
-                return positions.Select(x => new IdNameDto { Id = x.Id, Name = x.PositionName }).ToList();
+                return positions.Where(x=>x.IsVacation).Select(x => new IdNameDto { Id = x.Id, Name = x.PositionName+" -"+ (x.IsSTD?" СТД ":" ")+x.ReplacedName }).ToList();
             }
             else return new List<IdNameDto>();
             #region depricated

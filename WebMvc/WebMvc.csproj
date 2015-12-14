@@ -937,6 +937,7 @@
     <Content Include="Views\DocumentMovements\DocumentMovementsEdit.cshtml" />
     <Content Include="Views\Shared\_LayoutModern.cshtml" />
     <Content Include="Views\DocumentMovements\CreateWithoutSend.cshtml" />
+    <Content Include="Views\StaffMovements\StaffMovementsFactList.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

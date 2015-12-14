@@ -234,7 +234,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 if (entity.ReceiverRuscount != null)
                 {
-                    model.Receiver.Id = entity.Receiver.Id;
+                    model.Receiver.Id = (CurrentUser.UserRole& UserRole.PersonnelManager)>0?CurrentUser.Id:entity.Receiver.Id;
                     model.Receiver.Name = entity.ReceiverRuscount.Name;
                 }
                 else
