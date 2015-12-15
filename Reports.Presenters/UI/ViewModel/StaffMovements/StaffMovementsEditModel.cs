@@ -109,7 +109,7 @@ namespace Reports.Presenters.UI.ViewModel
         public decimal Casing { get; set; }
         [Display(Name="Условия перевода")]
         public string MovementCondition { get; set; }
-        [Display(Name="Задача в Pyrus")];
+        [Display(Name="Задача в Pyrus")]
         public string PyrusLink { get; set; }
         public IList<AdditionsDto> ActiveAdditions { get; set; }
         public IList<AdditionsDto> AdditionsToEdit { get; set; }
