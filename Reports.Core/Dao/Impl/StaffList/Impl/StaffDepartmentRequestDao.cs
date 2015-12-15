@@ -125,7 +125,7 @@ namespace Reports.Core.Dao.Impl
                                  INNER JOIN (SELECT C.*
                                              FROM Users as A
                                              INNER JOIN Department as B ON B.Id = A.DepartmentId
-                                             INNER JOIN Department as C ON C.Path like B.Path + N'%' and C.ItemLevel <> B.ItemLevel
+                                             INNER JOIN Department as C ON C.Path like B.Path + N'%' --and C.ItemLevel <> B.ItemLevel
 						                     WHERE A.Id = :userId) as F ON F.Id = isnull(A.DepartmentId, A.ParentId)";
                     break;
             }
