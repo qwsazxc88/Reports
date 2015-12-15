@@ -342,7 +342,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, SalaryEnabel);
                 //уровень подразделений
-                model.Departments = GetDepartmentListByParent(DepId, false).OrderBy(x => x.Priority).ToList();
+                model.Departments = GetDepartmentListByParent(DepId, false)
+                    .OrderBy(x => x.Priority)
+                    .ToList();
+                    
             }
             else
             {
@@ -398,7 +401,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         protected IList<StaffListDepartmentDto> GetDepListWithSEPCount(string DepId, bool IsParentDepOnly)
         {
-            IList<StaffListDepartmentDto> Sdeps = DepartmentDao.DepFingradName(DepId, IsParentDepOnly);
+            IList<StaffListDepartmentDto> Sdeps = DepartmentDao.DepFingradName(DepId, IsParentDepOnly, AuthenticationService.CurrentUser.UserRole);
             return Sdeps;
         }
         #endregion
@@ -426,6 +429,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public StaffDepartmentRequestListModel SetStaffDepartmentRequestList(StaffDepartmentRequestListModel model)
         {
             model.DepRequestList = StaffDepartmentRequestDao.GetDepartmentRequestList(userDao.Load(AuthenticationService.CurrentUser.Id), 
+                AuthenticationService.CurrentUser.UserRole,
                 model.DepartmentId, 
                 model.Id.HasValue ? model.Id.Value : 0, 
                 model.Creator, 
@@ -1610,7 +1614,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
 
-            if (entity.DepNext != null)
+            if (entity.DepNext != null && entity.DepartmentAccessory.Id == 2)
             {
                 if (string.IsNullOrEmpty(entity.DepNext.DepartmentTaxDetails[0].TaxAdminCode) || string.IsNullOrWhiteSpace(entity.DepNext.DepartmentTaxDetails[0].TaxAdminCode))
                 {
