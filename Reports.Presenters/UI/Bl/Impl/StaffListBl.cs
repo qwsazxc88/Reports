@@ -2569,6 +2569,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 model.IsUsed = entity.IsUsed;
+                model.RequestTypeId = entity.RequestType.Id;
                 model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
                 model.DateRequest = entity.DateRequest;
                 model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
