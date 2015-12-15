@@ -179,6 +179,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public DocumentMovementsListModel GetListModel()
         {
             var model =  new DocumentMovementsListModel();
+            model.DocTypes = DocumentMovements_DocTypesDao.LoadAll().Select(x => new IdNameDto { Name = x.Name }).ToList();
             model.IsSaveAvailable = (CurrentUser.UserRole & (UserRole.PersonnelManager)) > 0;
             model.IsAddAvailable = (CurrentUser.UserRole &(UserRole.Manager | UserRole.PersonnelManager))>0;
             return model;

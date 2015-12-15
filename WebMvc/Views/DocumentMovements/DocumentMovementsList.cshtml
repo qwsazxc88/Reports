@@ -22,30 +22,46 @@ height: auto !important;
  </style>
 @Html.AddStyles("../../Content/artem.css",
                 "../../Content/uigrid/ui-grid.min.css")          
-@Html.AddScripts("../../Scripts/jQueryUIDefaults.js", 
-                "../../Scripts/angular.min.js", 
-                "../../Scripts/uigrid/ui-grid.min.js", 
+@Html.AddScripts("../../Scripts/jQueryUIDefaults.js",
+                "../../Scripts/angular.min.js",
+                "../../Scripts/uigrid/ui-grid.min.js",
                 "../../Scripts/angular-modules/DataService.js",
                 "../../Scripts/DocumentMovements/DocumentMovementsList.js")
                 <style>table{height:100%;}#grid{height:100%;}form{height:100%;}</style>
-@using (Html.BeginBlock("block-wrap", "ng-app='DocumentMovementsList'", "ng-controller='DocumentMovementsListController'","adjust-height"))
+@using (Html.BeginBlock("block-wrap", "ng-app='DocumentMovementsList'", "ng-controller='DocumentMovementsListController'", "adjust-height"))
 {
     using (Html.BeginBlock("filter-wrap"))
     {
     @Html.CreateHeader((string)ViewBag.Title);
     <a href="../../Templates/DocumentMovementsInstriction.doc">Инструкция</a>
+    <div>
+        <span style="width:220px">
+            @Html.LabelFor(m => m.DepartmentName):
+        </span>
+        <span>
+            <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+            <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+            <input type="hidden" id="DepartmentId" ng-model="Model.DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+        </span>
+    </div>
+    <div>
+        <div>
+            <input type="button" value="Выбрать" onclick="changeDepartment();"/>                                           
+        </div>
+    </div>
     @Html.CreateField(m => m.Number, new Dictionary<string, object> { { "ng-model", "Model.Number" } })
     @Html.CreateField(m => m.UserName, new Dictionary<string, object> { { "ng-model", "Model.UserName" } })
     @Html.CreateField(m => m.SenderName, new Dictionary<string, object> { { "ng-model", "Model.SenderName" } })
      
     @Html.CreateField(m => m.ReceiverName, new Dictionary<string, object> { { "ng-model", "Model.ReceiverName" } })
-    <div class="field-wrap"><span style="width:200px; display:inline-block;">Тип документа:</span><input type="text" ng-model="RowFilter.DocumentName"/></div>
+    
+    <div class="field-wrap"><span style="width:200px; display:inline-block;">Тип документа:</span><select ng-model="RowFilter.DocumentName"><option></option>@foreach(var el in Model.DocTypes){<option>@el.Name</option>}</select></div>
    
-                                             using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Период"))
-                                             {
+    using (Html.BeginFieldset("bordered panel doc-wrap-blue", "Период"))
+    {
                 @Html.CreateField("{0:dd.MM.yyyy}", m => m.BeginDate, new Dictionary<string, object> { { "class", "DatePicker" }, { "ng-model", "Model.BeginDate" } }, true)
                 @Html.CreateField("{0:dd.MM.yyyy}", m => m.EndDate, new Dictionary<string, object> { { "class", "DatePicker" }, { "ng-model", "Model.EndDate" } }, true)
-                                             }
+    }
 
     }
 
@@ -71,3 +87,7 @@ height: auto !important;
     </div>
     <div class="page-buffer"></div>   
 }
+<script>
+var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+</script>

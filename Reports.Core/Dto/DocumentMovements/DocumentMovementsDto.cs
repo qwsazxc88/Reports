@@ -39,7 +39,7 @@ namespace Reports.Core.Dto
             Descript = "";
             Status = "";
         }
-        [ngGridRow(field = "Id", displayName = "Номер", enableFiltering = true, enableSorting = true, type = "number", cellTemplate = "<div class='ui-grid-cell-contents'><i ng-class=\"{ 'ui-grid-icon-plus-squared' : !row.isExpanded, 'ui-grid-icon-minus-squared' : row.isExpanded }\" ng-click='grid.appScope.toggleRow(row.entity)'></i><a href='/DocumentMovements/DocumentMovementsEdit/{{row.entity[col.field]}}'>{{row.entity[col.field]}}</a> </div>")]
+        [ngGridRow(field = "Id", displayName = "Номер", enableFiltering = true, enableSorting = true, type = "number", cellTemplate = "<div class='ui-grid-cell-contents'><i ng-class=\"{ 'ui-grid-icon-plus-squared' : !row.isExpanded, 'ui-grid-icon-minus-squared' : row.isExpanded }\" ng-click='grid.appScope.toggleRow(row.entity)'></i><a target='_blank' href='/DocumentMovements/DocumentMovementsEdit/{{row.entity[col.field]}}'>{{row.entity[col.field]}}</a> </div>")]
         public int Id { get; set; }
         [ngGridRow(field = "User", displayName = "ФИО сотрудника", enableCellEdit = true, enableFiltering = true, enableSorting = true, type = "string")]
         public string User { get; set; }
