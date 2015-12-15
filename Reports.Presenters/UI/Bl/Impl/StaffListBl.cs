@@ -1778,7 +1778,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     error = "Заявка создана!";
                 }
 
-                if (DocApproval.Where(x => x.Number == 1).Count() == 1 && DocApproval.Where(x => x.Number == 2).Count() == 0)
+                if (DocApproval.Where(x => x.Number == 1).Count() == 1 && DocApproval.Where(x => x.Number == 2).Count() == 0 && entity.DepartmentAccessory.Id == 2)//только фронты
                 {
                     da.ApproveUser = curUser;
                     da.AssistantUser = null;
@@ -1787,7 +1787,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     error = "Заявка проверена куратором!";
                 }
 
-                if (DocApproval.Where(x => x.Number == 2).Count() == 1 && DocApproval.Where(x => x.Number == 3).Count() == 0)
+                //if (DocApproval.Where(x => x.Number == 2).Count() == 1 && DocApproval.Where(x => x.Number == 3).Count() == 0)
+                if (DocApproval.Where(x => x.Number == 1).Count() == 1 && DocApproval.Where(x => x.Number == 3).Count() == 0 && entity.DepartmentAccessory.Id == 1)//только бэки
                 {
                     da.ApproveUser = curUser;
                     da.AssistantUser = null;
@@ -2285,8 +2286,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 }
 
                                 //открываем согласование для следующего участника процесса
-                                model.IsCuratorApproveAvailable = model.IsCurator || model.IsConsultant ? true : false;
-                                model.IsAgreeButtonAvailable = model.IsCuratorApproveAvailable;
+                                if (entity.DepartmentAccessory.Id == 2)//кураторы согласуют фронты
+                                {
+                                    model.IsCuratorApproveAvailable = model.IsCurator || model.IsConsultant ? true : false;
+                                    model.IsAgreeButtonAvailable = model.IsCuratorApproveAvailable;
+                                }
+                                else
+                                {
+                                    model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
+                                    model.IsAgreeButtonAvailable = model.IsPersonnelBankApproveAvailable;
+                                }
                                 break;
                             case 2://куратор
                                 model.IsCuratorApprove = true;
@@ -2299,8 +2308,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 }
 
                                 //открываем согласование для следующего участника процесса
-                                model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
-                                model.IsAgreeButtonAvailable = model.IsPersonnelBankApproveAvailable;
+                                if (entity.DepartmentAccessory.Id == 1)//кадровики согласуют только бэк
+                                {
+                                    model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
+                                    model.IsAgreeButtonAvailable = model.IsPersonnelBankApproveAvailable;
+                                }
+                                else
+                                {
+                                    model.IsTopManagerApproveAvailable = model.TopManagers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.TopManagers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
+                                    model.IsAgreeButtonAvailable = model.IsTopManagerApproveAvailable;
+                                }
                                 break;
                             case 3://кадровик
                                 model.IsPersonnelBankApprove = true;
