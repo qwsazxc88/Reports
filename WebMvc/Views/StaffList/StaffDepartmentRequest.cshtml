@@ -11,7 +11,7 @@
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.DMDetailId)
     @Html.HiddenFor(m => m.IsAgreeButtonAvailable)
-    @*@Html.HiddenFor(m => m.IsDraftButtonAvailable)*@
+    @Html.HiddenFor(m => m.IsImportance)
     @Html.HiddenFor(m => m.ItemLevel)
     @Html.HiddenFor(m => m.IsUsed)
     @Html.HiddenFor(m => m.DepartmentId)
@@ -32,6 +32,7 @@
             <h3>Общие реквизиты</h3>
             <div>
                 <table>
+                @*
                     <tr>
                         <td>@Html.LabelFor(m => m.ManagementCode)</td>
                         <td>@Html.DisplayFor(m => m.ManagementCode)</td>
@@ -64,6 +65,7 @@
                         <td>@Html.LabelFor(m => m.RPLInkName)</td>
                         <td>@Html.DisplayFor(m => m.RPLInkName)</td>
                     </tr>
+                    *@
                     <tr>
                         <td>
                             @Html.LabelFor(m => m.DateState)
@@ -1147,7 +1149,6 @@
                                                  {<text>"Редактировать заявку"</text>}) 
                                                 @if (!Model.IsDraftButtonAvailable)
                                                 {<text>disabled="disabled"</text>}>@(Model.Id == 0 ? "Сохранить" : "Редактировать")</button>
-
         <button id="btnAgree" type="button" title="Согласовать заявку/Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
                                                                                                         {<text>disabled="disabled"</text>}>Согласовать</button>
     </div>
@@ -1192,7 +1193,7 @@
             }
 
             $("#IsDraft").val(false); 
-            $("#IsImportance").val(true);
+            //$("#IsImportance").val(true);
             ShowFlash(true); 
             $("#StaffDepartmentRequestForm").submit(); 
         });
