@@ -8,8 +8,8 @@
     <div>
         @*Html.HiddenFor(m => m.UserId)*@
         <input type="hidden" name="User.Id" value="@Model.UserId" />
-        @Html.LabelFor(m => m.RequestTypeId)
-        @Html.DropDownListFor(m => m.RequestTypeId, new SelectList(Model.RequestTypes, "Id", "Name"))
+        @Html.LabelFor(m => m.RequestType)
+        @Html.DropDownListFor(m => m.RequestType, new SelectList(Model.RequestTypes, "Id", "Name"))
         <button>Выбрать</button>
     </div>
 }

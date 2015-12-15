@@ -13,7 +13,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public int UserId { get; set; }
 
         [Display(Name = "Вид заявки")]
-        public int RequestTypeId { get; set; }
+        public int RequestType { get; set; }
         public IList<refStaffMovementsTypes> RequestTypes { get; set; }
     }
 }

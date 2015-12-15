@@ -192,6 +192,7 @@
     {
     
         var url = "@Url.Action("AddEditStaffDepartmentAdministration", "StaffList")";
+        url += "?ManagementFilterId=" + $("#ManagementFilterId").val() + "&BranchFilterId="+ $("#BranchFilterId").val();
         var dataToSend = $("#AddEditAdministrationDialog form").serialize();
         ShowFlash(true);    //это диалоговое окно находится на родительской странице
         $.post(url, dataToSend, function(data){
