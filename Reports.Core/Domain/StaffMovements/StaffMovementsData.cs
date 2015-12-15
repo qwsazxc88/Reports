@@ -63,5 +63,9 @@ namespace Reports.Core.Domain
         /// График работы
         /// </summary>
         public virtual Schedule HoursType { get; set; }
+        /// <summary>
+        /// Pyrus
+        /// </summary>
+        public virtual string PyrusLink { get; set; }
     }
 }
