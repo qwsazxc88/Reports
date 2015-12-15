@@ -20,6 +20,7 @@
     <property name="NorthFactorDay" not-null="false"/>
     <property name="NorthFactorAddition" not-null="false"/>
     <property name="NorthFactorAdditionAction" not-null="false"/>
+    <property name="PyrusLink" not-null="false"/>
     <!--Причина перевода-->
     <property name="MovementReason" not-null="false"/>
     <!--Условия перевода-->

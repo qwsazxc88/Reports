@@ -111,6 +111,11 @@ namespace WebMvc.Controllers
             if ( StaffMovementsBl.CheckMovementsExist(date, UserId,id)) return Content("Error");
             else return Content("Ok");
         }
+        /// <summary>
+        /// Сохранение галочек для документов. DEPRECATED
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public ContentResult SaveDocs(StaffMovementsEditModel model)
         {
             StaffMovementsBl.SaveDocsModel(model);
