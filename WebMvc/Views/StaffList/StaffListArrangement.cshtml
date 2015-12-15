@@ -97,7 +97,7 @@
         setActiveMenuItem("moStaffArrangement");
 
          $(document).tooltip({track: false,
-            show: { /*effect: "blind",*/ duration: 300 }});
+            show: { /*effect: "blind",*/ duration: 1000 }});
 
         ShowFlash(true);
         ShowFlash(false);
@@ -281,7 +281,14 @@
                                         //красим увольняющихся
                                         if(!result.EstablishedPosts[i].IsDismiss && !result.EstablishedPosts[i].IsDismissal)
                                         {
-                                            tblStr += "<td><a href='#' onclick='GetStaffMovementRequest(" + result.EstablishedPosts[i].UserId + ");'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</a></td>"
+                                            if(result.EstablishedPosts[i].IsVacation || result.EstablishedPosts[i].IsReserve)
+                                            {
+                                                tblStr += "<td>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>"
+                                            }
+                                            else
+                                            {
+                                                tblStr += "<td><a href='#' onclick='GetStaffMovementRequest(" + result.EstablishedPosts[i].UserId + ");'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</a></td>"
+                                            }
                                             //"<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
                                             //GetStaffMovementRequest(UserId)
                                         }
@@ -415,9 +422,9 @@
 //                    $(this).dialog("close");
 //                }
 //                ,
-//                "Отмена": function () {
-//                    $(this).dialog("close");
-//                }
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
             }
         });
 
