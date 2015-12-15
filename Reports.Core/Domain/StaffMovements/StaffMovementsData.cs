@@ -32,17 +32,7 @@ namespace Reports.Core.Domain
         /// Грейд
         /// </summary>
         public virtual int Grade { get; set; }
-        /// <summary>
-        /// Северный стаж
-        /// </summary>
-        public virtual int NorthFactor { get; set; }
-        public virtual int NorthFactorOrder { get; set; }
-        public virtual int NorthFactorYear { get; set; }
-        public virtual int NorthFactorMonth { get; set; }
-        public virtual int NorthFactorDay { get; set; }
-        public virtual decimal NorthFactorAddition { get; set; }
-        public virtual int NorthFactorAdditionAction { get; set; }
-
+        
         /// <summary>
         /// Причина перевода
         /// </summary>
@@ -63,5 +53,9 @@ namespace Reports.Core.Domain
         /// График работы
         /// </summary>
         public virtual Schedule HoursType { get; set; }
+        /// <summary>
+        /// Pyrus
+        /// </summary>
+        public virtual string PyrusLink { get; set; }
     }
 }

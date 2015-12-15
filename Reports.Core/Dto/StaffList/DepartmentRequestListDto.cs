@@ -11,6 +11,7 @@ namespace Reports.Core.Dto
         public int RequestTypeId { get; set; }
         public int DepartmentId { get; set; }
         public int ParentId { get; set; }
+        public string AccessoryName { get; set; }
         public string Dep2Name { get; set; }
         public string Dep3Name { get; set; }
         public string Dep4Name { get; set; }

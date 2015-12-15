@@ -1334,6 +1334,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.HigherManagerRejectionReason = entity.HigherManagerRejectionReason;
                 model.SendTo1C = entity.Candidate.SendTo1C;
                 model.MentorName = entity.MentorName;
+                model.PyrusNumber = entity.PyrusNumber;
 
                 model.Comments = EmploymentCandidateCommentDao.GetComments(entity.Candidate.User.Id, (int)EmploymentCommentTypeEnum.Managers);
                 model.IsAddCommentAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.Manager) > 0 ||
@@ -1424,6 +1425,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (PostUserLink != null)
                 model.UserLinkId = PostUserLink.Id;
 
+            model.IsConsultant = AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ? true : false;
+            model.SalaryTotal = CalculateCandidateSalary(entity).ToString("C", System.Globalization.CultureInfo.CurrentCulture);
+            
             LoadDictionaries(model);
 
             return model;
@@ -1511,6 +1515,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.HigherManagerApprovalList += (string.IsNullOrEmpty(model.HigherManagerApprovalList) ? "" : ", ") + item.Name;
             }
+
+            model.IsConsultant = AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ? true : false;
+            model.SalaryTotal = CalculateCandidateSalary(entity).ToString("C", System.Globalization.CultureInfo.CurrentCulture);
 
             LoadDictionaries(model);
             //состояние кандидата
@@ -2010,6 +2017,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.AppointmentReportNumber : null,
                     filters != null ? (filters.AppointmentNumber.HasValue ? filters.AppointmentNumber.Value : 0) : 0,
                     filters != null ? filters.PersonnelId : 0,
+                    filters != null ? (filters.AdditionId.HasValue ? filters.AdditionId.Value : 0) : 0,
                     filters.SortBy,
                     filters.SortDescending);
 
@@ -2696,7 +2704,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     });
                 }
                 model.IsMarried = candidate.Family.FamilyMembers.Any(fm => fm.RelationshipId == FamilyRelationship.SPOUSE);
-                if (EmploymentFamilyDao.GetFamilyStatuses() != null && EmploymentFamilyDao.GetFamilyStatuses().ToList().Count != 0)
+                if (EmploymentFamilyDao.GetFamilyStatuses() != null && EmploymentFamilyDao.GetFamilyStatuses().ToList().Count != 0 && candidate.Family.FamilyStatusId != null)
                     model.FamilyStatusName = EmploymentFamilyDao.GetFamilyStatuses().Where(x => x.Id == candidate.Family.FamilyStatusId).Single().Name;
 
             } 
@@ -2912,6 +2920,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.AppointmentReportNumber : null,
                     filters != null ? (filters.AppointmentNumber.HasValue ? filters.AppointmentNumber.Value : 0) : 0,
                     filters != null ? filters.PersonnelId : 0,
+                    filters != null ? (filters.AdditionId.HasValue ? filters.AdditionId.Value : 0) : 0,
                     filters.SortBy,
                     filters.SortDescending);
             }
@@ -2998,6 +3007,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.Statuses = GetEmploymentStatuses();
             model.Personnels = EmploymentCandidateDao.GetPersonnels();
+            model.Additions = GetAdditionAvailable();
         }
         public void LoadDictionaries(SignersModel model)
         {
@@ -3151,6 +3161,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Выгружено в 1С", Value = "8"},
                 new SelectListItem {Text = "Отклонен", Value = "9"},
                 new SelectListItem {Text = "Временно заблокирован", Value = "-1"}
+            };
+        }
+
+        public IEnumerable<SelectListItem> GetAdditionAvailable()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem {Text = "Да", Value = "1"},
+                new SelectListItem {Text = "Нет", Value = "2"},
             };
         }
 
@@ -5002,8 +5021,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             Department department = DepartmentDao.Get(viewModel.DepartmentId);
 
             StaffEstablishedPostDto Vacation = StaffEstablishedPostDao.GetStaffEstablishedArrangements(viewModel.DepartmentId)
-                .Where(x => x.IsVacation && x.Id == viewModel.UserLinkId)
+                .Where(x => x.Id == viewModel.UserLinkId)
                 .FirstOrDefault();
+            if (Vacation == null)
+            {
+                error = "Выберите доступную вакансию!";
+                return false;
+            }
+
             //проверяем соответствие ТД
             if (Vacation.IsSTD && entity.Candidate.User.IsFixedTermContract.HasValue && !entity.Candidate.User.IsFixedTermContract.Value)
             {
@@ -5053,6 +5078,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Candidate.PersonnelManagers.TravelRelatedAddition = viewModel.TravelRelatedAddition;
             entity.Candidate.PersonnelManagers.CompetenceAddition = viewModel.CompetenceAddition;
             entity.Candidate.PersonnelManagers.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
+            entity.PyrusNumber = viewModel.PyrusNumber;
 
             if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
             {
@@ -5783,6 +5809,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Candidate.PersonnelManagers.TravelRelatedAddition = viewModel.TravelRelatedAddition;
                         entity.Candidate.PersonnelManagers.CompetenceAddition = viewModel.CompetenceAddition;
                         entity.Candidate.PersonnelManagers.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
+                        entity.PyrusNumber = viewModel.PyrusNumber;
 
                         if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
                         {
@@ -6414,6 +6441,27 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 return "Roster";
             }
+        }
+        /// <summary>
+        /// Считаем итоговую зарплату кандидата.
+        /// </summary>
+        /// <param name="entity">Данные руководителя.</param>
+        /// <returns></returns>
+        protected decimal CalculateCandidateSalary(Managers entity)
+        {
+            decimal SalaryBasis = (entity.SalaryBasis.HasValue ? entity.SalaryBasis.Value : 0);//оклад
+            decimal SalaryMultiplier = (entity.SalaryMultiplier.HasValue ? entity.SalaryMultiplier.Value : 0);//ставка
+            decimal AreaMultiplier = (entity.Candidate.PersonnelManagers.AreaMultiplier.HasValue ? entity.Candidate.PersonnelManagers.AreaMultiplier.Value : 0);//районный коэффициент %
+            decimal PersonalAddition = (entity.Candidate.PersonnelManagers.PersonalAddition.HasValue ? entity.Candidate.PersonnelManagers.PersonalAddition.Value : 0);//Персональная надбавка (руб)
+            decimal AreaAddition = (entity.Candidate.PersonnelManagers.AreaAddition.HasValue ? entity.Candidate.PersonnelManagers.AreaAddition.Value : 0);//Территориальная надбавка (руб)
+            decimal TravelRelatedAddition = (entity.Candidate.PersonnelManagers.TravelRelatedAddition.HasValue ? entity.Candidate.PersonnelManagers.TravelRelatedAddition.Value : 0);//Надбавка за разъездной характер работы (руб)
+            decimal CompetenceAddition = (entity.Candidate.PersonnelManagers.CompetenceAddition.HasValue ? entity.Candidate.PersonnelManagers.CompetenceAddition.Value : 0);//Надбавка за квалификацию (руб)
+            decimal FrontOfficeExperienceAddition = (entity.Candidate.PersonnelManagers.FrontOfficeExperienceAddition.HasValue ? entity.Candidate.PersonnelManagers.FrontOfficeExperienceAddition.Value : 0);//Надбавка за стаж работы специалистом фронт-офиса (руб)
+            decimal NorthernAreaAddition = (entity.Candidate.PersonnelManagers.NorthernAreaAddition.HasValue ? entity.Candidate.PersonnelManagers.NorthernAreaAddition.Value : 0);//северная %
+
+            return (SalaryBasis * SalaryMultiplier + PersonalAddition + AreaAddition + FrontOfficeExperienceAddition + TravelRelatedAddition + CompetenceAddition)
+                     + ((SalaryBasis * SalaryMultiplier + PersonalAddition + AreaAddition + FrontOfficeExperienceAddition + TravelRelatedAddition + CompetenceAddition) * (AreaMultiplier / 100))
+                     + ((SalaryBasis * SalaryMultiplier + PersonalAddition + AreaAddition + FrontOfficeExperienceAddition + TravelRelatedAddition + CompetenceAddition) * (NorthernAreaAddition / 100)); 
         }
 
         public bool IsFixedTermContract(int userId)

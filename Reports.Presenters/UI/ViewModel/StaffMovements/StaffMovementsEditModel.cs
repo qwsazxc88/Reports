@@ -95,6 +95,10 @@ namespace Reports.Presenters.UI.ViewModel
         public string PersonnelManager { get; set; }
         #endregion
         #region Для Руководителя
+        [Display(Name="Оклад")]
+        public Decimal TargetCasing { get; set; }
+        [Display(Name = "Региональный коэффициент")]
+        public Decimal TargetRegion { get; set; }
         [Display(Name = "Ставка")]
         [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal Salary { get; set; }
@@ -105,6 +109,8 @@ namespace Reports.Presenters.UI.ViewModel
         public decimal Casing { get; set; }
         [Display(Name="Условия перевода")]
         public string MovementCondition { get; set; }
+        [Display(Name="Задача в Pyrus")]
+        public string PyrusLink { get; set; }
         public IList<AdditionsDto> ActiveAdditions { get; set; }
         public IList<AdditionsDto> AdditionsToEdit { get; set; }
         /// <summary>

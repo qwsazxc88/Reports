@@ -1548,7 +1548,7 @@ namespace WebMvc.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing | UserRole.Employee | UserRole.OutsourcingManager)]
         public ActionResult GetStaffEstablishmentPostDetails(bool IsSP, int DepartmentId, int UserLinkId)
         {
             string error = String.Empty;
@@ -2389,7 +2389,7 @@ namespace WebMvc.Controllers
         {
             ValidateFileLength(model.PersonalDataProcessingScanFile, "PersonalDataProcessingScanFile", 0.5);
             ValidateFileLength(model.InfoValidityScanFile, "InfoValidityScanFile", 0.5);
-            ValidateFileLength(model.EmploymentFile, "EmploymentFile", 2);
+            ValidateFileLength(model.EmploymentFile, "EmploymentFile", 4);
             ValidateFileLength(model.EmploymentFile, "IsValidate", 2);
 
             if (!model.IsBGDraft)
@@ -2476,6 +2476,18 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError("SalaryMultiplier", "Ставка не может быть больше единицы!");
             }
 
+            //проверка на задачу в пайрусе
+            if (((model.PersonalAddition.HasValue && model.PersonalAddition.Value != 0)
+                || (model.PositionAddition.HasValue && model.PositionAddition.Value != 0)
+                || (model.AreaAddition.HasValue && model.AreaAddition.Value != 0)
+                || (model.TravelRelatedAddition.HasValue && model.TravelRelatedAddition.Value != 0)
+                || (model.CompetenceAddition.HasValue && model.CompetenceAddition.Value != 0)
+                || (model.FrontOfficeExperienceAddition.HasValue && model.FrontOfficeExperienceAddition.Value != 0)) 
+                && (string.IsNullOrEmpty(model.PyrusNumber) || string.IsNullOrWhiteSpace(model.PyrusNumber)))
+            {
+                ModelState.AddModelError("PyrusNumber", "Введите номер задачи в системе Pyrus!");
+            }
+            //model.PyrusNumber;
             
             if (!model.SendTo1C.HasValue)
             {
@@ -2488,7 +2500,7 @@ namespace WebMvc.Controllers
                         if (model.RegistrationDate.Value.Year != DateTime.Today.Year || model.RegistrationDate.Value.Month != DateTime.Today.Month)
                         {
                             //если дата приема стоит прошлым месяцем относительно текущей даты, то можно принять только до 5 числа текущего месяца (Экспресс-Волга до 8 числа)
-                            if (model.RegistrationDate.Value.AddMonths(1).Year == DateTime.Today.Year && model.RegistrationDate.Value.AddMonths(1).Month == DateTime.Today.Month && DateTime.Today.Day > (model.IsVolga ? 8 : 5))
+                            if (model.RegistrationDate.Value.AddMonths(1).Year == DateTime.Today.Year && model.RegistrationDate.Value.AddMonths(1).Month == DateTime.Today.Month && DateTime.Today.Day > 5/*(model.IsVolga ? 8 : 5)*/)
                             {
                                 ModelState.AddModelError("RegistrationDate", "Прием сотрудника в прошлом периоде запрещен!");
                             }

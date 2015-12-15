@@ -42,7 +42,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Уровень подразделения")]
         public int? ItemLevel { get; set; }
 
-        [Display(Name = "Назание структурного подразделения")]
+        [Display(Name = "Название структурного подразделения")]
         public string Name { get; set; }
 
         [Display(Name = "Принадлежность подразделения")]

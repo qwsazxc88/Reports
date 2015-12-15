@@ -19,6 +19,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Constants
         #endregion
         #region Dao
+        protected IStaffMovementsFactDao staffMovementsFactDao;
+        public IStaffMovementsFactDao StaffMovementsFactDao
+        {
+            get { return Validate.Dependency(staffMovementsFactDao); }
+            set { staffMovementsFactDao = value; }
+        }
         protected IStaffEstablishedPostChargeLinksDao staffEstablishedPostChargeLinksDao;
         public IStaffEstablishedPostChargeLinksDao StaffEstablishedPostChargeLinksDao
         {
@@ -134,26 +140,33 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { employmentSignersDao = value; }
         }
         #endregion
-        #region Methods
-        public StaffMovementsEditModel GetEditModel(int id)
+        #region Public Methods
+        #region Реестр факт. кадровых перемещений
+        public StaffMovementsFactListModel GetFactListModel()
         {
-            var model = new StaffMovementsEditModel();
-            if (id == 0)
-            {
-                model.User = new StandartUserDto();
-                model.Creator = new StandartUserDto();
-                SetModelAdditions(model);
-                SetFlagState(model);
-            }
-            else
-            {
-                model.Id = id;
-                SetModel(model);
-            }
-            LoadDictionaries(model);
-
-            return model;
+            return new StaffMovementsFactListModel();
         }
+        public List<StaffMovementsFactDto> GetFactDocuments(StaffMovementsFactListModel model)
+        {
+            var user = UserDao.Load(CurrentUser.Id);
+            var query= QueryCreator.Create<StaffMovementsFact, StaffMovementsFactListModel>(model, user, CurrentUser.UserRole);
+            var data = StaffMovementsFactDao.QueryExpression(query);
+            return data.Select(x => new StaffMovementsFactDto
+            {
+                Id = x.Id,
+                StaffMovementsId = x.StaffMovements.Id,
+                SendTo1C = x.SendTo1C,
+                UserToMove = new StandartUserDto { Id = x.User.Id, Name= x.User.Name },
+                StaffEstablishedPostRequestId = x.StaffEstablishedPostRequest.Id,
+                
+            }).ToList();
+        }
+        #endregion
+        #region Реестр заявок
+        /// <summary>
+        /// Получение вьюмодели для реестра заявок
+        /// </summary>
+        /// <returns></returns>
         public StaffMovementsListModel GetListModel()
         {
             StaffMovementsListModel model = new StaffMovementsListModel();
@@ -163,6 +176,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Status = 0;
             return model;
         }
+        /// <summary>
+        /// Получение документов кодрового перемещения
+        /// </summary>
+        /// <param name="DepartmentId"></param>
+        /// <param name="UserName"></param>
+        /// <param name="Number"></param>
+        /// <param name="Status"></param>
+        /// <returns></returns>
         public IList<StaffMovementsDto> GetDocuments(int DepartmentId, string UserName, int Number, int Status)
         {
             var docs = StaffMovementsDao.GetDocuments(CurrentUser.Id, CurrentUser.UserRole ,DepartmentId, UserName, Number, Status);
@@ -190,6 +211,36 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }).ToList();
             else return new List<StaffMovementsDto>();
         }
+        #endregion
+        #region Редактирование заявок
+        /// <summary>
+        /// Получение вьюмодели для редактирования заявки
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public StaffMovementsEditModel GetEditModel(int id)
+        {
+            var model = new StaffMovementsEditModel();
+            if (id == 0)
+            {
+                model.User = new StandartUserDto();
+                model.Creator = new StandartUserDto();
+                SetModelAdditions(model);
+                SetFlagState(model);
+            }
+            else
+            {
+                model.Id = id;
+                SetModel(model);
+            }
+            LoadDictionaries(model);
+
+            return model;
+        }
+        /// <summary>
+        /// Загрузка модели
+        /// </summary>
+        /// <param name="model"></param>
         public void SetModel(StaffMovementsEditModel model)
         {
             if (model.Id > 0)
@@ -197,7 +248,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 var entity = StaffMovementsDao.Load(model.Id);
                 #region Стандартные поля заявки
 
-                model.UserLinkId = entity.TargetStaffEstablishedPostRequest.Id;                
+                model.UserLinkId = entity.TargetStaffEstablishedPostRequest.Id;
+                GetMoneyForStaffEstablishedPostUserLinks(entity.TargetStaffEstablishedPostRequest, model);
                 model.StatusId = entity.Status.Id;
                 model.Status = entity.Status.Name;
                 model.Creator.Id = entity.Creator.Id;
@@ -246,19 +298,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsTempMoving = entity.IsTempMoving;
                 model.Conjunction = entity.Data.Conjunction;
                 model.MovementCondition = entity.Data.MovementCondition;
+                model.PyrusLink = entity.Data.PyrusLink;
                 #endregion
                 #region Для кадровиков
                 model.TargetCasingType = entity.Data.TargetCasingType;
                 model.RegionCoefficient = entity.Data.RegionCoefficient;
                 model.Grade = entity.Data.Grade;
                 model.HoursType = entity.Data.HoursType!=null?entity.Data.HoursType.Id:0;
-                model.NorthFactor = entity.Data.NorthFactor;
-                model.NorthFactorOrder = entity.Data.NorthFactorOrder;
-                model.NorthFactorAddition = entity.Data.NorthFactorAddition;
-                model.NorthFactorAdditionAction = entity.Data.NorthFactorAdditionAction;
-                model.NorthFactorDay = entity.Data.NorthFactorDay;
-                model.NorthFactorMonth = entity.Data.NorthFactorMonth;
-                model.NorthFactorYear = entity.Data.NorthFactorYear;
+                
                 model.AccessGroup = entity.Data.AccessGroup!=null?entity.Data.AccessGroup.Id:0;
                 #endregion
                 #region Files
@@ -306,6 +353,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadUserData(model.User);
             var usertomove = UserDao.Load(model.User.Id);
             var userlinks=StaffEstablishedPostUserLinksDao.QueryExpression(x=>x.IsUsed && x.User.Id==model.User.Id);
+            var userlink = userlinks.First();
             model.RegionCoefficient = StaffMovementsDao.GetUserRegionCoeff(model.User.Id);
             model.Casing = StaffMovementsDao.GetUserSalary(model.User.Id);
             model.Salary = usertomove.Rate.HasValue?usertomove.Rate.Value:0;
@@ -324,106 +372,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.TargetPositions = GetPositionsForDepartment(model.TargetDepartmentId);
                     model.UserLinkId = userlinks.First().Id;
                     model.UserLinks = GetPositionsForDepartment(model.TargetDepartmentId);
+                    GetMoneyForStaffEstablishedPostUserLinks(userlink, model);
                 }
                 model.Creator = new StandartUserDto();
                 model.Creator.Id = CurrentUser.Id;
                 model.CreateDate = DateTime.Now;
                 LoadUserData(model.Creator);
-                SetFlagState(model);
+                SetFlagState(model);                
                 return;
             }            
             LoadUserData(model.Creator);
             SetFlagState(model);
         }
-        private void SetModelAdditions(StaffMovementsEditModel model)
-        {
-            model.ActiveAdditions = StaffPostChargeLinksDao.QueryExpression(x => x.IsActive && x.Staff.Id==model.User.Id)
-                .Select(x => 
-                    new AdditionsDto { 
-                        Action = x.ExtraChargeActions.Id, 
-                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
-                        guid = x.ExtraCharges.GUID,
-                        Value = x.Salary 
-                    })
-                .ToList();
-            if (model.Id > 0)
-            {
-                model.AdditionsToEdit = StaffPostChargeLinksDao.QueryExpression(x => x.StaffMovements.Id==model.Id)
-                .Select(x =>
-                    new AdditionsDto
-                    {
-                        Action = x.ExtraChargeActions.Id,
-                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
-                        guid = x.ExtraCharges.GUID,
-                        Value = x.Salary
-                    })
-                .ToList();
-            }
-            else
-            {
-                model.AdditionsToEdit = StaffPostChargeLinksDao.QueryExpression(x => x.IsActive && x.Staff.Id == model.User.Id)
-                .Select(x =>
-                    new AdditionsDto
-                    {
-                        Action = x.ExtraChargeActions.Id,
-                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
-                        guid = x.ExtraCharges.GUID,
-                        Value = x.Salary
-                    })
-                .ToList();
-                var charges=StaffExtraChargesDao.LoadAll();
-                foreach (var charge in charges)
-                {
-                    if (!model.AdditionsToEdit.Any(x => x.Type.Id == charge.Id))
-                        model.AdditionsToEdit.Add(new AdditionsDto { Action = 4, Value = 0, Type = new IdNameDto { Id = charge.Id, Name = charge.Name }, guid=charge.GUID });
-                }
-            }
-        }
-        private void LoadDictionaries(StaffMovementsEditModel model)
-        {            
-            var extracharges = ExtraChargesDao.LoadAll();
-            if (extracharges != null && extracharges.Any())
-            {
-                model.NorthFactorOrders = extracharges.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
-            }
-            var HoursTypes = ScheduleDao.LoadAll();
-            if(HoursTypes!=null && HoursTypes.Any())
-            {
-                model.HoursTypes = HoursTypes.Select(x => new IdNameDto { Id=x.Id,Name=x.Name}).ToList();
-            }
-            var AccessGroups = AccessGroupDao.LoadAll();
-            if(AccessGroups!=null && AccessGroups.Any())
-            {
-                model.AccessGroupsList = AccessGroups.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
-            }
-            
-            var RequestTypes = StaffMovementsTypesDao.LoadAll();
-            if (RequestTypes != null && RequestTypes.Any())
-            {
-                model.RequestTypes = RequestTypes.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
-                if (model.Id == 0 && CurrentUser.UserRole == UserRole.Employee)
-                {
-                    model.RequestTypes = model.RequestTypes.Where(x => x.Id != 1).ToList();
-                }
-            }
-            model.NorthFactors = GetNorthExperienceTypes();
-            model.AdditionActions = new List<IdNameDto>();
-            model.AdditionActions.Add(new IdNameDto { Id = 1, Name = "Начать" });
-            model.AdditionActions.Add(new IdNameDto { Id = 2, Name = "Изменить" });
-            model.AdditionActions.Add(new IdNameDto { Id = 3, Name = "Не изменять" });
-            model.AdditionActions.Add(new IdNameDto { Id = 4, Name = "Прекратить" });
-            if (model.TargetDepartmentId > 0)
-            {
-                model.UserLinks = GetPositionsForDepartment(model.TargetDepartmentId);
-                if (model.UserLinks == null) model.UserLinks = new List<IdNameDto>();
-                if ( model.UserLinkId>0 && !model.UserLinks.Any(x => x.Id == model.UserLinkId))
-                {
-                    var link = StaffEstablishedPostUserLinksDao.Load(model.UserLinkId);
-                    model.UserLinks.Add(new IdNameDto { Name= link.StaffEstablishedPost.Position.Name, Id=link.Id});
-                }
-            }
-            else model.UserLinks = new List<IdNameDto>();
-        }
+        /// <summary>
+        /// Сохранение модели
+        /// </summary>
+        /// <param name="model"></param>
         public void SaveModel(StaffMovementsEditModel model)
         {
             StaffMovements entity;
@@ -452,13 +416,184 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             
         }
-        public void SaveDocsModel(StaffMovementsEditModel model)
-        {            
-            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.MaterialLiabilityDoc, y => y.IsRequired = model.MaterialLiabilityDocIsRequired);
-            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.MovementNote, y => y.IsRequired = model.MovementNoteIsRequired);
-            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.RequirementsOrderDoc, y => y.IsRequired = model.RequirementsOrderDocIsRequired);
-            StaffMovementsDocsDao.Update(x =>x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.ServiceOrderDoc, y => y.IsRequired = model.ServiceOrderDocIsRequired);
+       
+        /// <summary>
+        /// Получает должности для подразделения
+        /// </summary>
+        /// <param name="id">ид подразделения</param>
+        /// <returns>список должностей</returns>
+        public IList<IdNameDto> GetPositionsForDepartment(int id)
+        {
+            var positions = StaffEstablishedPostDao.GetStaffEstablishedArrangements(id);
+            if (positions != null && positions.Any())
+            {
+                return positions.Where(x=>x.IsVacation).Select(x => new IdNameDto { Id = x.Id, Name = x.PositionName+" -"+ (x.IsSTD?" СТД ":" ")+x.ReplacedName }).ToList();
+            }
+            else return new List<IdNameDto>();
+            #region depricated
+            /*var users = UserDao.Find(x => (x.Department!=null && x.Department.Id == id && x.Position != null));
+            if (users != null && users.Any())
+            {
+                var positions = users.Select(x => x.Position).Distinct();
+                return (positions!=null && positions.Any())?positions.Select(x=>new IdNameDto { Id=x.Id, Name = x.Name}).ToList():new List<IdNameDto>();
+            }
+            else return new List<IdNameDto>();*/
+            #endregion
+            #region Оставлено до лучших времен(появление штатного рассписания), если не наступят - удалить.
+            //var positions=StaffEstablishedPostRequestDao.Find(x => x.Department.Id == id);
+            //if (positions != null && positions.Any())
+            //{
+            //    return positions.Select(x => new IdNameDto { Id = x.Id, Name = x.Position.Name }).ToList();
+            //}
+            //else return new List<IdNameDto>();       
+            #endregion
         }
+        /// <summary>
+        /// Проверка существования заявки
+        /// </summary>
+        /// <param name="date">Дата перемещения</param>
+        /// <param name="UserId">Сотрудник</param>
+        /// <param name="id">Идентивикатор текущей заявки</param>
+        /// <returns></returns>
+        public bool CheckMovementsExist(DateTime date, int UserId, int id)
+        {
+            var res = StaffMovementsDao.QueryExpression(x => x.MovementDate == date && x.User.Id == UserId && x.Id != id && x.Status.Id != (int)Reports.Core.Enum.StaffMovementsStatus.Canceled);
+            if (res != null && res.Any())
+                return true;
+            else return false;
+        }
+        #endregion
+        #endregion
+        #region Private methods
+        /// <summary>
+        /// Получает руководителя для подразделени\
+        /// </summary>
+        /// <param name="dep">подразделение</param>
+        /// <returns>руководитель</returns>
+        private User GetManagerForDepartment(Department dep)
+        {
+            var managers = DepartmentDao.GetDepartmentManagers(dep.Id, true);
+            if (managers != null && managers.Any())
+            {
+                var level = managers.Max(x => x.Level.Value);
+                managers = managers.Where(x => x.Level.Value == level).ToList();
+                var mainmanager = managers.Where(x => x.IsMainManager);
+                if (mainmanager != null && mainmanager.Any()) return mainmanager.First();
+                else return managers.First();
+            }
+            return null;
+        }
+        /// <summary>
+        /// Получаем список текущих надбавок
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        private List<AdditionsDto> GetUserActualAddition(int userId)
+        {
+            return StaffPostChargeLinksDao.QueryExpression(x => x.IsActive && x.Staff.Id == userId)
+                            .Select(x =>
+                                new AdditionsDto
+                                {
+                                    Action = x.ExtraChargeActions.Id,
+                                    Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
+                                    guid = x.ExtraCharges.GUID,
+                                    Value = x.Salary
+                                })
+                            .ToList();
+        }
+        /// <summary>
+        /// Устанавливаем надбавки
+        /// </summary>
+        /// <param name="model"></param>
+        private void SetModelAdditions(StaffMovementsEditModel model)
+        {
+            model.ActiveAdditions = GetUserActualAddition(model.User.Id);
+            if (model.Id > 0)
+            {
+                model.AdditionsToEdit = StaffPostChargeLinksDao.QueryExpression(x => x.StaffMovements.Id == model.Id)
+                .Select(x =>
+                    new AdditionsDto
+                    {
+                        Action = x.ExtraChargeActions.Id,
+                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
+                        guid = x.ExtraCharges.GUID,
+                        Value = x.Salary
+                    })
+                .ToList();
+            }
+            else
+            {
+                model.AdditionsToEdit = StaffPostChargeLinksDao.QueryExpression(x => x.IsActive && x.Staff.Id == model.User.Id)
+                .Select(x =>
+                    new AdditionsDto
+                    {
+                        Action = x.ExtraChargeActions.Id,
+                        Type = new IdNameDto { Id = x.ExtraCharges.Id, Name = x.ExtraCharges.Name },
+                        guid = x.ExtraCharges.GUID,
+                        Value = x.Salary
+                    })
+                .ToList();
+                var charges = StaffExtraChargesDao.LoadAll();
+                foreach (var charge in charges)
+                {
+                    if (!model.AdditionsToEdit.Any(x => x.Type.Id == charge.Id))
+                        model.AdditionsToEdit.Add(new AdditionsDto { Action = 4, Value = 0, Type = new IdNameDto { Id = charge.Id, Name = charge.Name }, guid = charge.GUID });
+                }
+            }
+        }
+        /// <summary>
+        /// Справочники
+        /// </summary>
+        /// <param name="model"></param>
+        private void LoadDictionaries(StaffMovementsEditModel model)
+        {
+            var extracharges = ExtraChargesDao.LoadAll();
+            if (extracharges != null && extracharges.Any())
+            {
+                model.NorthFactorOrders = extracharges.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            }
+            var HoursTypes = ScheduleDao.LoadAll();
+            if (HoursTypes != null && HoursTypes.Any())
+            {
+                model.HoursTypes = HoursTypes.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            }
+            var AccessGroups = AccessGroupDao.LoadAll();
+            if (AccessGroups != null && AccessGroups.Any())
+            {
+                model.AccessGroupsList = AccessGroups.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            }
+
+            var RequestTypes = StaffMovementsTypesDao.LoadAll();
+            if (RequestTypes != null && RequestTypes.Any())
+            {
+                model.RequestTypes = RequestTypes.Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+                if (model.Id == 0 && CurrentUser.UserRole == UserRole.Employee)
+                {
+                    model.RequestTypes = model.RequestTypes.Where(x => x.Id != 1).ToList();
+                }
+            }
+            model.NorthFactors = GetNorthExperienceTypes();
+            model.AdditionActions = new List<IdNameDto>();
+            model.AdditionActions.Add(new IdNameDto { Id = 1, Name = "Начать" });
+            model.AdditionActions.Add(new IdNameDto { Id = 2, Name = "Изменить" });
+            model.AdditionActions.Add(new IdNameDto { Id = 3, Name = "Не изменять" });
+            model.AdditionActions.Add(new IdNameDto { Id = 4, Name = "Прекратить" });
+            if (model.TargetDepartmentId > 0)
+            {
+                model.UserLinks = GetPositionsForDepartment(model.TargetDepartmentId);
+                if (model.UserLinks == null) model.UserLinks = new List<IdNameDto>();
+                if (model.UserLinkId > 0 && !model.UserLinks.Any(x => x.Id == model.UserLinkId))
+                {
+                    var link = StaffEstablishedPostUserLinksDao.Load(model.UserLinkId);
+                    model.UserLinks.Add(new IdNameDto { Name = link.StaffEstablishedPost.Position.Name, Id = link.Id });
+                }
+            }
+            else model.UserLinks = new List<IdNameDto>();
+        }
+        /// <summary>
+        /// Сохранение файлов
+        /// </summary>
+        /// <param name="model"></param>
         private void SaveFiles(StaffMovementsEditModel model)
         {
             //Сохраняем файлы
@@ -476,6 +611,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             SaveAttachment(ServiceOrderDoc.Id, ServiceOrderDoc.Attachment != null ? ServiceOrderDoc.Attachment.Id : 0, model.ServiceOrderDocDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
             #endregion
         }
+        /// <summary>
+        /// Установка флажков
+        /// </summary>
+        /// <param name="model"></param>
         private void SetFlagState(StaffMovementsEditModel model)
         {
             #region Сначала сбросим все флаги в false
@@ -514,7 +653,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsDepartmentEditable = true;
                     model.IsPositionEditable = true;
                     break;
-                case 3: 
+                case 3:
                     model.IsDepartmentEditable = false;
                     model.IsPositionEditable = true;
                     model.IsTargetManagerAcceptAvailable = true;
@@ -652,15 +791,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsPersonnelVisible = false;
                     model.IsManagerVisible = true;
                     model.IsPersonnelManagerEditable = false; //Редактирование кадровиком
-                    model.IsManagerEditable = model.IsManagerEditable && (model.Id == 0 || (model.TargetManager!=null?model.TargetManager.Id==CurrentUser.Id:false));//Редактирование руководителем, должно быть доступно только принимающему руководителю
+                    model.IsManagerEditable = model.IsManagerEditable && (model.Id == 0 || (model.TargetManager != null ? model.TargetManager.Id == CurrentUser.Id : false));//Редактирование руководителем, должно быть доступно только принимающему руководителю
                     model.IsDocsEditable = false;//Редактирование документов
                     model.IsDocsAddAvailable = model.IsDocsAddAvailable && true;//Добавление документов
-                    
+
                     model.IsUserAcceptAvailable = false; //Утверждение сотрудником
                     model.SendDate = model.SendDate.HasValue ? model.SendDate : DateTime.Now;
                     model.ISRejectAvailable = model.ISRejectAvailable && true; //Отмена
-                    model.IsSourceManagerAcceptAvailable = model.IsSourceManagerAcceptAvailable && model.SourceManager!=null?model.SourceManager.Id==CurrentUser.Id:false;//Утверждение отпускающим руководителем. Должно быть доступно только отпускающему
-                    model.IsTargetManagerAcceptAvailable = model.IsTargetManagerAcceptAvailable && model.TargetManager!=null?model.TargetManager.Id==CurrentUser.Id:false;//Утверждение принимающим руководителем
+                    model.IsSourceManagerAcceptAvailable = model.IsSourceManagerAcceptAvailable && model.SourceManager != null ? model.SourceManager.Id == CurrentUser.Id : false;//Утверждение отпускающим руководителем. Должно быть доступно только отпускающему
+                    model.IsTargetManagerAcceptAvailable = model.IsTargetManagerAcceptAvailable && model.TargetManager != null ? model.TargetManager.Id == CurrentUser.Id : false;//Утверждение принимающим руководителем
                     model.IsPersonnelManagerAcceptAvailable = false;//Утверждение кадровиком
                     model.IsPersonnelManagerBankAcceptAvailable = false;//Утверждение кадровиком банка
                     if (model.TargetManager != null)
@@ -671,7 +810,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else model.IsChiefAcceptAvailable = false;
                     model.IsConfirmButtonAvailable = false;//Кнопка утверждения документов                   
                     model.IsStopButtonAvailable = false;//Конпка приостановки        
-                    model.IsPositionEditable = model.IsPositionEditable && (model.Id==0 || model.IsTargetManagerAcceptAvailable || model.IsSourceManagerAcceptAvailable);
+                    model.IsPositionEditable = model.IsPositionEditable && (model.Id == 0 || model.IsTargetManagerAcceptAvailable || model.IsSourceManagerAcceptAvailable);
                     SetAdditionFlags(model.AdditionsToEdit, CurrentUser.UserRole, model.IsManagerEditable);
                     break;
                 case UserRole.ConsultantPersonnel:
@@ -679,7 +818,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsPersonnelVisible = false;
                     model.IsManagerVisible = true;
                     model.IsPersonnelManagerEditable = false; //Редактирование кадровиком
-                    model.IsManagerEditable = (model.IsPersonnelManagerBankAcceptAvailable ) && true;//Редактирование руководителем, должно быть доступно только принимающему руководителю
+                    model.IsManagerEditable = (model.IsPersonnelManagerBankAcceptAvailable) && true;//Редактирование руководителем, должно быть доступно только принимающему руководителю
                     model.IsDocsEditable = false;//Редактирование документов
                     model.IsDocsAddAvailable = false;//Добавление документов
 
@@ -700,10 +839,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsPersonnelVisible = true;
                     model.IsManagerVisible = true;
                     model.IsPersonnelManagerEditable = model.IsPersonnelManagerEditable && true; //Редактирование кадровиком
-                    model.IsManagerEditable = (model.IsPersonnelManagerEditable|| model.IsManagerEditable) && true;//Редактирование руководителем, должно быть доступно только принимающему руководителю
+                    model.IsManagerEditable = (model.IsPersonnelManagerEditable || model.IsManagerEditable) && true;//Редактирование руководителем, должно быть доступно только принимающему руководителю
                     model.IsDocsEditable = model.IsDocsEditable && true;//Редактирование документов
                     model.IsDocsAddAvailable = model.IsDocsAddAvailable && true;//Добавление документов
-                    
+
                     model.IsUserAcceptAvailable = false; //Утверждение сотрудником
                     model.SendDate = model.SendDate.HasValue ? model.SendDate : DateTime.Now;
                     model.ISRejectAvailable = model.ISRejectAvailable && true; //Отмена
@@ -718,11 +857,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                     SetAdditionFlags(model.AdditionsToEdit, CurrentUser.UserRole, model.IsPersonnelManagerEditable);
                     break;
             }
-            model.IsSaveAvailable = (model.StatusId == 1 && (model.Creator.Id==CurrentUser.Id || model.User.Id==CurrentUser.Id) )  
-                || model.IsManagerEditable 
+            model.IsSaveAvailable = (model.StatusId == 1 && (model.Creator.Id == CurrentUser.Id || model.User.Id == CurrentUser.Id))
+                || model.IsManagerEditable
                 || model.IsPersonnelManagerEditable
                 || model.IsDocsAddAvailable;
         }
+        /// <summary>
+        /// Флаги редактирования надбавок
+        /// </summary>
+        /// <param name="additions">Надбавки</param>
+        /// <param name="role">Роль текущего пользовтеля</param>
+        /// <param name="isEditable">Доступно ли редактирование</param>
         private void SetAdditionFlags(IList<AdditionsDto> additions, UserRole role, bool isEditable)
         {
             var ShowAllToRoles = UserRole.PersonnelManager | UserRole.OutsourcingManager;
@@ -730,50 +875,50 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 switch (element.guid)
                 {
-                        //Районный коэф.
+                    //Районный коэф.
                     case "66f08438-f006-44e8-b9ee-32a8dcf557ba":
                         element.IsEditable = false;
                         break;
-                        //Оклад
+                    //Оклад
                     case "35c7a5dd-d8e9-4aa0-8378-2a7e501d846a":
                         element.IsEditable = false;
                         element.IsVisible = (role & ShowAllToRoles) > 0;
                         break;
-                        //Оклад
+                    //Оклад
                     case "537ff7ed-5e51-48d1-bf5e-4f680cb3e1b7":
                         element.IsEditable = false;
                         element.IsVisible = (role & ShowAllToRoles) > 0;
                         break;
-                        //Северная автомат
+                    //Северная автомат
                     case "1f076cf3-1ebb-11e4-80c8-002590d1e727":
                         element.IsValueEditable = false;
                         element.IsEditable = (role & UserRole.PersonnelManager) > 0 && isEditable;
                         element.IsVisible = (role & ShowAllToRoles) > 0;
                         break;
-                        //Северная руч.
+                    //Северная руч.
                     case "a5ceb324-a745-11de-b733-003048359abd":
                         element.IsValueEditable = false;
                         element.IsEditable = (role & UserRole.PersonnelManager) > 0 && isEditable;
                         element.IsVisible = (role & ShowAllToRoles) > 0;
-                        break; 
-                        //Отпуск по уходу за ребенком без оплаты
+                        break;
+                    //Отпуск по уходу за ребенком без оплаты
                     case "9e6ec242-49f2-4320-a5aa-024c5d607aa3":
                         element.IsEditable = false;
                         element.IsVisible = (role & ShowAllToRoles) > 0;
                         break;
-                        //Пособие по уходу за ребёнком до 1.5 лет#1502
+                    //Пособие по уходу за ребёнком до 1.5 лет#1502
                     case "1671e1b6-0281-489c-b191-50e6fb241e75":
-                        element.IsEditable=false;
+                        element.IsEditable = false;
                         element.IsVisible = (role & ShowAllToRoles) > 0;
                         break;
-                        //Пособие по уходу за ребёнком до 3 лет#1503
+                    //Пособие по уходу за ребёнком до 3 лет#1503
                     case "db5cc88b-4080-4061-8bba-42f22b500bb4":
-                        element.IsEditable=false;
+                        element.IsEditable = false;
                         element.IsVisible = (role & ShowAllToRoles) > 0;
                         break;
-                        //Доплата за совмещение
+                    //Доплата за совмещение
                     case "91a004fc-d13e-11dd-b086-00308d000000":
-                        element.IsEditable=false;
+                        element.IsEditable = false;
                         element.IsVisible = (role & ShowAllToRoles) > 0;
                         break;
                     default:
@@ -806,7 +951,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.CreateDate = model.CreateDate;
                 //Создатель
                 entity.Creator = UserDao.Load(model.Creator.Id);
-                if ((CurrentUser.UserRole & (UserRole.Manager | UserRole.PersonnelManager))>0)
+                if ((CurrentUser.UserRole & (UserRole.Manager | UserRole.PersonnelManager)) > 0)
                 {
                     entity.SendDate = DateTime.Now;
                     if (model.RequestType == 2)
@@ -838,7 +983,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     entity.TargetPosition = entity.SourcePosition;
                     entity.TargetStaffEstablishedPostRequest = entity.SourceStaffEstablishedPostRequest;
-                } 
+                }
                 //Тип заявки
                 entity.Type = StaffMovementsTypesDao.Load(model.RequestType);
                 //Данные заявки, создаём и сохраняем
@@ -846,23 +991,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 StaffMovementsDataDao.SaveAndFlush(entity.Data);
                 //Сохраняем надбавки
                 SaveAdditions(entity, model);
-                
+
                 //Документы, создаём сразу все.
-                var docs=new List<StaffMovementsDocs>();
-                docs.Add(new StaffMovementsDocs { DocType = (int)StaffMovementsDocsTypes.AdditionalAgreementDoc, Request=entity });
+                var docs = new List<StaffMovementsDocs>();
+                docs.Add(new StaffMovementsDocs { DocType = (int)StaffMovementsDocsTypes.AdditionalAgreementDoc, Request = entity });
                 docs.Add(new StaffMovementsDocs { DocType = (int)StaffMovementsDocsTypes.MaterialLiabilityDoc, Request = entity });
                 docs.Add(new StaffMovementsDocs { DocType = (int)StaffMovementsDocsTypes.MovementNote, Request = entity });
                 docs.Add(new StaffMovementsDocs { DocType = (int)StaffMovementsDocsTypes.MovementOrderDoc, Request = entity });
                 docs.Add(new StaffMovementsDocs { DocType = (int)StaffMovementsDocsTypes.RequirementsOrderDoc, Request = entity });
                 docs.Add(new StaffMovementsDocs { DocType = (int)StaffMovementsDocsTypes.ServiceOrderDoc, Request = entity });
-                entity.Docs = docs;                
+                entity.Docs = docs;
             }
             #endregion
-            #region Данные о переводе, заполняет персонаж или руководитель            
+            #region Данные о переводе, заполняет персонаж или руководитель
             if (model.IsDepartmentEditable)
             {
                 if (entity.TargetDepartment != null && entity.TargetDepartment.Id != model.TargetDepartmentId)
-                {                    
+                {
                     entity.TargetManagerAccept = null;
                     entity.TargetChief = null;
                     entity.TargetChiefAccept = null;
@@ -871,13 +1016,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.TargetManager = GetManagerForDepartment(entity.TargetDepartment);
             }
             if (model.IsPositionEditable)
-            {                
+            {
                 entity.TargetStaffEstablishedPostRequest = StaffEstablishedPostUserLinksDao.Load(model.UserLinkId);
                 entity.TargetPosition = entity.TargetStaffEstablishedPostRequest.StaffEstablishedPost.Position;
-            }       
+            }
             #endregion
             #region Общее
-            if (model.StatusId<=1 || model.IsManagerEditable || model.IsPersonnelManagerEditable || model.IsPersonnelManagerBankAcceptAvailable)
+            if (model.StatusId <= 1 || model.IsManagerEditable || model.IsPersonnelManagerEditable || model.IsPersonnelManagerBankAcceptAvailable)
             {
                 entity.MovementDate = model.MovementDate;
                 entity.MovementTempTo = model.MovementTempTo;
@@ -890,25 +1035,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.IsTempMoving = model.IsTempMoving;
                 entity.Data.MovementCondition = model.MovementCondition;//Условие перевода
                 entity.Data.Conjunction = model.Conjunction;
+                entity.Data.PyrusLink = model.PyrusLink;
                 SaveAdditions(entity, model);
             }
             #endregion
             #region Для кадров
             if (model.IsPersonnelManagerEditable)
-            {                
+            {
                 entity.Data.Grade = model.Grade;//Грейд
                 entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
-                entity.Data.NorthFactor = model.NorthFactor;//Северный стаж
-                entity.Data.NorthFactorAddition = model.NorthFactorAddition;
-                entity.Data.NorthFactorYear = model.NorthFactorYear;
-                entity.Data.NorthFactorMonth = model.NorthFactorMonth;
-                entity.Data.NorthFactorDay = model.NorthFactorDay;
-                entity.Data.NorthFactorOrder = model.NorthFactorOrder;
                 entity.Data.AccessGroup = AccessGroupDao.Load(model.AccessGroup);//Группа доступа
-                entity.Data.NorthFactorAdditionAction = model.NorthFactorAdditionAction;
                 //Ставим галочки в документах
                 if (model.IsDocsEditable)
-                {                    
+                {
                     StaffMovementsDocsDao.Update(x => x.Request.Id == entity.Id && x.DocType == (int)StaffMovementsDocsTypes.MaterialLiabilityDoc, y => y.IsRequired = model.MaterialLiabilityDocIsRequired);
                     StaffMovementsDocsDao.Update(x => x.Request.Id == entity.Id && x.DocType == (int)StaffMovementsDocsTypes.MovementNote, y => y.IsRequired = model.MovementNoteIsRequired);
                     StaffMovementsDocsDao.Update(x => x.Request.Id == entity.Id && x.DocType == (int)StaffMovementsDocsTypes.RequirementsOrderDoc, y => y.IsRequired = model.RequirementsOrderDocIsRequired);
@@ -918,7 +1057,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SaveAdditions(entity, model);
             }
             #endregion
-            
+
             #region Согласования, утверждения, отмены и изменение статуса
             switch (model.StatusId)
             {
@@ -994,17 +1133,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.TargetManagerAccept = DateTime.Now;
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
                         entity.TargetStaffEstablishedPostRequest.DocId = entity.Id;
-                        entity.TargetStaffEstablishedPostRequest.ReserveType =(int) StaffReserveTypeEnum.StaffMovements;                        
+                        entity.TargetStaffEstablishedPostRequest.ReserveType = (int)StaffReserveTypeEnum.StaffMovements;
                     }
                     break;
-                case 4:                    
+                case 4:
                 case 5:
                     if (model.IsStopButtonAvailable && model.IsStopButtonPressed)
                     {
                         //Если нажали кнопку приостановки согласования
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Blocked);
                         //Тут еще нужно отправить письмо с угрозами руководителям и сотруднику
-                    }                    
+                    }
                     if (model.ISRejectAvailable && model.IsRejectButtonPressed)
                     {
                         //Если нажали кнопку отказа, то отказ и всё поезд ушёл.
@@ -1015,7 +1154,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Canceled);
                     }
                     if (model.IsPersonnelManagerBankAcceptAvailable && model.IsAcceptButtonPressed)
-                    { 
+                    {
                         //Если согласовано кадровиком банка
                         entity.PersonnelManagerBank = UserDao.Load(CurrentUser.Id);
                         entity.PersonnelManagerBankAccept = DateTime.Now;
@@ -1033,7 +1172,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Canceled);
                     }
                     if (model.IsChiefAcceptAvailable && model.IsAcceptButtonPressed)
-                    { 
+                    {
                         //Если согласовано вышестоящим руководителем
                         entity.TargetChief = UserDao.Load(CurrentUser.Id);
                         entity.TargetChiefAccept = DateTime.Now;
@@ -1074,7 +1213,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         if (doc.IsRequired && doc.Attachment == null) accept = false;
                     }
-                    if(accept) entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.DocsApproved);
+                    if (accept) entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.DocsApproved);
                     break;
                 case 9:
                     //Проверяем все документы, если у обязательного документа нет вложения - нужно вернутся обратно
@@ -1108,11 +1247,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             #endregion
         }
+        /// <summary>
+        /// Сохранение надвбавок
+        /// </summary>
+        /// <param name="entity">сущность</param>
+        /// <param name="model">модель</param>
         private void SaveAdditions(StaffMovements entity, StaffMovementsEditModel model)
-        {            
+        {
             foreach (var addition in model.AdditionsToEdit)
             {
-                if (!entity.Additions.Any(x => x.ExtraCharges!=null && x.ExtraCharges.Id == addition.Type.Id))
+                if (!entity.Additions.Any(x => x.ExtraCharges != null && x.ExtraCharges.Id == addition.Type.Id))
                 {
                     entity.Additions.Add(new StaffPostChargeLinks
                     {
@@ -1151,35 +1295,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.PersonnelManagerAccept = null;
         }
         /// <summary>
-        /// Получает должности для подразделения
+        /// Получение оклада и районного коэф.
         /// </summary>
-        /// <param name="id">ид подразделения</param>
-        /// <returns>список должностей</returns>
-        public IList<IdNameDto> GetPositionsForDepartment(int id)
+        /// <param name="request"></param>
+        /// <param name="Salary"></param>
+        /// <param name="Region"></param>
+        private void GetMoneyForStaffEstablishedPostUserLinks(StaffEstablishedPostUserLinks request, StaffMovementsEditModel model)
         {
-            var positions = StaffEstablishedPostDao.GetStaffEstablishedArrangements(id);
-            if (positions != null && positions.Any())
+            model.TargetCasing = request.StaffEstablishedPost.Salary;
+            var charges = request.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges != null && x.ExtraCharges.Id == 6).ToList();
+            if (charges != null && charges.Any())
             {
-                return positions.Select(x => new IdNameDto { Id = x.Id, Name = x.PositionName }).ToList();
+                var charge = charges.First();
+                model.TargetRegion = charge.Amount.HasValue? charge.Amount.Value:0;
             }
-            else return new List<IdNameDto>();
-            #region depricated
-            /*var users = UserDao.Find(x => (x.Department!=null && x.Department.Id == id && x.Position != null));
-            if (users != null && users.Any())
-            {
-                var positions = users.Select(x => x.Position).Distinct();
-                return (positions!=null && positions.Any())?positions.Select(x=>new IdNameDto { Id=x.Id, Name = x.Name}).ToList():new List<IdNameDto>();
-            }
-            else return new List<IdNameDto>();*/
-            #endregion
-            #region Оставлено до лучших времен(появление штатного рассписания), если не наступят - удалить.
-            //var positions=StaffEstablishedPostRequestDao.Find(x => x.Department.Id == id);
-            //if (positions != null && positions.Any())
-            //{
-            //    return positions.Select(x => new IdNameDto { Id = x.Id, Name = x.Position.Name }).ToList();
-            //}
-            //else return new List<IdNameDto>();       
-            #endregion
         }
         #endregion
         #region Files
@@ -1236,83 +1365,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             return true;
         }
         #endregion
-        #region Dictionaries
-        public static string[] GetAgreementEntriesTemplate(string entry)
-        {
-            Dictionary<string, string[]> Entries = new Dictionary<string, string[]>();
-            //пункт 1.2
-            string[] entry1_2 = new string[] 
-            {
-                "Работник переводится, с его согласия, с должности {{SourcePosition}} {{SourceDepartment}} на должность {{TargetPosition}} {{TargetDepartment}} с {{MovementDate}} г. ",
-                "Работник переводится, с его согласия, с должности {{SourcePosition}} {{SourceDepartment}} на должность {{TargetPosition}} {{TargetDepartment}} с {{MovementDate}} г. временно, {{Field}} ",
-                "Работник переводится, с его согласия,  с временной должности {{SourcePosition}} {{Field}} {{SourceDepartment}} на постоянную должность {{TargetPosition}} {{TargetDepartment}} с {{MovementDate}} г.",
-                "Не выбран"
-            };
-            Entries.Add("1_2", entry1_2);
-            //Пункт 1.6
-            string[] entry1_6 = new string[] 
-            {
-                "Фактическое место работы Работника: {{Field}}",
-                "Не выбран"
-            };
-            Entries.Add("1_6", entry1_6);
-            //Пункт 2.2.1
-            string[] entry2_2_1 = new string[] 
-            {
-                "Должностные обязанности изменяются согласно должностной инструкции {{TargetPosition}} {{TargetDepartment}}",
-                "Не выбран"
-            };
-            Entries.Add("2_2_1", entry2_2_1);
-            //Пункт 4_2
-            string[] entry4_2 = new string[] 
-            {
-                "РАБОТНИКУ устанавливается c {{MovementDate}} г. "+Environment.NewLine+"- базовый должностной оклад в размере {{TargetSalary}} рублей в месяц {0}",
-                "РАБОТНИКУ устанавливается c {{MovementDate}} г. "+Environment.NewLine+"- базовый должностной оклад в размере {{TargetSalary}} рублей в месяц {0}"+Environment.NewLine+"Оплата труда производится пропорционально отработанному времени, исходя из оклада, что составляет {{Field}} рублей в месяц",
-                "Не выбран"
-            };
-            Entries.Add("4_2", entry4_2);
-            //Пункт 5.1
-            string[] entry5_1 = new string[] 
-            {
-                "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 8 часов.",
-                "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период квартал.",
-                "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период 1 календарный год.",
-                "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 4 часа.",
-                "{{Field}}",
-                "Не выбран"
-            };
-            Entries.Add("5_1", entry5_1);
-            return Entries[entry];
-        }
-        public IList<IdNameDto> GetNorthExperienceTypes()
-        {
-            IList<IdNameDto> inDto = new List<IdNameDto> { };
 
-            inDto.Add(new IdNameDto { Id = 1, Name = "Сотруднику не полагается северная надбавка" });
-            inDto.Add(new IdNameDto { Id = 2, Name = "Северный стаж сотрудника отсутствует, начать начисление стажа с даты приема" });
-            inDto.Add(new IdNameDto { Id = 3, Name = "Северный стаж у сотрудника имеется, указать количество северного стажа" });
 
-            return inDto;
-        }
-        /// <summary>
-        /// Получает руководителя для подразделени\
-        /// </summary>
-        /// <param name="dep">подразделение</param>
-        /// <returns>руководитель</returns>
-        public User GetManagerForDepartment(Department dep)
-        {
-            var managers=DepartmentDao.GetDepartmentManagers(dep.Id,true);
-            if (managers != null && managers.Any())
-            {
-                var level=managers.Max(x => x.Level.Value);
-                managers = managers.Where(x => x.Level.Value == level).ToList();
-                var mainmanager = managers.Where(x => x.IsMainManager);
-                if (mainmanager != null && mainmanager.Any()) return mainmanager.First();
-                else return managers.First();
-            }
-            return null;
-        }
-        #endregion
+        #region DEPRECATED CODE TO DELETE
         //Deprecated Временно не печатаем документы отсюда
         /*public StaffMovementsPrintModel GetPrintModel(int id)
         {
@@ -1444,13 +1499,75 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.HoursType = entity.Data.HoursType!=null? entity.Data.HoursType.Name:"";
             return model;
         }*/
-        public bool CheckMovementsExist(DateTime date, int UserId, int id)
+        /// <summary>
+        /// Сохранение модели документов. DEPRECATED
+        /// </summary>
+        /// <param name="model"></param>
+        public void SaveDocsModel(StaffMovementsEditModel model)
         {
-            var res= StaffMovementsDao.QueryExpression(x => x.MovementDate == date && x.User.Id == UserId && x.Id != id && x.Status.Id != (int)Reports.Core.Enum.StaffMovementsStatus.Canceled);
-            if (res != null && res.Any())
-                return true;
-            else return false;
+            StaffMovementsDocsDao.Update(x => x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.MaterialLiabilityDoc, y => y.IsRequired = model.MaterialLiabilityDocIsRequired);
+            StaffMovementsDocsDao.Update(x => x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.MovementNote, y => y.IsRequired = model.MovementNoteIsRequired);
+            StaffMovementsDocsDao.Update(x => x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.RequirementsOrderDoc, y => y.IsRequired = model.RequirementsOrderDocIsRequired);
+            StaffMovementsDocsDao.Update(x => x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.ServiceOrderDoc, y => y.IsRequired = model.ServiceOrderDocIsRequired);
         }
+        public static string[] GetAgreementEntriesTemplate(string entry)
+        {
+            Dictionary<string, string[]> Entries = new Dictionary<string, string[]>();
+            //пункт 1.2
+            string[] entry1_2 = new string[] 
+            {
+                "Работник переводится, с его согласия, с должности {{SourcePosition}} {{SourceDepartment}} на должность {{TargetPosition}} {{TargetDepartment}} с {{MovementDate}} г. ",
+                "Работник переводится, с его согласия, с должности {{SourcePosition}} {{SourceDepartment}} на должность {{TargetPosition}} {{TargetDepartment}} с {{MovementDate}} г. временно, {{Field}} ",
+                "Работник переводится, с его согласия,  с временной должности {{SourcePosition}} {{Field}} {{SourceDepartment}} на постоянную должность {{TargetPosition}} {{TargetDepartment}} с {{MovementDate}} г.",
+                "Не выбран"
+            };
+            Entries.Add("1_2", entry1_2);
+            //Пункт 1.6
+            string[] entry1_6 = new string[] 
+            {
+                "Фактическое место работы Работника: {{Field}}",
+                "Не выбран"
+            };
+            Entries.Add("1_6", entry1_6);
+            //Пункт 2.2.1
+            string[] entry2_2_1 = new string[] 
+            {
+                "Должностные обязанности изменяются согласно должностной инструкции {{TargetPosition}} {{TargetDepartment}}",
+                "Не выбран"
+            };
+            Entries.Add("2_2_1", entry2_2_1);
+            //Пункт 4_2
+            string[] entry4_2 = new string[] 
+            {
+                "РАБОТНИКУ устанавливается c {{MovementDate}} г. "+Environment.NewLine+"- базовый должностной оклад в размере {{TargetSalary}} рублей в месяц {0}",
+                "РАБОТНИКУ устанавливается c {{MovementDate}} г. "+Environment.NewLine+"- базовый должностной оклад в размере {{TargetSalary}} рублей в месяц {0}"+Environment.NewLine+"Оплата труда производится пропорционально отработанному времени, исходя из оклада, что составляет {{Field}} рублей в месяц",
+                "Не выбран"
+            };
+            Entries.Add("4_2", entry4_2);
+            //Пункт 5.1
+            string[] entry5_1 = new string[] 
+            {
+                "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 8 часов.",
+                "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период квартал.",
+                "РАБОТНИКУ устанавливается следующий режим рабочего времени: рабочая неделя с предоставлением выходных дней по скользящему графику с суммированным учетом рабочего времени за учетный период 1 календарный год.",
+                "РАБОТНИКУ устанавливается следующий режим рабочего времени: пятидневная рабочая неделя с двумя выходными днями, продолжительность ежедневной работы 4 часа.",
+                "{{Field}}",
+                "Не выбран"
+            };
+            Entries.Add("5_1", entry5_1);
+            return Entries[entry];
+        }
+        public IList<IdNameDto> GetNorthExperienceTypes()
+        {
+            IList<IdNameDto> inDto = new List<IdNameDto> { };
+
+            inDto.Add(new IdNameDto { Id = 1, Name = "Сотруднику не полагается северная надбавка" });
+            inDto.Add(new IdNameDto { Id = 2, Name = "Северный стаж сотрудника отсутствует, начать начисление стажа с даты приема" });
+            inDto.Add(new IdNameDto { Id = 3, Name = "Северный стаж у сотрудника имеется, указать количество северного стажа" });
+
+            return inDto;
+        }
+        #endregion
     }
 }
 

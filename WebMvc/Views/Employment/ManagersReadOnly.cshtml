@@ -115,7 +115,7 @@
                 <div class="portlet-header">Персональные надбавки</div>
                 <div id="DivAdditional" class="portlet-content">
                     <table>
-                        <tr><td colspan="2" style="background-color:#FFCCCC;">Персональная надбавка согласовывается УКДиУ и Заместителем председателя правления банка.</td></tr>
+                        <tr><td colspan="2" style="background-color:#FFCCCC;">Персональные(ная) надбавки(а) должны быть согласованы в системе Pyrus.</td></tr>
                         <tr>
                             <td>@Html.LabelFor(m => m.PersonalAddition)</td>
                             <td>@Html.TextBoxFor(m => m.PersonalAddition, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.PersonalAddition)</td>
@@ -136,14 +136,34 @@
                             <td>@Html.LabelFor(m => m.FrontOfficeExperienceAddition)</td>
                             <td>@Html.TextBoxFor(m => m.FrontOfficeExperienceAddition, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.FrontOfficeExperienceAddition)</td>
                         </tr>
+                        @if (Model.IsConsultant && !string.IsNullOrEmpty(Model.PyrusNumber) && !string.IsNullOrWhiteSpace(Model.PyrusNumber))
+                        {
+                            <tr>
+                                <td>@Html.LabelFor(m => m.PyrusNumber)</td>
+                                <td>@Html.TextBoxFor(m => m.PyrusNumber, new { @class = "calc" })&nbsp;@Html.ValidationMessageFor(m => m.PyrusNumber)</td>
+                            </tr>
+                        }
                         <tr>
-                            <td colspan="2">
-                                <button type="button" style="float:right;">Согласовать</button>
-                            </td>
+                            @if (!string.IsNullOrEmpty(Model.PyrusNumber) && !string.IsNullOrWhiteSpace(Model.PyrusNumber))
+                            {
+                                <td colspan="2">
+                                    <a href="@("https://pyrus.com/t#id" + Model.PyrusNumber)" target="_blank">Задача в системе Pyrus</a><br />
+                                </td>
+                            }
+                            else
+                            {
+                                <td>@Html.LabelFor(m => m.PyrusNumber)</td>
+                                <td>@Html.TextBoxFor(m => m.PyrusNumber, new { @class = "calc" })&nbsp;@Html.ValidationMessageFor(m => m.PyrusNumber)</td>
+                            }
                         </tr>
                     </table>
+                    <a href="https://pyrus.com/" target="_blank">Для создания задачи перейдите по ссылке</a>
                 </div>
             </div>
+        </div>
+
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.SalaryTotal)&nbsp;@Html.DisplayFor(m => m.SalaryTotal)
         </div>
 
         @*

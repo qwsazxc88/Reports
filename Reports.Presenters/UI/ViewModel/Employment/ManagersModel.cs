@@ -93,6 +93,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "ФИО наставника")]
         public string MentorName { get; set; }
 
+
         public bool IsApproveByManagerAvailable { get; set; }
         public bool IsApproveByHigherManagerAvailable { get; set; }
 
@@ -120,6 +121,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int UserLinkId { get; set; }
         public IList<IdNameDto> PostUserLinks { get; set; }
 
+
+
         #region Надбавки
         //только для чтения
         [Display(Name = "Районный коэффициент (%)")]
@@ -142,6 +145,14 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Надбавка за стаж работы специалистом фронт-офиса (руб)")]
         public decimal? FrontOfficeExperienceAddition { get; set; }
+
+        [Display(Name = "Итого оплата труда (руб)")]
+        public string SalaryTotal { get; set; }
+
+        [Display(Name = "Укажите номер задачи в системе Pyrus")]
+        public string PyrusNumber { get; set; }
+
+        public bool IsConsultant { get; set; }  //признак консультанта у текущего пользователя
         #endregion
 
         public ManagersModel()

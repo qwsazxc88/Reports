@@ -12,14 +12,8 @@
     <property name="RegionCoefficient" not-null="false"/>
     <!--Грейд-->
     <property name="Grade" not-null="false"/>
-    <!--Северный стаж-->
-    <property name="NorthFactor" not-null="false"/>
-    <property name="NorthFactorOrder" not-null="false"/>
-    <property name="NorthFactorYear" not-null="false"/>
-    <property name="NorthFactorMonth" not-null="false"/>
-    <property name="NorthFactorDay" not-null="false"/>
-    <property name="NorthFactorAddition" not-null="false"/>
-    <property name="NorthFactorAdditionAction" not-null="false"/>
+    
+    <property name="PyrusLink" not-null="false"/>
     <!--Причина перевода-->
     <property name="MovementReason" not-null="false"/>
     <!--Условия перевода-->

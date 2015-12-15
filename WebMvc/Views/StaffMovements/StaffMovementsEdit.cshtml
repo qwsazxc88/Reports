@@ -338,7 +338,15 @@
                           {
                           <div id="tabs-2">
                           <fieldset class="bordered doc-wrap-blue panel">
-                          <table>                            
+                          <table>            
+                           <tr>
+                            <td>@Html.LabelFor(m=>m.TargetCasing)</td>
+                            <td>@Html.TextBoxFor(m => m.TargetCasing, new { disabled="disabled" })</td>
+                           </tr> 
+                           <tr>
+                            <td>@Html.LabelFor(m=>m.TargetRegion)</td>
+                            <td>@Html.TextBoxFor(m => m.TargetRegion, new { disabled = "disabled" })</td>
+                           </tr>               
                             <tr>
                                     <td>
                                     <div id="IsTempMovingContainer" class="formfield clear">
@@ -401,6 +409,15 @@
                                 <tr>
                                     <td>@Html.LabelFor(m => m.HoursType)</td>
                                     <td>@Html.DropDownListFor(m => m.HoursType, new SelectList(Model.HoursTypes, "Id", "Name"), Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                </tr>
+                                <tr>
+                                <td>
+                                @Html.LabelFor(m=>m.PyrusLink) 
+                                </td>
+                                <td>
+                                @Html.TextBoxFor(m => m.PyrusLink, Model.IsManagerEditable ? null : (object)new { disabled="disabled"})
+                                <a href="https://pyrus.com/" target="_blank">Для создания задачи перейдите по ссылке</a>
+                                </td>
                                 </tr>
                             <tr>    
                                 <td colspan="2">Надбавки
@@ -729,6 +746,13 @@ label { font-size:1.1em; }
         
         @if (Model.IsManagerEditable)
         {<text>
+            clearControlErrors($("#PyrusLink"));
+            if($("#PyrusLink").val() == '')
+            {
+                addControlError($("#PyrusLink"),'Необходимо создать задачу в Pyrus');
+                addControlError($("#JSError"),'Необходимо создать задачу в Pyrus');
+                result = false;
+            }
             clearControlErrors($("#MovementDate"));
             if($("#MovementDate").val() == '')
             {
@@ -794,7 +818,15 @@ label { font-size:1.1em; }
         {
             $('.M_TargetPositionName').text($("select[name^='UserLinkId'] option:selected").text());
         });
-        
+        $('#UserLinkId').change(function(){
+            $.ajax({
+              type: "POST",
+              url: '/Employment/GetStaffEstablishmentPostDetails',
+              data: { IsSP:false, DepartmentId:$('#TargetDepartmentId').val(),UserLinkId:$('#UserLinkId').val()},
+              success: function(data){ $('#TargetCasing').val(data.SalaryBasis);$('#TargetRegion').val(data.AreaMultiplier);}
+              
+            });
+        });
         $('#IsHourlyContainer').buttonset(@if (!Model.IsPersonnelManagerEditable)
                                           {<text>{disabled: true}</text>});
         $('#IsTempMovingContainer').buttonset(@if (!Model.IsManagerEditable)
