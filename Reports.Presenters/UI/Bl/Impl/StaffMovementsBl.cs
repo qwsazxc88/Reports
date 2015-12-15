@@ -305,13 +305,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.RegionCoefficient = entity.Data.RegionCoefficient;
                 model.Grade = entity.Data.Grade;
                 model.HoursType = entity.Data.HoursType!=null?entity.Data.HoursType.Id:0;
-                model.NorthFactor = entity.Data.NorthFactor;
-                model.NorthFactorOrder = entity.Data.NorthFactorOrder;
-                model.NorthFactorAddition = entity.Data.NorthFactorAddition;
-                model.NorthFactorAdditionAction = entity.Data.NorthFactorAdditionAction;
-                model.NorthFactorDay = entity.Data.NorthFactorDay;
-                model.NorthFactorMonth = entity.Data.NorthFactorMonth;
-                model.NorthFactorYear = entity.Data.NorthFactorYear;
+                
                 model.AccessGroup = entity.Data.AccessGroup!=null?entity.Data.AccessGroup.Id:0;
                 #endregion
                 #region Files
@@ -1050,14 +1044,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.Data.Grade = model.Grade;//Грейд
                 entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
-                entity.Data.NorthFactor = model.NorthFactor;//Северный стаж
-                entity.Data.NorthFactorAddition = model.NorthFactorAddition;
-                entity.Data.NorthFactorYear = model.NorthFactorYear;
-                entity.Data.NorthFactorMonth = model.NorthFactorMonth;
-                entity.Data.NorthFactorDay = model.NorthFactorDay;
-                entity.Data.NorthFactorOrder = model.NorthFactorOrder;
                 entity.Data.AccessGroup = AccessGroupDao.Load(model.AccessGroup);//Группа доступа
-                entity.Data.NorthFactorAdditionAction = model.NorthFactorAdditionAction;
                 //Ставим галочки в документах
                 if (model.IsDocsEditable)
                 {
