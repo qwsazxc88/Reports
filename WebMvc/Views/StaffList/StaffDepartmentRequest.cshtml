@@ -968,7 +968,7 @@
                                 @Html.LabelFor(m => m.PyrusNumber)
                                 @Html.TextBoxFor(m => m.PyrusNumber, Model.IsAgreeButtonAvailable ? (object)new { style = "width:100px;" } : (object)new { style = "width:100px;", disabled = "disabled" })
                             </td>
-                            <td></td>
+                            <td><a href='@Model.InitiatorPyrusRef' target="_blank">@Model.InitiatorPyrusName</a></td>
                             <td>
                                 @Html.LabelFor(m => m.IsInitiatorApprove)
                                 @Html.HiddenFor(m => m.IsInitiatorApprove)
@@ -984,12 +984,10 @@
                                 {
                                     @Html.HiddenFor(m => m.InitiatorId)
                                 }
-                                <br />
-                                <a href='@Model.InitiatorPyrusRef' target="_blank">@Model.InitiatorPyrusName</a>
                             </td>
                         </tr>
                         <tr>
-                            <td></td>
+                            <td><a href='@Model.CuratorPyrusRef' target="_blank">@Model.CuratorPyrusName</a></td>
                             <td>
                                 @Html.LabelFor(m => m.IsCuratorApprove)
                                 @Html.HiddenFor(m => m.IsCuratorApprove)
@@ -997,12 +995,10 @@
                             <td>@Html.CheckBoxFor(m => m.IsCuratorApprove, (object)new { disabled = "disabled" })</td>
                             <td>
                                 @Html.DisplayFor(m => m.CuratorApproveName)
-                                <br />
-                                <a href='@Model.CuratorPyrusRef' target="_blank">@Model.CuratorPyrusName</a>
                             </td>
                         </tr>
                         <tr>
-                            <td></td>
+                            <td><a href='@Model.PersonnelBankPyrusRef' target="_blank">@Model.PersonnelBankPyrusName</a></td>
                             <td>
                                 @Html.LabelFor(m => m.IsPersonnelBankApprove)
                                 @Html.HiddenFor(m => m.IsPersonnelBankApprove)
@@ -1010,12 +1006,10 @@
                             <td>@Html.CheckBoxFor(m => m.IsPersonnelBankApprove, (object)new { disabled = "disabled" })</td>
                             <td>
                                 @Html.DisplayFor(m => m.PersonnelBankApproveName)
-                                <br />
-                                <a href='@Model.PersonnelBankPyrusRef' target="_blank">@Model.PersonnelBankPyrusName</a>
                             </td>
                         </tr>
                         <tr>
-                            <td></td>
+                            <td><a href='@Model.TopManagerPyrusRef' target="_blank">@Model.TopManagerPyrusName</a></td>
                             <td>
                                 @Html.LabelFor(m => m.IsTopManagerApprove)
                                 @Html.HiddenFor(m => m.IsTopManagerApprove)
@@ -1028,12 +1022,10 @@
                                 {
                                     @Html.DropDownListFor(m => m.TopManagerId, new SelectList(Model.TopManagers, "ID", "Name"), !Model.IsTopManagerApproveAvailable ? (object)new { disabled = "disabled" } : null)
                                 }
-                                <br />
-                                <a href='@Model.TopManagerPyrusRef' target="_blank">@Model.TopManagerPyrusName</a>
                             </td>
                         </tr>
                         <tr>
-                            <td></td>
+                            <td><a href='@Model.BoardMemberPyrusRef' target="_blank">@Model.BoardMemberPyrusName</a></td>
                             <td>
                                 @Html.LabelFor(m => m.IsBoardMemberApprove)
                                 @Html.HiddenFor(m => m.IsBoardMemberApprove)
@@ -1041,13 +1033,10 @@
                             <td>@Html.CheckBoxFor(m => m.IsBoardMemberApprove, (object)new { disabled = "disabled" })</td>
                             <td>
                                 @Html.DisplayFor(m => m.BoardMemberApproveName)
-                                @*@Html.HiddenFor(m => m.BoardMemberId)*@
                                 @if (Model.IsBoardMemberApproveAvailable && (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant))
                                 {
                                     @Html.DropDownListFor(m => m.BoardMemberId, new SelectList(Model.BoardMembers, "ID", "Name"), !Model.IsBoardMemberApproveAvailable ? (object)new { disabled = "disabled" } : null)
                                 }
-                                <br />
-                                <a href='@Model.BoardMemberPyrusRef' target="_blank">@Model.BoardMemberPyrusName</a>
                             </td>
                         </tr>
                     </table>
