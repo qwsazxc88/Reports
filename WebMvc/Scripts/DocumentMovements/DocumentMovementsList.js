@@ -1,7 +1,6 @@
 ﻿console.log('DocumentMovementsList module loading...');
 var GridApi=undefined;
 var Application = angular.module('DocumentMovementsList', ['ServiceModule', 'ui.grid', 'ui.grid.edit', 'ui.grid.autoResize', 'ui.grid.expandable', 'ui.grid.grouping', 'ui.grid.resizeColumns']);
-
 Application.controller('DocumentMovementsListController', function ($scope, $http, $filter, dataService, i18nService, $timeout, $window) {
     this.scope = $scope;
     //i18nService.setCurrentLang('ru');
@@ -23,27 +22,56 @@ Application.controller('DocumentMovementsListController', function ($scope, $htt
             IsGridEditable: data.IsGridEditable,
             DocTypeFilter: $scope.RowFilter
         };
+        $scope.CustomFilter = function (renderableRows) {
+            var value = $scope.RowFilter.DocumentName ? $scope.RowFilter.DocumentName.toLowerCase() : "";
+
+            renderableRows.forEach(function (row) {
+                var match = false;
+                row.entity.subGridOptions.data.forEach(function (field) {
+                    var val = field.DocumentName;
+
+                    if (val.toLowerCase().indexOf(value) > -1) {
+                        match = true;
+                    }
+                });
+                if (!match) {
+                    row.visible = false;
+                }
+            });
+            return renderableRows;
+        };
+        $scope.$watch(
+        // This function returns the value being watched. It is called for each turn of the $digest loop
+            function () { return $scope.RowFilter.DocumentName; },
+        // This is the change listener, called when the value returned from the above function changes
+            function (newValue, oldValue) {
+                if (newValue != oldValue) {
+                    // Only increment the counter if the value changed
+                    if ($scope.gridApi) {
+                        if (data.data) {
+                            $('#changes-height').height((data.data.length + 1) * 30); $scope.gridApi.core.handleWindowResize();
+                        }
+                        $scope.gridApi.grid.refresh(); $scope.gridApi.core.handleWindowResize(); $('#changes-height').height('auto');
+                    }
+                }
+            }
+            );
         data.onRegisterApi = function (gridApi) {
             if (gridApi != undefined) {
                 $scope.gridApi = gridApi;
                 $scope.gridApi.core.handleWindowResize();
-                console.log($scope.gridApi);
-                $('#changes-height').height('auto');
+                $scope.gridApi.grid.registerRowsProcessor($scope.CustomFilter, 110);
             }
         };
         $scope.GridOptions = data;
         if ($scope.gridApi != undefined) {
             $scope.gridApi.core.handleWindowResize(); $('#changes-height').height('auto');
-            console.log($scope.gridApi);
         }
     }
     $scope.OnError = function (message) { alert(message); $scope.IsWorking = false; }
     $scope.IsWorking = false;
     $scope.SetDocuments({});
-    $scope.GridOptions.onRegisterApi = function (gridApi) {
-        $scope.gridApi = gridApi;
-        $scope.gridApi.expandable.expandAllRows();
-    };
+
     $scope.toggleRow = function (row) {
         $scope.gridApi.expandable.toggleRowExpansion(row);
     }
@@ -56,6 +84,7 @@ Application.controller('DocumentMovementsListController', function ($scope, $htt
     }
     $scope.GetData = function () {
         $scope.IsWorking = true;
+        $scope.Model.DepartmentId = $('#DepartmentId').val();
         var promise = dataService.PostPromise('/DocumentMovements/DocumentMovementsListJson', $scope.Model);
         promise.then($scope.SetDocuments);
     }

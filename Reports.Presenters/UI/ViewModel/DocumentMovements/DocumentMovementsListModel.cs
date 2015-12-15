@@ -21,6 +21,10 @@ namespace Reports.Presenters.UI.ViewModel
         }
         public bool IsSaveAvailable { get; set; }
         public bool IsAddAvailable { get; set; }
+        public List<IdNameDto> DocTypes { get; set; }
+        [Display(Name="Тип документа")]
+        
+        public int DocType { get; set; }
         public IList<IdNameDto> Statuses { get; set; }
         [SearchField(Comparer = ComparerEnum.Equals, ModelParam = "StatusId", IgnoreValue = 0)]
         [Display(Name = "Статус")]
@@ -37,9 +41,11 @@ namespace Reports.Presenters.UI.ViewModel
         [SearchField(Comparer = ComparerEnum.Equals, ModelParam = "Id",IsNullable=true)]
         [Display(Name = "Номер заявки")]
         public int? Number { get; set; }
+
+        [SearchField(Comparer = ComparerEnum.EqualsOrGreatar, ModelParam = "SendDate")]
         [Display(Name = "С")]
         public DateTime? BeginDate { get; set; }
-        [SearchField(Comparer = ComparerEnum.EqualsOrLess, ModelParam = "ContinueDate")]
+        [SearchField(Comparer = ComparerEnum.EqualsOrLess, ModelParam = "SendDate")]
         [Display(Name = "по")]
         public DateTime? EndDate { get; set; }
         [SearchField(Comparer = ComparerEnum.Department, ModelParam = "User.Department", IgnoreValue = 0)]
