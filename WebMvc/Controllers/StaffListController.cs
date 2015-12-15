@@ -1102,7 +1102,7 @@ namespace WebMvc.Controllers
             //для налоговиков при согласовании
             if (!model.IsDraft)
             {
-                if (model.DepNextId == 0 && (model.ItemLevel <= 2 || model.ItemLevel == 7) && AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector)
+                if (model.DepNextId == 0 && (model.ItemLevel <= 2 || model.ItemLevel == 7) && AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector && model.BFGId == 2)
                 {
                     ModelState.AddModelError("DepNextId", "Укажите подразделение с налоговыми рекизитами!");
                     ModelState.AddModelError("MessageStr", "Укажите подразделение с налоговыми рекизитами!");
@@ -1145,10 +1145,13 @@ namespace WebMvc.Controllers
             }
             else
             {
-                if (model.Quantity <= 0)
-                    ModelState.AddModelError("Quantity", "Укажите количество!");
-                if (model.Salary <= 0)
-                    ModelState.AddModelError("Salary", "Укажите оклад!");
+                if (model.RequestTypeId != 3)
+                {
+                    if (model.Quantity <= 0)
+                        ModelState.AddModelError("Quantity", "Укажите количество!");
+                    if (model.Salary <= 0)
+                        ModelState.AddModelError("Salary", "Укажите оклад!");
+                }
 
                 if (model.PostChargeLinks.Where(x => x.ActionId == 0).Count() != 0)
                 {
