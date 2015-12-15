@@ -73,6 +73,7 @@
                 <th><div id="sort1" style="min-width:30px"><a href="#" onclick = "SortChanged(1);">Номер<br /> заявки</a></div></th>
                 <th><div id="sort2" style="min-width:30px"><a href="#" onclick = "SortChanged(2);">Дата создания<br /> заявки</a></div></th>
                 <th><div id="sort3" style="min-width:30px"><a href="#" onclick = "SortChanged(3);">Вид заявки</a></div></th>
+                <th><div id="sort15" style="min-width:30px"><a href="#" onclick = "SortChanged(15);">Принадлежность</a></div></th>
                 <th><div id="sort4" style="min-width:30px"><a href="#" onclick = "SortChanged(4);">Подразделение <br />2 уровня</a></div></th>
                 <th><div id="sort5" style="min-width:30px"><a href="#" onclick = "SortChanged(5);">Подразделение <br />3 уровня</a></div></th>
                 <th><div id="sort6" style="min-width:30px"><a href="#" onclick = "SortChanged(6);">Подразделение <br />4 уровня</a></div></th>
@@ -96,6 +97,7 @@
                             <td style="text-align:center;"><a class="ui-notify-close" href='@Url.Action("StaffDepartmentRequest", "StaffList", new { RequestType = @item.RequestTypeId, DepartmentId = @item.DepartmentId, id = @item.Id })' style="cursor:hand">@item.Id</a></td>
                             <td>@(item.DateRequest.HasValue ? item.DateRequest.Value.ToShortDateString() : "")</td>
                             <td>@item.RequestTypeName</td>
+                            <td>@item.AccessoryName</td>
                             <td>@item.Dep2Name</td>
                             <td>@item.Dep3Name</td>
                             <td>@item.Dep4Name</td>

@@ -43,6 +43,7 @@ namespace Reports.Core.Dao.Impl
                                        A.DepartmentId,
                                        A.ParentId,
                                        A.BFGId,
+                                       F.Name as AccessoryName,
                                        isnull(Dep2.Name, case when A.ItemLevel = 2 then A.Name else null end) as Dep2Name, 
                                        isnull(Dep3.Name, case when A.ItemLevel = 3 then A.Name else null end) as Dep3Name, 
                                        isnull(Dep4.Name, case when A.ItemLevel = 4 then A.Name else null end) as Dep4Name, 
@@ -74,7 +75,8 @@ namespace Reports.Core.Dao.Impl
                                 LEFT JOIN Department as Dep5 ON C.Path like Dep5.Path + N'%' and Dep5.ItemLevel = 5
                                 LEFT JOIN Department as Dep6 ON C.Path like Dep6.Path + N'%' and Dep6.ItemLevel = 6
                                 LEFT JOIN Users as D ON D.Id = A.CreatorID
-                                LEFT JOIN Position as E ON E.Id = D.PositionId";
+                                LEFT JOIN Position as E ON E.Id = D.PositionId
+                                LEFT JOIN StaffDepartmentAccessory as F ON F.Id = A.BFGId";
 
             
 
@@ -102,6 +104,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("RequestTypeId", NHibernateUtil.Int32)
                 .AddScalar("DepartmentId", NHibernateUtil.Int32)
                 .AddScalar("ParentId", NHibernateUtil.Int32)
+                .AddScalar("AccessoryName", NHibernateUtil.String)
                 .AddScalar("Dep2Name", NHibernateUtil.String)
                 .AddScalar("Dep3Name", NHibernateUtil.String)
                 .AddScalar("Dep4Name", NHibernateUtil.String)
@@ -240,6 +243,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 14:
                     SqlOrderBy += "Status";
+                    break;
+                case 15:
+                    SqlOrderBy += "AccessoryName";
                     break;
                 default:
                     SqlOrderBy += "A.Id";
