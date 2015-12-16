@@ -174,8 +174,8 @@
 
     @* END Выбор параметров *@
    
-    int[] createcandidateapprove = { 991, 998, 1002, 1006 };    
-    if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)))
+    int[] createcandidateapprove = { 991, 998, 1002, 1006 };
+    if (((dto.UserRole & UserRole.PersonnelManager) > 0 || (dto.UserRole & UserRole.Manager) > 0) && (!createcandidateapprove.Contains(dto.Id)))
     {
         <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
     }
@@ -295,6 +295,9 @@
         </th>
         <th>
             <div id="sort20"><a href="#" onclick = "SortColumnChanged(20);">Номер<br />заявки<br />из подбора<br />персонала</a></div>
+        </th>
+        <th>
+            <div id="sort27"><a href="#" onclick = "SortColumnChanged(27);">Номер<br />задачи<br />в системе<br />Pyrus</a></div>
         </th>
         <th>
             <div id="sort21"><a href="#" onclick="SortColumnChanged(21);">Дата<br />увольнения</a></div>
@@ -452,6 +455,12 @@
                     else
                     {
                         @*<text>Из оформления без службы по найму</text>*@
+                    }
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(candidate.PyrusNumber) && !string.IsNullOrWhiteSpace(candidate.PyrusNumber))
+                    {
+                        <a href="@("https://pyrus.com/t#id" + candidate.PyrusNumber)">@candidate.PyrusNumber</a>
                     }
                 </td>
                 <td>

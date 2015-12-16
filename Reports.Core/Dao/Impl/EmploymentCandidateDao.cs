@@ -555,6 +555,9 @@ namespace Reports.Core.Dao.Impl
                 case 26:
                     orderBy = "AdditionAvailable";
                     break;
+                case 27:
+                    orderBy = "PyrusNumber";
+                    break;
                 default:
                     orderBy = "candidate.Id desc";
                     break;
