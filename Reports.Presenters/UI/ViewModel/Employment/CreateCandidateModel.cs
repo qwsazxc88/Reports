@@ -54,7 +54,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "До приема")]
         public bool IsBeforEmployment { get; set; }
 
-        [Display(Name = "№ задачи в системе Pyrus")]
+        [Display(Name = "№ задачи в системе Pyrus по поиску кандидата")]
         public string PyrusNumber { get; set; }
 
         public bool IsSP { get; set; }//сабмитимся для заполнения списка штатных единиц
