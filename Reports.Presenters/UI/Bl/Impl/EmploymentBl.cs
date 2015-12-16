@@ -1310,8 +1310,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ProbationaryPeriod = entity.ProbationaryPeriod;
                 model.RequestNumber = entity.RequestNumber;
                 //оклад и надбавки
-                model.SalaryBasis = entity.SalaryBasis;
-                model.SalaryMultiplier = entity.SalaryMultiplier;
                 model.AreaMultiplier = entity.Candidate.PersonnelManagers.AreaMultiplier;
                 model.PersonalAddition = entity.Candidate.PersonnelManagers.PersonalAddition;
                 model.PositionAddition = entity.Candidate.PersonnelManagers.PositionAddition;
@@ -1423,9 +1421,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByDocId(entity.Candidate.Id, (int)StaffReserveTypeEnum.Employment);
 
             if (PostUserLink != null)
+            {
                 model.UserLinkId = PostUserLink.Id;
+                model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
+                model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Count() == 0 ? 0 :
+                    PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Single().Amount;
+            }
+            else
+            {
+                model.SalaryBasis = entity.SalaryBasis;
+                model.SalaryMultiplier = entity.SalaryMultiplier;
+                model.AreaMultiplier = entity.Candidate.PersonnelManagers.AreaMultiplier.Value;
+            }
 
             model.IsConsultant = AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ? true : false;
+            model.SalaryTotalCaption = entity.Candidate.PersonnelManagers.NorthernAreaAddition.HasValue ? "Итого оплата труда с учетом северной надбавки (руб)" : "Итого оплата труда без учета северной надбавки (руб)";
             model.SalaryTotal = CalculateCandidateSalary(entity).ToString("C", System.Globalization.CultureInfo.CurrentCulture);
             
             LoadDictionaries(model);
@@ -1517,6 +1527,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             model.IsConsultant = AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ? true : false;
+            model.SalaryTotalCaption = entity.Candidate.PersonnelManagers.NorthernAreaAddition.HasValue ? "Итого оплата труда с учетом северной надбавки (руб)" : "Итого оплата труда без учета северной надбавки (руб)";
             model.SalaryTotal = CalculateCandidateSalary(entity).ToString("C", System.Globalization.CultureInfo.CurrentCulture);
 
             LoadDictionaries(model);
@@ -1614,7 +1625,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SendTo1C = entity.Candidate.SendTo1C;
             }
 
-            
+            model.SalaryTotalCaption = entity.NorthernAreaAddition.HasValue ? "Итого оплата труда с учетом северной надбавки (руб)" : "Итого оплата труда без учета северной надбавки (руб)";
+            model.SalaryTotal = CalculateCandidateSalary(entity.Candidate.Managers).ToString("C", System.Globalization.CultureInfo.CurrentCulture);
+
             //состояние кандидата
             model.CandidateStateModel = new CandidateStateModel();
             model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
@@ -1632,6 +1645,10 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             LoadDictionaries(model);
+
+            model.SalaryTotalCaption = entity.NorthernAreaAddition.HasValue ? "Итого оплата труда с учетом северной надбавки (руб)" : "Итого оплата труда без учета северной надбавки (руб)";
+            model.SalaryTotal = CalculateCandidateSalary(entity.Candidate.Managers).ToString("C", System.Globalization.CultureInfo.CurrentCulture);
+
             //состояние кандидата
             model.CandidateStateModel = new CandidateStateModel();
             model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
@@ -3323,7 +3340,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 IsTrainingNeeded = model.IsTrainingNeeded,
                 IsBeforEmployment = model.IsTrainingNeeded ? model.IsBeforEmployment : false,
                 Appointment = (model.AppointmentId!=0)?AppointmentDao.Load(model.AppointmentId):null,
-                AppointmentReport =(model.AppointmentReportId!=0)?AppointmentReportDao.Load(model.AppointmentReportId):null
+                AppointmentReport =(model.AppointmentReportId!=0)?AppointmentReportDao.Load(model.AppointmentReportId):null,
+                PyrusNumber = model.PyrusNumber
             };
             
             EmploymentCommonDao.SaveAndFlush(candidate);
