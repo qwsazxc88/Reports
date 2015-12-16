@@ -41,10 +41,7 @@ namespace Reports.Core.Domain
         /// Условия перевода
         /// </summary>
         public virtual string MovementCondition { get; set; }
-        /// <summary>
-        /// Группа доступа
-        /// </summary>
-        public virtual AccessGroup AccessGroup { get; set; }
+ 
         /// <summary>
         /// Совместительство
         /// </summary>

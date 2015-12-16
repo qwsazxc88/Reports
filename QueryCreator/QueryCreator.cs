@@ -26,7 +26,7 @@ namespace Reports.Core
             if(domain==null)
                domain = Expression.Parameter(typeof(TDomain), "domain");
             //Получаем Expression для прав пользователя
-            Expression rights = Expression.Constant(true);
+            Expression rights = BinaryExpression.Constant(true); 
             var smattrib = searchmodel.GetType().GetCustomAttributes(typeof(SearchModelAttribute), false);
             smattrib.NotNullAndAny()
                 .OnSuccess(x =>
@@ -94,7 +94,12 @@ namespace Reports.Core
                 for(int i=0;i<expressions.Length;i++)
                 result = Expression.And(result, expressions[i]);
             }
-            return Expression.Lambda<Func<TDomain, bool>>(result, domain);
+            while(result.CanReduce)
+            {
+                result = result.Reduce();
+            }
+            var final=Expression.Lambda<Func<TDomain, bool>>(result, domain);
+            return final;
         }
         public static Expression GetUserRightsForDocumentMovements(User user, UserRole role, Expression domain, string departmentContainer = "User.Department")
         {
@@ -131,7 +136,7 @@ namespace Reports.Core
         {
             var userdepprop = domain.GetProperty(departmentContainer+".Path");            
             var useridprop = domain.GetProperty("User.Id");
-            Expression result = Expression.Constant(false);
+            Expression result = BinaryExpression.Constant(false);
             switch (role)
             {
                 case UserRole.Manager:

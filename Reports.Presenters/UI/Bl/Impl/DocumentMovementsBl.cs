@@ -77,7 +77,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             var domain = Expression.Parameter(typeof(DocumentMovements), "domain");
             //var query = QueryCreator.Create<DocumentMovements, ViewModel.DocumentMovementsListModel>(model, user, CurrentUser.UserRole);
             var query = QueryCreator.Create<DocumentMovements, ViewModel.DocumentMovementsListModel>(model, user, CurrentUser.UserRole,domain,QueryCreator.GetUserRightsForDocumentMovements(user,CurrentUser.UserRole,domain));
-            var docs = DocumentMovementsDao.Find(query.Compile()).ToList();
+            var docs = DocumentMovementsDao.QueryExpression(query).ToList();
             string[] statuses=new string[]{"","Черновик","Отправлено", "Получено"};
             string[] directions = new string[] { "","В Банк", "От Банка" };
             List<DocumentMovementsDto> docDtos = new List<DocumentMovementsDto>();
