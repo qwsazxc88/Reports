@@ -41,7 +41,7 @@ namespace WebMvc.Controllers
             return View(model);
         }
         [HttpPost]
-        ContentResult GetFactDocuments(StaffMovementsFactListModel model)
+        public ContentResult GetFactDocuments(StaffMovementsFactListModel model)
         {
             var result = StaffMovementsBl.GetFactDocuments(model);
             var content = Content(Newtonsoft.Json.JsonConvert.SerializeObject(result));

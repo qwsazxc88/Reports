@@ -20,8 +20,7 @@
     <property name="MovementCondition" not-null="false"/>
     <!--Совместительство-->
     <property name="Conjunction" not-null="false"/>      
-    <!--Группа доступа-->
-    <many-to-one name="AccessGroup" class="AccessGroup" column="AccessGroup" foreign-key="FK_StaffMovementsData_AccessGroup" not-null="false"/>    
+   
     <!--График работы-->
     <many-to-one name="HoursType" class="Schedule" column="HoursType" foreign-key="FK_StaffMovementsData_HoursType" not-null="false"/>
   </class>

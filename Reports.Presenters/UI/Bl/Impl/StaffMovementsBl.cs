@@ -146,20 +146,23 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             return new StaffMovementsFactListModel();
         }
-        public List<StaffMovementsFactDto> GetFactDocuments(StaffMovementsFactListModel model)
+        public GridDefinition GetFactDocuments(StaffMovementsFactListModel model)
         {
             var user = UserDao.Load(CurrentUser.Id);
             var query= QueryCreator.Create<StaffMovementsFact, StaffMovementsFactListModel>(model, user, CurrentUser.UserRole);
-            var data = StaffMovementsFactDao.QueryExpression(query);
-            return data.Select(x => new StaffMovementsFactDto
+            var data = StaffMovementsFactDao.QueryExpression(x=>true && true);
+            var result= data.Select(x => new StaffMovementsFactDto
             {
                 Id = x.Id,
                 StaffMovementsId = x.StaffMovements.Id,
                 SendTo1C = x.SendTo1C,
-                UserToMove = new StandartUserDto { Id = x.User.Id, Name= x.User.Name },
+                User = x.User.Name,
+                UserDep3= x.User.Department.Dep3.First().Name,
+                UserDep7 = x.User.Department.Name,                
                 StaffEstablishedPostRequestId = x.StaffEstablishedPostRequest.Id,
                 
             }).ToList();
+            return UIGrid_Helper.GetGridDefinition(result);
         }
         #endregion
         #region Реестр заявок
@@ -306,7 +309,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Grade = entity.Data.Grade;
                 model.HoursType = entity.Data.HoursType!=null?entity.Data.HoursType.Id:0;
                 
-                model.AccessGroup = entity.Data.AccessGroup!=null?entity.Data.AccessGroup.Id:0;
+                //model.AccessGroup = entity.Data.AccessGroup!=null?entity.Data.AccessGroup.Id:0;
                 #endregion
                 #region Files
                 var docs = entity.Docs;
@@ -988,6 +991,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Type = StaffMovementsTypesDao.Load(model.RequestType);
                 //Данные заявки, создаём и сохраняем
                 entity.Data = new StaffMovementsData();
+                entity.Data.Grade = model.Grade;
+                entity.Data.HoursType = ScheduleDao.Load(model.HoursType);
+                
                 StaffMovementsDataDao.SaveAndFlush(entity.Data);
                 //Сохраняем надбавки
                 SaveAdditions(entity, model);
@@ -1036,6 +1042,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.MovementCondition = model.MovementCondition;//Условие перевода
                 entity.Data.Conjunction = model.Conjunction;
                 entity.Data.PyrusLink = model.PyrusLink;
+                entity.Data.Grade = model.Grade;//Грейд
+                entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
                 SaveAdditions(entity, model);
             }
             #endregion
@@ -1044,7 +1052,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.Data.Grade = model.Grade;//Грейд
                 entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
-                entity.Data.AccessGroup = AccessGroupDao.Load(model.AccessGroup);//Группа доступа
+                //entity.Data.AccessGroup = AccessGroupDao.Load(model.AccessGroup);//Группа доступа
                 //Ставим галочки в документах
                 if (model.IsDocsEditable)
                 {

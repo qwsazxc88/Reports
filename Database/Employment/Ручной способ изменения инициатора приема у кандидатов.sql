@@ -48,7 +48,7 @@ WHERE A.Id = 11923
 --дальше запускать для каждого руководителя отдельно
 declare @UserId int, @DepartmentId int
 
-select @UserId = Id, @DepartmentId = DepartmentId from users where name like 'Барышева Екатерина Сергеевна%' and RoleId = 4 and IsActive = 1
+select @UserId = Id, @DepartmentId = DepartmentId from users where name like 'Пилипчук Ирина Витальевна%' and RoleId = 4 and IsActive = 1
 --select * from users where name like 'Крылова Ольга Викторовна%'
 --select * from users where name like 'Назаркина Татьяна Владимировна%'
 --select * from users where name like 'Барышева Екатерина Сергеевна%'

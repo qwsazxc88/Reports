@@ -404,7 +404,8 @@
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.Grade)</td>
-                                    <td>@Html.TextBoxFor(m => m.Grade, Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    @*<td>@Html.TextBoxFor(m => m.Grade, Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>*@
+                                    <td>@Html.DropDownListFor(m => m.Grade, new SelectList(System.Linq.Enumerable.Range(1, 4),Model.Grade), Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                                 </tr>
                                 <tr>
                                     <td>@Html.LabelFor(m => m.HoursType)</td>
