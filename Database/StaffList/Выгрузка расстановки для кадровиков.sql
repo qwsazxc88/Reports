@@ -1,7 +1,14 @@
 	SELECT M.Name as Dep2, L.Name as Dep3, K.Name as Dep4, J.Name as Dep5, I.Name as Dep6, C.Name as Dep7, A.DepartmentId,
 				 F.Id, A.Id as SEPId, B.Code as PositionCode, B.Name as PositionName, A.Salary,
-				 isnull(E.Rate, 0) as Rate,	--ставка
-				 isnull(case when E.IsPregnant = 1 then null else E.Code end, '') as UserId, 
+				 isnull(E.Rate, 0) as Rate	--ставка
+				 ,isnull(N.Regional, 0) as Regional
+				 ,isnull(N.Personnel, 0) as Personnel
+				 ,isnull(N.Territory, 0) as Territory
+				 ,isnull(N.Front, 0) as Front
+				 ,isnull(N.Drive, 0) as Drive
+				 ,isnull(case when N.NorthAuto = 0 then N.North else N.NorthAuto end, 0) as North
+				 ,isnull(N.Qualification, 0) as Qualification
+				 ,isnull(case when E.IsPregnant = 1 then null else E.Code end, '') as UserId, 
 				 case when (case when (isnull(E.IsPregnant, 0) = 1 or F.UserId is null) and isnull(F.ReserveType, 0) = 0 then 1 else 0 end) = 1 or (case when isnull(F.DocId, 0) = 0 then 0 else 1 end) = 1
 							then (case when (case when F.UserId is null then 0 else (case when isnull(E.IsPregnant, 0) = 1 or H.Id is not null then 1 else 0 end) end) = 1 
 												 then 'Временная вакансия' else 'Вакансия' end) 
@@ -21,6 +28,7 @@
 	INNER JOIN Department as K ON J.ParentId = K.Id
 	INNER JOIN Department as L ON K.ParentId = L.Id
 	INNER JOIN Department as M ON L.ParentId = M.Id
+	LEFT JOIN vwStaffPostSalary as N ON N.UserId = E.Id
 	WHERE A.IsUsed = 1 
 	ORDER BY M.Name, L.Name, K.Name, J.Name, I.Name, C.Name, B.Name,
 					 case when (case when (isnull(E.IsPregnant, 0) = 1 or F.UserId is null) and isnull(F.ReserveType, 0) = 0 then 1 else 0 end) = 1 or (case when isnull(F.DocId, 0) = 0 then 0 else 1 end) = 1
