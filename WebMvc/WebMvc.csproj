@@ -244,6 +244,7 @@
     <Content Include="Scripts\json2.js" />
     <Content Include="Scripts\localization\messages_ru.js" />
     <Content Include="Scripts\mustache.js" />
+    <Content Include="Scripts\StaffMovements\StaffMovementsFactList.js" />
     <Content Include="Scripts\TableSort.js" />
     <Content Include="Scripts\TerraGraphicsShortNameDialog.js" />
     <Content Include="Scripts\textAngular-rangy.min.js" />

@@ -8,7 +8,7 @@ namespace Reports.Core
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class ngGridRowAttribute : Attribute
     {        
-        public string field { get; set; }
+        public string field { get; set; }        
         public string displayName { get; set; }
         public bool enableSorting { get; set; }
         public bool enableFiltering { get; set; }
