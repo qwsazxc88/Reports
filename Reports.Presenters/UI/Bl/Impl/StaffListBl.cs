@@ -1751,6 +1751,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing
                 || AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector ? curUser : null;//куратор/кадровик банка/консультант РК
 
+            bool IsCurator = (AuthenticationService.CurrentUser.UserRole == UserRole.Inspector);
+            bool IsPersonnelBank = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel);
             bool IsConsultant = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing);
             bool IsTaxCollector = (AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector);
             bool IsStaffListOrder = (AuthenticationService.CurrentUser.UserRole == UserRole.StaffListOrder);
@@ -1766,7 +1768,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (model.IsImportance)//обязательное согласование
             {
-                if (DocApproval.Where(x => x.Number == 1).Count() == 0)
+                if (DocApproval.Where(x => x.Number == 1).Count() == 0 && (IsCurator || IsPersonnelBank || IsConsultant))//инициатор, куратор, кадровик, консультант
                 {
                     //если иницатор не выбран, это значит, что инициатор действует сам
                     User Initiator = model.InitiatorId != 0 ? UserDao.Get(model.InitiatorId) : curUser;//инициатор
@@ -1778,7 +1780,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     error = "Заявка создана!";
                 }
 
-                if (DocApproval.Where(x => x.Number == 1).Count() == 1 && DocApproval.Where(x => x.Number == 2).Count() == 0 && entity.DepartmentAccessory.Id == 2)//только фронты
+                if (DocApproval.Where(x => x.Number == 1).Count() == 1 && DocApproval.Where(x => x.Number == 2).Count() == 0 && entity.DepartmentAccessory.Id == 2 && IsCurator)//только фронты
                 {
                     da.ApproveUser = curUser;
                     da.AssistantUser = null;
@@ -1788,7 +1790,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 //if (DocApproval.Where(x => x.Number == 2).Count() == 1 && DocApproval.Where(x => x.Number == 3).Count() == 0)
-                if (DocApproval.Where(x => x.Number == 1).Count() == 1 && DocApproval.Where(x => x.Number == 3).Count() == 0 && entity.DepartmentAccessory.Id == 1)//только бэки
+                if (DocApproval.Where(x => x.Number == 1).Count() == 1 && DocApproval.Where(x => x.Number == 3).Count() == 0 && entity.DepartmentAccessory.Id == 1 && IsPersonnelBank)//только бэки
                 {
                     da.ApproveUser = curUser;
                     da.AssistantUser = null;
@@ -1797,7 +1799,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     error = "Заявка проверена кадровиком банка!";
                 }
 
-                if (DocApproval.Where(x => x.Number == 3).Count() == 1 && DocApproval.Where(x => x.Number == 5).Count() == 0)
+                if (DocApproval.Where(x => x.Number == 3).Count() == 1 && DocApproval.Where(x => x.Number == 5).Count() == 0 && (IsCurator || IsPersonnelBank || IsConsultant))//высший руководитель, куратор, кадровик, консультант
                 {
                     //если согласовант не выбран, это значит, что он действует сам
                     User TopManager = model.TopManagerId != 0 ? UserDao.Get(model.TopManagerId) : curUser;//высший руководитель
@@ -1809,7 +1811,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     error = "Заявка согласована!";
                 }
 
-                if (DocApproval.Where(x => x.Number == 5).Count() == 1 && DocApproval.Where(x => x.Number == 6).Count() == 0)
+                if (DocApproval.Where(x => x.Number == 5).Count() == 1 && DocApproval.Where(x => x.Number == 6).Count() == 0 && (IsCurator || IsPersonnelBank || IsConsultant))//член правления, куратор, кадровик, консультант
                 {
                     //если утверждающий не выбран, это значит, что он действует сам
                     User BoardMember = model.BoardMemberId != 0 ? UserDao.Get(model.BoardMemberId) : curUser;//член правления
