@@ -986,28 +986,37 @@
                                 }
                             </td>
                         </tr>
-                        <tr>
-                            <td><a href='@Model.CuratorPyrusRef' target="_blank">@Model.CuratorPyrusName</a></td>
-                            <td>
-                                @Html.LabelFor(m => m.IsCuratorApprove)
-                                @Html.HiddenFor(m => m.IsCuratorApprove)
-                            </td>
-                            <td>@Html.CheckBoxFor(m => m.IsCuratorApprove, (object)new { disabled = "disabled" })</td>
-                            <td>
-                                @Html.DisplayFor(m => m.CuratorApproveName)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><a href='@Model.PersonnelBankPyrusRef' target="_blank">@Model.PersonnelBankPyrusName</a></td>
-                            <td>
-                                @Html.LabelFor(m => m.IsPersonnelBankApprove)
-                                @Html.HiddenFor(m => m.IsPersonnelBankApprove)
-                            </td>
-                            <td>@Html.CheckBoxFor(m => m.IsPersonnelBankApprove, (object)new { disabled = "disabled" })</td>
-                            <td>
-                                @Html.DisplayFor(m => m.PersonnelBankApproveName)
-                            </td>
-                        </tr>
+
+                        @if(Model.BFGId == 2 && Model.IsCurator)
+                        {
+                            <tr>
+                                <td><a href='@Model.CuratorPyrusRef' target="_blank">@Model.CuratorPyrusName</a></td>
+                                <td>
+                                    @Html.LabelFor(m => m.IsCuratorApprove)
+                                    @Html.HiddenFor(m => m.IsCuratorApprove)
+                                </td>
+                                <td>@Html.CheckBoxFor(m => m.IsCuratorApprove, (object)new { disabled = "disabled" })</td>
+                                <td>
+                                    @Html.DisplayFor(m => m.CuratorApproveName)
+                                </td>
+                            </tr>
+                        }
+                        
+                        @if(Model.BFGId == 1 && Model.IsPersonnelBank)
+                        {
+                            <tr>
+                                <td><a href='@Model.PersonnelBankPyrusRef' target="_blank">@Model.PersonnelBankPyrusName</a></td>
+                                <td>
+                                    @Html.LabelFor(m => m.IsPersonnelBankApprove)
+                                    @Html.HiddenFor(m => m.IsPersonnelBankApprove)
+                                </td>
+                                <td>@Html.CheckBoxFor(m => m.IsPersonnelBankApprove, (object)new { disabled = "disabled" })</td>
+                                <td>
+                                    @Html.DisplayFor(m => m.PersonnelBankApproveName)
+                                </td>
+                            </tr>
+                        }
+                            
                         <tr>
                             <td><a href='@Model.TopManagerPyrusRef' target="_blank">@Model.TopManagerPyrusName</a></td>
                             <td>
