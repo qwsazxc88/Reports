@@ -54,7 +54,8 @@
     <property name="IsTDReceived" not-null="false"/>
     <property name="TDReceivedDate" not-null="false"/>
     <many-to-one name="TDMarkUser" class="User" column="TDMarkUserId" foreign-key="FK_EmploymentCandidate_TDMarkUser" index="EmploymentCandidate_TDMarkUser"  not-null="false" cascade="save-update" />
-    
 
+    <property name="PyrusNumber" length="50" not-null="false"/>
+    
   </class>
 </hibernate-mapping>

@@ -103,6 +103,7 @@ namespace Reports.Core.Dto.Employment2
         public DateTime? TDReceivedDate { get; set; }
         public string AdditionAvailable { get; set; }
 
+        public string PyrusNumber { get; set; }
         /*
         [Display(Name = "Паспортные данные"),
             StringLength(500, ErrorMessage = "Не более 500 знаков."),
