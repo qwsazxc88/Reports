@@ -13,6 +13,11 @@ IF OBJECT_ID ('FK_StaffMovements_TargetUserLink', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffMovements] DROP CONSTRAINT [FK_StaffMovements_TargetUserLink]
 GO
 
+IF OBJECT_ID ('FK_StaffMovementsFact_StaffEstablishedPostRequest', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffMovementsFact] DROP CONSTRAINT [FK_StaffMovementsFact_StaffEstablishedPostRequest]
+GO
+
+
 UPDATE StaffMovements SET SourceStaffEstablishedPostRequest = null, TargetStaffEstablishedPostRequest = null
 
 DELETE FROM DocumentApproval WHERE ApprovalType in (1, 2)
@@ -2540,6 +2545,12 @@ GO
 ALTER TABLE [dbo].[StaffMovements] CHECK CONSTRAINT [FK_StaffMovements_TargetUserLink]
 GO
 
+ALTER TABLE [dbo].[StaffMovementsFact]  WITH CHECK ADD  CONSTRAINT [FK_StaffMovementsFact_StaffEstablishedPostRequest] FOREIGN KEY([StaffEstablishedPostRequestId])
+REFERENCES [dbo].[StaffEstablishedPostRequest] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffMovementsFact] CHECK CONSTRAINT [FK_StaffMovementsFact_StaffEstablishedPostRequest]
+GO
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id депозитного подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'DepDepositId'
