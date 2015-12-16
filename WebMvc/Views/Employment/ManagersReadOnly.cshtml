@@ -215,12 +215,12 @@
             @Html.LabelFor(m => m.MentorName)&nbsp;@Html.ValidationMessageFor(m => m.MentorName)<br />
             @Html.EditorFor(m => m.MentorName)
         </div>
-
+        @*
         <div class="formfield clear">
             @Html.LabelFor(m => m.RequestNumber)&nbsp;@Html.ValidationMessageFor(m => m.RequestNumber)<br />
             @Html.EditorFor(m => m.RequestNumber)
         </div>
-
+        *@
         @if ((!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.Value) || (dto.UserRole & UserRole.PersonnelManager) > 0)
         {
             <div class="formfield clear">
