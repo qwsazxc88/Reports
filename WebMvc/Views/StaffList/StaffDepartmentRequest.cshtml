@@ -987,7 +987,7 @@
                             </td>
                         </tr>
 
-                        @if(Model.BFGId == 2 && Model.IsCurator)
+                        @if(Model.BFGId == 2)
                         {
                             <tr>
                                 <td><a href='@Model.CuratorPyrusRef' target="_blank">@Model.CuratorPyrusName</a></td>
@@ -1002,7 +1002,7 @@
                             </tr>
                         }
                         
-                        @if(Model.BFGId == 1 && Model.IsPersonnelBank)
+                        @if(Model.BFGId == 1)
                         {
                             <tr>
                                 <td><a href='@Model.PersonnelBankPyrusRef' target="_blank">@Model.PersonnelBankPyrusName</a></td>
