@@ -991,6 +991,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Type = StaffMovementsTypesDao.Load(model.RequestType);
                 //Данные заявки, создаём и сохраняем
                 entity.Data = new StaffMovementsData();
+                entity.Data.Grade = model.Grade;
+                entity.Data.HoursType = ScheduleDao.Load(model.HoursType);
+                
                 StaffMovementsDataDao.SaveAndFlush(entity.Data);
                 //Сохраняем надбавки
                 SaveAdditions(entity, model);
@@ -1039,6 +1042,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.MovementCondition = model.MovementCondition;//Условие перевода
                 entity.Data.Conjunction = model.Conjunction;
                 entity.Data.PyrusLink = model.PyrusLink;
+                entity.Data.Grade = model.Grade;//Грейд
+                entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
                 SaveAdditions(entity, model);
             }
             #endregion
