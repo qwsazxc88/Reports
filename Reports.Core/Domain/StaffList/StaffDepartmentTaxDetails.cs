@@ -12,6 +12,7 @@ namespace Reports.Core.Domain
         public virtual string KPP { get; set; }
         public virtual string OKTMO { get; set; }
         public virtual string OKATO { get; set; }
+        public virtual string OKPO { get; set; }
         public virtual string RegionCode { get; set; }
         public virtual string TaxAdminCode { get; set; }
         public virtual string TaxAdminName { get; set; }

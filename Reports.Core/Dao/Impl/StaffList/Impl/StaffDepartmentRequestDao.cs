@@ -148,7 +148,7 @@ namespace Reports.Core.Dao.Impl
 //						                     WHERE A.Id = :userId) as F ON F.Id = isnull(A.DepartmentId, A.ParentId)";
 //                    break;
                 case UserRole.Inspector:
-                    sqlWhere = "(A.BFGId = 2 or A.BFGId is null)";
+                    sqlWhere = "(A.BFGId in (2, 6) or A.BFGId is null)";
                     break;
             }
             return sqlWhere;

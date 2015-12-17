@@ -24,6 +24,7 @@
     <property name="IsPlan" not-null="false"/>
     <property name="IsUsed" not-null="false"/>
     <property name="IsDraft" not-null="false"/>
+    <property name="IsTaxRequest" not-null="false"/>
     <property name="DateSendToApprove" not-null="false"/>
     <property name="BeginAccountDate" not-null="false"/>
     <property name="DateState" not-null="false"/>

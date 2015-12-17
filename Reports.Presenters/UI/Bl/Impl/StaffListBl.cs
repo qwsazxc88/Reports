@@ -566,6 +566,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 //Общие реквизиты
+                model.DateRequest = entity.DateRequest;
                 model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
                 model.DateState = entity.DateState;
                 model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
@@ -576,6 +577,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BFGId = entity.DepartmentAccessory != null ? entity.DepartmentAccessory.Id : 0;
                 model.OrderNumber = entity.OrderNumber;
                 model.OrderDate = entity.OrderDate;
+                model.BeginAccountDate = entity.BeginAccountDate;
                 if (entity.LegalAddress != null)
                 {
                     model.LegalAddressId = entity.LegalAddress.Id;
@@ -601,6 +603,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepDepositName = entity.DepDeposit != null ? entity.DepDeposit.Name : string.Empty;
                 model.IsPlan = entity.IsPlan;
                 model.IsUsed = entity.IsUsed;
+                model.IsTaxRequest = entity.IsTaxRequest;
 
                 StaffDepartmentFingradStructureDto FinStructure = StaffDepartmentRPLinkDao.GetFingradStructureForDeparment(model.ParentId);
                 if (FinStructure != null)
@@ -746,11 +749,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     DepartmentAccessory = model.BFGId == 0 ? null : StaffDepartmentAccessoryDao.Load(model.BFGId),
                     OrderNumber = model.OrderNumber,
                     OrderDate = model.OrderDate,
+                    BeginAccountDate = model.BeginAccountDate,
                     IsTaxAdminAccount = model.IsTaxAdminAccount,
                     IsEmployeAvailable = model.IsEmployeAvailable,
                     IsPlan = model.IsPlan,
                     IsUsed = false,
                     IsDraft = true,
+                    IsTaxRequest = false,
                     Creator = curUser,
                     CreateDate = DateTime.Now
                 };
@@ -1028,6 +1033,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.DepartmentAccessory = model.BFGId == 0 ? null : StaffDepartmentAccessoryDao.Load(model.BFGId);
             entity.OrderNumber = model.OrderNumber;
             entity.OrderDate = model.OrderDate;
+            entity.BeginAccountDate = model.BeginAccountDate;
             entity.IsTaxAdminAccount = model.IsTaxAdminAccount;
             entity.IsEmployeAvailable = model.IsEmployeAvailable;
             entity.IsPlan = model.IsPlan;
@@ -1037,6 +1043,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.ParentDepartment = model.ParentId == 0 ? null : DepartmentDao.Load(model.ParentId);
             entity.DepNext = model.DepNextId == 0 ? null : DepartmentDao.Load(model.DepNextId);
             entity.DepDeposit = model.DepDepositId == 0 ? null : DepartmentDao.Load(model.DepDepositId);
+            entity.IsTaxRequest = model.IsTaxRequest;
 
             //юридический адрес
             RefAddresses la = null;
@@ -1536,7 +1543,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //для первоначальных данных
                     if (entity.RequestType.Id == 4)
                     {
-                        entity.BeginAccountDate = DateTime.Now;
                         entity.DateState = DateTime.Now;
                         entity.DateSendToApprove = DateTime.Now;
                     }
@@ -1570,7 +1576,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //у текущей заявки ставим признак использования
                     entity.IsUsed = true;
                     error = "Заявка утверждена!";
-                    //entity.BeginAccountDate = DateTime.Now;
                 }
 
                 
@@ -1793,7 +1798,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     error = "Заявка создана!";
                 }
 
-                if (DocApproval.Where(x => x.Number == 1).Count() == 1 && DocApproval.Where(x => x.Number == 2).Count() == 0 && entity.DepartmentAccessory.Id == 2 && IsCurator)//только фронты
+                if (DocApproval.Where(x => x.Number == 1).Count() == 1 && DocApproval.Where(x => x.Number == 2).Count() == 0 && (entity.DepartmentAccessory.Id == 2 || entity.DepartmentAccessory.Id == 6) && IsCurator)//только фронты и БэкФронты
                 {
                     da.ApproveUser = curUser;
                     da.AssistantUser = null;
@@ -1880,12 +1885,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return da.Number;
                 }
 
-                if (da.Number > 1 && da.Number < 5)
+                if (da.Number > 1 && da.Number < 6)
                     return da.Number;
 
-                if (da.Number == 5)
+                if (da.Number == 6)
                 {
-                    entity.BeginAccountDate = DateTime.Now;
                     entity.DateState = DateTime.Now;
                 }
             }
@@ -2411,7 +2415,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //налоговик
             if (model.IsTaxCollector && DocApproval.Where(x => x.Number == 4).Count() == 0)
             {
-                model.IsTaxCollectorApprove = true;
+                //model.IsTaxCollectorApprove = true;
                 model.IsTaxCollectorApproveAvailable = true;
                 model.IsAgreeButtonAvailable = model.IsTaxCollectorApproveAvailable;
                 model.IsImportance = false;
@@ -2420,7 +2424,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //приказы
             if (model.IsOrder && DocApproval.Where(x => x.Number == 7).Count() == 0)
             {
-                model.IsOrderApprove = true;
+                //model.IsOrderApprove = true;
                 model.IsOrderApproveAvailable = true;
                 model.IsAgreeButtonAvailable = model.IsOrderApproveAvailable;
                 model.IsImportance = false;

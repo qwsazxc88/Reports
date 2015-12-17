@@ -765,6 +765,7 @@ CREATE TABLE [dbo].[StaffDepartmentTaxDetails](
 	[KPP] [nvarchar](9) NULL,
 	[OKTMO] [nvarchar](11) NULL,
 	[OKATO] [nvarchar](11) NULL,
+	[OKPO] [nvarchar](10) NULL,
 	[RegionCode] [nvarchar](2) NULL,
 	[TaxAdminCode] [nvarchar](10) NULL,
 	[TaxAdminName] [nvarchar](100) NULL,
@@ -805,6 +806,7 @@ CREATE TABLE [dbo].[StaffDepartmentRequest](
 	[DateSendToApprove] [datetime] NULL,
 	[BeginAccountDate] [datetime] NULL,
 	[DateState] [datetime] NULL,
+	[IsTaxRequest] [bit] NULL,
 	[CreatorID] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorID] [int] NULL,
@@ -1400,6 +1402,7 @@ INSERT INTO StaffDepartmentAccessory (Version, Name) VALUES(1, N'Фронт')
 INSERT INTO StaffDepartmentAccessory (Version, Name) VALUES(1, N'ГПД')
 INSERT INTO StaffDepartmentAccessory (Version, Name) VALUES(1, N'Управленческое')
 INSERT INTO StaffDepartmentAccessory (Version, Name) VALUES(1, N'Удалено/закрыто')
+INSERT INTO StaffDepartmentAccessory (Version, Name) VALUES(1, N'БэкФронт')
 
 
 
@@ -1615,6 +1618,9 @@ REFERENCES [dbo].[StaffDepartmentRequest] ([Id])
 GO
 
 ALTER TABLE [dbo].[StaffRequestPyrusTasks] CHECK CONSTRAINT [FK_StaffRequestPyrusTasks_StaffDepartmentRequest]
+GO
+
+ALTER TABLE [dbo].[StaffDepartmentRequest] ADD  CONSTRAINT [DF_StaffDepartmentRequest_IsTaxRequest]  DEFAULT ((0)) FOR [IsTaxRequest]
 GO
 
 ALTER TABLE [dbo].[StaffRequestPyrusTasks]  WITH CHECK ADD  CONSTRAINT [FK_StaffRequestPyrusTasks_StaffEstablishedPostRequest] FOREIGN KEY([SEPRequestId])
@@ -2553,6 +2559,9 @@ ALTER TABLE [dbo].[StaffMovementsFact] CHECK CONSTRAINT [FK_StaffMovementsFact_S
 GO
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак подачи заявки в ИФНС' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'IsTaxRequest'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id депозитного подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'DepDepositId'
 GO
 
@@ -3511,6 +3520,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ОКТМО' , @leve
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ОКАТО' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentTaxDetails', @level2type=N'COLUMN',@level2name=N'OKATO'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ОКПО' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentTaxDetails', @level2type=N'COLUMN',@level2name=N'OKPO'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код региона' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentTaxDetails', @level2type=N'COLUMN',@level2name=N'RegionCode'
