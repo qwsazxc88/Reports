@@ -800,6 +800,9 @@ namespace Reports.Core
             Register(Component.For<IStaffExtraChargeActionsDao>()
                 .ImplementedBy<StaffExtraChargeActionsDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffUserNorthAdditionalDao>()
+                .ImplementedBy<StaffUserNorthAdditionalDao>()
+                .LifeStyle.Is(type));
             #endregion
             
             

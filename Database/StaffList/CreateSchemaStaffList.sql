@@ -46,6 +46,10 @@ IF OBJECT_ID ('FK_RefAddresses_Creators', 'F') IS NOT NULL
 GO
 
 
+IF OBJECT_ID ('FK_StaffUserNorthAdditional_Users', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffUserNorthAdditional] DROP CONSTRAINT [FK_StaffUserNorthAdditional_Users]
+GO
+
 IF OBJECT_ID ('FK_StaffExtraCharges_StaffUnitReference', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffExtraCharges] DROP CONSTRAINT [FK_StaffExtraCharges_StaffUnitReference]
 GO
@@ -1522,8 +1526,40 @@ CREATE TABLE [dbo].[StaffExtraChargeActions](
 GO
 
 
+if OBJECT_ID (N'StaffUserNorthAdditional', 'U') is not null
+	DROP TABLE [dbo].[StaffUserNorthAdditional]
+GO
+CREATE TABLE [dbo].[StaffUserNorthAdditional](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [int] NULL,
+	[DateCalculate] [datetime] NULL,
+	[Amount] [numeric](18, 2) NULL,
+	[CreateDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffUserNorthAdditional] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+
 
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffUserNorthAdditional] ADD  CONSTRAINT [DF_StaffUserNorthAdditional_Amount]  DEFAULT ((0)) FOR [Amount]
+GO
+
+ALTER TABLE [dbo].[StaffUserNorthAdditional] ADD  CONSTRAINT [DF_StaffUserNorthAdditional_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffUserNorthAdditional]  WITH CHECK ADD  CONSTRAINT [FK_StaffUserNorthAdditional_Users] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffUserNorthAdditional] CHECK CONSTRAINT [FK_StaffUserNorthAdditional_Users]
+GO
+
 ALTER TABLE [dbo].[StaffExtraCharges]  WITH CHECK ADD  CONSTRAINT [FK_StaffExtraCharges_StaffUnitReference] FOREIGN KEY([UnitId])
 REFERENCES [dbo].[StaffUnitReference] ([Id])
 GO
@@ -2559,6 +2595,24 @@ ALTER TABLE [dbo].[StaffMovementsFact] CHECK CONSTRAINT [FK_StaffMovementsFact_S
 GO
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffUserNorthAdditional', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id сотрудника' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffUserNorthAdditional', @level2type=N'COLUMN',@level2name=N'UserId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата расчета' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffUserNorthAdditional', @level2type=N'COLUMN',@level2name=N'DateCalculate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Значение надбавки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffUserNorthAdditional', @level2type=N'COLUMN',@level2name=N'Amount'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffUserNorthAdditional', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Журнал северных надбавок(%) для сотрудников' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffUserNorthAdditional'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак подачи заявки в ИФНС' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffDepartmentRequest', @level2type=N'COLUMN',@level2name=N'IsTaxRequest'
 GO
 
@@ -4050,19 +4104,22 @@ GO
 --представление дает раскладку для сотрудника по его зарплате
 CREATE VIEW [dbo].[vwStaffPostSalary]
 AS
-SELECT UserId
+SELECT A.UserId
 			,sum(A.Salary) as Salary
 			,sum(Regional) as Regional
 			,sum(Personnel) as Personnel
 			,sum(Territory) as Territory
 			,sum(Front) as Front
 			,sum(Drive) as Drive
-			,sum(NorthAuto) as NorthAuto
-			,sum(North) as North
+			--,sum(NorthAuto) as NorthAuto
+			--,sum(North) as North
+			--решили, что северная будет выгружаться на начало каждого месяца из 1С
+			,isnull(Amount, 0) as North
 			,sum(Qualification) as Qualification
 			,((sum(A.Salary) * B.Rate) + sum(Personnel) + sum(Territory) + sum(Front) + sum(Drive) + sum(Qualification)) +
 			 (((sum(A.Salary) * B.Rate) + sum(Personnel) + sum(Territory) + sum(Front) + sum(Drive) + sum(Qualification)) * (sum(Regional) / 100)) +
-			 (((sum(A.Salary) * B.Rate) + sum(Personnel) + sum(Territory) + sum(Front) + sum(Drive) + sum(Qualification)) * (case when sum(NorthAuto) = 0 then sum(North) else sum(NorthAuto) end / 100))
+			 --(((sum(A.Salary) * B.Rate) + sum(Personnel) + sum(Territory) + sum(Front) + sum(Drive) + sum(Qualification)) * (case when sum(NorthAuto) = 0 then sum(North) else sum(NorthAuto) end / 100))
+			 (((sum(A.Salary) * B.Rate) + sum(Personnel) + sum(Territory) + sum(Front) + sum(Drive) + sum(Qualification)) * (isnull(Amount, 0) / 100))
 			as TotalSalary
 FROM (--персональные надбваки
 			SELECT UserId, 0 as Salary, 0 as Regional
@@ -4070,14 +4127,14 @@ FROM (--персональные надбваки
 						,case when StaffExtraChargeId = 5 then Salary else 0 end as Territory	--территориальная надбавка
 						,case when StaffExtraChargeId = 10 then Salary else 0 end as Front	--фронт надбавка
 						,case when StaffExtraChargeId = 3 then Salary else 0 end as Drive	--разъездная надбавка
-						,case when StaffExtraChargeId = 7 then Salary else 0 end as NorthAuto	--северная автомат надбавка
-						,case when StaffExtraChargeId = 16 then Salary else 0 end as North	--северная ручная надбавка
+						--,case when StaffExtraChargeId = 7 then Salary else 0 end as NorthAuto	--северная автомат надбавка
+						--,case when StaffExtraChargeId = 16 then Salary else 0 end as North	--северная ручная надбавка
 						,case when StaffExtraChargeId = 2 then Salary else 0 end as Qualification	--квалификация надбавка
 			FROM StaffPostChargeLinks
 			WHERE IsActive = 1
 			UNION ALL
 			--оклад и должностные надбавки
-			SELECT C.UserId, A.Salary, isnull(B.Amount, 0) as Regional, 0 as Personnel, 0 as Territory, 0 as Front, 0 as Drive, 0 as NorthAuto, 0 as North, 0 as Qualification
+			SELECT C.UserId, A.Salary, isnull(B.Amount, 0) as Regional, 0 as Personnel, 0 as Territory, 0 as Front, 0 as Drive/*, 0 as NorthAuto, 0 as North*/, 0 as Qualification
 			FROM StaffEstablishedPost as A
 			LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.SEPId = A.Id
 			INNER JOIN StaffEstablishedPostUserLinks as C ON C.SEPId = A.Id and C.IsUsed = 1
@@ -4085,7 +4142,8 @@ FROM (--персональные надбваки
 			INNER JOIN StaffEstablishedPostRequest as E ON E.SEPId = A.Id and E.IsUsed = 1
 			WHERE A.IsUsed = 1) as A
 INNER JOIN Users as B ON B.Id = A.UserId
-GROUP BY A.UserId, B.Rate
+LEFT JOIN StaffUserNorthAdditional as C ON C.UserId = A.UserId and year(DateCalculate) = year(getdate()) and month(DateCalculate) = month(getdate())
+GROUP BY A.UserId, B.Rate, isnull(Amount, 0)
 
 --select * from vwStaffPostSalary
 GO
@@ -4758,7 +4816,8 @@ BEGIN
 				 ,I.Territory
 				 ,I.Front
 				 ,I.Drive
-				 ,case when I.NorthAuto = 0 then I.North else I.NorthAuto end as North
+				 --,case when I.NorthAuto = 0 then I.North else I.NorthAuto end as North
+				 ,I.North
 				 ,I.Qualification
 				 ,isnull(I.TotalSalary, A.Salary) as TotalSalary	--если вакансия, то надо показать оклад штатной единицы
 	FROM StaffEstablishedPost as A
@@ -4786,6 +4845,9 @@ BEGIN
 END
 
 GO
+
+
+
 
 
 
