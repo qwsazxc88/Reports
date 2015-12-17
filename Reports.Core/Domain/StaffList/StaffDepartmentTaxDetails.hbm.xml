@@ -9,6 +9,7 @@
     <property name="KPP" length="9" not-null="false"/>
     <property name="OKTMO" length="11" not-null="false"/>
     <property name="OKATO" length="11" not-null="false"/>
+    <property name="OKPO" length="10" not-null="false"/>
     <property name="RegionCode" length="2" not-null="false"/>
     <property name="TaxAdminCode" length="10" not-null="false"/>
     <property name="TaxAdminName" length="100" not-null="false"/>

@@ -119,7 +119,7 @@ BEGIN
 				 ,D.OperationModeATM--Режим_работы_Банкомата
 				 ,D.OperationModeCashIn--Режим_работы_Cash_in
 				 ,T.FingradCode as DepositPointCode --Код_депозитной_точки (null)
-				 ,null as Front_Back1--Front_Back1 (Front/Back/null)
+				 ,case B.BFGId when 1 then N'Back' when 2 then N'Front' when 6 then N'BackFront' end as Front_Back1--Front_Back1 (Front/Back/null)
 				 ,I.ManagementCode--ID_Дирекции
 				 ,I.AdminCode--ID_Управления_Дирекции_Управление_Дирекции
 				 ,I.RPCode--РП_привязка_Код_РП_в_финград

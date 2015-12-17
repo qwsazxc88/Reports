@@ -55,6 +55,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Дата приказа")]
         public DateTime? OrderDate { get; set; }
 
+        [Display(Name = "Дата вступления приказа в силу")]
+        public DateTime? BeginAccountDate { get; set; }
+
         [Display(Name = "Юридический адрес")]
         public int? LegalAddressId { get; set; }
         public string LegalAddress { get; set; }
@@ -120,6 +123,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "ID РП-привязки")]
         public string RPLInkCode { get; set; }
+
+        [Display(Name = "Форма С-09-3-1 отправлена")]
+        public bool IsTaxRequest { get; set; }
         #endregion
 
         #region Налоговые реквизиты
@@ -131,6 +137,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "ОКАТО")]
         public string OKATO { get; set; }
+
+        [Display(Name = "ОКПО")]
+        public string OKPO { get; set; }
 
         [Display(Name = "Код региона")]
         public string RegionCode { get; set; }
