@@ -1694,14 +1694,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 
                 if (entity.RequestType.Id != 3)
                 {
-                    if (entity.DepartmentAccessory.Id == 2)
+                    if (!CreateCodeForDepartment(entity, dep, curUser, out error))
                     {
-                        if (!CreateCodeForDepartment(entity, dep, curUser, out error))
-                        {
-                            error = "Произошла ошибка при формировании кода подразделения!";
-                            DepartmentDao.RollbackTran();
-                            DepartmentArchiveDao.RollbackTran();
-                        }
+                        error = "Произошла ошибка при формировании кода подразделения!";
+                        DepartmentDao.RollbackTran();
+                        DepartmentArchiveDao.RollbackTran();
                     }
                 }
 
@@ -2207,39 +2204,43 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case 7://подразделение (точка)
-                    br = StaffDepartmentBranchDao.GetDepartmentBranchByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
-                    if (br == null)
+                    //создаем код только для фронтов и бэкфронтов
+                    if (entity.DepartmentAccessory.Id == 2 || entity.DepartmentAccessory.Id == 6)
                     {
-                        error = "Для данной точки не определен филиал! Проверьте данные в справочнике кодировки.";
-                        return false;
-                    }
+                        br = StaffDepartmentBranchDao.GetDepartmentBranchByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
+                        if (br == null)
+                        {
+                            error = "Для данной точки не определен филиал! Проверьте данные в справочнике кодировки.";
+                            return false;
+                        }
 
-                    mn = StaffDepartmentManagementDao.GetDepartmentManagementByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
-                    if (mn == null)
-                    {
-                        error = "Для данной точки не определена дирекция! Проверьте данные в справочнике кодировки.";
-                        return false;
-                    }
+                        mn = StaffDepartmentManagementDao.GetDepartmentManagementByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
+                        if (mn == null)
+                        {
+                            error = "Для данной точки не определена дирекция! Проверьте данные в справочнике кодировки.";
+                            return false;
+                        }
 
-                    StaffDepartmentRPLink rp = StaffDepartmentRPLinkDao.GetDepartmentRPLinkByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
-                    if (rp == null)
-                    {
-                        error = "Для данной точки не определена РП-привязка! Проверьте данные в справочнике кодировки.";
-                        return false;
-                    }
+                        StaffDepartmentRPLink rp = StaffDepartmentRPLinkDao.GetDepartmentRPLinkByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
+                        if (rp == null)
+                        {
+                            error = "Для данной точки не определена РП-привязка! Проверьте данные в справочнике кодировки.";
+                            return false;
+                        }
 
-                    entity.DepartmentManagerDetails[0].DepCode = StaffDepartmentRequestDao.GetNewFinDepCode(br, mn, rp);
-                    dep.FingradCode = entity.DepartmentManagerDetails[0].DepCode;
+                        entity.DepartmentManagerDetails[0].DepCode = StaffDepartmentRequestDao.GetNewFinDepCode(br, mn, rp);
+                        dep.FingradCode = entity.DepartmentManagerDetails[0].DepCode;
 
-                    try
-                    {
-                        DepartmentDao.SaveAndFlush(dep);
-                    }
-                    catch (Exception ex)
-                    {
-                        DepartmentDao.RollbackTran();
-                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
-                        return false;
+                        try
+                        {
+                            DepartmentDao.SaveAndFlush(dep);
+                        }
+                        catch (Exception ex)
+                        {
+                            DepartmentDao.RollbackTran();
+                            error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                            return false;
+                        }
                     }
                     break;
             }
