@@ -37,6 +37,13 @@ namespace Reports.Core.Dao.Impl
             return (Department)Session.CreateCriteria(typeof(Department))
                    .Add(Restrictions.Eq("Name", name)).UniqueResult();
         }
+        public IList<Department> GetChildDepartments(Department dep)
+        {
+            return Session.CreateCriteria<Department>()
+                .Add(Expression.Like("Path", dep.Path + "%"))
+                .Add(Expression.Not(Expression.Eq("Id", dep.Id)))
+                .List<Department>();
+        }
         public Department GetRootDepartment()
         {
             return (Department)Session.CreateCriteria(typeof(Department))
