@@ -9,6 +9,7 @@ namespace Reports.Presenters.UI.Bl
     public interface IStaffMovementsBl
     {
         StaffMovementsFactListModel GetFactListModel();
+        StaffMovementsFactEditModel GetFactEditModel(int Id);
         GridDefinition GetFactDocuments(StaffMovementsFactListModel model);
         StaffMovementsEditModel GetEditModel(int id);
         void SetModel(StaffMovementsEditModel model);

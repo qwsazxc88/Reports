@@ -10,7 +10,8 @@ namespace Reports.Core.Dto
         public StaffMovementsFactDto()
         {           
         }
-        [ngGridRow(field = "Id", displayName = "Номер", enableFiltering = true, enableSorting = true, type = "number")]
+        [ngGridRow(field = "Id", displayName = "Номер", enableFiltering = true, enableSorting = true, type = "number",
+            cellTemplate = "<div class='ui-grid-cell-contents'><a target='_blank' href='/StaffMovements/StaffMovementsFactEdit/{{row.entity[col.field]}}'>{{row.entity[col.field]}}</a> </div>")]
         public int Id { get; set; }
         [ngGridRow(field = "SendTo1C", displayName = "Дата", enableFiltering = true, enableSorting = true, type = "date", cellTemplate = "<div class='ui-grid-cell-contents'>{{row.entity[col.field]| date: 'dd.MM.yyyy'}}</div>")]
         public DateTime SendTo1C { get; set; }
@@ -27,12 +28,18 @@ namespace Reports.Core.Dto
             type = "number", 
             cellTemplate = "<div class='ui-grid-cell-contents'><a target='_blank' href='/StaffList/DocumentMovementsEdit/{{row.entity[col.field]}}'>{{row.entity[col.field]}}</a> </div>")]
         public int StaffEstablishedPostRequestId { get; set; }
-        [ngGridRow(field = "StaffEstablishedPostRequestId",
+        [ngGridRow(field = "StaffMovementsId",
             displayName = "Номер кадрового перемещения",
             enableFiltering = true,
             enableSorting = true,
             type = "number",
             cellTemplate = "<div class='ui-grid-cell-contents'><a target='_blank' href='/StaffMovements/Edit/{{row.entity[col.field]}}'>{{row.entity[col.field]}}</a> </div>")]
         public int StaffMovementsId { get; set; }
+        [ngGridRow(field = "IsOk",
+            displayName = "Состояние выгрузки",
+            enableFiltering = true,
+            enableSorting = true,
+            cellTemplate = "<div class='ui-grid-cell-contents' ng-class='{bgRed: row.entity[col.field]!=true, bgGreen: row.entity[col.field]==true}'><span class='bgRed' ng-show='row.entity[col.field]!=true'>Ошибка</span><span class='bgGreen'  ng-show='row.entity[col.field]==true'>Ok</span></div>")]
+        public bool IsOk { get; set; }
     }
 }

@@ -47,6 +47,11 @@ namespace WebMvc.Controllers
             var content = Content(Newtonsoft.Json.JsonConvert.SerializeObject(result));
             return content;
         }
+
+        public ActionResult StaffMovementsFactEdit(int id)
+        {
+            return View(StaffMovementsBl.GetFactEditModel(id));
+        }
         #endregion
         #region
         #region Реестр заявок
