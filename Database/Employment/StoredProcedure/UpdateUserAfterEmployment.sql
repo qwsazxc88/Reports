@@ -44,48 +44,48 @@ BEGIN TRANSACTION
 	
 	IF @PersonalAddition <> 0
 	BEGIN
-		INSERT INTO StaffPostChargeLinks(StaffExtraChargeId, Salary, ActionId, CreateDate, IsActive)
-		SELECT Id, @PersonalAddition, 1, getdate(), 1
+		INSERT INTO StaffPostChargeLinks(UserId, StaffExtraChargeId, Salary, ActionId, CreateDate, IsActive)
+		SELECT @UserId, Id, @PersonalAddition, 1, getdate(), 1
 		FROM StaffExtraCharges
 		WHERE GUID = N'784efe28-3634-11dd-b8e4-00304861d218'
 	END
 
 	IF @AreaAddition <> 0
 	BEGIN
-		INSERT INTO StaffPostChargeLinks(StaffExtraChargeId, Salary, ActionId, CreateDate, IsActive)
-		SELECT Id, @AreaAddition, 1, getdate(), 1
+		INSERT INTO StaffPostChargeLinks(UserId, StaffExtraChargeId, Salary, ActionId, CreateDate, IsActive)
+		SELECT @UserId, Id, @AreaAddition, 1, getdate(), 1
 		FROM StaffExtraCharges
 		WHERE GUID = N'c693b11a-ec98-11df-aabb-003048ba0538'
 	END
 
 	IF @TravelRelatedAddition <> 0
 	BEGIN
-		INSERT INTO StaffPostChargeLinks(StaffExtraChargeId, Salary, ActionId, CreateDate, IsActive)
-		SELECT Id, @TravelRelatedAddition, 1, getdate(), 1
+		INSERT INTO StaffPostChargeLinks(UserId, StaffExtraChargeId, Salary, ActionId, CreateDate, IsActive)
+		SELECT @UserId, Id, @TravelRelatedAddition, 1, getdate(), 1
 		FROM StaffExtraCharges
 		WHERE GUID = N'd9cd6dfe-b4b0-11de-b733-003048359abd'
 	END
 
 	IF @CompetenceAddition <> 0
 	BEGIN
-		INSERT INTO StaffPostChargeLinks(StaffExtraChargeId, Salary, ActionId, CreateDate, IsActive)
-		SELECT Id, @CompetenceAddition, 1, getdate(), 1
+		INSERT INTO StaffPostChargeLinks(UserId, StaffExtraChargeId, Salary, ActionId, CreateDate, IsActive)
+		SELECT @UserId, Id, @CompetenceAddition, 1, getdate(), 1
 		FROM StaffExtraCharges
 		WHERE GUID = N'4f4a4696-cc10-11dd-87ea-00304861d218'
 	END
 
 	IF @FrontOfficeExperienceAddition <> 0
 	BEGIN
-		INSERT INTO StaffPostChargeLinks(StaffExtraChargeId, Salary, ActionId, CreateDate, IsActive)
-		SELECT Id, @FrontOfficeExperienceAddition, 1, getdate(), 1
+		INSERT INTO StaffPostChargeLinks(UserId, StaffExtraChargeId, Salary, ActionId, CreateDate, IsActive)
+		SELECT @UserId, Id, @FrontOfficeExperienceAddition, 1, getdate(), 1
 		FROM StaffExtraCharges
 		WHERE GUID = N'521ba992-ef7d-11e2-8985-003048ba0538'
 	END
 
 	IF @NorthernAreaAddition <> 0
 	BEGIN
-		INSERT INTO StaffPostChargeLinks(StaffExtraChargeId, Salary, ActionId, CreateDate, IsActive)
-		SELECT Id, 0, 1, getdate(), 1
+		INSERT INTO StaffPostChargeLinks(UserId, StaffExtraChargeId, Salary, ActionId, CreateDate, IsActive)
+		SELECT @UserId, Id, 0, 1, getdate(), 1
 		FROM StaffExtraCharges
 		WHERE GUID = N'1f076cf3-1ebb-11e4-80c8-002590d1e727'
 	END
