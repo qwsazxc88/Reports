@@ -280,7 +280,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>@("Причина " + (Model.RequestTypeId == 1 ? "создания" : (Model.RequestTypeId == 2 ? "изменения" : "сокращения")) + " ШЕ")</td>
+                        <td>@("Причина " + (Model.RequestTypeId == 1 ? "создания" : (Model.RequestTypeId == 3 ? "сокращения" : "изменения")) + " ШЕ")</td>
                         <td>
                             @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name")) 
                         </td>

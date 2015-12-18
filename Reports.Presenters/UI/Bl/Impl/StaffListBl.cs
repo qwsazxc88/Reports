@@ -2589,7 +2589,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 model.IsUsed = entity.IsUsed;
-                model.RequestTypeId = entity.RequestType.Id;
+                model.RequestTypeId = model.Id == 0 ? model.RequestTypeId : entity.RequestType.Id;
                 model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
                 model.DateRequest = entity.DateRequest;
                 model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
@@ -2602,7 +2602,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ReasonId = entity.Reason == null ? 0 : entity.Reason.Id;
                 model.ScheduleId = entity.Schedule == null ? 0 : entity.Schedule.Id;
                 model.WCId = entity.WorkingCondition == null ? 0 : entity.WorkingCondition.Id;
-                model.BeginAccountDate = entity.BeginAccountDate;
+                model.BeginAccountDate = model.Id == 0 ? model.BeginAccountDate : entity.BeginAccountDate;
 
                 int UsersCount = StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0);
                 model.EPInfo = "Занято - " + (UsersCount).ToString() + "; Вакантно - " + (entity.Quantity - UsersCount).ToString();
