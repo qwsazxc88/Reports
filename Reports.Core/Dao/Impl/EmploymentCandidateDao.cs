@@ -134,6 +134,7 @@ namespace Reports.Core.Dao.Impl
                 ,case when isnull(personnelManagers.PersonalAddition, 0) + isnull(personnelManagers.AreaAddition, 0) + isnull(personnelManagers.TravelRelatedAddition, 0) + isnull(personnelManagers.CompetenceAddition, 0) + 
                            isnull(personnelManagers.FrontOfficeExperienceAddition, 0) <> 0
                       then 'Да' else 'Нет' end as AdditionAvailable
+                ,candidate.PyrusNumber
               from dbo.EmploymentCandidate candidate
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
                 left join dbo.Dismissal dis on candidate.UserId=dis.UserId and dis.SendTo1C is not null
@@ -554,6 +555,9 @@ namespace Reports.Core.Dao.Impl
                 case 26:
                     orderBy = "AdditionAvailable";
                     break;
+                case 27:
+                    orderBy = "PyrusNumber";
+                    break;
                 default:
                     orderBy = "candidate.Id desc";
                     break;
@@ -621,6 +625,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("IsTDReceived", NHibernateUtil.Boolean)
                 .AddScalar("TDReceivedDate", NHibernateUtil.DateTime)
                 .AddScalar("AdditionAvailable", NHibernateUtil.String)
+                .AddScalar("PyrusNumber", NHibernateUtil.String)
                 ;
 
             return query;

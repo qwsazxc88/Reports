@@ -2121,6 +2121,9 @@ namespace WebMvc.Controllers
             if (!model.PlanRegistrationDate.HasValue)
                 ModelState.AddModelError("PlanRegistrationDate", "Укажите планируемую дату приема!");
 
+            if (string.IsNullOrEmpty(model.PyrusNumber) || string.IsNullOrWhiteSpace(model.PyrusNumber))
+                ModelState.AddModelError("PyrusNumber", "Укажите номер задачи в системе Pyrus!");
+
             return ModelState.IsValid;
         }
 
@@ -2526,6 +2529,11 @@ namespace WebMvc.Controllers
                 {
                     ModelState.AddModelError("ProbationaryPeriod", "Испытательный срок должен содержать только цифры!");
                 }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.ManagerApprovalStatus = null;
             }
 
             return ModelState.IsValid;

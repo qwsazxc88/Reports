@@ -114,6 +114,11 @@
             }
             @Html.HiddenFor(m => m.AppointmentReportId)
             @Html.HiddenFor(m => m.AppointmentId)
+
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.PyrusNumber)&nbsp;@Html.ValidationMessageFor(m => m.PyrusNumber)<br />
+                @Html.TextBoxFor(m => m.PyrusNumber)
+            </div>
         </fieldset>
     </div>
     

@@ -566,6 +566,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 //Общие реквизиты
+                model.DateRequest = entity.DateRequest;
                 model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
                 model.DateState = entity.DateState;
                 model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
@@ -576,6 +577,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BFGId = entity.DepartmentAccessory != null ? entity.DepartmentAccessory.Id : 0;
                 model.OrderNumber = entity.OrderNumber;
                 model.OrderDate = entity.OrderDate;
+                model.BeginAccountDate = entity.BeginAccountDate;
                 if (entity.LegalAddress != null)
                 {
                     model.LegalAddressId = entity.LegalAddress.Id;
@@ -601,6 +603,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepDepositName = entity.DepDeposit != null ? entity.DepDeposit.Name : string.Empty;
                 model.IsPlan = entity.IsPlan;
                 model.IsUsed = entity.IsUsed;
+                model.IsTaxRequest = entity.IsTaxRequest;
 
                 StaffDepartmentFingradStructureDto FinStructure = StaffDepartmentRPLinkDao.GetFingradStructureForDeparment(model.ParentId);
                 if (FinStructure != null)
@@ -746,11 +749,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     DepartmentAccessory = model.BFGId == 0 ? null : StaffDepartmentAccessoryDao.Load(model.BFGId),
                     OrderNumber = model.OrderNumber,
                     OrderDate = model.OrderDate,
+                    BeginAccountDate = model.BeginAccountDate,
                     IsTaxAdminAccount = model.IsTaxAdminAccount,
                     IsEmployeAvailable = model.IsEmployeAvailable,
                     IsPlan = model.IsPlan,
                     IsUsed = false,
                     IsDraft = true,
+                    IsTaxRequest = false,
                     Creator = curUser,
                     CreateDate = DateTime.Now
                 };
@@ -1028,6 +1033,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.DepartmentAccessory = model.BFGId == 0 ? null : StaffDepartmentAccessoryDao.Load(model.BFGId);
             entity.OrderNumber = model.OrderNumber;
             entity.OrderDate = model.OrderDate;
+            entity.BeginAccountDate = model.BeginAccountDate;
             entity.IsTaxAdminAccount = model.IsTaxAdminAccount;
             entity.IsEmployeAvailable = model.IsEmployeAvailable;
             entity.IsPlan = model.IsPlan;
@@ -1037,6 +1043,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.ParentDepartment = model.ParentId == 0 ? null : DepartmentDao.Load(model.ParentId);
             entity.DepNext = model.DepNextId == 0 ? null : DepartmentDao.Load(model.DepNextId);
             entity.DepDeposit = model.DepDepositId == 0 ? null : DepartmentDao.Load(model.DepDepositId);
+            entity.IsTaxRequest = model.IsTaxRequest;
 
             //юридический адрес
             RefAddresses la = null;
@@ -1536,7 +1543,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //для первоначальных данных
                     if (entity.RequestType.Id == 4)
                     {
-                        entity.BeginAccountDate = DateTime.Now;
                         entity.DateState = DateTime.Now;
                         entity.DateSendToApprove = DateTime.Now;
                     }
@@ -1570,7 +1576,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //у текущей заявки ставим признак использования
                     entity.IsUsed = true;
                     error = "Заявка утверждена!";
-                    //entity.BeginAccountDate = DateTime.Now;
                 }
 
                 
@@ -1689,14 +1694,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 
                 if (entity.RequestType.Id != 3)
                 {
-                    if (entity.DepartmentAccessory.Id == 2)
+                    if (!CreateCodeForDepartment(entity, dep, curUser, out error))
                     {
-                        if (!CreateCodeForDepartment(entity, dep, curUser, out error))
-                        {
-                            error = "Произошла ошибка при формировании кода подразделения!";
-                            DepartmentDao.RollbackTran();
-                            DepartmentArchiveDao.RollbackTran();
-                        }
+                        error = "Произошла ошибка при формировании кода подразделения!";
+                        DepartmentDao.RollbackTran();
+                        DepartmentArchiveDao.RollbackTran();
                     }
                 }
 
@@ -1751,9 +1753,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                 || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing
                 || AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector ? curUser : null;//куратор/кадровик банка/консультант РК
 
+            //список руководителей по по ветке
+            IList<User> Initiators = DepartmentDao.GetDepartmentManagers(entity.ParentDepartment.Id, true)
+                .OrderByDescending<User, int?>(manager => manager.Level)
+                .ToList<User>();
+
+            bool IsInitiator = Initiators.Where(x => x.Id == AuthenticationService.CurrentUser.Id).Count() != 0 ? true : false;
+            bool IsTopManager = Initiators.Where(x => x.Id == AuthenticationService.CurrentUser.Id && x.Level == 3).Count() != 0 ? true : false;
+            bool IsBoardMember = AuthenticationService.CurrentUser.UserRole == UserRole.Director;
+            bool IsCurator = (AuthenticationService.CurrentUser.UserRole == UserRole.Inspector);
+            bool IsPersonnelBank = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel);
             bool IsConsultant = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing);
             bool IsTaxCollector = (AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector);
             bool IsStaffListOrder = (AuthenticationService.CurrentUser.UserRole == UserRole.StaffListOrder);
+
+            
+
+            //вышестоящее руководство
+            model.TopManagers = Initiators.Where(x => x.Level == 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
             
             //выбираем из согласования не архивные записи.
             IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffDepartmentRequest);
@@ -1766,7 +1783,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (model.IsImportance)//обязательное согласование
             {
-                if (DocApproval.Where(x => x.Number == 1).Count() == 0)
+                if (DocApproval.Where(x => x.Number == 1).Count() == 0 && (IsInitiator || IsCurator || IsPersonnelBank || IsConsultant))//инициатор, куратор, кадровик, консультант
                 {
                     //если иницатор не выбран, это значит, что инициатор действует сам
                     User Initiator = model.InitiatorId != 0 ? UserDao.Get(model.InitiatorId) : curUser;//инициатор
@@ -1778,7 +1795,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     error = "Заявка создана!";
                 }
 
-                if (DocApproval.Where(x => x.Number == 1).Count() == 1 && DocApproval.Where(x => x.Number == 2).Count() == 0 && entity.DepartmentAccessory.Id == 2)//только фронты
+                if (DocApproval.Where(x => x.Number == 1).Count() == 1 && DocApproval.Where(x => x.Number == 2).Count() == 0 && (entity.DepartmentAccessory.Id == 2 || entity.DepartmentAccessory.Id == 6) && IsCurator)//только фронты и БэкФронты
                 {
                     da.ApproveUser = curUser;
                     da.AssistantUser = null;
@@ -1788,7 +1805,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 //if (DocApproval.Where(x => x.Number == 2).Count() == 1 && DocApproval.Where(x => x.Number == 3).Count() == 0)
-                if (DocApproval.Where(x => x.Number == 1).Count() == 1 && DocApproval.Where(x => x.Number == 3).Count() == 0 && entity.DepartmentAccessory.Id == 1)//только бэки
+                if (DocApproval.Where(x => x.Number == 1).Count() == 1 && DocApproval.Where(x => x.Number == 3).Count() == 0 && entity.DepartmentAccessory.Id == 1 && IsPersonnelBank)//только бэки
                 {
                     da.ApproveUser = curUser;
                     da.AssistantUser = null;
@@ -1797,7 +1814,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     error = "Заявка проверена кадровиком банка!";
                 }
 
-                if (DocApproval.Where(x => x.Number == 3).Count() == 1 && DocApproval.Where(x => x.Number == 5).Count() == 0)
+                if (DocApproval.Where(x => x.Number == 3 || x.Number == 2).Count() == 1 && DocApproval.Where(x => x.Number == 5).Count() == 0 && (IsTopManager || IsCurator || IsPersonnelBank || IsConsultant))//высший руководитель, куратор, кадровик, консультант
                 {
                     //если согласовант не выбран, это значит, что он действует сам
                     User TopManager = model.TopManagerId != 0 ? UserDao.Get(model.TopManagerId) : curUser;//высший руководитель
@@ -1809,7 +1826,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     error = "Заявка согласована!";
                 }
 
-                if (DocApproval.Where(x => x.Number == 5).Count() == 1 && DocApproval.Where(x => x.Number == 6).Count() == 0)
+                if (DocApproval.Where(x => x.Number == 5).Count() == 1 && DocApproval.Where(x => x.Number == 6).Count() == 0 && (IsBoardMember || IsCurator || IsPersonnelBank || IsConsultant))//член правления, куратор, кадровик, консультант
                 {
                     //если утверждающий не выбран, это значит, что он действует сам
                     User BoardMember = model.BoardMemberId != 0 ? UserDao.Get(model.BoardMemberId) : curUser;//член правления
@@ -1865,12 +1882,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return da.Number;
                 }
 
-                if (da.Number > 1 && da.Number < 5)
+                if (da.Number > 1 && da.Number < 6)
                     return da.Number;
 
-                if (da.Number == 5)
+                if (da.Number == 6)
                 {
-                    entity.BeginAccountDate = DateTime.Now;
                     entity.DateState = DateTime.Now;
                 }
             }
@@ -2188,39 +2204,43 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case 7://подразделение (точка)
-                    br = StaffDepartmentBranchDao.GetDepartmentBranchByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
-                    if (br == null)
+                    //создаем код только для фронтов и бэкфронтов
+                    if (entity.DepartmentAccessory.Id == 2 || entity.DepartmentAccessory.Id == 6)
                     {
-                        error = "Для данной точки не определен филиал! Проверьте данные в справочнике кодировки.";
-                        return false;
-                    }
+                        br = StaffDepartmentBranchDao.GetDepartmentBranchByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
+                        if (br == null)
+                        {
+                            error = "Для данной точки не определен филиал! Проверьте данные в справочнике кодировки.";
+                            return false;
+                        }
 
-                    mn = StaffDepartmentManagementDao.GetDepartmentManagementByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
-                    if (mn == null)
-                    {
-                        error = "Для данной точки не определена дирекция! Проверьте данные в справочнике кодировки.";
-                        return false;
-                    }
+                        mn = StaffDepartmentManagementDao.GetDepartmentManagementByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
+                        if (mn == null)
+                        {
+                            error = "Для данной точки не определена дирекция! Проверьте данные в справочнике кодировки.";
+                            return false;
+                        }
 
-                    StaffDepartmentRPLink rp = StaffDepartmentRPLinkDao.GetDepartmentRPLinkByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
-                    if (rp == null)
-                    {
-                        error = "Для данной точки не определена РП-привязка! Проверьте данные в справочнике кодировки.";
-                        return false;
-                    }
+                        StaffDepartmentRPLink rp = StaffDepartmentRPLinkDao.GetDepartmentRPLinkByDeparment(DepartmentDao.GetParentDepartmentWithLevel(dep, dep.ItemLevel.Value - 1));
+                        if (rp == null)
+                        {
+                            error = "Для данной точки не определена РП-привязка! Проверьте данные в справочнике кодировки.";
+                            return false;
+                        }
 
-                    entity.DepartmentManagerDetails[0].DepCode = StaffDepartmentRequestDao.GetNewFinDepCode(br, mn, rp);
-                    dep.FingradCode = entity.DepartmentManagerDetails[0].DepCode;
+                        entity.DepartmentManagerDetails[0].DepCode = StaffDepartmentRequestDao.GetNewFinDepCode(br, mn, rp);
+                        dep.FingradCode = entity.DepartmentManagerDetails[0].DepCode;
 
-                    try
-                    {
-                        DepartmentDao.SaveAndFlush(dep);
-                    }
-                    catch (Exception ex)
-                    {
-                        DepartmentDao.RollbackTran();
-                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
-                        return false;
+                        try
+                        {
+                            DepartmentDao.SaveAndFlush(dep);
+                        }
+                        catch (Exception ex)
+                        {
+                            DepartmentDao.RollbackTran();
+                            error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                            return false;
+                        }
                     }
                     break;
             }
@@ -2396,7 +2416,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //налоговик
             if (model.IsTaxCollector && DocApproval.Where(x => x.Number == 4).Count() == 0)
             {
-                model.IsTaxCollectorApprove = true;
+                //model.IsTaxCollectorApprove = true;
                 model.IsTaxCollectorApproveAvailable = true;
                 model.IsAgreeButtonAvailable = model.IsTaxCollectorApproveAvailable;
                 model.IsImportance = false;
@@ -2405,7 +2425,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //приказы
             if (model.IsOrder && DocApproval.Where(x => x.Number == 7).Count() == 0)
             {
-                model.IsOrderApprove = true;
+                //model.IsOrderApprove = true;
                 model.IsOrderApproveAvailable = true;
                 model.IsAgreeButtonAvailable = model.IsOrderApproveAvailable;
                 model.IsImportance = false;

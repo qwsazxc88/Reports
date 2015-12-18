@@ -205,6 +205,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsAddCommentAvailable { get; set; }
         public DateTime? SendTo1C { get; set; }
 
+        [Display(Name = "Итого")]
+        public string SalaryTotalCaption { get; set; }
+        public string SalaryTotal { get; set; }
+
         public PersonnelManagersModel()
         {
             this.Version = 0;

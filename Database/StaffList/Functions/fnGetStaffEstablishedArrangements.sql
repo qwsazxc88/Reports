@@ -76,7 +76,8 @@ BEGIN
 				 ,I.Territory
 				 ,I.Front
 				 ,I.Drive
-				 ,case when I.NorthAuto = 0 then I.North else I.NorthAuto end as North
+				 --,case when I.NorthAuto = 0 then I.North else I.NorthAuto end as North
+				 ,I.North
 				 ,I.Qualification
 				 ,isnull(I.TotalSalary, A.Salary) as TotalSalary	--если вакансия, то надо показать оклад штатной единицы
 	FROM StaffEstablishedPost as A

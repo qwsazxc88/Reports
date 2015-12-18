@@ -55,5 +55,6 @@ namespace Reports.Core.Domain
         public virtual bool IsTDReceived { get; set; }
         public virtual DateTime? TDReceivedDate { get; set; }
         public virtual User TDMarkUser { get; set; }
+        public virtual string PyrusNumber { get; set; }
     }
 }

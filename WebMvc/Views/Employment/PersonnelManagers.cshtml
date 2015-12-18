@@ -3,25 +3,27 @@
 @using Reports.Core
 @{
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    //Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Кадры";
+    
 }
 
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 
 <span style="color:red;">@ViewBag.Error</span>
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.MessageStr)</span>
+    
 
 @using (Html.BeginForm("PersonnelManagers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    @Html.HiddenFor(m => m.UserId)
+    @Html.HiddenFor(m => m.UserId)    
+    @Html.HiddenFor(m => m.IsDraft)
     @Html.HiddenFor(m => m.IsDraftPM)
     @Html.HiddenFor(m => m.SendTo1C)
     @Html.HiddenFor(m => m.IsReject)
-    @Html.HiddenFor(m => m.IsFixedTermContract)
     
     
-    <fieldset class="bordered doc-wrap panel floatleft">
+    <fieldset class="bordered doc-wrap panel">
     <legend>Кадры</legend>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.EmploymentOrderDate)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentOrderDate)<br />
@@ -98,8 +100,7 @@
             @Html.TextBoxFor(m => m.PositionAddition, new { @class = "calc halfwidth" })
         </div>
         *@
-        
-        <div class="formfield clearleft">
+        <div class="formfield">
             @Html.LabelFor(m => m.AreaMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.AreaMultiplier)<br />
             @Html.TextBoxFor(m => m.AreaMultiplier, new { @class = "calc halfwidth", @readonly = "readonly" })
         </div>
@@ -119,6 +120,11 @@
             @Html.LabelFor(m => m.FrontOfficeExperienceAddition)&nbsp;@Html.ValidationMessageFor(m => m.FrontOfficeExperienceAddition)<br />
             @Html.TextBoxFor(m => m.FrontOfficeExperienceAddition, new { @class = "calc halfwidth", @readonly = "readonly" })
         </div>
+
+        <div class="formfield clear">
+            @Html.DisplayFor(m => m.SalaryTotalCaption)&nbsp;@Html.DisplayFor(m => m.SalaryTotal)
+        </div>
+
         <div class="formfield clear">
             @Html.LabelFor(m => m.Grade)&nbsp;@Html.ValidationMessageFor(m => m.Grade)<br />
             @Html.TextBoxFor(m => m.Grade, new { @class = "halfwidth" })
@@ -159,6 +165,7 @@
             </div>
         </fieldset>
 
+        
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Северный стаж</legend>
             <div class="formfield clearleft">                
@@ -186,7 +193,7 @@
                 @Html.DropDownListFor(m => m.ExtraChargesId, new SelectList(Model.ExtraCharges, "Id", "Name"))
             </div>
         </fieldset>
-
+        
         <fieldset class="bordered nomargin clear">
             <legend class="level2">Пункты трудового договора</legend>
             <table width="100%">
@@ -256,7 +263,7 @@
             @Html.DropDownListFor(m => m.SignerId, Model.Signers, string.Empty)
         </div>
 
-        <div class="formfield">
+        <div class="formfield clear">
             @Html.LabelFor(m => m.InsuredPersonTypeId)&nbsp;@Html.ValidationMessageFor(m => m.InsuredPersonTypeId)<br />
             @Html.DropDownListFor(m => m.InsuredPersonTypeId, Model.InsuredPersonTypeItems, string.Empty)
         </div>
@@ -264,19 +271,23 @@
             @Html.LabelFor(m => m.StatusId)&nbsp;@Html.ValidationMessageFor(m => m.StatusId)<br />
             @Html.DropDownListFor(m => m.StatusId, Model.StatusItems, string.Empty)
         </div>        
-
+        
         @if ((dto.UserRole & UserRole.PersonnelManager) > 0)
         {
             <div class="formfield clearleft">
                 <button id="btnPMDraft" >Сохранить</button>         
-                @if (Model.StatusId != 7 && Model.StatusId != 8)
-                {
-                <button >Утвердить</button>         
-                }
+                <button >Утвердить</button>     
+                
             </div>            
-            <button id="btnReject" style="float:right;">Кандидат отказался от приема</button>    
+            if (!Model.SendTo1C.HasValue)
+            {
+                <button id="btnReject" style="float:right;">Кандидат отказался от приема</button>    
+            }
         }
+
     </fieldset>
+    
+    
     @*
     <div class="buttonpanel">
         <button type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';">Печать<br />трудового договора</button>
@@ -288,8 +299,11 @@
         <button type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать<br />личного листка<br />по учету кадров</button>
         <button type="button" onclick="window.location.href='@Url.Action("GetPrintAttachments", "Employment", new { userId = Model.UserId })';">Печать<br />реестра личного дела</button>
     </div>
- *@
+    *@
+
+ 
 }
+
 
 <div id="add-personnel-managers-comment-dialog" title="Добавление комментария">
     @using (Html.BeginForm("PersonnelManagersAddComments", "Employment", FormMethod.Post))
@@ -298,6 +312,7 @@
         <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
     }
 </div>
+
 
 <table id="CommentsTable" style="width: 100%;">
         <tr>
@@ -323,18 +338,20 @@
             }
         }
 </table>
-
-<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+    
+<script src="../../Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script  type="text/javascript">
     $(document).ready(function () {
-        setActiveMenuItem("empPersonnelManagers");
+        //setActiveMenuItem("empPersonnelManagers");
         UIHelpers.attachDatepickerToInputs($('#EmploymentOrderDate, #EmploymentDate, #ContractDate'), "-1:+1", true);
         UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
         UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
         $('#isHourlySalaryBasisContainer').buttonset();
 
-        
+        $("#NorthExperienceType").change(function () {
+            NorthExperienceTypesChange($("#NorthExperienceType").val());
+        });
 
         //подкрашиваем пол
         $("#IsHourlySalaryBasisTrue").click(function () {
@@ -395,6 +412,7 @@
             $addPersonnelManagersCommentDialog.dialog("open");
             e.preventDefault();
         });
+
     });
 
     function ContractPointChange(TypeId) {
