@@ -769,7 +769,7 @@ CREATE TABLE [dbo].[StaffDepartmentTaxDetails](
 	[KPP] [nvarchar](9) NULL,
 	[OKTMO] [nvarchar](11) NULL,
 	[OKATO] [nvarchar](11) NULL,
-	[OKPO] [nvarchar](10) NULL,
+	[OKPO] [nvarchar](14) NULL,
 	[RegionCode] [nvarchar](2) NULL,
 	[TaxAdminCode] [nvarchar](10) NULL,
 	[TaxAdminName] [nvarchar](100) NULL,
