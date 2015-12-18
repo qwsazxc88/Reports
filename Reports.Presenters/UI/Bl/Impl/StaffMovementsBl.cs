@@ -19,6 +19,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Constants
         #endregion
         #region Dao
+        protected IRequestPrintFormDao requestPrintFormDao;
+        public IRequestPrintFormDao RequestPrintFormDao
+        {
+            get { return Validate.Dependency(requestPrintFormDao); }
+            set { requestPrintFormDao = value; }
+        }
         protected IStaffMovementsFactDao staffMovementsFactDao;
         public IStaffMovementsFactDao StaffMovementsFactDao
         {
@@ -149,8 +155,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         public GridDefinition GetFactDocuments(StaffMovementsFactListModel model)
         {
             var user = UserDao.Load(CurrentUser.Id);
-            var query= QueryCreator.Create<StaffMovementsFact, StaffMovementsFactListModel>(model, user, CurrentUser.UserRole);
-            var data = StaffMovementsFactDao.QueryExpression(x=>true && true);
+            //var query= QueryCreator.Create<StaffMovementsFact, StaffMovementsFactListModel>(model, user, CurrentUser.UserRole);
+            var data = StaffMovementsFactDao.GetDocuments(CurrentUser.Id, 
+                CurrentUser.UserRole, 
+                model.Number, 
+                model.StaffEstablishedPostRequestId.HasValue?model.StaffEstablishedPostRequestId.Value:0, 
+                model.StaffMovementsId.HasValue? model.StaffMovementsId.Value:0, 
+                model.DepartmentId, 
+                model.UserName);
             var result= data.Select(x => new StaffMovementsFactDto
             {
                 Id = x.Id,
@@ -160,10 +172,31 @@ namespace Reports.Presenters.UI.Bl.Impl
                 UserDep3= x.User.Department.Dep3.First().Name,
                 UserDep7 = x.User.Department.Name,                
                 StaffEstablishedPostRequestId = x.StaffEstablishedPostRequest.Id,
+                IsOk = x.IsOk
                 
             }).ToList();
             return UIGrid_Helper.GetGridDefinition(result);
         }
+        #endregion
+        #region
+        public StaffMovementsFactEditModel GetFactEditModel(int Id)
+        {
+            var entity = StaffMovementsFactDao.Load(Id);
+            StaffMovementsFactEditModel model = new StaffMovementsFactEditModel();
+            model.Id = entity.Id;
+            model.User.Id = entity.User.Id;
+            LoadUserData(model.User);
+            var usr = UserDao.Load(model.User.Id);
+            model.ActiveAdditions = GetUserActualAddition(model.User.Id);
+            model.IsOrderAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsOrder).Count>0;
+            model.IsAgreementAdditionAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsAgreementAddition).Count > 0;
+            model.IsAgreementAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsAgreement).Count > 0;
+            model.RegionCoefficient = StaffMovementsDao.GetUserRegionCoeff(model.User.Id);
+            model.Casing = StaffMovementsDao.GetUserSalary(model.User.Id);
+            model.Salary = usr.Rate.HasValue ? usr.Rate.Value : 0;
+            return model;
+        }
+
         #endregion
         #region Реестр заявок
         /// <summary>
