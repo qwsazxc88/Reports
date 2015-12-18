@@ -769,7 +769,7 @@ CREATE TABLE [dbo].[StaffDepartmentTaxDetails](
 	[KPP] [nvarchar](9) NULL,
 	[OKTMO] [nvarchar](11) NULL,
 	[OKATO] [nvarchar](11) NULL,
-	[OKPO] [nvarchar](10) NULL,
+	[OKPO] [nvarchar](14) NULL,
 	[RegionCode] [nvarchar](2) NULL,
 	[TaxAdminCode] [nvarchar](10) NULL,
 	[TaxAdminName] [nvarchar](100) NULL,
@@ -4136,16 +4136,16 @@ FROM (--персональные надбваки
 			--оклад и должностные надбавки
 			SELECT C.UserId, A.Salary, isnull(B.Amount, 0) as Regional, 0 as Personnel, 0 as Territory, 0 as Front, 0 as Drive/*, 0 as NorthAuto, 0 as North*/, 0 as Qualification
 			FROM StaffEstablishedPost as A
-			LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.SEPId = A.Id 
 			INNER JOIN StaffEstablishedPostUserLinks as C ON C.SEPId = A.Id and C.IsUsed = 1
 			INNER JOIN Users as D ON D.Id = C.UserId and D.IsActive = 1
 			INNER JOIN StaffEstablishedPostRequest as E ON E.SEPId = A.Id and E.IsUsed = 1
-			WHERE A.IsUsed = 1 and B.SEPRequestId = E.Id) as A
+			LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.SEPId = A.Id and B.SEPRequestId = E.Id
+			WHERE A.IsUsed = 1) as A
 INNER JOIN Users as B ON B.Id = A.UserId
 LEFT JOIN StaffUserNorthAdditional as C ON C.UserId = A.UserId and year(DateCalculate) = year(getdate()) and month(DateCalculate) = month(getdate())
 GROUP BY A.UserId, B.Rate, isnull(Amount, 0)
 
---select * from vwStaffPostSalary
+--select * from vwStaffPostSalary where userid = 6118
 GO
 
 
@@ -4797,13 +4797,13 @@ BEGIN
 												 then 'Временная вакансия' else 'Вакансия' end) 
 							else E.Name end as Surname, 
 												 
-				 case when E.IsPregnant = 1 then E.Id else G.ReplacedId end as ReplacedId
+				 case when isnull(E.IsPregnant, 0) = 1 then E.Id else G.ReplacedId end as ReplacedId
 				 ,case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, E.Id), E.Name)  else isnull(dbo.fnGetReplacedName(F.Id, null), H.Name) end as ReplacedName
 				 ,F.ReserveType
 				 ,case when F.ReserveType = 1 then N'Перемещение' when F.ReserveType = 2 then N'Прием' end as Reserve
 				 ,F.DocId
 				 ,cast(case when isnull(F.DocId, 0) = 0 then 0 else 1 end as bit) as IsReserve
-				 ,E.IsPregnant
+				 ,isnull(E.IsPregnant, 0) as IsPregnant
 				 ,case when (isnull(E.IsPregnant, 0) = 1 or F.UserId is null) and isnull(F.ReserveType, 0) = 0 then 1 else 0 end as IsVacation
 				 --,case when (case when E.IsPregnant = 1 then null else E.Id end) is null and H.Id is not null then 1 else 0 end as IsSTD
 				 ,case when F.UserId is null then 0 else (case when isnull(E.IsPregnant, 0) = 1 or H.Id is not null then 1 else 0 end) end as IsSTD
@@ -4839,12 +4839,14 @@ BEGIN
 	ORDER BY A.Priority
 
 		
---select * from dbo.fnGetStaffEstablishedArrangements(7924) 
+--select * from dbo.fnGetStaffEstablishedArrangements(23230) 
 
 	RETURN 
 END
 
 GO
+
+
 
 
 

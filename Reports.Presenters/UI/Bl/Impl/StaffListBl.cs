@@ -626,6 +626,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.KPP = dt != null ? dt.KPP : string.Empty;
                     model.OKTMO = dt != null ? dt.OKTMO : string.Empty;
                     model.OKATO = dt != null ? dt.OKATO : string.Empty;
+                    model.OKPO = dt != null ? dt.OKPO : string.Empty;
                     model.RegionCode = dt != null ? dt.RegionCode : string.Empty;
                     model.TaxAdminCode = dt != null ? dt.TaxAdminCode : string.Empty;
                     model.TaxAdminName = dt != null ? dt.TaxAdminName : string.Empty;
