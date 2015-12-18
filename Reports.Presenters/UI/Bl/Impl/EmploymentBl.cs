@@ -1424,6 +1424,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.UserLinkId = PostUserLink.Id;
                 model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
+                model.SalaryMultiplier = entity.SalaryMultiplier;
                 model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Count() == 0 ? 0 :
                     PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Single().Amount;
             }
@@ -5081,6 +5082,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsSecondaryJob = viewModel.IsSecondaryJob;
             entity.IsExternalPTWorker = !viewModel.IsSecondaryJob ? false : viewModel.IsExternalPTWorker;
             //entity.Position = PositionDao.Load(viewModel.PositionId);
+            entity.Position = PositionDao.Load(Vacation.PositionId);
             entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
             entity.RequestNumber = viewModel.RequestNumber;
             entity.SalaryBasis = viewModel.SalaryBasis;
@@ -5800,6 +5802,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
 
+                    StaffEstablishedPostDto Vacation = StaffEstablishedPostDao.GetStaffEstablishedArrangements(viewModel.DepartmentId)
+                        .Where(x => x.Id == viewModel.UserLinkId)
+                        .FirstOrDefault();
+                    if (Vacation == null)
+                    {
+                        error = "Выберите доступную вакансию!";
+                        return false;
+                    }
+
+
                     if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_MANAGER)
                     {
                         entity.Bonus = viewModel.Bonus;
@@ -5809,7 +5821,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.EmploymentConditions = viewModel.EmploymentConditions;
                         entity.IsFront = viewModel.IsFront;
                         entity.IsLiable = viewModel.IsLiable;
-                        entity.Position = PositionDao.Load(viewModel.PositionId);
+                        //entity.Position = PositionDao.Load(viewModel.PositionId);
+                        entity.Position = PositionDao.Load(Vacation.PositionId);
                         entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
                         entity.RequestNumber = viewModel.RequestNumber;
                         entity.SalaryBasis = viewModel.SalaryBasis;

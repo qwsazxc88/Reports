@@ -2531,6 +2531,11 @@ namespace WebMvc.Controllers
                 }
             }
 
+            if (!ModelState.IsValid)
+            {
+                model.ManagerApprovalStatus = null;
+            }
+
             return ModelState.IsValid;
         }
 
