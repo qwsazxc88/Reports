@@ -208,7 +208,8 @@
         ChildVacation = 6,
         ServiceRequest = 7,  //инфоуслуги
         StaffMovementsAgreement =8,
-        StaffMovementsAgreementAddition = 9
+        StaffMovementsAgreementAddition = 9,
+        StaffMovementsOrder = 10,
     }
     public enum DeductionTypeEnum
     {

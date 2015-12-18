@@ -7,6 +7,7 @@
     <!--Данные оклада и регионального коэфф.-->
     <property name="SendTo1C" not-null="false"/>
     <property name="MovementGuid" not-null="false"/>
+    <property name="IsOk" not-null="false"/>
     <!--Персонаж-->
     <many-to-one name="User" class="User" column="UserId" foreign-key="FK_StaffMovementsFact_User" not-null="false"/>
     <!--Кадровое перемещение-->

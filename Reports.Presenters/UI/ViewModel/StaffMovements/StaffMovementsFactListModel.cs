@@ -24,5 +24,6 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Подразделение")]
         public string DepartmentName { get; set; }
         public int DepartmentId { get; set; }
+        public int Number { get; set; }
     }
 }

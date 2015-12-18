@@ -12,5 +12,6 @@ namespace Reports.Core.Domain
         public virtual User User { get; set; }
         public virtual StaffEstablishedPostRequest StaffEstablishedPostRequest { get; set; }
         public virtual StaffMovements StaffMovements { get; set; }
+        public virtual bool IsOk { get; set; } 
     }
 }
