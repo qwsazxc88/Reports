@@ -123,6 +123,8 @@
     $(document).ready(function () {
         setActiveMenuItem("moStaffPost");
 
+        $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
+
          $(document).tooltip({
             track: false,
             show: { /*effect: "blind",*/ duration: 1000 },
@@ -307,7 +309,7 @@
                                         "<td></td>" +
                                         "<td>" +
                                         "<span>" +
-                                            "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
+                                            "<a class='Acollapsible CallModal' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
                                             "<span Id='span-tr'" + result.EstablishedPosts[i].Id + "' >&nbsp;</span> " + result.EstablishedPosts[i].PositionName + "</a>" +
                                         "</span>" +
                                         "</td>" + 
@@ -327,6 +329,7 @@
 
                             var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
                             $(ParentRowName).after(tblStr);//вставляем новую строку
+                            $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
                         }
                     }
                     

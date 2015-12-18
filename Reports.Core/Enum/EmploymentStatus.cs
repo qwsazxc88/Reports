@@ -43,7 +43,7 @@
         /// </summary>
         PENDING_PREV_APPROVAL_BY_SECURITY = 10,
         /// <summary>
-        /// Документы отправлены на подпись кандидату.
+        /// Контроль руководителя - пакет документов на подпись.
         /// </summary>
         DOCUMENTS_SENT_TO_SIGNATURE_TO_CANDIDATE = 11,
         /// <summary>
