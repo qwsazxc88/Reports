@@ -2971,6 +2971,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
 
+            //для создания/изменения в надбавках делаем ссылку на штатную единицу
+            if (entity.RequestType.Id != 3)
+            {
+                if (entity.PostChargeLinks.Count != 0)
+                {
+                    foreach (var item in entity.PostChargeLinks)
+                    {
+                        item.EstablishedPost = sep;
+                        item.Editor = curUser;
+                        item.EditDate = DateTime.Now;
+                    }
+                }
+            }
+
+
             //архивируем изменения
             if (sep.EstablishedPostArchive == null)
                 sep.EstablishedPostArchive = new List<StaffEstablishedPostArchive>();
