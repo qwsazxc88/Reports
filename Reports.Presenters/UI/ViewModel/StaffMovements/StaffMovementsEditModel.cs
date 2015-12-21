@@ -102,6 +102,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Ставка")]
         [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public decimal Salary { get; set; }
+        [Display(Name = "Ставка")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
+        public decimal TargetSalaryCount { get; set; }
         [Display(Name = "Вид расчёта оклада")]
         public string CasingType { get; set; }
         [Display(Name = "Оклад")]
@@ -165,21 +168,6 @@ namespace Reports.Presenters.UI.ViewModel
         public bool MovementNoteIsRequired { get { return true; } set {  } }
         public int MovementNoteAttachmentId { get; set; }
         public UploadFileDto MovementNoteDto { get; set; }
-
-        public HttpPostedFileBase MaterialLiabilityDoc { get; set; }
-        public bool MaterialLiabilityDocIsRequired { get; set; }
-        public int MaterialLiabilityDocAttachmentId { get; set; }
-        public UploadFileDto MaterialLiabilityDocDto { get; set; }
-
-        public HttpPostedFileBase RequirementsOrderDoc { get; set; }
-        public bool RequirementsOrderDocIsRequired { get; set; }
-        public int RequirementsOrderDocAttachmentId { get; set; }
-        public UploadFileDto RequirementsOrderDocDto { get; set; }
-
-        public HttpPostedFileBase ServiceOrderDoc { get; set; }
-        public bool ServiceOrderDocIsRequired { get; set; }
-        public int ServiceOrderDocAttachmentId { get; set; }
-        public UploadFileDto ServiceOrderDocDto { get; set; }
         #endregion
     }
 }

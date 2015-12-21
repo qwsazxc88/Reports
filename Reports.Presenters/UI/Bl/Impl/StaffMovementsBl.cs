@@ -279,6 +279,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="model"></param>
         public void SetModel(StaffMovementsEditModel model)
         {
+            
             if (model.Id > 0)
             {
                 var entity = StaffMovementsDao.Load(model.Id);
@@ -289,11 +290,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.StatusId = entity.Status.Id;
                 model.Status = entity.Status.Name;
                 model.Creator.Id = entity.Creator.Id;
-                model.Number = String.Format("№{0}",entity.Id);
+                model.Number = String.Format("№{0}", entity.Id);
                 model.User.Id = entity.User.Id;
                 model.RequestType = entity.Type.Id;
                 model.MovementDate = entity.MovementDate;
                 model.MovementReason = entity.Data.MovementReason;
+                model.TargetSalaryCount = entity.Data.Salary;
                 model.CreateDate = entity.CreateDate;
                 var targetposition = entity.TargetPosition;
                 if (targetposition != null)
@@ -312,16 +314,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PersonnelManagerBankAccept = entity.PersonnelManagerBankAccept;
                 model.PersonnelManagerBank = entity.PersonnelManagerBank != null ? entity.PersonnelManagerBank.Name : "";
                 model.ChiefAccept = entity.TargetChiefAccept;
-                model.Chief = entity.TargetChief!=null?entity.TargetChief.Name:"";
+                model.Chief = entity.TargetChief != null ? entity.TargetChief.Name : "";
                 model.PersonnelManagerAccept = entity.PersonnelManagerAccept;
-                model.PersonnelManager = entity.PersonnelManager != null ? entity.PersonnelManager.Name : "";                
+                model.PersonnelManager = entity.PersonnelManager != null ? entity.PersonnelManager.Name : "";
                 #endregion
                 #region Данные о переводе
                 model.MovementDate = entity.MovementDate;
                 model.MovementTempTo = entity.MovementTempTo;
                 model.TargetPositionId = entity.TargetPosition.Id;
                 model.TargetPositions = new List<IdNameDto>();
-                model.TargetPositions.Add(new IdNameDto {  Id= model.TargetPositionId, Name=model.TargetPositionName});
+                model.TargetPositions.Add(new IdNameDto { Id = model.TargetPositionId, Name = model.TargetPositionName });
                 model.TargetPositionName = entity.TargetPosition.Name;
                 model.TargetDepartmentId = entity.TargetDepartment.Id;
                 model.TargetDepartmentName = entity.TargetDepartment.Name;
@@ -340,50 +342,30 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TargetCasingType = entity.Data.TargetCasingType;
                 model.RegionCoefficient = entity.Data.RegionCoefficient;
                 model.Grade = entity.Data.Grade;
-                model.HoursType = entity.Data.HoursType!=null?entity.Data.HoursType.Id:0;
-                
+                model.HoursType = entity.Data.HoursType != null ? entity.Data.HoursType.Id : 0;
+
                 //model.AccessGroup = entity.Data.AccessGroup!=null?entity.Data.AccessGroup.Id:0;
                 #endregion
                 #region Files
                 var docs = entity.Docs;
                 if (docs != null && docs.Any())
-                {
-                    
-                    var MaterialLiabilityDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MaterialLiabilityDoc).First();
-                    model.MaterialLiabilityDocDto = new UploadFileDto();
-                    model.MaterialLiabilityDocIsRequired =MaterialLiabilityDoc!=null? MaterialLiabilityDoc.IsRequired:false;
-                    if (MaterialLiabilityDoc != null && MaterialLiabilityDoc.Attachment != null)
-                    {
-                        model.MaterialLiabilityDocDto.FileName = MaterialLiabilityDoc.Attachment.FileName;
-                        model.MaterialLiabilityDocAttachmentId = MaterialLiabilityDoc.Attachment.Id;
-                    }
+                {                    
                     var MovementNote = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementNote).First();
                     model.MovementNoteDto = new UploadFileDto();
-                    model.MovementNoteIsRequired = MovementNote!=null?MovementNote.IsRequired:false;
+                    model.MovementNoteIsRequired = MovementNote != null ? MovementNote.IsRequired : false;
                     if (MovementNote != null && MovementNote.Attachment != null)
                     {
                         model.MovementNoteDto.FileName = MovementNote.Attachment.FileName;
                         model.MovementNoteAttachmentId = MovementNote.Attachment.Id;
                     }
-                    
-                    var RequirementsOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.RequirementsOrderDoc).First();
-                    model.RequirementsOrderDocDto = new UploadFileDto();
-                    model.RequirementsOrderDocIsRequired = RequirementsOrderDoc!=null?RequirementsOrderDoc.IsRequired:false;
-                    if (RequirementsOrderDoc != null && RequirementsOrderDoc.Attachment != null)
-                    {
-                        model.RequirementsOrderDocDto.FileName = RequirementsOrderDoc.Attachment.FileName;
-                        model.RequirementsOrderDocAttachmentId = RequirementsOrderDoc.Attachment.Id;
-                    }
-                    var ServiceOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.ServiceOrderDoc).First();
-                    model.ServiceOrderDocDto = new UploadFileDto();
-                    model.ServiceOrderDocIsRequired = ServiceOrderDoc!=null? ServiceOrderDoc.IsRequired: false;
-                    if (ServiceOrderDoc != null && ServiceOrderDoc.Attachment != null)
-                    {
-                        model.ServiceOrderDocDto.FileName = ServiceOrderDoc.Attachment.FileName;
-                        model.ServiceOrderDocAttachmentId = ServiceOrderDoc.Attachment.Id;                        
-                    }
+                   
                 }
                 #endregion
+            }
+            else
+            {
+                var tmp = UserDao.Load(model.User.Id);
+                model.TargetSalaryCount = tmp.Rate.HasValue ? tmp.Rate.Value : 0;
             }
             //Подгружаем данные о сотруднике
             LoadUserData(model.User);
@@ -637,14 +619,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             var docs = entity.Docs;
             #region файлики
             var tmp = "";
-            var MaterialLiabilityDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MaterialLiabilityDoc).First();
-            SaveAttachment(MaterialLiabilityDoc.Id, MaterialLiabilityDoc.Attachment != null ? MaterialLiabilityDoc.Attachment.Id : 0, model.MaterialLiabilityDocDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
             var MovementNote = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementNote).First();
             SaveAttachment(MovementNote.Id, MovementNote.Attachment != null ? MovementNote.Attachment.Id : 0, model.MovementNoteDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
-            var RequirementsOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.RequirementsOrderDoc).First();
-            SaveAttachment(RequirementsOrderDoc.Id, RequirementsOrderDoc.Attachment != null ? RequirementsOrderDoc.Attachment.Id : 0, model.RequirementsOrderDocDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
-            var ServiceOrderDoc = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.ServiceOrderDoc).First();
-            SaveAttachment(ServiceOrderDoc.Id, ServiceOrderDoc.Attachment != null ? ServiceOrderDoc.Attachment.Id : 0, model.ServiceOrderDocDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
             #endregion
         }
         /// <summary>
@@ -697,7 +673,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
             }
             //Если вышло из состояния черновика, то редактировать подразделение и должность нельзя. Заисключением кадровиков
-            if (model.StatusId > 1 && UserRole.PersonnelManager != CurrentUser.UserRole)
+            if (model.StatusId > 1 /*&& UserRole.PersonnelManager != CurrentUser.UserRole*/)
             {
                 model.IsDepartmentEditable = false;
                 model.IsPositionEditable = false;
@@ -1026,7 +1002,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data = new StaffMovementsData();
                 entity.Data.Grade = model.Grade;
                 entity.Data.HoursType = ScheduleDao.Load(model.HoursType);
-                
+                entity.Data.Salary = model.TargetSalaryCount;
                 StaffMovementsDataDao.SaveAndFlush(entity.Data);
                 //Сохраняем надбавки
                 SaveAdditions(entity, model);
@@ -1075,6 +1051,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.MovementCondition = model.MovementCondition;//Условие перевода
                 entity.Data.Conjunction = model.Conjunction;
                 entity.Data.PyrusLink = model.PyrusLink;
+                entity.Data.Salary = model.TargetSalaryCount;
                 entity.Data.Grade = model.Grade;//Грейд
                 entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
                 SaveAdditions(entity, model);
@@ -1085,14 +1062,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.Data.Grade = model.Grade;//Грейд
                 entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
+                entity.Data.Salary = model.TargetSalaryCount;
                 //entity.Data.AccessGroup = AccessGroupDao.Load(model.AccessGroup);//Группа доступа
                 //Ставим галочки в документах
                 if (model.IsDocsEditable)
                 {
-                    StaffMovementsDocsDao.Update(x => x.Request.Id == entity.Id && x.DocType == (int)StaffMovementsDocsTypes.MaterialLiabilityDoc, y => y.IsRequired = model.MaterialLiabilityDocIsRequired);
                     StaffMovementsDocsDao.Update(x => x.Request.Id == entity.Id && x.DocType == (int)StaffMovementsDocsTypes.MovementNote, y => y.IsRequired = model.MovementNoteIsRequired);
-                    StaffMovementsDocsDao.Update(x => x.Request.Id == entity.Id && x.DocType == (int)StaffMovementsDocsTypes.RequirementsOrderDoc, y => y.IsRequired = model.RequirementsOrderDocIsRequired);
-                    StaffMovementsDocsDao.Update(x => x.Request.Id == entity.Id && x.DocType == (int)StaffMovementsDocsTypes.ServiceOrderDoc, y => y.IsRequired = model.ServiceOrderDocIsRequired);
+                    
                 }
                 //Сохраняем надбавки
                 SaveAdditions(entity, model);
@@ -1235,7 +1211,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //Если согласовано кадровиком
                         entity.PersonnelManager = UserDao.Load(CurrentUser.Id);
                         entity.PersonnelManagerAccept = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.ChiefControl);
+                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved);
                     }
                     break;
                 case 8:
@@ -1333,6 +1309,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.TargetManagerAccept = null;
             entity.PersonnelManagerBankAccept = null;
             entity.TargetChiefAccept = null;
+            //entity.TargetStaffEstablishedPostRequest.re
+            if (entity.TargetStaffEstablishedPostRequest.ReserveType != null && entity.TargetStaffEstablishedPostRequest.DocId == entity.Id)
+            {
+                entity.TargetStaffEstablishedPostRequest.ReserveType = null;
+                entity.TargetStaffEstablishedPostRequest.DocId = null;
+            }
             entity.PersonnelManagerAccept = null;
         }
         /// <summary>
@@ -1546,10 +1528,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="model"></param>
         public void SaveDocsModel(StaffMovementsEditModel model)
         {
-            StaffMovementsDocsDao.Update(x => x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.MaterialLiabilityDoc, y => y.IsRequired = model.MaterialLiabilityDocIsRequired);
+            
             StaffMovementsDocsDao.Update(x => x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.MovementNote, y => y.IsRequired = model.MovementNoteIsRequired);
-            StaffMovementsDocsDao.Update(x => x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.RequirementsOrderDoc, y => y.IsRequired = model.RequirementsOrderDocIsRequired);
-            StaffMovementsDocsDao.Update(x => x.Request.Id == model.Id && x.DocType == (int)StaffMovementsDocsTypes.ServiceOrderDoc, y => y.IsRequired = model.ServiceOrderDocIsRequired);
         }
         public static string[] GetAgreementEntriesTemplate(string entry)
         {

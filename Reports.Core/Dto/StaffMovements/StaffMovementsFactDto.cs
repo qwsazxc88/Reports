@@ -39,7 +39,7 @@ namespace Reports.Core.Dto
             displayName = "Состояние выгрузки",
             enableFiltering = true,
             enableSorting = true,
-            cellTemplate = "<div class='ui-grid-cell-contents' ng-class='{bgRed: row.entity[col.field]!=true, bgGreen: row.entity[col.field]==true}'><span class='bgRed' ng-show='row.entity[col.field]!=true'>Ошибка</span><span class='bgGreen'  ng-show='row.entity[col.field]==true'>Ok</span></div>")]
+            cellTemplate = "<div class='ui-grid-cell-contents' ng-class='{bgRed: row.entity[col.field]!=true, bgGreen: row.entity[col.field]==true}'><span class='bgRed' ng-show='row.entity[col.field]!=true'>Не проведено</span><span class='bgGreen'  ng-show='row.entity[col.field]==true'>Проведено</span></div>")]
         public bool IsOk { get; set; }
     }
 }

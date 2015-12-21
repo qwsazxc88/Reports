@@ -47,10 +47,21 @@ namespace WebMvc.Controllers
             var content = Content(Newtonsoft.Json.JsonConvert.SerializeObject(result));
             return content;
         }
-
+        [HttpGet]
         public ActionResult StaffMovementsFactEdit(int id)
         {
             return View(StaffMovementsBl.GetFactEditModel(id));
+        }
+        [HttpPost]
+        public ActionResult StaffMovementsFactEdit(StaffMovementsFactEditModel model)
+        {
+            model.MaterialLiabilityDocDto = GetFileContext(Request, ModelState, "MaterialLiabilityDoc");
+            model.AgreementDocDto = GetFileContext(Request, ModelState, "AgreementDoc");
+            model.AgreementAdditionalDocDto = GetFileContext(Request, ModelState, "AgreementAdditionDoc");
+            model.OrderDocDto = GetFileContext(Request, ModelState, "OrderDoc");
+            model.RequirementsOrderDocDto = GetFileContext(Request, ModelState, "RequirementsOrderDoc");
+            model.ServiceOrderDocDto = GetFileContext(Request, ModelState, "ServiceOrderDoc");
+            return View(model);
         }
         #endregion
         #region
@@ -105,11 +116,11 @@ namespace WebMvc.Controllers
             else
             {
                 //model.AdditionalAgreementDocDto = GetFileContext(Request, ModelState, "AdditionalAgreementDoc");
-                model.MaterialLiabilityDocDto = GetFileContext(Request, ModelState, "MaterialLiabilityDoc");
+               // model.MaterialLiabilityDocDto = GetFileContext(Request, ModelState, "MaterialLiabilityDoc");
                 model.MovementNoteDto = GetFileContext(Request, ModelState, "MovementNote");
                 //model.MovementOrderDocDto = GetFileContext(Request, ModelState, "MovementOrderDoc");
-                model.RequirementsOrderDocDto = GetFileContext(Request, ModelState, "RequirementsOrderDoc");
-                model.ServiceOrderDocDto = GetFileContext(Request, ModelState, "ServiceOrderDoc");
+               //model.RequirementsOrderDocDto = GetFileContext(Request, ModelState, "RequirementsOrderDoc");
+               // model.ServiceOrderDocDto = GetFileContext(Request, ModelState, "ServiceOrderDoc");
                 StaffMovementsBl.SaveModel(model);
                 StaffMovementsBl.SetModel(model);
             }

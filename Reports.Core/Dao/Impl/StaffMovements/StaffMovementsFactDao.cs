@@ -22,7 +22,9 @@ namespace Reports.Core.Dao.Impl
         public IList<StaffMovementsFact> GetDocuments(int UserId, UserRole role, int Number, int SEPReqId, int SMId, int DepartmentId, string userName)
         {
             var DepDao = Ioc.Resolve<IDepartmentDao>();
+            var ManualRoleRecordDao = Ioc.Resolve<IManualRoleRecordDao>();
             var query = Session.QueryOver<StaffMovementsFact>();
+            
             User userToMove = null;
             Department userToMoveDepartment = null;
             query = query.JoinAlias(x => x.User, () => userToMove);
@@ -57,11 +59,31 @@ namespace Reports.Core.Dao.Impl
             switch (role)
             {
                 case UserRole.Manager :
-                   // restriction.Add(Restrictions.In(userToMove.Id,""));
+                    var depts = ManualRoleRecordDao.QueryExpression(x => x.User.Id == UserId && x.TargetDepartment != null).Select(x=>x.TargetDepartment).ToList();
+                    if (depts == null) depts = new List<Department>();
+                    depts.Add(user.Department);
+                    List<int> deptsIds = new List<int>();
+                    foreach (var d in depts)
+                    {
+                        deptsIds.Add(d.Id);
+                        var cd = DepDao.GetChildDepartments(d);
+                        if (cd != null && cd.Any()) deptsIds.AddRange(cd.Select(x => x.Id).ToList());
+                    }
+                    restriction.Add(Restrictions.In(Projections.Property(()=>userToMoveDepartment.Id),deptsIds));
                     break;
                 case UserRole.Employee:
                     restriction.Add(Restrictions.Where<StaffMovementsFact>(x => x.User.Id == UserId));
                     break;
+                case UserRole.PersonnelManager:
+                    var users = UserDao.GetUsersForPersonnel(UserId);
+                    if (users == null) users = new List<User>();
+                    restriction.Add(Restrictions.In(Projections.Property(() => userToMove.Id), users.Select(x => x.Id).ToList()));
+                    break;
+                case UserRole.Admin:
+                case UserRole.ConsultantPersonnel:
+                case UserRole.OutsourcingManager:
+                    break;
+                default: throw new Exception("Нет доступа");
             }
             return query.Where(restriction).List();
 

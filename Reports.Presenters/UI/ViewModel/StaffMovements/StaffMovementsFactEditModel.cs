@@ -19,7 +19,21 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsAgreementAdditionAvailable { get; set; }
         public bool IsOrderAvailable { get; set; }
         public decimal RegionCoefficient {get;set;}
-            public decimal Salary {get;set;}
-            public decimal Casing { get; set; }
+        public decimal Salary {get;set;}
+        public decimal Casing { get; set; }
+        public bool IsDocsAddAvailable { get; set; }
+        public UploadFileDto MaterialLiabilityDocDto { get; set; }
+        public UploadFileDto RequirementsOrderDocDto { get; set; }
+        public UploadFileDto ServiceOrderDocDto { get; set; }
+        public UploadFileDto AgreementDocDto { get; set; }
+        public UploadFileDto AgreementAdditionalDocDto { get; set; }
+        public UploadFileDto OrderDocDto { get; set; }
+        public int MaterialLiabilityDocAttachmentId { get; set; }
+        public int ServiceOrderDocAttachmentId { get; set; }
+        public int RequirementsOrderDocAttachmentId { get; set; }
+        public int AgreementDocId { get; set; }
+        public int AgreementAdditionalDocId { get; set; }
+        public int OrderDocId { get; set; }
+        public bool IsDocsReceived { get; set; }
     }
 }
