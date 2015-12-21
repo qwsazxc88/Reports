@@ -211,7 +211,7 @@ IF @Switch = 2
 IF @Switch = 3
 	SELECT A.Name, A.Code, B.Name as Management--, D.*
 				 ,(SELECT top 1 Name FROM Users WHERE DepartmentId = A.DepartmentId and IsActive = 1 and RoleId = 4 and IsMainManager = 1 ORDER BY Id) as AdminName
-				 ,(SELECT top 1 Cnilc FROM Users WHERE Email = (SELECT top 1 Email FROM Users WHERE DepartmentId = A.DepartmentId and IsActive = 1 and RoleId = 4 and IsMainManager = 1 ORDER BY Id)
+				 ,(SELECT top 1 substring(Cnilc, 1, 11) + N'_' + substring(Cnilc, 13, 2) FROM Users WHERE Email = (SELECT top 1 Email FROM Users WHERE DepartmentId = A.DepartmentId and IsActive = 1 and RoleId = 4 and IsMainManager = 1 ORDER BY Id)
 																							 and RoleId & 2 > 0) as AdminSNILS
 	FROM StaffDepartmentAdministration as A
 	LEFT JOIN StaffDepartmentManagement as B ON B.Id = A.ManagementId
@@ -223,7 +223,7 @@ IF @Switch = 4
 	SELECT A.Name, A.Code, B.Name as Administration, C.Name as Management
 				 ,(SELECT top 1 Name FROM Users WHERE DepartmentId = A.DepartmentId and IsActive = 1 and RoleId = 4 and IsMainManager = 1 ORDER BY Id) as RBGName
 				 --,(SELECT top 1 Cnilc FROM Users WHERE DepartmentId = A.DepartmentId and IsActive = 1 and RoleId = 4 and IsMainManager = 1 ORDER BY Id) as RBGSNILS
-				 ,(SELECT top 1 Cnilc FROM Users WHERE Email = (SELECT top 1 Email FROM Users WHERE DepartmentId = A.DepartmentId and IsActive = 1 and RoleId = 4 and IsMainManager = 1 ORDER BY Id)
+				 ,(SELECT top 1 substring(Cnilc, 1, 11) + N'_' + substring(Cnilc, 13, 2) FROM Users WHERE Email = (SELECT top 1 Email FROM Users WHERE DepartmentId = A.DepartmentId and IsActive = 1 and RoleId = 4 and IsMainManager = 1 ORDER BY Id)
 																							 and RoleId & 2 > 0) as RBGSNILS
 				 ,(SELECT top 1 Name FROM Users WHERE DepartmentId = A.DepartmentId and IsActive = 1 and RoleId = 4 and IsMainManager = 0 ORDER BY Id) as RBGAssistant
 	FROM StaffDepartmentBusinessGroup as A
