@@ -8,7 +8,13 @@
 {   
     <div style="display:none">
     </div>
-    <div>
+    
+    <div id="tabs" width="100%">
+        <ul>
+        <li><a href="#tabs-1">Место работы сотрудника в настоящее время</a></li>                            
+        <li><a href="#tabs-2">Документы</a></li>                            
+        </ul>
+    <div id="tabs-1">
     <fieldset class="bordered doc-wrap-blue panel">    
     <legend title='Место работы сотрудника в настоящее время' class="bordered">Место работы сотрудника в настоящее время</legend>
     <table>
@@ -98,19 +104,107 @@
     </table>
     </fieldset>
     </div>
-    <div class =" doc-wrap-blue" >
+    <div id="tabs-2" class =" doc-wrap-blue" >
     <label>Документы:</label><br />
-    @if (Model.IsAgreementAvailable)
+    <table class="grid">
+                          <thead>
+                              <tr>
+                                <th>Название документа</th><th>Образец</th><th>Скан</th>
+                              </tr>
+                          </thead>
+                          <tr>
+                          <td>Приказ Форма Т5</td>
+                          <td>@if (Model.IsAgreementAvailable)
+                            {
+                                <a href='@Url.Action("GetPrintForm", "Help", new { id = Model.Id, typeId = 8 })'>Печать</a><br />
+                            }
+                          </td>
+                          <td>@if (Model.IsDocsAddAvailable)
+                                {
+                                    <input type="file" name="AgreementDoc" />
+                                }</td>
+                          </tr>
+                          <tr>
+                          <td>Дополнительное соглашение изменение оклада</td>
+                          <td>@if (Model.IsAgreementAdditionAvailable)        
+                                {
+                                    <a href='@Url.Action("GetPrintForm", "Help", new { id = Model.Id, typeId = 9 })'>Печать</a><br />
+                                }</td>
+                          <td>@if (Model.IsDocsAddAvailable)
+                                {
+                                    <input type="file" name="AgreementAdditionDoc" />
+                                }</td>
+                          </tr>
+                          <tr>
+                          <td>Дополнительное соглашение кадровое перемещение</td>
+                          <td>@if (Model.IsOrderAvailable)        
+                            {
+                                <a href='@Url.Action("GetPrintForm", "Help", new { id = Model.Id, typeId = 10 })'>Печать</a><br />
+                            }</td>
+                          <td>@if (Model.IsDocsAddAvailable)
+                                {
+                                    <input type="file" name="OrderDoc" />
+                                }</td>
+                          </tr>
+                          <tr>
+                              <td>
+                              Договор мат.ответственность
+                              </td>
+                              <td></td>
+                              <td>
+                                @if (Model.MaterialLiabilityDocDto != null && !string.IsNullOrEmpty(Model.MaterialLiabilityDocDto.FileName))
+                                {
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MaterialLiabilityDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.MaterialLiabilityDocDto.FileName</a>
+                                }
+                                @if (Model.IsDocsAddAvailable)
+                                {
+                                    <input type="file" name="MaterialLiabilityDoc" />
+                                }
+                              </td>                              
+                          </tr>
+                          <tr>
+                              <td>
+                              Печать порядок по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)
+                              </td>
+                              <td><a target="_blank" class="button" href="/StaffMovements/GetPrintModel/?Id=@(Model.Id)&Type=4">Печать</a> </td>
+                              <td>
+                                  @if (Model.RequirementsOrderDocDto != null && !string.IsNullOrEmpty(Model.RequirementsOrderDocDto.FileName))
+                                  {
+                                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.RequirementsOrderDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.RequirementsOrderDocDto.FileName</a>
+                                  }
+                                  @if (Model.IsDocsAddAvailable)
+                                  {
+                                    <input type="file" name="RequirementsOrderDoc" />
+                                  }
+                              </td>                              
+                          </tr>
+                          <tr>
+                              <td>
+                              Печать порядок по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)
+                              </td>
+                              <td><a target="_blank" class="button" href="/StaffMovements/GetPrintModel/?Id=@(Model.Id)&Type=5">Печать</a></td>
+                              <td>
+                                    @if (Model.ServiceOrderDocDto != null && !string.IsNullOrEmpty(Model.ServiceOrderDocDto.FileName))
+                                    {
+                                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.ServiceOrderDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.ServiceOrderDocDto.FileName</a>
+                                    }
+                                    @if (Model.IsDocsAddAvailable)
+                                    {
+                                        <input type="file" name="ServiceOrderDoc" />
+                                    }
+                              </td>                              
+                          </tr>
+                          </table>   
+    @if (Model.IsDocsAddAvailable)
     {
-         <a href='@Url.Action("GetPrintForm", "Help", new { id = Model.Id, typeId = 8 })'>Соглашение</a><br />
-    }
-    @if (Model.IsAgreementAdditionAvailable)
-    {
-        <a href='@Url.Action("GetPrintForm", "Help", new { id = Model.Id, typeId = 9 })'>Доп соглашение</a><br />
-    }
-    @if (Model.IsOrderAvailable)        
-    {
-        <a href='@Url.Action("GetPrintForm", "Help", new { id = Model.Id, typeId = 10 })'>Приказ</a><br />
+    <input type = "submit" value="сохранить" />
     }
     </div>
+    </div>
 }
+<script>
+$(document).ready(function () {
+        setActiveMenuItem("StaffMovements");
+        $("#tabs").tabs();
+    });
+</script>

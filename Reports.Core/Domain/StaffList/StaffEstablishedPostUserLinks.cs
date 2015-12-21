@@ -23,11 +23,11 @@ namespace Reports.Core.Domain
         /// <summary>
         /// Тип бронирования вакансии (StaffReserveTypeEnum).
         /// </summary>
-        public virtual int ReserveType { get; set; }
+        public virtual int? ReserveType { get; set; }
         /// <summary>
         /// Id документа/заявки
         /// </summary>
-        public virtual int DocId { get; set; }
+        public virtual int? DocId { get; set; }
         /// <summary>
         /// Признак сокращения
         /// </summary>
