@@ -4,9 +4,13 @@
     ViewBag.Title = "Просмотр кадрового перемещения";
     Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";    
 }
-@using (Html.BeginForm())
+@using (Html.BeginForm("StaffMovementsFactEdit", "StaffMovements", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {   
     <div style="display:none">
+    <div id="MaterialDocDialog">
+    <label>Подписант:</label>@Html.DropDownListFor(x=>x.SignerId, new SelectList(Model.Signers,"Id","Name",Model.SignerId))
+    <a target="_blank" id="MaterialDocLink" class="button" href="/StaffMovements/GetPrintModel/?Id=@(Model.Id)&Type=1&SignerId=@(Model.SignerId)">Печать</a>
+    </div>
     </div>
     
     <div id="tabs" width="100%">
@@ -122,6 +126,10 @@
                           <td>@if (Model.IsDocsAddAvailable)
                                 {
                                     <input type="file" name="AgreementDoc" />
+                                }
+                             @if (Model.AgreementDocDto != null && !string.IsNullOrEmpty(Model.AgreementDocDto.FileName))
+                                {
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AgreementDocId })' style="cursor:hand" target="_blank" >@Model.AgreementDocDto.FileName</a>
                                 }</td>
                           </tr>
                           <tr>
@@ -133,7 +141,12 @@
                           <td>@if (Model.IsDocsAddAvailable)
                                 {
                                     <input type="file" name="AgreementAdditionDoc" />
-                                }</td>
+                                }
+                                @if (Model.AgreementAdditionalDocDto != null && !string.IsNullOrEmpty(Model.AgreementAdditionalDocDto.FileName))
+                                {
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AgreementAdditionalDocId })' style="cursor:hand" target="_blank" >@Model.AgreementAdditionalDocDto.FileName</a>
+                                }
+                                </td>
                           </tr>
                           <tr>
                           <td>Дополнительное соглашение кадровое перемещение</td>
@@ -144,13 +157,18 @@
                           <td>@if (Model.IsDocsAddAvailable)
                                 {
                                     <input type="file" name="OrderDoc" />
-                                }</td>
+                                }
+                                @if (Model.OrderDocDto != null && !string.IsNullOrEmpty(Model.OrderDocDto.FileName))
+                                {
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.OrderDocId })' style="cursor:hand" target="_blank" >@Model.OrderDocDto.FileName</a>
+                                }
+                                </td>
                           </tr>
                           <tr>
                               <td>
                               Договор мат.ответственность
                               </td>
-                              <td></td>
+                              <td><a href="#" onclick='$("#MaterialDocDialog").dialog("open");' >Печать</a></td>
                               <td>
                                 @if (Model.MaterialLiabilityDocDto != null && !string.IsNullOrEmpty(Model.MaterialLiabilityDocDto.FileName))
                                 {
@@ -160,11 +178,12 @@
                                 {
                                     <input type="file" name="MaterialLiabilityDoc" />
                                 }
+                                
                               </td>                              
                           </tr>
                           <tr>
                               <td>
-                              Печать порядок по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)
+                              Порядок по исполнению требований при организации кассовой работы сотрудниками ВСП (Приложение 1)
                               </td>
                               <td><a target="_blank" class="button" href="/StaffMovements/GetPrintModel/?Id=@(Model.Id)&Type=4">Печать</a> </td>
                               <td>
@@ -180,7 +199,7 @@
                           </tr>
                           <tr>
                               <td>
-                              Печать порядок по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)
+                              Порядок по обслуживанию клиентов в кассе сотрудниками ВСП (Приложение 2)
                               </td>
                               <td><a target="_blank" class="button" href="/StaffMovements/GetPrintModel/?Id=@(Model.Id)&Type=5">Печать</a></td>
                               <td>
@@ -195,9 +214,11 @@
                               </td>                              
                           </tr>
                           </table>   
-    @if (Model.IsDocsAddAvailable)
+    @if (Model.IsSaveAvailable)
     {
-    <input type = "submit" value="сохранить" />
+        <br />
+        <label>Кадровое перемещение завершено:</label>     @Html.CheckBoxFor(m=>m.IsDocsReceived,Model.IsCheckByPersonelAvailable? null:(object) new {disabled="disabled"}) <br />
+        <input type = "submit" value="сохранить" />
     }
     </div>
     </div>
@@ -206,5 +227,13 @@
 $(document).ready(function () {
         setActiveMenuItem("StaffMovements");
         $("#tabs").tabs();
+        $('#MaterialDocDialog').dialog({
+            autoOpen: false
+        });
+    $('#SignerId').change(function()
+    {
+        var newlink='/StaffMovements/GetPrintModel/?Id=@(Model.Id)&Type=1&SignerId='+ $('#SignerId').val();
+        $("#MaterialDocLink").attr("href", newlink);
+    });
     });
 </script>
