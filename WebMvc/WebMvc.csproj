@@ -261,9 +261,11 @@
     <Content Include="Views\StaffMovements\Templates\Prilozhenie1.cshtml">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Views\StaffMovements\Templates\Prilozhenie1.css" />
     <Content Include="Views\StaffMovements\Templates\prilozhenie2.cshtml">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Views\StaffMovements\Templates\Prilozhenie2.css" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
