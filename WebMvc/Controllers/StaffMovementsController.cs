@@ -61,6 +61,7 @@ namespace WebMvc.Controllers
             model.OrderDocDto = GetFileContext(Request, ModelState, "OrderDoc");
             model.RequirementsOrderDocDto = GetFileContext(Request, ModelState, "RequirementsOrderDoc");
             model.ServiceOrderDocDto = GetFileContext(Request, ModelState, "ServiceOrderDoc");
+            StaffMovementsBl.SaveFact(model);
             return View(model);
         }
         #endregion
@@ -168,6 +169,30 @@ namespace WebMvc.Controllers
         {
             var data = NoteDocumentCreator.StaffMovementsDocsCreator.CreateAgreementDoc(Server.MapPath("~/Files"), AgreementNumber, AgreementDate, UserName, SignerName, TargetPosition, TargetDepartment, SignerShortName, SignerPositionWithDepartment, UserShortName);
             return File(data, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "dogovor.docx");
+        }
+        public ActionResult GetPrintModel(int id, int type, int SignerId=0)
+        {
+            StaffMovementsPrintModel model = StaffMovementsBl.GetPrintModel(id,SignerId);
+            string view = "";
+            switch (type)
+            {
+                case 1:
+                    view = "~/Views/StaffMovements/Templates/MaterialLiabilityDoc.cshtml";
+                    break;
+                case 2:
+                    view = "~/Views/StaffMovements/Templates/Addition.cshtml";
+                    break;
+                case 3:
+                    view = "~/Views/StaffMovements/Templates/Addition2.cshtml";
+                    break;
+                case 4:
+                    view = "~/Views/StaffMovements/Templates/Prilozhenie1.cshtml";
+                    break;
+                case 5:
+                    view = "~/Views/StaffMovements/Templates/prilozhenie2.cshtml";
+                    break;
+            }
+            return View(view, model);
         }
         /*public ActionResult GetPrintModel(int id, int type)
        {

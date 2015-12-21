@@ -178,25 +178,156 @@ namespace Reports.Presenters.UI.Bl.Impl
             return UIGrid_Helper.GetGridDefinition(result);
         }
         #endregion
-        #region
+        #region фактическое перемещение редактирвоание 
         public StaffMovementsFactEditModel GetFactEditModel(int Id)
         {
             var entity = StaffMovementsFactDao.Load(Id);
+            
             StaffMovementsFactEditModel model = new StaffMovementsFactEditModel();
+            model.Signers = EmploymentSignersDao.LoadAll().Select(x=>new IdNameDto{ Id=x.Id, Name=x.Name}).ToList();
+            model.SignerId = model.Signers.First().Id;
+
             model.Id = entity.Id;
             model.User.Id = entity.User.Id;
+            if (CurrentUser.Id == model.User.Id && !model.IsDocsReceived)
+            {
+                model.IsDocsAddAvailable = true;
+            }
             LoadUserData(model.User);
             var usr = UserDao.Load(model.User.Id);
             model.ActiveAdditions = GetUserActualAddition(model.User.Id);
             model.IsOrderAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsOrder).Count>0;
             model.IsAgreementAdditionAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsAgreementAddition).Count > 0;
             model.IsAgreementAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsAgreement).Count > 0;
+            if (entity.AgreementAdditionalDoc.HasValue)
+            {
+                model.AgreementAdditionalDocDto = new UploadFileDto();
+                var file = RequestAttachmentDao.Load(entity.AgreementAdditionalDoc.Value);
+                model.AgreementAdditionalDocDto.FileName = file.FileName;
+                model.AgreementAdditionalDocId = file.Id;
+            }
+            if (entity.AgreementDoc.HasValue)
+            {
+                model.AgreementDocDto = new UploadFileDto();
+                var file = RequestAttachmentDao.Load(entity.AgreementDoc.Value);
+                model.AgreementDocDto.FileName = file.FileName;
+                model.AgreementDocId = file.Id;
+            }
+            if (entity.MaterialLiabilityDoc.HasValue)
+            {
+                model.MaterialLiabilityDocDto = new UploadFileDto();
+                var file = RequestAttachmentDao.Load(entity.MaterialLiabilityDoc.Value);
+                model.MaterialLiabilityDocDto.FileName = file.FileName;
+                model.MaterialLiabilityDocAttachmentId  = file.Id;
+            }
+            if (entity.RequirementsOrderDoc.HasValue)
+            {
+                model.RequirementsOrderDocDto = new UploadFileDto();
+                var file = RequestAttachmentDao.Load(entity.RequirementsOrderDoc.Value);
+                model.RequirementsOrderDocDto.FileName = file.FileName;
+                model.RequirementsOrderDocAttachmentId = file.Id;
+            }
+            if (entity.ServiceOrderDoc.HasValue)
+            {
+                model.ServiceOrderDocDto = new UploadFileDto();
+                var file = RequestAttachmentDao.Load(entity.ServiceOrderDoc.Value);
+                model.ServiceOrderDocDto.FileName = file.FileName;
+                model.ServiceOrderDocAttachmentId = file.Id;
+            }
+            if (entity.OrderDoc.HasValue)
+            {
+                model.OrderDocDto = new UploadFileDto();
+                var file = RequestAttachmentDao.Load(entity.OrderDoc.Value);
+                model.OrderDocDto.FileName = file.FileName;
+                model.OrderDocId = file.Id;
+            }
             model.RegionCoefficient = StaffMovementsDao.GetUserRegionCoeff(model.User.Id);
             model.Casing = StaffMovementsDao.GetUserSalary(model.User.Id);
             model.Salary = usr.Rate.HasValue ? usr.Rate.Value : 0;
+            model.IsCheckByPersonelAvailable = ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && !model.IsDocsReceived);
+            model.IsSaveAvailable = model.IsDocsAddAvailable || model.IsCheckByPersonelAvailable;
             return model;
         }
-
+        public void SaveFact(StaffMovementsFactEditModel model)
+        {
+            var entity = StaffMovementsFactDao.Load(model.Id);
+            if ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+            {
+                entity.IsDocumentsReceived = model.IsDocsReceived;
+            }
+            if ((CurrentUser.UserRole & UserRole.Employee)>0)
+            {
+                if (model.AgreementAdditionalDocDto != null)
+                {
+                    string tmp = "";
+                    var id = SaveAttachment(model.Id, 0, model.AgreementAdditionalDocDto, RequestAttachmentTypeEnum.AgreementAdditionalDocDto, out tmp);
+                    if (id.HasValue)
+                    {
+                        model.AgreementAdditionalDocId = id.Value;
+                        model.AgreementAdditionalDocDto.FileName = tmp;
+                        entity.AgreementAdditionalDoc = id.Value;
+                    }
+                }
+                if (model.AgreementDocDto != null)
+                {
+                    string tmp = "";
+                    var id = SaveAttachment(model.Id, 0, model.AgreementDocDto, RequestAttachmentTypeEnum.AgreementDocDto, out tmp);
+                    if (id.HasValue)
+                    {
+                        model.AgreementDocId = id.Value;
+                        model.AgreementDocDto.FileName = tmp;
+                        entity.AgreementDoc = id.Value;
+                    }
+                }
+                if (model.MaterialLiabilityDocDto != null)
+                {
+                    string tmp = "";
+                    var id = SaveAttachment(model.Id, 0, model.MaterialLiabilityDocDto, RequestAttachmentTypeEnum.MaterialLiabilityDocDto, out tmp);
+                    if (id.HasValue)
+                    {
+                        model.MaterialLiabilityDocAttachmentId = id.Value;
+                        model.MaterialLiabilityDocDto.FileName = tmp;
+                        entity.MaterialLiabilityDoc = id.Value;
+                    }
+                }
+                if (model.OrderDocDto != null)
+                {
+                    string tmp = "";
+                    var id = SaveAttachment(model.Id, 0, model.OrderDocDto, RequestAttachmentTypeEnum.OrderDocDto, out tmp);
+                    if (id.HasValue)
+                    {
+                        model.OrderDocId = id.Value;
+                        model.OrderDocDto.FileName = tmp;
+                        entity.OrderDoc = id.Value;
+                    }
+                }
+                if (model.RequirementsOrderDocDto != null)
+                {
+                    string tmp = "";
+                    var id = SaveAttachment(model.Id, 0, model.RequirementsOrderDocDto, RequestAttachmentTypeEnum.RequirementsOrderDocDto, out tmp);
+                    if (id.HasValue)
+                    {
+                        model.RequirementsOrderDocAttachmentId = id.Value;
+                        model.RequirementsOrderDocDto.FileName = tmp;
+                        entity.RequirementsOrderDoc = id.Value;
+                    }
+                }
+                if (model.ServiceOrderDocDto != null)
+                {
+                    string tmp = "";
+                    var id = SaveAttachment(model.Id, 0, model.ServiceOrderDocDto, RequestAttachmentTypeEnum.ServiceOrderDocDto, out tmp);
+                    if (id.HasValue)
+                    {
+                        model.ServiceOrderDocAttachmentId = id.Value;
+                        model.ServiceOrderDocDto.FileName = tmp;
+                        entity.ServiceOrderDoc = id.Value;
+                    }
+                }
+            }
+            model.IsDocsAddAvailable = (CurrentUser.Id == model.User.Id) && !model.IsDocsReceived;
+            model.IsSaveAvailable = model.IsDocsAddAvailable || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && !model.IsDocsReceived);
+            model = GetFactEditModel(model.Id);
+        }
         #endregion
         #region Реестр заявок
         /// <summary>
@@ -1389,48 +1520,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
 
-
-        #region DEPRECATED CODE TO DELETE
-        //Deprecated Временно не печатаем документы отсюда
-        /*public StaffMovementsPrintModel GetPrintModel(int id)
+        public StaffMovementsPrintModel GetPrintModel(int id, int SignerId=0)
         {
             var entity = StaffMovementsDao.Load(id);
             StaffMovementsPrintModel model = new StaffMovementsPrintModel();
-            #region Money
-            var bablo = entity.Data.TargetCasing;
-            model.TargetCasing = String.Format("{0}({1}) рублей в месяц", bablo, RequestBl.GetSummString(bablo));
-            model.Additions = new List<string>();
-            if (entity.Data.AdditionPersonnelAction != 4 && entity.Data.AdditionPersonnel > 0)
-            {
-                var sum =entity.Data.AdditionPersonnel;
-                model.Additions.Add(String.Format(" - Надбавка персональная в размере {0}({1}) рублей в месяц;",sum, RequestBl.GetSummString(sum)));
-            }
-            if (entity.Data.AdditionFrontAction != 4 && entity.Data.AdditionFront > 0)
-            {
-                var sum = entity.Data.AdditionFront;
-                model.Additions.Add(String.Format(" - Надбавка за работу специалистом фронт-офиса в размере {0}({1}) рублей в месяц;", sum, RequestBl.GetSummString(sum)));
-            }
-            if (entity.Data.AdditionQualityAction != 4 && entity.Data.AdditionQuality > 0)
-            {
-                var sum = entity.Data.AdditionQuality;
-                model.Additions.Add(String.Format(" - Надбавка квалификационная в размере {0}({1}) рублей в месяц;", sum, RequestBl.GetSummString(sum)));
-            }
-            if (entity.Data.AdditionTerritoryAction != 4 && entity.Data.AdditionTerritory > 0)
-            {
-                var sum = entity.Data.AdditionTerritory;
-                model.Additions.Add(String.Format(" - Надбавка территориальная в размере {0}({1}) рублей в месяц;", sum, RequestBl.GetSummString(sum)));
-            }
-            if (entity.Data.AdditionTravelingAction != 4 && entity.Data.AdditionTraveling > 0)
-            {
-                var sum = entity.Data.AdditionTraveling;
-                model.Additions.Add(String.Format(" - Надбавка за разъездной характер работы в размере {0}({1}) рублей в месяц;", sum, RequestBl.GetSummString(sum)));
-            }
-            if (entity.Data.NorthFactorAdditionAction!=4)
-            {
-                var sum = entity.Data.AdditionTraveling;
-                model.Additions.Add(String.Format(" - Надбавка за северный стаж;"));
-            }
-#endregion
+            
             #region Персонажи
             model.UserName = entity.User.Name;
             model.TargetPosition = entity.TargetPosition.Name;
@@ -1440,16 +1534,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.ChiefPosition = entity.TargetChief != null && entity.TargetChief.Position!=null? entity.TargetChief.Position.Name:"";
             model.TargetManager = entity.TargetManager.Name;
             model.SourceManager = entity.SourceManager.Name;
-            model.SignerName = entity.Data.Signatory!=null?entity.Data.Signatory.Name:"";
-            model.SignerPosition = entity.Data.Signatory!=null?entity.Data.Signatory.Position:"";
-            model.SignerAdditionData= entity.Data.Signatory!=null?entity.Data.Signatory.PreamblePartyTemplate:"";
+            if(SignerId>0)
+            {
+                var signer = EmploymentSignersDao.Load(SignerId);
+                model.SignerName = signer != null ? signer.Name : "";
+                model.SignerPosition = signer != null ? signer.Position : "";
+                model.SignerAdditionData = signer != null ? signer.PreamblePartyTemplate : "";
+            }
             model.PersonnelManagerBank = entity.PersonnelManagerBank!=null?entity.PersonnelManagerBank.Name:"";
             model.PersonnelManagerBankDateAccept = entity.PersonnelManagerBankAccept.HasValue? entity.PersonnelManagerBankAccept.Value.ToString("dd.MM.yyyy"):"";
             #endregion
-            #region Numbers 
-            model.MaterialDocNumber = entity.Data.AdditionalAgreementNumber;
             
-            #endregion
             #region Dates
             model.MovementDate = entity.MovementDate.HasValue?entity.MovementDate.Value.ToString("dd.MM.yyyy") :"";
             model.PersonnelManagerBankDateAccept = entity.PersonnelManagerAccept.HasValue ? entity.PersonnelManagerAccept.Value.ToString("dd.MM.yyyy") : "";            
@@ -1482,46 +1577,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.TargetDep3 = Targetdep3 != null ? Targetdep3.Name : "";
             var Targetdep2 = DepartmentDao.GetParentDepartmentWithLevel(Targetdep7, 2);
             model.TargetDep2 = Targetdep2 != null ? Targetdep2.Name : "";
-            #endregion
-            #region fields
-            var e1_2 = entity.Data.AgreementEntry1_2;
-            model.AgreementEntry1_2 = GetAgreementEntriesTemplate("1_2")[e1_2-1]
-                .Replace("{{SourcePosition}}", model.SourcePosition)
-                .Replace("{{SourceDepartment}}", model.SourceDepartment)
-                .Replace("{{TargetPosition}}", model.TargetDepartment)
-                .Replace("{{TargetDepartment}}", model.TargetDepartment)
-                .Replace("{{MovementDate}}", model.MovementDate);
-            if (e1_2 >= 2)
-            {
-                model.AgreementEntry1_2 = model.AgreementEntry1_2.Replace("{{Field}}", entity.Data.AgreementField1_2);
-            }
-
-            var e1_6 = entity.Data.AgreementEntry1_6;
-            model.AgreementEntry1_6 = GetAgreementEntriesTemplate("1_6")[e1_6-1];
-            if (e1_6 == 1)
-            {
-                model.AgreementEntry1_6 = model.AgreementEntry1_6.Replace("{{Field}}", entity.Data.AgreementField1_6);
-            }
-
-            var e2_2_1 = entity.Data.AgreementEntry2_2_1;
-            model.AgreementEntry2_2_1 = GetAgreementEntriesTemplate("2_2_1")[e2_2_1 - 1]
-                .Replace("{{TargetPosition}}", model.TargetDepartment)
-                .Replace("{{TargetDepartment}}", model.TargetDepartment);
-
-            var e4_2 = entity.Data.AgreementEntry4_2;
-            var e5_1 = entity.Data.AgreementEntry5_1;
-            
-            
-            if (e1_6 == 1) model.AgreementField1_6[0] = entity.Data.AgreementField1_6;
-            if (e4_2 == 2) model.AgreementField4_2[0] = entity.Data.AgreementField4_2;
-            if (e5_1 == 5) model.AgreementField5_1[0] = entity.Data.AgreementField5_1;
-            
-            
-
-            #endregion
+            #endregion            
             model.HoursType = entity.Data.HoursType!=null? entity.Data.HoursType.Name:"";
             return model;
-        }*/
+        }
+        
+        #region DEPRECATED CODE TO DELETE
+        //Deprecated Временно не печатаем документы отсюда
+        /*}*/
         /// <summary>
         /// Сохранение модели документов. DEPRECATED
         /// </summary>

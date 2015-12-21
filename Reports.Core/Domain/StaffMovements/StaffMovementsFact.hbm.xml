@@ -8,6 +8,13 @@
     <property name="SendTo1C" not-null="false"/>
     <property name="MovementGuid" not-null="false"/>
     <property name="IsOk" not-null="false"/>
+    <property name="MaterialLiabilityDoc" not-null ="false"/>
+    <property name="RequirementsOrderDoc" not-null ="false"/>
+    <property name="ServiceOrderDoc" not-null ="false"/>
+    <property name="AgreementDoc" not-null ="false"/>
+    <property name="AgreementAdditionalDoc" not-null ="false"/>
+    <property name="OrderDoc" not-null ="false"/>
+    <property name="IsDocumentsReceived" not-null ="false"/>
     <!--Персонаж-->
     <many-to-one name="User" class="User" column="UserId" foreign-key="FK_StaffMovementsFact_User" not-null="false"/>
     <!--Кадровое перемещение-->

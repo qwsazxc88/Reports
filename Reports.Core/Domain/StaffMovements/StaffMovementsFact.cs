@@ -13,5 +13,12 @@ namespace Reports.Core.Domain
         public virtual StaffEstablishedPostRequest StaffEstablishedPostRequest { get; set; }
         public virtual StaffMovements StaffMovements { get; set; }
         public virtual bool IsOk { get; set; } 
+        public virtual int? MaterialLiabilityDoc {get;set;}
+        public virtual int? RequirementsOrderDoc {get;set;}
+        public virtual int? ServiceOrderDoc {get;set;}
+        public virtual int? AgreementDoc {get;set;}
+        public virtual int? AgreementAdditionalDoc {get;set;}
+        public virtual int? OrderDoc {get;set;}
+        public virtual bool IsDocumentsReceived { get; set; } 
     }
 }

@@ -35,5 +35,9 @@ namespace Reports.Presenters.UI.ViewModel
         public int AgreementAdditionalDocId { get; set; }
         public int OrderDocId { get; set; }
         public bool IsDocsReceived { get; set; }
+        public bool IsCheckByPersonelAvailable { get; set; }
+        public bool IsSaveAvailable { get; set; }
+        public int SignerId { get; set; }
+        public List<IdNameDto> Signers { get; set; }
     }
 }
