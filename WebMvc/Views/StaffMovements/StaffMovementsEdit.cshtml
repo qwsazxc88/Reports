@@ -4,7 +4,8 @@
     ViewBag.Title = "Редактирование заявки на перемещение";
     Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";
     ViewBag.PlaceId = Model.Id;
-    ViewBag.PlaceTypeId = (int)Reports.Core.Enum.CommentsPlaceTypes.StaffMovements; 
+    ViewBag.PlaceTypeId = (int)Reports.Core.Enum.CommentsPlaceTypes.StaffMovements;
+    DateTime NextDay = DateTime.Now.AddDays(2);
 }
 @using (Html.BeginForm("Edit", "StaffMovements", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {   
@@ -50,6 +51,9 @@
         <td colspan="2">
           <div class="filter-wrap">
           <h2>@Model.RequestTypes.Where(x => x.Id == Model.RequestType).First().Name</h2>
+          @if (Model.IsRequestBad)
+          {
+          <h3 style="color:Red">Редактирование заявки в прошлом периоде невозможно</h3>}
             <table width="100%">
                 <tr>
                     <td colspan="2">
@@ -571,7 +575,7 @@
                     <td>@Html.LabelFor(m => m.SendDate)</td>
                     <td>
                         <input type="checkbox" disabled="disabled" @(Model.SendDate.HasValue ? "checked" : "") />
-                        @if (Model.IsUserAcceptAvailable)
+                        @if (Model.IsUserAcceptAvailable && !Model.IsRequestBad)
                         {
                             <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
                         }
@@ -585,7 +589,7 @@
                     <td>@Html.LabelFor(m => m.SourceManagerAccept)</td>
                     <td>
                         <input type="checkbox" disabled="disabled" @(Model.SourceManagerAccept.HasValue ? "checked" : "") />
-                        @if (Model.IsSourceManagerAcceptAvailable)
+                        @if (Model.IsSourceManagerAcceptAvailable && !Model.IsRequestBad)
                         {
                             <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
                         }
@@ -601,7 +605,7 @@
                     {<td>@Html.LabelFor(m => m.TargetManagerAccept)</td>}
                     <td>
                         <input type="checkbox" disabled="disabled" @(Model.TargetManagerAccept.HasValue ? "checked" : "") />
-                        @if (Model.IsTargetManagerAcceptAvailable)
+                        @if (Model.IsTargetManagerAcceptAvailable && !Model.IsRequestBad)
                         {
                             <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
                         }
@@ -613,7 +617,7 @@
                     <td>@Html.LabelFor(m => m.PersonnelManagerBankAccept)</td>
                     <td>
                         <input type="checkbox" disabled="disabled" @(Model.PersonnelManagerBankAccept.HasValue ? "checked" : "") />
-                        @if (Model.IsPersonnelManagerBankAcceptAvailable)
+                        @if (Model.IsPersonnelManagerBankAcceptAvailable && !Model.IsRequestBad)
                         {
                             <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
                         }
@@ -625,7 +629,7 @@
                     <td>@Html.LabelFor(m => m.ChiefAccept)</td>
                     <td>
                         <input type="checkbox" disabled="disabled" @(Model.ChiefAccept.HasValue ? "checked" : "") />
-                        @if (Model.IsChiefAcceptAvailable)
+                        @if (Model.IsChiefAcceptAvailable && !Model.IsRequestBad)
                         {
                             <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
                         }
@@ -637,7 +641,7 @@
                     <td>@Html.LabelFor(m => m.PersonnelManagerAccept)</td>
                     <td>
                         <input type="checkbox" disabled="disabled" @(Model.PersonnelManagerAccept.HasValue ? "checked" : "") />
-                        @if (Model.IsPersonnelManagerAcceptAvailable)
+                        @if (Model.IsPersonnelManagerAcceptAvailable && !Model.IsRequestBad)
                         {
                             <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
                         }
@@ -655,23 +659,23 @@
                      <tr>
                         <td colspan="2">
                         <div id="toolbar" class="ui-widget-header ui-corner-all">
-                        @if (Model.IsSaveAvailable)
+                        @if (Model.IsSaveAvailable && !Model.IsRequestBad)
                         {
                             <input type="submit"  onclick="return ValidateForm();" value="Сохранить" />
                         }
-                        @if (Model.IsConfirmButtonAvailable)
+                        @if (Model.IsConfirmButtonAvailable && !Model.IsRequestBad)
                         {
                             <input type="submit"  onclick="return ButtonPressed('Confirm');" value="Утвердить" />
                         }
-                        @if (Model.IsStopButtonAvailable)
+                        @if (Model.IsStopButtonAvailable && !Model.IsRequestBad)
                         {
                             <input type="submit"  onclick="return ButtonPressed('Stop');" value="Приостановить согласование" />
                         }
-                        @if (Model.IsCancelAvailable)
+                        @if (Model.IsCancelAvailable && !Model.IsRequestBad)
                         {
                             <input type="submit"  onclick="return ButtonPressed('Cancel');" value="Отменить( вернуть заявку в черновик)" />
                         }
-                        @if (Model.ISRejectAvailable)
+                        @if (Model.ISRejectAvailable && !Model.IsRequestBad)
                         {
                             <input type="submit"  onclick="return ButtonPressed('Reject');" value="Отклонить( заявка будет заблокирована )" />
                         }
@@ -866,7 +870,14 @@ label { font-size:1.1em; }
     function ConfigureFields()
     {
            
-        $("#MovementDate, #AdditionFrontTo, #AdditionQualityTo, #AdditionPositionTo, #AdditionPersonnelTo,  #MovementTempTo, #AdditionalAgreementDate, #OrderDate, #AgreementDate").datepicker({changeMonth: true, changeYear: true});
+        $(" #AdditionFrontTo, #AdditionQualityTo, #AdditionPositionTo, #AdditionPersonnelTo,  #MovementTempTo, #AdditionalAgreementDate, #OrderDate, #AgreementDate").datepicker({changeMonth: true, changeYear: true});
+        $("#MovementDate").datepicker({
+            showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '@NextDay.Year:@(NextDay.Year+30)',
+            minDate: new Date(@NextDay.Year, @NextDay.Month - 1, @NextDay.Day)
+        });
         $("#MovementDate").change(function(){$('.M_MovementDate').text($(this).val());});
         $("#TargetDepartmentId").change(function(){$('.M_TargetDepartment').text($('#TargetDepartmentNameLabel').text());});
         $( "select[name^='UserLinkId']" ).change(function()

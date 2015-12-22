@@ -147,6 +147,7 @@ namespace WebMvc.Controllers
         /// <returns></returns>
         public ContentResult CheckMovementDate(DateTime date, int UserId, int id)
         {
+            if (date<(DateTime.Now.AddDays(1))) return Content("Error");
             if (StaffMovementsBl.CheckMovementsExist(date, UserId, id)) return Content("Error");
             else return Content("Ok");
         }        

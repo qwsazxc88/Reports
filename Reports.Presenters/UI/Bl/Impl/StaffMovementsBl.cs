@@ -426,6 +426,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.User.Id = entity.User.Id;
                 model.RequestType = entity.Type.Id;
                 model.MovementDate = entity.MovementDate;
+                var lastDate = entity.MovementDate.Value.AddMonths(1);
+                lastDate = new DateTime(lastDate.Year, lastDate.Month, 5);                
+                model.IsRequestBad = (DateTime.Now >= lastDate) && entity.Status.Id< 10;
                 model.MovementReason = entity.Data.MovementReason;
                 model.TargetSalaryCount = entity.Data.Salary;
                 model.CreateDate = entity.CreateDate;
@@ -497,6 +500,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 var tmp = UserDao.Load(model.User.Id);
+                model.HoursType = tmp.HoursType.Id;
                 model.TargetSalaryCount = tmp.Rate.HasValue ? tmp.Rate.Value : 0;
             }
             //Подгружаем данные о сотруднике
