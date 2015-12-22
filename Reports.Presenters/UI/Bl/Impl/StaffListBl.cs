@@ -2967,6 +2967,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     sep.IsUsed = false; //делаем неактивной текущую запись в справочнике
                 }
+                sep.BeginAccountDate = entity.BeginAccountDate;
                 sep.Editor = curUser;
                 sep.EditDate = DateTime.Now;
             }
@@ -3161,7 +3162,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 if (da.Number == 5)
                 {
-                    entity.BeginAccountDate = DateTime.Now;
+                    //entity.BeginAccountDate = DateTime.Now;
                     entity.DateAccept = DateTime.Now;
                 }
             }

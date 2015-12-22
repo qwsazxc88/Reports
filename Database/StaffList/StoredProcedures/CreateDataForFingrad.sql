@@ -200,6 +200,7 @@ BEGIN
 	--депозитное подразделение
 	LEFT JOIN Department as T ON T.Id = B.DepDepositId
 	WHERE A.FingradCode is not null
+	--where a.FingradCode = '01-01-13-010'
 END
 --dbo.CreateDataForFingrad 1
 
