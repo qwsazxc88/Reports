@@ -23,12 +23,15 @@ namespace Reports.Core.Dao.Impl
         {
             var DepDao = Ioc.Resolve<IDepartmentDao>();
             var ManualRoleRecordDao = Ioc.Resolve<IManualRoleRecordDao>();
-            var query = Session.QueryOver<StaffMovementsFact>();
-            
+            var query = Session.QueryOver<StaffMovementsFact>();        
+               
             User userToMove = null;
-            Department userToMoveDepartment = null;
+            Department userToMoveDepartment = null;           
+            User personnel = null;
             query = query.JoinAlias(x => x.User, () => userToMove);
             query = query.JoinAlias(x => userToMove.Department, () => userToMoveDepartment);
+            query = query.JoinAlias(x=> userToMove.Personnels, () => personnel);            
+           
             var user = UserDao.Load(UserId);
             if(userName!=null)
                 userName=userName.Trim();
@@ -63,13 +66,12 @@ namespace Reports.Core.Dao.Impl
                     if (depts == null) depts = new List<Department>();
                     depts.Add(user.Department);
                     List<int> deptsIds = new List<int>();
+                    var ors = Restrictions.Disjunction();
                     foreach (var d in depts)
                     {
-                        deptsIds.Add(d.Id);
-                        var cd = DepDao.GetChildDepartments(d);
-                        if (cd != null && cd.Any()) deptsIds.AddRange(cd.Select(x => x.Id).ToList());
+                        ors.Add(Restrictions.Like(Projections.Property(() => userToMoveDepartment.Path), d.Path + '%'));
                     }
-                    restriction.Add(Restrictions.In(Projections.Property(()=>userToMoveDepartment.Id),deptsIds));
+                    restriction.Add(ors);
                     break;
                 case UserRole.Employee:
                     restriction.Add(Restrictions.Where<StaffMovementsFact>(x => x.User.Id == UserId));
@@ -77,7 +79,9 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.PersonnelManager:
                     var users = UserDao.GetUsersForPersonnel(UserId);
                     if (users == null) users = new List<User>();
-                    restriction.Add(Restrictions.In(Projections.Property(() => userToMove.Id), users.Select(x => x.Id).ToList()));
+                    restriction.Add(Restrictions.Eq(Projections.Property(() => personnel.Id), UserId));
+                        
+                    //restriction.Add(Restrictions.In(Projections.Property(() => userToMove.Id), users.Select(x => x.Id).ToList()));
                     break;
                 case UserRole.Admin:
                 case UserRole.ConsultantPersonnel:
