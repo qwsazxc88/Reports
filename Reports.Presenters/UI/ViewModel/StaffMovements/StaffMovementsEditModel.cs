@@ -33,7 +33,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsDocsAddAvailable { get; set; }
         public bool IsConfirmButtonAvailable { get; set; }
         public bool IsStopButtonAvailable { get; set; }
-
+        public bool IsRequestBad { get; set; }
         public bool IsRejectButtonPressed { get; set; }
         public bool IsAcceptButtonPressed { get; set; }
         public bool IsConfirmButtonPressed { get; set; }
