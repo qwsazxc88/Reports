@@ -15,7 +15,14 @@
                 "../../Scripts/uigrid/ui-grid.min.js",
                 "../../Scripts/angular-modules/DataService.js",
                     "../../Scripts/StaffMovements/StaffMovementsFactList.js")
-
+<div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
 @using (Html.BeginBlock("block-wrap", "ng-app='StaffMovementsFactList'", "ng-controller='StaffMovementsFactListController'"))
 {
     using (Html.BeginBlock("filter-wrap"))

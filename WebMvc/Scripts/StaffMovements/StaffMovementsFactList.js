@@ -1,4 +1,5 @@
-﻿var Application = angular.module('StaffMovementsFactList', ['ServiceModule', 'ui.grid', 'ui.grid.edit', 'ui.grid.autoResize', 'ui.grid.expandable', 'ui.grid.grouping', 'ui.grid.resizeColumns']);
+﻿
+var Application = angular.module('StaffMovementsFactList', ['ServiceModule', 'ui.grid', 'ui.grid.edit', 'ui.grid.autoResize', 'ui.grid.expandable', 'ui.grid.grouping', 'ui.grid.resizeColumns']);
 Application.controller('StaffMovementsFactListController', function ($scope, $http, $filter, dataService, i18nService, $timeout, $window) {
     this.scope = $scope;
     $scope.Documents = [];
@@ -8,8 +9,8 @@ Application.controller('StaffMovementsFactListController', function ($scope, $ht
             $('#changes-height').height((data.data.length + 1) * 30);
         }
         $scope.IsWorking = false;
-        data.enableVerticalScrollbar = 0;        
-        
+        data.enableVerticalScrollbar = 0;
+
         data.onRegisterApi = function (gridApi) {
             if (gridApi != undefined) {
                 $scope.gridApi = gridApi;
@@ -35,14 +36,14 @@ Application.controller('StaffMovementsFactListController', function ($scope, $ht
     $scope.collapseAllRows = function () {
         $scope.gridApi.expandable.collapseAllRows();
     }
-    $scope.GetData = function () {
+    $scope.GetData = function () {        
         $scope.IsWorking = true;
         $scope.Model.DepartmentId = $('#DepartmentId').val();
         var promise = dataService.PostPromise('/StaffMovements/GetFactDocuments', $scope.Model);
         promise.then($scope.SetDocuments);
     }
     $scope.Model = {};
-    
+
 });
 $(document).ready(function () {
     setActiveMenuItem("documentMovements");
