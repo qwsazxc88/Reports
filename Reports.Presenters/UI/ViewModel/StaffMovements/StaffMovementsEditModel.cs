@@ -114,6 +114,8 @@ namespace Reports.Presenters.UI.ViewModel
         public string MovementCondition { get; set; }
         [Display(Name="Задача в Pyrus")]
         public string PyrusLink { get; set; }
+        [Display(Name = "Итого")]
+        public decimal TotalSalary { get; set; }
         public IList<AdditionsDto> ActiveAdditions { get; set; }
         public IList<AdditionsDto> AdditionsToEdit { get; set; }
         /// <summary>

@@ -24,6 +24,12 @@ namespace Reports.Core.Dao.Impl
             //query.AddScalar("Salary", NHibernateUtil.Decimal);
             return query.UniqueResult<Decimal>();            
         }
+        public decimal GetUserTotalSalary(int UserId)
+        {
+            var query = Session.CreateSQLQuery(String.Format("select TotalSalary from vwStaffPostSalary where userid={0}", UserId));
+            //query.AddScalar("Salary", NHibernateUtil.Decimal);
+            return query.UniqueResult<Decimal>();
+        }
         public decimal GetUserRegionCoeff(int UserId)
         {
             var query = Session.CreateSQLQuery(String.Format("select Regional from vwStaffPostSalary where userid={0}", UserId));

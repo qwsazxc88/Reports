@@ -242,6 +242,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.OrderDocId = file.Id;
             }
             model.RegionCoefficient = StaffMovementsDao.GetUserRegionCoeff(model.User.Id);
+            model.TotalSalary = StaffMovementsDao.GetUserTotalSalary(model.User.Id);
             model.Casing = StaffMovementsDao.GetUserSalary(model.User.Id);
             model.Salary = usr.Rate.HasValue ? usr.Rate.Value : 0;
             model.IsCheckByPersonelAvailable = ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && !model.IsDocsReceived);
@@ -504,6 +505,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             var userlinks=StaffEstablishedPostUserLinksDao.QueryExpression(x=>x.IsUsed && x.User.Id==model.User.Id);
             var userlink = userlinks.First();
             model.RegionCoefficient = StaffMovementsDao.GetUserRegionCoeff(model.User.Id);
+            model.TotalSalary = StaffMovementsDao.GetUserTotalSalary(model.User.Id);
             model.Casing = StaffMovementsDao.GetUserSalary(model.User.Id);
             model.Salary = usertomove.Rate.HasValue?usertomove.Rate.Value:0;
             //Подгружаем надбавки
