@@ -183,7 +183,14 @@
         //StaffMovements
         StaffMovements =289,
         //VacationReturn
-        VacationReturn = 290
+        VacationReturn = 290,
+        //Кадровые перемещения
+        MaterialLiabilityDocDto =291,
+        RequirementsOrderDocDto =292,
+        ServiceOrderDocDto =293,
+        AgreementDocDto =294,
+        AgreementAdditionalDocDto =295,
+        OrderDocDto = 295
     }
   //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)
   //dbo.Dismissal (увольнения)            RequestTypeId = 2, (приказ)

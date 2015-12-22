@@ -22,11 +22,16 @@ namespace Reports.Core.Dao.Impl
         public IList<StaffMovementsFact> GetDocuments(int UserId, UserRole role, int Number, int SEPReqId, int SMId, int DepartmentId, string userName)
         {
             var DepDao = Ioc.Resolve<IDepartmentDao>();
-            var query = Session.QueryOver<StaffMovementsFact>();
+            var ManualRoleRecordDao = Ioc.Resolve<IManualRoleRecordDao>();
+            var query = Session.QueryOver<StaffMovementsFact>();        
+               
             User userToMove = null;
             Department userToMoveDepartment = null;
+            
             query = query.JoinAlias(x => x.User, () => userToMove);
             query = query.JoinAlias(x => userToMove.Department, () => userToMoveDepartment);
+                 
+           
             var user = UserDao.Load(UserId);
             if(userName!=null)
                 userName=userName.Trim();
@@ -57,11 +62,33 @@ namespace Reports.Core.Dao.Impl
             switch (role)
             {
                 case UserRole.Manager :
-                   // restriction.Add(Restrictions.In(userToMove.Id,""));
+                    var depts = ManualRoleRecordDao.QueryExpression(x => x.User.Id == UserId && x.TargetDepartment != null).Select(x=>x.TargetDepartment).ToList();
+                    if (depts == null) depts = new List<Department>();
+                    depts.Add(user.Department);
+                    List<int> deptsIds = new List<int>();
+                    var ors = Restrictions.Disjunction();
+                    foreach (var d in depts)
+                    {
+                        ors.Add(Restrictions.Like(Projections.Property(() => userToMoveDepartment.Path), d.Path + '%'));
+                    }
+                    restriction.Add(ors);
                     break;
                 case UserRole.Employee:
                     restriction.Add(Restrictions.Where<StaffMovementsFact>(x => x.User.Id == UserId));
                     break;
+                case UserRole.PersonnelManager:
+                    User personnel = null; query = query.JoinAlias(x => userToMove.Personnels, () => personnel);       
+                    var users = UserDao.GetUsersForPersonnel(UserId);
+                    if (users == null) users = new List<User>();
+                    restriction.Add(Restrictions.Eq(Projections.Property(() => personnel.Id), UserId));
+                        
+                    //restriction.Add(Restrictions.In(Projections.Property(() => userToMove.Id), users.Select(x => x.Id).ToList()));
+                    break;
+                case UserRole.Admin:
+                case UserRole.ConsultantPersonnel:
+                case UserRole.OutsourcingManager:
+                    break;
+                default: throw new Exception("Нет доступа");
             }
             return query.Where(restriction).List();
 

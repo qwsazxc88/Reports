@@ -47,10 +47,22 @@ namespace WebMvc.Controllers
             var content = Content(Newtonsoft.Json.JsonConvert.SerializeObject(result));
             return content;
         }
-
+        [HttpGet]
         public ActionResult StaffMovementsFactEdit(int id)
         {
             return View(StaffMovementsBl.GetFactEditModel(id));
+        }
+        [HttpPost]
+        public ActionResult StaffMovementsFactEdit(StaffMovementsFactEditModel model)
+        {
+            model.MaterialLiabilityDocDto = GetFileContext(Request, ModelState, "MaterialLiabilityDoc");
+            model.AgreementDocDto = GetFileContext(Request, ModelState, "AgreementDoc");
+            model.AgreementAdditionalDocDto = GetFileContext(Request, ModelState, "AgreementAdditionDoc");
+            model.OrderDocDto = GetFileContext(Request, ModelState, "OrderDoc");
+            model.RequirementsOrderDocDto = GetFileContext(Request, ModelState, "RequirementsOrderDoc");
+            model.ServiceOrderDocDto = GetFileContext(Request, ModelState, "ServiceOrderDoc");
+            StaffMovementsBl.SaveFact(model);
+            return View(model);
         }
         #endregion
         #region
@@ -105,11 +117,11 @@ namespace WebMvc.Controllers
             else
             {
                 //model.AdditionalAgreementDocDto = GetFileContext(Request, ModelState, "AdditionalAgreementDoc");
-                model.MaterialLiabilityDocDto = GetFileContext(Request, ModelState, "MaterialLiabilityDoc");
+               // model.MaterialLiabilityDocDto = GetFileContext(Request, ModelState, "MaterialLiabilityDoc");
                 model.MovementNoteDto = GetFileContext(Request, ModelState, "MovementNote");
                 //model.MovementOrderDocDto = GetFileContext(Request, ModelState, "MovementOrderDoc");
-                model.RequirementsOrderDocDto = GetFileContext(Request, ModelState, "RequirementsOrderDoc");
-                model.ServiceOrderDocDto = GetFileContext(Request, ModelState, "ServiceOrderDoc");
+               //model.RequirementsOrderDocDto = GetFileContext(Request, ModelState, "RequirementsOrderDoc");
+               // model.ServiceOrderDocDto = GetFileContext(Request, ModelState, "ServiceOrderDoc");
                 StaffMovementsBl.SaveModel(model);
                 StaffMovementsBl.SetModel(model);
             }
@@ -135,6 +147,7 @@ namespace WebMvc.Controllers
         /// <returns></returns>
         public ContentResult CheckMovementDate(DateTime date, int UserId, int id)
         {
+            if (date<(DateTime.Now.AddDays(1))) return Content("Error");
             if (StaffMovementsBl.CheckMovementsExist(date, UserId, id)) return Content("Error");
             else return Content("Ok");
         }        
@@ -157,6 +170,30 @@ namespace WebMvc.Controllers
         {
             var data = NoteDocumentCreator.StaffMovementsDocsCreator.CreateAgreementDoc(Server.MapPath("~/Files"), AgreementNumber, AgreementDate, UserName, SignerName, TargetPosition, TargetDepartment, SignerShortName, SignerPositionWithDepartment, UserShortName);
             return File(data, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "dogovor.docx");
+        }
+        public ActionResult GetPrintModel(int id, int type, int SignerId=0)
+        {
+            StaffMovementsPrintModel model = StaffMovementsBl.GetPrintModel(id,SignerId);
+            string view = "";
+            switch (type)
+            {
+                case 1:
+                    view = "~/Views/StaffMovements/Templates/MaterialLiabilityDoc.cshtml";
+                    break;
+                case 2:
+                    view = "~/Views/StaffMovements/Templates/Addition.cshtml";
+                    break;
+                case 3:
+                    view = "~/Views/StaffMovements/Templates/Addition2.cshtml";
+                    break;
+                case 4:
+                    view = "~/Views/StaffMovements/Templates/Prilozhenie1.cshtml";
+                    break;
+                case 5:
+                    view = "~/Views/StaffMovements/Templates/prilozhenie2.cshtml";
+                    break;
+            }
+            return View(view, model);
         }
         /*public ActionResult GetPrintModel(int id, int type)
        {
