@@ -98,7 +98,7 @@
                 {
                     foreach (var el in Model.UserLinks)
                     { 
-                    <option value="@el.Id">@el.Name</option>
+                    <option value="@el.Id" @(Model.UserLinkId==el.Id?"selected":"")>@el.Name</option>
                     }
                 }
                 </select>
