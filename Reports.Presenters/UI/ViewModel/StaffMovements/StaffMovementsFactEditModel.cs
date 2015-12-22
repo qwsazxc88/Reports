@@ -39,5 +39,6 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsSaveAvailable { get; set; }
         public int SignerId { get; set; }
         public List<IdNameDto> Signers { get; set; }
+        public decimal TotalSalary { get; set; }
     }
 }
