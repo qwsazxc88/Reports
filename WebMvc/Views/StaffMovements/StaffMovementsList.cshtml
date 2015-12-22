@@ -239,7 +239,46 @@
     </table> 
 }
 </div>
+<div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
 <script>
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        var ind = $("#LoadingIndicator2");
+        if (ind == undefined) return;
+        if (!IsShow) {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
+    }
     var GridApp = angular.module('GridApp', []);
     GridApp.controller('GridController', function ($scope, $http, $filter) {
         $scope.IsWorking = false;
@@ -263,18 +302,21 @@
 
         $scope.GetData = function () {
             $scope.IsWorking = true;
+            ShowFlash(true);
             $(':button').button('disable');
             $scope.TotalSum = 0;
             $http.post('/StaffMovements/', { DepartmentId: $('#DepartmentId').val(), Status: $('#Status').val(), UserName: $('#UserName').val(), Number: $('#Number').val() }).
               success(function (data, status, headers, config) {
+                  
                   for (var i = 0; i < data.length; i++) {
                       $scope.TotalSum += data[i].AllSum;
                   }
                   $scope.Grid.Data = data;
                   $scope.IsWorking = false;
-                  $(':button').button('enable');
+                  $(':button').button('enable'); ShowFlash(false);
               }).
               error(function (data, status, headers, config) {
+                  ShowFlash(false);
                   alert('Ошибка при получении данных.');
                   $scope.IsWorking = false;
                   $(':button').button('enable');

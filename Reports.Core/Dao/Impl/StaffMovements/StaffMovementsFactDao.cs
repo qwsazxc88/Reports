@@ -26,11 +26,11 @@ namespace Reports.Core.Dao.Impl
             var query = Session.QueryOver<StaffMovementsFact>();        
                
             User userToMove = null;
-            Department userToMoveDepartment = null;           
-            User personnel = null;
+            Department userToMoveDepartment = null;
+            
             query = query.JoinAlias(x => x.User, () => userToMove);
             query = query.JoinAlias(x => userToMove.Department, () => userToMoveDepartment);
-            query = query.JoinAlias(x=> userToMove.Personnels, () => personnel);            
+                 
            
             var user = UserDao.Load(UserId);
             if(userName!=null)
@@ -77,6 +77,7 @@ namespace Reports.Core.Dao.Impl
                     restriction.Add(Restrictions.Where<StaffMovementsFact>(x => x.User.Id == UserId));
                     break;
                 case UserRole.PersonnelManager:
+                    User personnel = null; query = query.JoinAlias(x => userToMove.Personnels, () => personnel);       
                     var users = UserDao.GetUsersForPersonnel(UserId);
                     if (users == null) users = new List<User>();
                     restriction.Add(Restrictions.Eq(Projections.Property(() => personnel.Id), UserId));

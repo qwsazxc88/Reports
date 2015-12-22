@@ -36,6 +36,14 @@
     @Html.HiddenFor(m => m.IsTargetManagerAcceptAvailable)
     @Html.HiddenFor(m => m.IsUserAcceptAvailable)
     @Html.HiddenFor(m => m.Creator.Id)
+    <div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
     </div>
     <table style="width:100%">
     <tr>
@@ -101,7 +109,7 @@
                     <option value="@el.Id" @(Model.UserLinkId==el.Id?"selected":"")>@el.Name</option>
                     }
                 }
-                </select>
+                </select> <span id="vacationCount"></span>
                 @Html.HiddenFor(m => m.User.StaffEstablishedPostId)
                 </td>
                 </tr>
@@ -826,8 +834,38 @@ label { font-size:1.1em; }
         options.children().remove();
         options.append(optionsValues);
     }
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
+    }
     function ConfigureFields()
     {
+           
         $("#MovementDate, #AdditionFrontTo, #AdditionQualityTo, #AdditionPositionTo, #AdditionPersonnelTo,  #MovementTempTo, #AdditionalAgreementDate, #OrderDate, #AgreementDate").datepicker({changeMonth: true, changeYear: true});
         $("#MovementDate").change(function(){$('.M_MovementDate').text($(this).val());});
         $("#TargetDepartmentId").change(function(){$('.M_TargetDepartment').text($('#TargetDepartmentNameLabel').text());});
@@ -836,12 +874,13 @@ label { font-size:1.1em; }
             $('.M_TargetPositionName').text($("select[name^='UserLinkId'] option:selected").text());
         });
         $('#UserLinkId').change(function(){
+        ShowFlash(true);
             $.ajax({
               type: "POST",
               url: '/Employment/GetStaffEstablishmentPostDetails',
               data: { IsSP:false, DepartmentId:$('#TargetDepartmentId').val(),UserLinkId:$('#UserLinkId').val()},
-              success: function(data){ $('#TargetCasing').val(data.SalaryBasis);$('#TargetRegion').val(data.AreaMultiplier);}
-              
+              success: function(data){ShowFlash(false); $('#TargetCasing').val(data.SalaryBasis);$('#TargetRegion').val(data.AreaMultiplier);},
+              error: function(){ ShowFlash(false); alert('Ошибка при получении данных');}
             });
         });
         $('#IsHourlyContainer').buttonset(@if (!Model.IsPersonnelManagerEditable)
@@ -888,9 +927,13 @@ label { font-size:1.1em; }
         $("#TargetDepartmentId").change(function ()
         {
             var url = "/StaffMovements/GetPositionsForDepartment/"+$("#TargetDepartmentId").val();
+            $('#vacationCount').text('');
+            ShowFlash(true);
             $.getJSON(url,
                 function (result) {
-                    setOptionsToDropdown("UserLinkId", result);                    
+                if(result == undefined || result.length==0) $('#vacationCount').text('Нет вакансий');
+                    setOptionsToDropdown("UserLinkId", result);    
+                    ShowFlash(false);
                 });
         });
         if(@(Model.IsTempMoving ? "true" : "false"))
