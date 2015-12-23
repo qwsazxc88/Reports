@@ -347,8 +347,8 @@ namespace Reports.Core.Dao.Impl
 								    where manager.IsActive=1 and manager.RoleId&4>0 and u.Email!=manager.Email 
                                           and manager.level < case when ur.id is not null and isnull(ur.IsMainManager, 0) = 1 
                                                                    then ur.level 
-                                                                   when ur.id is not null and isnull(ur.IsMainManager, 0) = 0 then ur.level + 6 else 7 end
-                                    order by manager.Level desc, manager.IsMainManager desc 
+                                                                   when ur.id is not null and isnull(ur.IsMainManager, 0) = 0 then ur.level + 1 else 7 end
+                                    order by manager.IsMainManager desc , manager.Level desc 
 								) as ManagerName,
                                 '{3}' as Name,
                                 {2} as Date,  
