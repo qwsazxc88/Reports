@@ -2076,6 +2076,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsOnBehalfOfManagerAvailable = (AuthenticationService.CurrentUser.UserRole & (UserRole.Manager | UserRole.Chief | UserRole.Director )) == 0 ? true : false;
             model.Personnels = EmploymentCandidateDao.GetPersonnels();
             model.PostUserLinks = new List<IdNameDto>();
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Manager)
+            {
+                User manager = UserDao.Get(AuthenticationService.CurrentUser.Id);
+                model.DepartmentId = manager.Department.Id;
+                model.DepartmentName = manager.Department.Name;
+            }
             return model;
         }
 
