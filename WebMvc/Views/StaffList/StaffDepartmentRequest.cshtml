@@ -1095,7 +1095,22 @@
                         </tr>
                         <tr><td colspan="3"><br /></td></tr>
                         <tr><td colspan="3" style="font-weight:bold;">Ответственные по приказам</td></tr>
-                        <tr><td colspan="3"><button type="button">Печать приказа</button></td></tr>
+                        @*<tr><td colspan="3"><button type="button">Печать приказа</button></td></tr>*@
+                        @if(Model.RequestTypeId == 1 || Model.RequestTypeId == 4)
+                        {
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/zayavlenie_na_ezhemesyachnoe_posobie_po_uhodu_za_rebenkom_do_3_h_let.doc")" target="_blank">Бланк приказа об открытии МО</a></td></tr>
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/zayavlenie_na_ezhemesyachnoe_posobie_po_uhodu_za_rebenkom_do_3_h_let.doc")" target="_blank">Бланк приказа об открытии УРМ</a></td></tr>
+                        }
+                        @if(Model.RequestTypeId == 2 || Model.RequestTypeId == 4)
+                        {
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/zayavlenie_na_ezhemesyachnoe_posobie_po_uhodu_za_rebenkom_do_3_h_let.doc")" target="_blank">Бланк приказа об изменении адреса МО</a></td></tr>
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/zayavlenie_na_ezhemesyachnoe_posobie_po_uhodu_za_rebenkom_do_3_h_let.doc")" target="_blank">Бланк приказа об изменении адреса УРМ</a></td></tr>
+                        }
+                        @if(Model.RequestTypeId == 3 || Model.RequestTypeId == 4)
+                        {
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/zayavlenie_na_ezhemesyachnoe_posobie_po_uhodu_za_rebenkom_do_3_h_let.doc")" target="_blank">Бланк приказа о закрытии МО</a></td></tr>
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/zayavlenie_na_ezhemesyachnoe_posobie_po_uhodu_za_rebenkom_do_3_h_let.doc")" target="_blank">Бланк приказа о закрытии УРМ</a></td></tr>
+                        }
                         <tr>
                             <td>
                                 @Html.LabelFor(m => m.IsOrderApprove)
