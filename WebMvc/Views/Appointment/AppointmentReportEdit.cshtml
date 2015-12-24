@@ -380,7 +380,7 @@
                     @if ( !Model.CandidateRejectDate.HasValue && Model.IsColloquyPassed == 1 && ((dto.UserRole & UserRole.Manager)>0) && !(Model.Candidates != null && Model.Candidates.Any()) && Model.IsBankAccountantAccept)
                     {
                         
-                        <input type="button" value="Выгрузить в приём" onclick="$('#AddEmployment').dialog('open');"/>
+                        <input type="button" value="Выгрузить в приём" onclick="@("window.location.href='" + @Url.Action("MoveToEmployment", new { id = Model.Id }) + "'");"/>
                         
                     }
                     @if (!Model.IsClosed)
