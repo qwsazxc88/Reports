@@ -1,7 +1,7 @@
 --СКРИПТ СОЗДАЕТ СТРУКТУРУ БАЗЫ ДАННЫХ ДЛЯ РАЗДЕЛА ШТАТНОГО РАСПИСАНИЯ, СОЗДАЕТ ОБЪЕКТЫ БАЗЫ И ЗАПОЛНЯЕТ НОВЫЕ СПРАВОЧНИКИ НАЧАЛЬНЫМИ ДАННЫМИ
 --СКРИПТ НЕ МЕНЯЕТ СТРУКТУРУ УЖЕ СУЩЕСТВУЮЩИХ СПРАВОЧНИКОВ, ТОЛЬКО ПЕРЕСОЗДАЕТ НОВЫЕ ТАБЛИЦЫ НЕОБХОДИМЫЕ ДЛЯ ШТАТНОГО РАСПИСАНИЯ
 --RETURN
-use WebAppTest2
+use WebAppSKB
 go
 
 --1. УДАЛЕНИЕ ССЫЛОК
@@ -1549,6 +1549,13 @@ GO
 
 
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffPostReplacement]  WITH CHECK ADD  CONSTRAINT [FK_StaffPostReplacement_StaffEstablishedPostUserLinks] FOREIGN KEY([UserLinkId])
+REFERENCES [dbo].[StaffEstablishedPostUserLinks] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement] CHECK CONSTRAINT [FK_StaffPostReplacement_StaffEstablishedPostUserLinks]
+GO
+
 ALTER TABLE [dbo].[StaffUserNorthAdditional] ADD  CONSTRAINT [DF_StaffUserNorthAdditional_Amount]  DEFAULT ((0)) FOR [Amount]
 GO
 
@@ -4246,7 +4253,7 @@ DROP TABLE #FinManager
 --руками перепривязываю дирекцию
 UPDATE StaffDepartmentManagement SET DepartmentId = 4175 WHERE Code = '301'
 
-IF (SELECT count(*) FROM StaffDepartmentManagement) <> (SELECT count(*) FROM DepFinManager)
+IF (SELECT count(*) FROM StaffDepartmentManagement) <> (SELECT count(*) FROM DepFinManager WHERE [ID Дирекции] <> 800)
 	PRINT 'Количественное несхождение при загрузке справочника кодировок - Дирекции'
 
 
@@ -4532,7 +4539,7 @@ INSERT INTO Kladr
 SELECT * FROM #Kladr
 
 DROP TABLE #Kladr
-
+/*
 IF DB_NAME() = 'WebAppTest' or DB_NAME() = 'WebAppTest2'
 BEGIN
 	UPDATE sysdiagrams SET definition = B.definition
@@ -4540,7 +4547,7 @@ BEGIN
 	INNER JOIN WebAppSKB.dbo.sysdiagrams as B ON B.diagram_id = A.diagram_id 
 
 END
-
+*/
 
 DELETE FROM Messages WHERE CommentPlaceType in (2, 4)
 
