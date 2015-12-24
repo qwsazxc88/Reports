@@ -178,5 +178,6 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="error">Сообщение.</param>
         /// <returns></returns>
         bool EmploymentProccedRegistrationSendEmail(PersonnelInfoModel model, out string error);
+        void GetStaffEstablishmentPostDetails(ManagersModel model);
     }
 }
