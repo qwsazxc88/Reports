@@ -7,6 +7,15 @@
 @if (Request.IsAuthenticated)
 {
         <input type="hidden" id="ActiveMenuItem" name="ActiveMenuItem" value="" />
+        <div id="InstructionsDialog" style="display:none" title="Инструкции">
+        <ul>
+        <li><a href='@Url.Content("~/Templates/InstructionEmployee.docx")'>Инструкция для сотрудника</a></li>
+        <li><a href='@Url.Content("~/Templates/InstructionManagerSource.docx")'>Инструкция для руководителя(отпускающего)</a></li>
+        <li><a href='@Url.Content("~/Templates/InstructionManagerTarget.docx")'>Инструкция для руководителя(принимающего)</a></li>
+        <li><a href='@Url.Content("~/Templates/InstructionChief.docx")'>Инструкция для вышестоящего руководителя(принимающего)</a></li>
+        <li><a href='@Url.Content("~/Templates/InstructionPersonnelManagerBank.docx")'>Инструкция для кадровиков банка</a></li>
+        </ul>
+        </div>
         <div class="menu-wrap">
         <div class="menu">
 @*            <tr>*@
@@ -140,7 +149,7 @@
                      || (dto.UserRole & UserRole.Trainer) > 0
                       )
                  {
-                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала (добавление кандидата в Прием)", "Instruction", "Appointment")
+                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала", "Instruction", "Appointment")
                     </div> 
                  }
                  @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0 || (dto.UserRole & UserRole.Estimator) > 0)
@@ -153,8 +162,22 @@
                  }
         </div>  
         <div class="podmenu">            
+            <div class="menuitem"><a href="#" onclick="$('#InstructionsDialog').dialog('open');">Инструкции</a></div>
             <div class="menuitem" id="StaffMovements">@Html.ActionLink("Реестр заявок на кадровые перемещения", "Index", "StaffMovements")</div>
             <div class="menuitem" id="StaffMovementsFacts">@Html.ActionLink("Реестр проведенных перемещений", "StaffMovementsFactList", "StaffMovements")</div>
         </div>
     </div>   
 }
+<script>
+    $(document).ready(function () {
+        $("#InstructionsDialog").dialog(
+            { // initialize dialog box
+                autoOpen: false,
+                modal: true,
+                
+                width: 600,
+                height: 350,
+                
+            });
+    });
+</script>
