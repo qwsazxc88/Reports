@@ -44,6 +44,11 @@ namespace WebMvc.Controllers
             }
         }
         #region Appointment
+        public ActionResult MoveToEmployment(int id)
+        {
+            var model = AppointmentBl.FillCreateCandidateModelByReportId(id);
+            return View("~/Views/Employment/CreateCandidate.cshtml", model);
+        }
         [HttpGet]
         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Manager | UserRole.StaffManager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.Security | UserRole.Trainer)]
         public ActionResult Index()
