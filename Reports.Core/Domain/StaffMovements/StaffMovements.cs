@@ -7,9 +7,20 @@ namespace Reports.Core.Domain
 {
     public class StaffMovements: StandartRequestEntity
     {
+        public StaffMovements()
+        {
+            Additions = new List<StaffPostChargeLinks>();
+        }
         public virtual StaffMovementsData Data { get; set; }
         //Основные данные заявки                
-        	
+        /// <summary>
+        /// Исходная позиция штатной расстановки
+        /// </summary>
+        public virtual StaffEstablishedPostUserLinks SourceStaffEstablishedPostRequest { get; set; }
+        /// <summary>
+        /// Целевая позиция штатной расстановки
+        /// </summary>
+        public virtual StaffEstablishedPostUserLinks TargetStaffEstablishedPostRequest { get; set; }
 	    //Подразделения
         /// <summary>
         /// Исходное подразделение
