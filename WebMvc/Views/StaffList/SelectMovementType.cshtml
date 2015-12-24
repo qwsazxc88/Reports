@@ -1,0 +1,27 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.SelectMovementTypeModel
+@{
+    ViewBag.Title = "Выбор вида заявки";
+}
+
+@using (Html.BeginForm("Edit", "StaffMovements", FormMethod.Post, new { enctype = "multipart/form-data", id = "SelectMovementType", target = "divSelectTypeDialog" }))
+{
+    <div>
+        @*Html.HiddenFor(m => m.UserId)*@
+        <input type="hidden" name="User.Id" value="@Model.UserId" />
+        @Html.LabelFor(m => m.RequestType)
+        @Html.DropDownListFor(m => m.RequestType, new SelectList(Model.RequestTypes, "Id", "Name"))
+        <button>Выбрать</button>
+    </div>
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $(":button").button();
+    });
+
+
+   
+
+    
+</script>

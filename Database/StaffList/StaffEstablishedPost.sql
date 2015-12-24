@@ -1,4 +1,4 @@
-use WebAppTest
+use WebAppTest2
 go
 
 --СКРИПТ ФОРМИРУЕТ ШТАТНЫЕ ЕДИНИЦЫ И ЗАЯВКИ НА ИХ СОЗДАНИЕ
@@ -294,6 +294,52 @@ GROUP BY C.Id, B.SEPId, A.StaffExtraChargeId, A.Salary, A.ActionId
 --UPDATE StaffEstablishedPostArchive SET Salary = 0
 
 
+--на основе данных кадровиков банка добавляем вакансии в штатные единицы
+SELECT A.[Код подразделения7] as DepartmentId, A.[Код расстановки], A.[Код ш#е#], A.[Код должности], B.Id as PositionId
+			 ,case when not exists(SELECT * FROM StaffEstablishedPost WHERE DepartmentId = A.[Код подразделения7] and PositionId = B.Id) and A.[Код расстановки] is null and A.[Код ш#е#] is null
+						 then 1 else 0 end as IsNewSP
+			 ,case when exists(SELECT * FROM StaffEstablishedPost WHERE DepartmentId = A.[Код подразделения7] and PositionId = B.Id) and A.[Код расстановки] is null and A.[Код ш#е#] is null
+						 then 1 else 0 end as IsEditSP
+INTO #SP
+FROM StaffEstablishedPostUserLinksTemp as A
+INNER JOIN Position as B ON B.Code = A.[Код должности]
+WHERE isnull(A.[Признак для подразделений], N'') = N'1' and A.[Код подразделения7] is not null 
+			and isnull(A.[Признак для должностей], N'') <> N'2' and A.[Код должности] is not null
+ORDER BY A.[Код должности], A.[Код подразделения7]
+
+
+--select * from #SP
+--добавить записи в расстановку
+
+INSERT INTO StaffEstablishedPostUserLinks(Version, SEPId, UserId, IsUsed, ReserveType, DocId, IsDismissal)
+SELECT 1, B.Id, null, 1, null, null, 0
+FROM #SP as A
+INNER JOIN StaffEstablishedPost as B ON B.DepartmentId = A.DepartmentId and B.PositionId = A.PositionId
+WHERE IsEditSP = 1
+
+
+--количество, которое нужно добавить в штатные единицы
+
+SELECT A.Id, B.cnt INTO #SPAdd
+FROM StaffEstablishedPost as A
+INNER JOIN (SELECT  DepartmentId, PositionId, sum(IsEditSP) as cnt
+						FROM #SP 
+						WHERE IsEditSP = 1
+						GROUP BY DepartmentId, PositionId) as B ON B.DepartmentId = A.DepartmentId and B.PositionId = A.PositionId
+
+
+UPDATE StaffEstablishedPost SET Quantity = A.Quantity + B.cnt
+FROM StaffEstablishedPost as A
+INNER JOIN #SPAdd as B ON B.Id = A.Id
+
+
+IF (select sum(Quantity) from StaffEstablishedPost) <> (select count(*) from StaffEstablishedPostUserLinks)
+	PRINT 'Количество позиций в расстановке отличается от суммы количества штатных единиц'
+ELSE
+	PRINT 'Данные успешно обработаны!'
+
+drop table #SP
+drop table #SPAdd
 drop table #Users
 drop table #Vacation
 drop table #TMP

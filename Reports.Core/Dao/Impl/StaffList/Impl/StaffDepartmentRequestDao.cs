@@ -24,6 +24,7 @@ namespace Reports.Core.Dao.Impl
         /// Список заявок для подразделений.
         /// </summary>
         /// <param name="curUser">Текущий пользователь.</param>
+        /// <param name="role">Роль текущего пользователя.</param>
         /// <param name="DepartmentId">Id подразделения.</param>
         /// <param name="Id">Номер заявки</param>
         /// <param name="Surname">ФИО инициатора</param>
@@ -33,7 +34,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="SortBy">Номер колонки для сортировки</param>
         /// <param name="SortDescending">Признак направления сортировки.</param>
         /// <returns></returns>
-        public IList<DepartmentRequestListDto> GetDepartmentRequestList(User curUser, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending)
+        public IList<DepartmentRequestListDto> GetDepartmentRequestList(User curUser, UserRole role, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending)
         {
             string SqlQuery = @"SELECT A.Id, 
                                        A.DateRequest, 
@@ -41,6 +42,8 @@ namespace Reports.Core.Dao.Impl
                                        A.RequestTypeId,
                                        A.DepartmentId,
                                        A.ParentId,
+                                       A.BFGId,
+                                       F.Name as AccessoryName,
                                        isnull(Dep2.Name, case when A.ItemLevel = 2 then A.Name else null end) as Dep2Name, 
                                        isnull(Dep3.Name, case when A.ItemLevel = 3 then A.Name else null end) as Dep3Name, 
                                        isnull(Dep4.Name, case when A.ItemLevel = 4 then A.Name else null end) as Dep4Name, 
@@ -72,13 +75,27 @@ namespace Reports.Core.Dao.Impl
                                 LEFT JOIN Department as Dep5 ON C.Path like Dep5.Path + N'%' and Dep5.ItemLevel = 5
                                 LEFT JOIN Department as Dep6 ON C.Path like Dep6.Path + N'%' and Dep6.ItemLevel = 6
                                 LEFT JOIN Users as D ON D.Id = A.CreatorID
-                                LEFT JOIN Position as E ON E.Id = D.PositionId";
+                                LEFT JOIN Position as E ON E.Id = D.PositionId
+                                LEFT JOIN StaffDepartmentAccessory as F ON F.Id = A.BFGId";
+
+            
 
             SqlQuery = string.Format(@"SELECT * FROM ({0}) as A", SqlQuery);
 
-            SqlQuery += GetWhereForUserRole(curUser);
-            SqlQuery += GetWhereForParameters(DepartmentId, Id, Surname, DateBegin, DateEnd, StatusId);
-            SqlQuery += GetOrderByForSqlQuery(SortBy, SortDescending);
+            if (role == UserRole.Manager)
+            {
+                SqlQuery += @"
+                                 INNER JOIN (SELECT C.*
+                                             FROM Users as A
+                                             INNER JOIN Department as B ON B.Id = A.DepartmentId
+                                             INNER JOIN Department as C ON C.Path like B.Path + N'%' --and C.ItemLevel <> B.ItemLevel
+						                     WHERE A.Id = :userId) as F ON F.Id = isnull(A.DepartmentId, A.ParentId)";
+            }
+
+            string sqlWhere = GetWhereForUserRole(curUser, role);
+            sqlWhere = GetWhereForParameters(DepartmentId, Id, Surname, DateBegin, DateEnd, StatusId, ref sqlWhere);
+            sqlWhere = (string.IsNullOrEmpty(sqlWhere) ? "" : " WHERE " + sqlWhere);
+            SqlQuery += sqlWhere + GetOrderByForSqlQuery(SortBy, SortDescending);
 
             IQuery query = Session.CreateSQLQuery(SqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
@@ -87,6 +104,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("RequestTypeId", NHibernateUtil.Int32)
                 .AddScalar("DepartmentId", NHibernateUtil.Int32)
                 .AddScalar("ParentId", NHibernateUtil.Int32)
+                .AddScalar("AccessoryName", NHibernateUtil.String)
                 .AddScalar("Dep2Name", NHibernateUtil.String)
                 .AddScalar("Dep3Name", NHibernateUtil.String)
                 .AddScalar("Dep4Name", NHibernateUtil.String)
@@ -114,19 +132,23 @@ namespace Reports.Core.Dao.Impl
         /// Определяем критерий поиска для роли текущего пользователя.
         /// </summary>
         /// <param name="curUser">Текущий пользователь.</param>
+        /// <param name="role">Роль текущего пользователя.</param>
         /// <returns></returns>
-        protected string GetWhereForUserRole(User curUser)
+        protected string GetWhereForUserRole(User curUser, UserRole role)
         {
             string sqlWhere = string.Empty;
-            switch (curUser.UserRole)
+            switch (role)
             {
-                case UserRole.Manager:
-                    sqlWhere = @"
-                                 INNER JOIN (SELECT C.*
-                                             FROM Users as A
-                                             INNER JOIN Department as B ON B.Id = A.DepartmentId
-                                             INNER JOIN Department as C ON C.Path like B.Path + N'%' and C.ItemLevel <> B.ItemLevel
-						                     WHERE A.Id = :userId) as F ON F.Id = isnull(A.DepartmentId, A.ParentId)";
+//                case UserRole.Manager:
+//                    sqlWhere = @"
+//                                 INNER JOIN (SELECT C.*
+//                                             FROM Users as A
+//                                             INNER JOIN Department as B ON B.Id = A.DepartmentId
+//                                             INNER JOIN Department as C ON C.Path like B.Path + N'%' --and C.ItemLevel <> B.ItemLevel
+//						                     WHERE A.Id = :userId) as F ON F.Id = isnull(A.DepartmentId, A.ParentId)";
+//                    break;
+                case UserRole.Inspector:
+                    sqlWhere = "(A.BFGId in (2, 6) or A.BFGId is null)";
                     break;
             }
             return sqlWhere;
@@ -140,34 +162,34 @@ namespace Reports.Core.Dao.Impl
         /// <param name="DateBegin">Начало периода</param>
         /// <param name="DateEnd">Конец периода</param>
         /// <returns></returns>
-        protected string GetWhereForParameters(int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId)
+        protected string GetWhereForParameters(int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, ref string sqlWhere)
         {
-            string SqlWhere = string.Empty;
+            //string SqlWhere = string.Empty;
             if (DepartmentId != 0)
-                SqlWhere += "A.ParentId = :DepartmentId";
-
+                sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "A.ParentId = :DepartmentId";
+            
             if (Id != 0)
-                SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "A.Id = :Id";
+                sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "A.Id = :Id";
 
             if (!string.IsNullOrEmpty(Surname))
-                SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "Surname like '" + Surname + "%'";
+                sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "Surname like '" + Surname + "%'";
 
 
             if (DateBegin.HasValue && DateEnd.HasValue)
-                SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "A.DateRequest between :DateBegin and :DateEnd";
+                sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "A.DateRequest between :DateBegin and :DateEnd";
             else
             {
                 if (DateBegin.HasValue)
-                    SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "A.DateRequest >= :DateBegin";
+                    sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "A.DateRequest >= :DateBegin";
 
                 if (DateEnd.HasValue)
-                    SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "A.DateRequest < :DateEnd";
+                    sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "A.DateRequest < :DateEnd";
             }
 
             if (StatusId != 0)
-                SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "StatusId = :StatusId";
+                sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "StatusId = :StatusId";
 
-            return (string.IsNullOrEmpty(SqlWhere) ? "" : " WHERE " + SqlWhere);
+            return sqlWhere;
         }
         /// <summary>
         /// Определяем сортировку записей.
@@ -221,6 +243,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 14:
                     SqlOrderBy += "Status";
+                    break;
+                case 15:
+                    SqlOrderBy += "AccessoryName";
                     break;
                 default:
                     SqlOrderBy += "A.Id";

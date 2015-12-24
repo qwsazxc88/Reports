@@ -184,6 +184,10 @@ namespace Reports.Core.Domain
         /// Штатная единица.
         /// </summary>
         //public virtual StaffEstablishedPost StaffEstablishedPost { get; set; }
+        /// <summary>
+        /// Северные надбавки.
+        /// </summary>
+        public virtual IList<StaffUserNorthAdditional> UserNorthAdditionals { get; set; }
         #endregion
 
         #region Constructors

@@ -404,6 +404,12 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="DepId">Код родительского подразделения</param>
         /// <returns></returns>
         StaffListArrangementModel GetDepartmentStructureWithStaffArrangement(string DepId);
+        /// <summary>
+        /// Вызов формы для выбора типа заявки в штатном перемещении.
+        /// </summary>
+        /// <param name="UserId">Id сотрудника.</param>
+        /// <returns></returns>
+        SelectMovementTypeModel GetSelectMovementTypeModel(int UserId);
         #endregion
 
         #region Загрузка словарей и справочников.

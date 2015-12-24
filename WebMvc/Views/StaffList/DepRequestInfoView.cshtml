@@ -7,7 +7,7 @@
             @Html.LabelFor(m => m.DateRequest):
         </td>
         <td>
-            @Html.DisplayFor(m => m.DateRequest)
+            @(Model.DateRequest.HasValue ? Model.DateRequest.Value.ToShortDateString() : "")
         </td>
     </tr>
     <tr>
