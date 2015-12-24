@@ -176,7 +176,8 @@ namespace Reports.Core.Dao.Impl
     }
 
     public class DefaultDao<TEntity> : DefaultDao<TEntity, int>, IDao<TEntity>
-        where TEntity : IEntity<int>
+        
+        where TEntity : class, IEntity<int>
     {
         #region Constants
         public const string StrInvalidManagerLevel = "Ќеверный уровень руководител€ (id {0}) {1} в базе даннных.";
@@ -405,8 +406,8 @@ namespace Reports.Core.Dao.Impl
         }
         public IList<TEntity> QueryExpression(Expression<Func<TEntity, bool>> predicate)
         {           
-            var result = Session.Query<TEntity>().Where(predicate);
-            return (result != null && result.Any()) ? result.ToList() : new List<TEntity>();
+            var result = Session.QueryOver<TEntity>().Where(predicate).List();
+            return result;
         }
         public void Update(Func<TEntity, bool> predicate, Action<TEntity> action)
         {            
@@ -1471,7 +1472,7 @@ namespace Reports.Core.Dao.Impl
     //}
 
     public class DefaultDaoSorted<TEntity> : DefaultDao<TEntity>
-        where TEntity : IEntity<int>,ISortOrder
+        where TEntity : class,IEntity<int>,ISortOrder
     {
         public DefaultDaoSorted(ISessionManager sessionManager)
             : base(sessionManager)

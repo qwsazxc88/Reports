@@ -154,7 +154,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public object CopyAppointmentReport(int AppointmentNumber, int AppointmentReportId)
         {
-            var apps=AppointmentDao.Find(x => x.Number == AppointmentNumber);
+            var apps=AppointmentDao.QueryExpression(x => x.Number == AppointmentNumber);
             if (apps != null && apps.Any())
             {
                 var app = apps.First();
@@ -194,6 +194,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return new { status = "Ok", message = "Отчёт создан.", ReportId=newrep.Id };
             }
             else return new { status = "Error", message = "Заявка не найдена." };
+        }
+        public ViewModel.Employment2.CreateCandidateModel FillCreateCandidateModelByReportId(int id)
+        {
+            var model = Ioc.Resolve<IEmploymentBl>().GetCreateCandidateModel();
+            var entity = AppointmentReportDao.Load(id);
+            model.AppointmentId = entity.Appointment.Id;
+            model.AppointmentReportId = entity.Id;
+            model.DepartmentId = entity.Appointment.Department.Id;
+            model.DepartmentName = entity.Appointment.Department.Name;
+            model.Surname = entity.Name;
+            model.PlanRegistrationDate = entity.Appointment.ReasonBeginDate;
+            model.IsFixedTermContract = entity.Appointment.Type;
+            return model;
         }
         public AppointmentListModel GetAppointmentListModel()
         {
@@ -845,7 +858,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             try//ЗАПЛАТКА
             {
-                var mr=ManualRoleRecordDao.Find(x => x.User.Id == CurrentUser.Id && dep.Path.Contains(x.TargetDepartment.Path));
+                var mr=ManualRoleRecordDao.QueryExpression(x => x.User.Id == CurrentUser.Id && dep.Path.Contains(x.TargetDepartment.Path));
                 if (mr != null && mr.Any()) return true;
             }
             catch (Exception e) { }
@@ -1243,7 +1256,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             int id = 0;
             int secondnumber = 0;
-            var reports = AppointmentReportDao.Find(x => x.Appointment.Id == entity.Id);
+            var reports = AppointmentReportDao.QueryExpression(x => x.Appointment.Id == entity.Id);
             if (reports != null && reports.Any())
             {
                 foreach (var el in reports)
@@ -2232,7 +2245,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ValidationException(string.Format(CannotCreateReport));*/
             //return CreateAppointmentReport(entity.Appointment/*,entity.Appointment.AcceptStaff*/);
             int secondnumber = 0;
-            var reports = AppointmentReportDao.Find(x => x.Appointment.Id == entity.Appointment.Id);
+            var reports = AppointmentReportDao.QueryExpression(x => x.Appointment.Id == entity.Appointment.Id);
             if (reports != null && reports.Any())
             {
                 foreach (var el in reports)
