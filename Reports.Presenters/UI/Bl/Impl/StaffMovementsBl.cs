@@ -166,12 +166,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             var result= data.Select(x => new StaffMovementsFactDto
             {
                 Id = x.Id,
-                StaffMovementsId = x.StaffMovements.Id,
+                StaffMovementsId = x.StaffMovements!=null?x.StaffMovements.Id:0,
                 SendTo1C = x.SendTo1C,
                 User = x.User.Name,
                 UserDep3= x.User.Department.Dep3.First().Name,
                 UserDep7 = x.User.Department.Name,                
-                StaffEstablishedPostRequestId = x.StaffEstablishedPostRequest.Id,
+                StaffEstablishedPostRequestId =x.StaffEstablishedPostRequest!=null? x.StaffEstablishedPostRequest.Id:0,
                 IsOk = x.IsOk
                 
             }).ToList();

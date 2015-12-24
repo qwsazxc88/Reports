@@ -25,15 +25,15 @@ namespace Reports.Core.Dto
             displayName = "Номер заявки на изменение ШЕ", 
             enableFiltering = true, 
             enableSorting = true, 
-            type = "number", 
-            cellTemplate = "<div class='ui-grid-cell-contents'><a target='_blank' href='/StaffList/DocumentMovementsEdit/{{row.entity[col.field]}}'>{{row.entity[col.field]}}</a> </div>")]
+            type = "number",
+            cellTemplate = "<div class='ui-grid-cell-contents'><a target='_blank' ng-show='row.entity[col.field]!=0' href='/StaffList/StaffDepartmentRequest/?id={{row.entity[col.field]}}&RequestType=0&DepartmentId=0'>{{row.entity[col.field]}}</a> </div>")]
         public int StaffEstablishedPostRequestId { get; set; }
         [ngGridRow(field = "StaffMovementsId",
             displayName = "Номер кадрового перемещения",
             enableFiltering = true,
             enableSorting = true,
             type = "number",
-            cellTemplate = "<div class='ui-grid-cell-contents'><a target='_blank' href='/StaffMovements/Edit/{{row.entity[col.field]}}'>{{row.entity[col.field]}}</a> </div>")]
+            cellTemplate = "<div class='ui-grid-cell-contents'><a ng-show='row.entity[col.field]!=0' target='_blank' href='/StaffMovements/Edit/{{row.entity[col.field]}}'>{{row.entity[col.field]}}</a> </div>")]
         public int StaffMovementsId { get; set; }
         [ngGridRow(field = "IsOk",
             displayName = "Состояние выгрузки",
