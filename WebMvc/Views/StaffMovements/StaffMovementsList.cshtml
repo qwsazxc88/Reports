@@ -95,7 +95,7 @@
                           <td>
                           @if ((dto.UserRole & (UserRole.PersonnelManager | UserRole.Manager | UserRole.Employee ))>0)
                           {
-                            <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("Create", "StaffMovements")'"/>  
+                            <input type="button" value="Добавить новую заявку" onclick="location.href='@Url.Action("Create", "StaffMovements")'"/>  
                           }                                                                                                                 
                             <span id="LoadingIndicator" ng-class="{loading:IsWorking}"></span>
                             <input type="button" style="float: right;" onclick="window.print();" value="Печать"/>

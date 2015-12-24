@@ -97,7 +97,7 @@ namespace Reports.Presenters.UI.ViewModel
         #region Для Руководителя
         [Display(Name="Оклад")]
         public Decimal TargetCasing { get; set; }
-        [Display(Name = "Региональный коэффициент")]
+        [Display(Name = "Районный коэффициент")]
         public Decimal TargetRegion { get; set; }
         [Display(Name = "Ставка")]
         [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
