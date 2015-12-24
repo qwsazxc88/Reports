@@ -27,7 +27,7 @@ begin
 
 	drop table #checkpoint
 	--update TerraPoint set PossibleDepartmentId = null where id in (1241, 3995, 1823, 2409, 227)
-	--update TerraPoint set PossibleDepartmentId = null where name like '%(закрыто)%' or id in (3499)
+	--update TerraPoint set PossibleDepartmentId = null where name like '%(закрыто)%' or id in (3499, 1151)
 	return
 end
 else
