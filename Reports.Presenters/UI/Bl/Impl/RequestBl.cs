@@ -12470,6 +12470,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void ChangeEntityProperties(IUser current, MissionReport entity,
             MissionReportEditModel model, User user, out string error)
         {
+            try{
+                var serial = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+                Log.Debug("Редактирование Авансового Отчета "+entity.Number+" "+ CurrentUser.Name+" Состояние модели:"+ serial);
+            }
+            catch(Exception){}
+            
             error = string.Empty;
             //bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
             if (model.IsEditable)
@@ -12479,19 +12485,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 LoadCosts(model, entity);
             }
             ///Обработка автоматических удержаний
-            if(entity!=null)
+            ///
+            try
             {
-                var md=ManualDeductionDao.QueryExpression(x => x.MissionReport.Id == entity.Id);
-                if (md!=null && md.Any())
+                if (entity != null)
                 {
-                    foreach (var el in md)
+                    var md = ManualDeductionDao.QueryExpression(x => x.MissionReport.Id == entity.Id);
+                    if (md != null && md.Any())
                     {
-                        //MR.UserSumReceived+MR.PurchaseBookAllSum-MR.StornoSum
-                        el.AllSum = entity.UserSumReceived + entity.PurchaseBookAllSum - entity.StornoSum;
-                        ManualDeductionDao.SaveAndFlush(el);
+                        foreach (var el in md)
+                        {
+                            //MR.UserSumReceived+MR.PurchaseBookAllSum-MR.StornoSum
+                            el.AllSum = entity.UserSumReceived + entity.PurchaseBookAllSum - entity.StornoSum;
+                            ManualDeductionDao.SaveAndFlush(el);
+                        }
                     }
                 }
-            }
+            }catch(Exception){}
             if (model.IsAccountantEditable)
             {
                 if (model.IsAccountantReject) //?? flag can be set when AccountantEditable is not set
@@ -12526,8 +12536,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && !entity.UserDateAccept.HasValue
                 && model.IsUserApproved)
             {
+                Log.Debug("Сотрудник установил флажок согласования: "+DateTime.Now+" в АО №"+entity.Number);
                 if (model.IsAttachmentsInvalid)
+                {
                     error = string.Format(@"Ордер сохранен успешно, но не может быть согласован - не ко всем статьям расходов прикреплены документы.");
+                    Log.Debug(DateTime.Now+" в АО №"+entity.Number +" "+error);
+                }
                 else
                 {
                     entity.UserDateAccept = DateTime.Now;
@@ -12541,8 +12555,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             && !entity.UserDateAccept.HasValue
             && model.IsUserApproved)
             {
+                Log.Debug("Сотрудник(уволеный?) установил флажок согласования: "+DateTime.Now+" в АО №"+entity.Number);
                 if (model.IsAttachmentsInvalid)
+                {
                     error = string.Format(@"Ордер сохранен успешно, но не может быть согласован - не ко всем статьям расходов прикреплены документы.");
+                    Log.Debug(DateTime.Now+" в АО №"+entity.Number +" "+error);
+                }
                 else
                 {
                     entity.UserDateAccept = DateTime.Now;

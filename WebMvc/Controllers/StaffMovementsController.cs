@@ -8,8 +8,11 @@ using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using WebMvc.Attributes;
 namespace WebMvc.Controllers
 {
+    [PreventSpam]
+    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.PersonnelManager)]
     public class StaffMovementsController : BaseController
     {
         #region BL
