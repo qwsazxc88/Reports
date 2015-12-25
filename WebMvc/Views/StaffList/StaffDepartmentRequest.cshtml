@@ -1115,6 +1115,14 @@
                             <tr><td colspan="3"><a href="@Url.Content("~/Templates/BlankOrderForCloseMO.doc")" target="_blank">Бланк приказа о закрытии МО</a></td></tr>
                             <tr><td colspan="3"><a href="@Url.Content("~/Templates/BlankOrderForCloseURM.doc")" target="_blank">Бланк приказа о закрытии УРМ</a></td></tr>
                         }
+                        @if (Model.RequestTypeId != 3)
+                        {
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/OrderInputEquipment.doc")" target="_blank">Приказ о вводе оборудования</a></td></tr>
+                        }
+                        @if (Model.RequestTypeId != 1)
+                        {
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/OrderOutputEquipment.doc")" target="_blank">Приказ о выводе оборудования</a></td></tr>
+                        }
                         <tr>
                             <td>
                                 @Html.LabelFor(m => m.IsOrderApprove)

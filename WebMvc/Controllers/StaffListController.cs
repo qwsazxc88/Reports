@@ -1099,6 +1099,12 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("MessageStr", "Введите название подразделения!");
             }
 
+            if (model.BFGId == 0)
+            {
+                ModelState.AddModelError("BFGId", "Укажите принадлежность подразделения!");
+                ModelState.AddModelError("MessageStr", "Укажите принадлежность подразделения!");
+            }
+
             //для налоговиков при согласовании
             if (!model.IsDraft)
             {
