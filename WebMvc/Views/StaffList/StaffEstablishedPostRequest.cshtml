@@ -280,7 +280,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>@("Причина " + (Model.RequestTypeId == 1 ? "создания" : (Model.RequestTypeId == 2 ? "изменения" : "сокращения")) + " ШЕ")</td>
+                        <td>@("Причина " + (Model.RequestTypeId == 1 ? "создания" : (Model.RequestTypeId == 3 ? "сокращения" : "изменения")) + " ШЕ")</td>
                         <td>
                             @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name")) 
                         </td>
@@ -458,7 +458,7 @@
         //ShowFlash(true);
         //ShowFlash(false);
 
-        $(document).tooltip({ track: true });
+        $(document).tooltip({ track: false, duration: 1000 });
         $(":button").button();
         $("#BeginAccountDate").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
         $(".hasDatepicker").width("85px");

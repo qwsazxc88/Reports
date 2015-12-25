@@ -27,7 +27,7 @@ begin
 
 	drop table #checkpoint
 	--update TerraPoint set PossibleDepartmentId = null where id in (1241, 3995, 1823, 2409, 227)
-	--update TerraPoint set PossibleDepartmentId = null where name like '%(закрыто)%' or id in (3499, 227)
+	--update TerraPoint set PossibleDepartmentId = null where name like '%(закрыто)%' or id in (3499, 1151)
 	return
 end
 else
@@ -196,7 +196,7 @@ print 'Закончена обработка несвязанных подразделений'
 		
 drop table #TPLink
 
---находим записи, которые связаны по коду 1С и потом уже с данными Финграда по ихнему коду
+--находим записи, которые связаны по коду 1С и потом уже с данными Финграда по их коду
 SELECT A.Id, A.ParentId, C.[Сокращенное_наименование] as FinDepName, 
 			 case A.BFGId when 1 then 'Бэк'
 										when 2 then 'Фронт'
@@ -1132,8 +1132,8 @@ FROM StaffDepartmentCBDetails as A
 INNER JOIN StaffDepartmentRequest as B ON B.Id = A.DepRequestId and B.IsDraft = 0
 INNER JOIN Department as C ON C.id = B.DepartmentId and C.FingradCode is not null
 INNER JOIN Fingrad_csv as D ON D.[Код_подразделения] = C.FingradCode and (D.[Инкассирующее_подразделение_кэшина] is not null or D.[Инкассирующее_подразделение_банкомата] is not null)
-LEFT JOIN StaffDepartmentRPLink as E ON E.Code = D.[Инкассирующее_подразделение_кэшина_Код_РП_в_финград]
-LEFT JOIN StaffDepartmentRPLink as F ON F.Code = D.[Инкассирующее_подразделение_банкомата_Код_РП_в_финград]
+LEFT JOIN StaffDepartmentRPLink as E ON E.Name = D.[Инкассирующее_подразделение_кэшина]
+LEFT JOIN StaffDepartmentRPLink as F ON F.Name = D.[Инкассирующее_подразделение_банкомата]
 
 
 drop table #TMP

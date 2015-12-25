@@ -51,13 +51,15 @@
                 <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)
                 </div> 
                 
-                @if(UserDto.IsStaffDepartmentAvailable(dto))
-                {
-                    @*<div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>*@
-                }
-                
                 <div id="liStaffMovements" class="mainOn">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
                 </div>
+
+                @if(UserDto.IsStaffDepartmentAvailable(dto))
+                {
+                    <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
+                }
+                
+                
                 <div id="liDeduction" class="mainMenuItem">
                 @if ((dto.UserRole & UserRole.Accountant) > 0
                      || (dto.UserRole & UserRole.Estimator) > 0

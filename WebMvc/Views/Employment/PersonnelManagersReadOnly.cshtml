@@ -91,32 +91,40 @@
         *@
         <div class="formfield clear">
             @Html.LabelFor(m => m.PersonalAddition)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAddition)<br />
-            @Html.TextBoxFor(m => m.PersonalAddition, new { @class = "calc halfwidth" })
+            @Html.TextBoxFor(m => m.PersonalAddition, new { @class = "calc halfwidth", @readonly = "readonly" })
         </div>
+        @*
+        не нужно
         <div class="formfield">
             @Html.LabelFor(m => m.PositionAddition)&nbsp;@Html.ValidationMessageFor(m => m.PositionAddition)<br />
             @Html.TextBoxFor(m => m.PositionAddition, new { @class = "calc halfwidth" })
         </div>
+        *@
         <div class="formfield">
             @Html.LabelFor(m => m.AreaMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.AreaMultiplier)<br />
-            @Html.TextBoxFor(m => m.AreaMultiplier, new { @class = "calc halfwidth" })
+            @Html.TextBoxFor(m => m.AreaMultiplier, new { @class = "calc halfwidth", @readonly = "readonly" })
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.AreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.AreaAddition)<br />
-            @Html.TextBoxFor(m => m.AreaAddition, new { @class = "calc halfwidth" })
+            @Html.TextBoxFor(m => m.AreaAddition, new { @class = "calc halfwidth", @readonly = "readonly" })
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.TravelRelatedAddition)&nbsp;@Html.ValidationMessageFor(m => m.TravelRelatedAddition)<br />
-            @Html.TextBoxFor(m => m.TravelRelatedAddition, new { @class = "calc halfwidth" })
+            @Html.TextBoxFor(m => m.TravelRelatedAddition, new { @class = "calc halfwidth", @readonly = "readonly" })
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.CompetenceAddition)&nbsp;@Html.ValidationMessageFor(m => m.CompetenceAddition)<br />
-            @Html.TextBoxFor(m => m.CompetenceAddition, new { @class = "calc halfwidth" })
+            @Html.TextBoxFor(m => m.CompetenceAddition, new { @class = "calc halfwidth", @readonly = "readonly" })
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.FrontOfficeExperienceAddition)&nbsp;@Html.ValidationMessageFor(m => m.FrontOfficeExperienceAddition)<br />
-            @Html.TextBoxFor(m => m.FrontOfficeExperienceAddition, new { @class = "calc halfwidth" })
+            @Html.TextBoxFor(m => m.FrontOfficeExperienceAddition, new { @class = "calc halfwidth", @readonly = "readonly" })
         </div>
+
+        <div class="formfield clear">
+            @Html.DisplayFor(m => m.SalaryTotalCaption)&nbsp;@Html.DisplayFor(m => m.SalaryTotal)
+        </div>
+
         <div class="formfield clear">
             @Html.LabelFor(m => m.Grade)&nbsp;@Html.ValidationMessageFor(m => m.Grade)<br />
             @Html.TextBoxFor(m => m.Grade, new { @class = "halfwidth" })

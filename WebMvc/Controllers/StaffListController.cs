@@ -10,6 +10,7 @@ using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Dao;
 using Reports.Presenters.UI.ViewModel.StaffList;
+using Reports.Presenters.UI.ViewModel;
 using System.Web.Script.Serialization;
 
 namespace WebMvc.Controllers
@@ -241,7 +242,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.Inspector)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.Inspector /*| UserRole.PersonnelManager*/)]
         public ActionResult StaffEstablishedPostRequestList()
         {
             StaffEstablishedPostRequestListModel model = new StaffEstablishedPostRequestListModel();
@@ -254,7 +255,7 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.Inspector)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.Inspector /*| UserRole.PersonnelManager*/)]
         public ActionResult StaffEstablishedPostRequestList(StaffEstablishedPostRequestListModel model)
         {
             
@@ -276,7 +277,7 @@ namespace WebMvc.Controllers
         /// <param name="Id">Id заявки.</param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.Inspector)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.Inspector /*| UserRole.PersonnelManager*/)]
         public ActionResult StaffEstablishedPostRequest(int RequestType, int? DepartmentId, int? SEPId, int? Id)
         {
             ModelState.Clear();
@@ -367,7 +368,7 @@ namespace WebMvc.Controllers
         /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
         /// <returns></returns>
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing /*| UserRole.PersonnelManager*/)]
         public ActionResult StaffListArrangement(string DepId, bool? IsParentDepOnly)
         {
             StaffListArrangementModel model = new StaffListArrangementModel();
@@ -379,13 +380,25 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing /*| UserRole.PersonnelManager*/)]
         public ActionResult StaffListArrangement(string DepId)
         {
             var jsonSerializer = new JavaScriptSerializer();
             StaffListArrangementModel model = StaffListBl.GetDepartmentStructureWithStaffArrangement(DepId);
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
+        }
+
+        /// <summary>
+        /// Всплывающее окно для выбора типа заявки в кадровом перемещении.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult SelectMovementType(int UserId)
+        {
+            SelectMovementTypeModel model = StaffListBl.GetSelectMovementTypeModel(UserId);
+            return PartialView(model);
         }
         #endregion
 
@@ -1086,10 +1099,16 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("MessageStr", "Введите название подразделения!");
             }
 
+            if (model.BFGId == 0)
+            {
+                ModelState.AddModelError("BFGId", "Укажите принадлежность подразделения!");
+                ModelState.AddModelError("MessageStr", "Укажите принадлежность подразделения!");
+            }
+
             //для налоговиков при согласовании
             if (!model.IsDraft)
             {
-                if (model.DepNextId == 0 && (model.ItemLevel <= 2 || model.ItemLevel == 7) && AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector)
+                if (model.DepNextId == 0 && (model.ItemLevel <= 2 || model.ItemLevel == 7) && AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector && model.BFGId == 2)
                 {
                     ModelState.AddModelError("DepNextId", "Укажите подразделение с налоговыми рекизитами!");
                     ModelState.AddModelError("MessageStr", "Укажите подразделение с налоговыми рекизитами!");
@@ -1132,10 +1151,13 @@ namespace WebMvc.Controllers
             }
             else
             {
-                if (model.Quantity <= 0)
-                    ModelState.AddModelError("Quantity", "Укажите количество!");
-                if (model.Salary <= 0)
-                    ModelState.AddModelError("Salary", "Укажите оклад!");
+                if (model.RequestTypeId != 3)
+                {
+                    if (model.Quantity <= 0)
+                        ModelState.AddModelError("Quantity", "Укажите количество!");
+                    if (model.Salary <= 0)
+                        ModelState.AddModelError("Salary", "Укажите оклад!");
+                }
 
                 if (model.PostChargeLinks.Where(x => x.ActionId == 0).Count() != 0)
                 {
