@@ -171,6 +171,13 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="Type">Тип образования: 1 - Сведения об образовании, 2 - Послевузовское образование, 3 - Аттестация, 4 - Повышение квалификации.</param>
         /// <returns></returns>
         int CheckExistsEducationRecord(int UserId, int Type);
-        
+        /// <summary>
+        /// Отправка сообщения участника процесса приема другому участнику.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель.</param>
+        /// <param name="error">Сообщение.</param>
+        /// <returns></returns>
+        bool EmploymentProccedRegistrationSendEmail(PersonnelInfoModel model, out string error);
+        void GetStaffEstablishmentPostDetails(ManagersModel model);
     }
 }

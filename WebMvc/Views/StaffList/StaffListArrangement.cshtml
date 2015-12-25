@@ -166,53 +166,53 @@
         else{$("#getnodes-" + Id).addClass("IsLoading");}
 
         var actionUrl="@Url.Action("StaffListArrangement", "StaffList")";
-            $("#DepId").val(Id);
-            var dataToSend = $("#StaffListArrangementForm").serialize();
-            ShowFlash(true);
+        $("#DepId").val(Id);
+        var dataToSend = $("#StaffListArrangementForm").serialize();
+        ShowFlash(true);
 
-            jQuery.ajax({
-                url: actionUrl,
-                type: 'POST',
-                dataType: 'json',
-                data: dataToSend,
-                async: true,
-                success: function(result){
-                    // $liParent = $("#li-" + Id.toString());
-                    var ResultStr = "";
-                    var tblStr = "";
+        jQuery.ajax({
+            url: actionUrl,
+            type: 'POST',
+            dataType: 'json',
+            data: dataToSend,
+            async: true,
+            success: function(result){
+                // $liParent = $("#li-" + Id.toString());
+                var ResultStr = "";
+                var tblStr = "";
 
 
-                    if (result.Departments != null)
-                    {
-                        //DepTable = result.Departments;
-                        for (var i = 0; i < result.Departments.length; i++)
-                        {   
-                            if(IsExpandAll)
-                            {
-                                DepTable[i] = result.Departments[i].Code1C;
-                            }
+                if (result.Departments != null)
+                {
+                    //DepTable = result.Departments;
+                    for (var i = 0; i < result.Departments.length; i++)
+                    {   
+                        if(IsExpandAll)
+                        {
+                            DepTable[i] = result.Departments[i].Code1C;
+                        }
 
-                            tblStr = "<tr id='tr-" + result.Departments[i].Code1C + "' accessKey='" + result.Departments[i].Path + "' class='IsVisible' style='background-color: #E9FFE9;'>" +
-                                        "<td class='tdBtn'>" + result.Departments[i].ItemLevel + "</td>" +
-                                        "<td>" +
-                                        "<span>";
-                                            var BSCount = (result.Departments[i].ItemLevel - 1) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
-                                            for (var j = 0; j < BSCount; j++)
-                                            {
-                                                tblStr += "&nbsp;";
-                                            }
-                                            tblStr += "<a class='Acollapsible' accessKey='" + result.Departments[i].Path + "' href='#' id='getnodes-" + result.Departments[i].Code1C + "' onclick='GetNodes(" + result.Departments[i].Code1C + ");'>" +
-                                            "<span Id='span-tr" + result.Departments[i].Code1C + "' class='collapse collapsible'>&nbsp;</span> " + result.Departments[i].Name + "</a>" +
-                                        "</span>" +
-                                            "<button type='button' class='btnDepExpand' title='Раскрыть ветку' onclick='GetNodes("+ result.Departments[i].Code1C +", true);' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></button>" +
-                                            "<button type='button' class='btnDepNewWindow' title='Открыть ветку в новом окне' onclick='GetDepartments("+ result.Departments[i].Code + ");' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></button>" +
-                                        "</td>" + 
-                                        "<td></td>" +
-                                        "<td>" + result.Departments[i].SEPCount + "</td>" +
-                                        "<td></td>" +
-                                        "<td></td>" +
-                                        "<td></td>" +
-                                        "<td></td>" +
+                        tblStr = "<tr id='tr-" + result.Departments[i].Code1C + "' accessKey='" + result.Departments[i].Path + "' class='IsVisible' style='background-color: #E9FFE9;'>" +
+                                    "<td class='tdBtn'>" + result.Departments[i].ItemLevel + "</td>" +
+                                    "<td>" +
+                                    "<span>";
+                                        var BSCount = (result.Departments[i].ItemLevel - 1) * 4; //отступ от левого края каждого вложения на 4 пробела больше родительского
+                                        for (var j = 0; j < BSCount; j++)
+                                        {
+                                            tblStr += "&nbsp;";
+                                        }
+                                        tblStr += "<a class='Acollapsible' accessKey='" + result.Departments[i].Path + "' href='#' id='getnodes-" + result.Departments[i].Code1C + "' onclick='GetNodes(" + result.Departments[i].Code1C + ");'>" +
+                                        "<span Id='span-tr" + result.Departments[i].Code1C + "' class='collapse collapsible'>&nbsp;</span> " + result.Departments[i].Name + "</a>" +
+                                    "</span>" +
+                                        "<button type='button' class='btnDepExpand' title='Раскрыть ветку' onclick='GetNodes("+ result.Departments[i].Code1C +", true);' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></button>" +
+                                        "<button type='button' class='btnDepNewWindow' title='Открыть ветку в новом окне' onclick='GetDepartments("+ result.Departments[i].Code + ");' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></button>" +
+                                    "</td>" + 
+                                    "<td></td>" +
+                                    "<td>" + result.Departments[i].SEPCount + "</td>" +
+                                    "<td></td>" +
+                                    "<td></td>" +
+                                    "<td></td>" +
+                                    "<td></td>" +
                                         "<td></td>" +
                                         "<td></td>" +
                                         "<td></td>" +
@@ -225,52 +225,52 @@
 //                                        "<td>" + (result.Departments[i].DepFingradName == null ? "" : result.Departments[i].DepFingradName) + "</td>" +
 //                                        "<td>" + (result.Departments[i].DepFingradNameComment == null ? "" : result.Departments[i].DepFingradNameComment) + "</td>" +
 //                                        "<td>" + (result.Departments[i].FinDepPointCode == null ? "" : result.Departments[i].FinDepPointCode) + "</td>" +
-                                        "</tr>";
+                                    "</tr>";
 
-                            var ParentRowName = "#tr-" + (i == 0 ? Id : result.Departments[i - 1].Code1C);//определяем Id строки после которой нужно добавить новую строку
-                            $(ParentRowName).after(tblStr);//вставляем новую строку
-                            //var aa = $(ParentRowName);
-                            //console.log(aa);
-                            $("#span-tr" + result.Departments[i].Code1C).removeClass("collapse collapsible");
-                            $("#getnodes-" + result.Departments[i].Code1C).removeClass("Acollapsible");
+                        var ParentRowName = "#tr-" + (i == 0 ? Id : result.Departments[i - 1].Code1C);//определяем Id строки после которой нужно добавить новую строку
+                        $(ParentRowName).after(tblStr);//вставляем новую строку
+                        //var aa = $(ParentRowName);
+                        //console.log(aa);
+                        $("#span-tr" + result.Departments[i].Code1C).removeClass("collapse collapsible");
+                        $("#getnodes-" + result.Departments[i].Code1C).removeClass("Acollapsible");
 
-                            //для седьмого уровня надо обработчик, так как показываем еще и сотрудников
-                            if (result.Departments[i].ItemLevel <= 7){
-                                $("#span-tr" + result.Departments[i].Code1C).addClass("collapse collapsible");
-                                $("#getnodes-" + result.Departments[i].Code1C).addClass("Acollapsible");
-                                //console.log(ResultStr);
-                                //назначаем обработчик для раскрытия веток дерева
-                                $("#getnodes-" + result.Departments[i].Code1C).click(function (e) {
-                                    e.preventDefault();
-                                    $(this).children('span').toggleClass("collapse expand");
-                                    $(this).closest('li').children('ul').slideToggle();
-                                });
+                        //для седьмого уровня надо обработчик, так как показываем еще и сотрудников
+                        if (result.Departments[i].ItemLevel <= 7){
+                            $("#span-tr" + result.Departments[i].Code1C).addClass("collapse collapsible");
+                            $("#getnodes-" + result.Departments[i].Code1C).addClass("Acollapsible");
+                            //console.log(ResultStr);
+                            //назначаем обработчик для раскрытия веток дерева
+                            $("#getnodes-" + result.Departments[i].Code1C).click(function (e) {
+                                e.preventDefault();
+                                $(this).children('span').toggleClass("collapse expand");
+                                $(this).closest('li').children('ul').slideToggle();
+                            });
 
-                                //при автооткрытии имитируем клик, меняем внешний вид
-                                if (IsExpandAll){
-                                    $("#span-tr" + result.Departments[i].Code1C).toggleClass("collapse expand");
+                            //при автооткрытии имитируем клик, меняем внешний вид
+                            if (IsExpandAll){
+                                $("#span-tr" + result.Departments[i].Code1C).toggleClass("collapse expand");
 
-                                }
                             }
                         }
                     }
+                }
                     
-                    if(result.EstablishedPosts != null)
-                    {
-                        for (var i = 0; i < result.EstablishedPosts.length; i++)//штатные единицы
-                        {   
-                            tblStr = "<tr id='tru-" + result.EstablishedPosts[i].Id + "-" + result.EstablishedPosts[i].SEPId + "' accessKey='" + result.EstablishedPosts[i].Path + "' class='IsVisible' ;'>" +
-                                        "<td></td>" +
-                                        "<td></td>" +
-                                        "<td>" +
-                                        "<span>" +
-                                            "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
-                                            "<span Id='span-tr'" + result.EstablishedPosts[i].Id + "' >&nbsp;</span> " + result.EstablishedPosts[i].PositionName + "</a>" +
-                                        "</span>" +
-                                        "</td>" + 
-                                        "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
-                                        "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
-                                        "<td>" + (result.EstablishedPosts[i].Rate != null ? result.EstablishedPosts[i].Rate : "") + "</td>" +
+                if(result.EstablishedPosts != null)
+                {
+                    for (var i = 0; i < result.EstablishedPosts.length; i++)//штатные единицы
+                    {   
+                        tblStr = "<tr id='tru-" + result.EstablishedPosts[i].Id + "-" + result.EstablishedPosts[i].SEPId + "' accessKey='" + result.EstablishedPosts[i].Path + "' class='IsVisible' ;'>" +
+                                    "<td></td>" +
+                                    "<td></td>" +
+                                    "<td>" +
+                                    "<span>" +
+                                        "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
+                                        "<span Id='span-tr'" + result.EstablishedPosts[i].Id + "' >&nbsp;</span> " + result.EstablishedPosts[i].PositionName + "</a>" +
+                                    "</span>" +
+                                    "</td>" + 
+                                    "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
+                                    "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
+                                    "<td>" + (result.EstablishedPosts[i].Rate != null ? result.EstablishedPosts[i].Rate : "") + "</td>" +
                                         
                                         "<td>" + (result.EstablishedPosts[i].Regional != null ? result.EstablishedPosts[i].Regional : "") + "</td>" +
                                         "<td>" + (result.EstablishedPosts[i].Personnel != null ? result.EstablishedPosts[i].Personnel : "") + "</td>" +
@@ -298,40 +298,40 @@
                                         }
                                         tblStr += "<td>" + (result.EstablishedPosts[i].ReplacedName == null ? "" : result.EstablishedPosts[i].ReplacedName) + "</td>" +
                                         "<td>" + (result.EstablishedPosts[i].Reserve == null ? "" : result.EstablishedPosts[i].Reserve) + "</td>" +
-                                        "</tr>";
+                                    "</tr>";
 
-                            var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
-                            $(ParentRowName).after(tblStr);//вставляем новую строку
+                        var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
+                        $(ParentRowName).after(tblStr);//вставляем новую строку
                             $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
-                        }
                     }
-                    
-
-                    //пытаемся раскрыть рекурсивно всю ветку 
-                    if (DepTable.length > 0)
-                    {
-                        for (var i = 0; i < DepTable.length; i++)
-                        {
-                            GetNodes(DepTable[i], IsExpandAll);
-                        }
-                        DepTable = [];
-                    }
-                    
-
-
-                    $(":button").button();
-
-                    ShowFlash(false);
-                },
-                error: function(e, str1){
-                    if(str1 == "parsererror")
-                        alert("Доступ запрещен!.");
-                    else
-                        alert("При загрузке данных произошла ошибка.");
-
-                    ShowFlash(false);
                 }
-            });
+                    
+
+                //пытаемся раскрыть рекурсивно всю ветку 
+                if (DepTable.length > 0)
+                {
+                    for (var i = 0; i < DepTable.length; i++)
+                    {
+                        GetNodes(DepTable[i], IsExpandAll);
+                    }
+                    DepTable = [];
+                }
+                    
+
+
+                $(":button").button();
+
+                ShowFlash(false);
+            },
+            error: function(e, str1){
+                if(str1 == "parsererror")
+                    alert("Доступ запрещен!.");
+                else
+                    alert("При загрузке данных произошла ошибка.");
+
+                ShowFlash(false);
+            }
+        });
     }
 
 

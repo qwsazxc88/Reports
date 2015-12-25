@@ -21,15 +21,12 @@
                                 <span style="font-size:large;color:Red;">Уважаемые  коллеги! <br />Обращаем  ваше  внимание, если у  вас  возникли  сложности при оформлении  Приема  кандидата  через  ВЕБ - пишите  об этом   сразу  кадровику  Дирекции на электронную  почту.</span>
                                 <br />
                                 <div style="width:70%;">
-                                    <span>&nbsp;&nbsp;&nbsp;&nbsp;Обращаем Ваше внимание! Внесены изменения в программу "Прием". Прикрепить сканированные документы кандидата можно на первой странице 
-                                          "Сканы оригиналов документов" Анкеты по приему в программе  "Прием". После прикрепления, документы отразятся на каждой странице Анкеты по приему. 
-                                          Электронно заполненную Анкету по приему теперь можно распечатать на странице Анкеты по приему "Департамент безопасности". На этой же странице можно 
-                                          прикрепить подписанный скан оригинала данной Анкеты. 
-                                          <br />
-                                          &nbsp;&nbsp;&nbsp;&nbsp;У Департамента безопасности появилась возможность предварительного согласования кандидата после приложенных сканов документов кандидата на странице 
-                                          "Сканы оригиналов документов" Анкеты по приему. Окончательно кандидата Департамент безопасности согласовывает после получения заполненной Анкеты по приему.
-                                          <br />
-                                          &nbsp;&nbsp;&nbsp;&nbsp;Тренер сможет начать работу с кандидатом после предварительного согласования Департаментом безопасности.
+                                    <span>С 25 декабря 2015 года в программу Прием внесены следующие изменения:<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;Кнопка "Добавить кандидата" перенесена из "Подбор персонала" в "Прием".<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;При оформлении приема Руководителю следует выбрать свое подразделение до 7-го уровня. После выбора подразделения программа покажет есть ли вакансии в выбранном подразделении.
+                                        Если вакансии в выбранном подразделении есть, то откроется список вакансий по должностям.
+                                        Если вакансий в выбранном подразделении нет, программа сообщит об этом, и если  есть Прием, согласованный в <a href="https://pyrus.com/t#id" target="_blank">Pyrus</a> , то Руководителю следует обратиться к начальнику 
+                                        УКДиК банка <a  href="mailto:RogozinaIE@sovcombank.ru" target="_blank">Рогозиной И.Е.</a>
                                     </span>
                                 </div>
                             </td>
@@ -127,6 +124,14 @@
                                                 </td>
                                             </tr>
                                             <tr>
+                                                <td>
+                                                    @Html.LabelFor(m => m.AdditionId):
+                                                </td>
+                                                <td>
+                                                    @Html.DropDownListFor(model => model.AdditionId, Model.Additions, string.Empty)
+                                                </td>
+                                            </tr>
+                                            <tr>
                                                 <td colspan="2">
                                                     @Html.LabelFor(m => m.BeginDate):
                                                     @Html.EditorFor(model => model.BeginDate) 
@@ -166,12 +171,12 @@
 
     @* END Выбор параметров *@
    
-    int[] createcandidateapprove = { 991, 998, 1002, 1006 };    
-    if ((dto.UserRole & UserRole.PersonnelManager) > 0 && (!createcandidateapprove.Contains(dto.Id)))
+    int[] createcandidateapprove = { 991, 998, 1002, 1006 };
+    if (((dto.UserRole & UserRole.PersonnelManager) > 0 || (dto.UserRole & UserRole.Manager) > 0) && (!createcandidateapprove.Contains(dto.Id)))
     {
         <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
     }
-    <label style="color:Red;">С 27 апреля  2015  кнопка  "Добавить кандидата"  перенесена  на  страницу  "Подбор персонала (добавление кандидата в Прием) " => Инструкция =>   Согласование кандидата  от Руководителя.</label>
+    <label style="color:Red;">С 27 апреля  2015  кнопка  "Добавить кандидата"  перенесена  на  страницу  "Подбор персонала" => Инструкция =>   Согласование кандидата  от Руководителя.</label>
     <div style="text-align: right;">
         @if (Model.Roster != null && Model.Roster.Count > 0)
         {
@@ -223,6 +228,9 @@
         </th>
         <th>
             <div id="sort4"><a href="#" onclick = "SortColumnChanged(4);">Должность</a></div>
+        </th>        
+        <th>
+            <div id="sort26"><a href="#" onclick = "SortColumnChanged(26);">Есть<br />надбав-<br />ка</a></div>
         </th>        
         <th>
             <div id="sort5"><a href="#" onclick = "SortColumnChanged(5);">Структурное<br />подразделение<br />3 ур.</a></div>
@@ -284,6 +292,9 @@
         </th>
         <th>
             <div id="sort20"><a href="#" onclick = "SortColumnChanged(20);">Номер<br />заявки<br />из подбора<br />персонала</a></div>
+        </th>
+        <th>
+            <div id="sort27"><a href="#" onclick = "SortColumnChanged(27);">Номер<br />задачи<br />в системе<br />Pyrus<br />по поиску<br />кандидата</a></div>
         </th>
         <th>
             <div id="sort21"><a href="#" onclick="SortColumnChanged(21);">Дата<br />увольнения</a></div>
@@ -359,6 +370,11 @@
                 <td>
                     &nbsp;@candidate.Position
                 </td>        
+
+                <td>
+                    &nbsp;@candidate.AdditionAvailable
+                </td>
+
                 <td>
                     &nbsp;@candidate.Department3
                 </td>
@@ -436,6 +452,12 @@
                     else
                     {
                         @*<text>Из оформления без службы по найму</text>*@
+                    }
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(candidate.PyrusNumber) && !string.IsNullOrWhiteSpace(candidate.PyrusNumber))
+                    {
+                        <a target="_blank" href="@("https://pyrus.com/t#id" + candidate.PyrusNumber)">@candidate.PyrusNumber</a>
                     }
                 </td>
                 <td>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
+using Reports.Core.Dto;
 using System.Web.Mvc;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
@@ -52,5 +53,13 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsTrainingNeeded { get; set; }
         [Display(Name = "До приема")]
         public bool IsBeforEmployment { get; set; }
+
+        [Display(Name = "№ задачи в системе Pyrus по поиску кандидата")]
+        public string PyrusNumber { get; set; }
+
+        public bool IsSP { get; set; }//сабмитимся для заполнения списка штатных единиц
+        [Display(Name = "Штатная единица")]
+        public int? UserLinkId { get; set; }
+        public IList<IdNameDto> PostUserLinks { get; set; }
     }
 }

@@ -3,13 +3,12 @@
 @using Reports.Core           
 @{
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    //Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Руководители";
 }
 
 @Html.Partial("CandidateState", Model.CandidateStateModel)
 <span style="font-size:large;">@Html.ValidationMessageFor(m => m.MessageStr)</span>
-
 
 @using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", Id = "ManagerForm" }))
 {
@@ -17,21 +16,21 @@
     @Html.HiddenFor(m => m.IsDraftM)
     @Html.HiddenFor(m => m.SendTo1C)
     @Html.HiddenFor(m => m.IsPyrusDialogVisible)
+    @Html.HiddenFor(m => m.IsVolga)
+    @Html.HiddenFor(m => m.IsSP)
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Руководители</legend>
+@*
+старый вариант без штатного расписания
         <div class="formfield clear">
             @Html.LabelFor(m => m.PositionId):
             <input type="text" name="PositionName" id="PositionName" value="@Model.PositionName" onchange=" changePosition(); " style="width:600px" data-autocomplete-source="@Url.Action("AutocompletePositionSearch", "Employment")" />
             <input type="hidden" id="PositionId" name="PositionId" value="@Model.PositionId"/>
-            @*<input type="hidden" id="PositionName" name="PositionName" value="@Model.PositionName"/>*@
             @Html.ValidationMessageFor(model => model.PositionId)
-            @*
-            @Html.LabelFor(m => m.PositionId)&nbsp;@Html.ValidationMessageFor(m => m.PositionId)<br />
-            @Html.DropDownListFor(m => m.PositionId, Model.PositionItems)
-            *@
         </div>
-        
+*@        
+
         <div class="formfield clear">
             @Html.LabelFor(m => m.DepartmentName):
         </div>
@@ -41,7 +40,14 @@
             @Html.HiddenFor(m => m.DepartmentId)
         </div>
         <div class="formfield clear">
-            <input id="btnChangeDep" type="button" value="Выбрать" onclick="changeDepartment();"/>
+            <input id="btnChangeDep" type="button" value="Выбрать" onclick="changeDepartment(7);"/>
+        </div>
+
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.UserLinkId)<br />
+            @Html.DropDownListFor(m => m.UserLinkId, new SelectList(Model.PostUserLinks, "Id", "Name"), new { onchange = "GetSPDetails(false);" })
+
+            <br />@Html.ValidationMessageFor(m => m.UserLinkId)
         </div>
 
         <div class="formfield clear">
@@ -77,21 +83,97 @@
                                                                                                                                                         {<text> style="border-color:silver;"</text>}>Внутренний совместитель</label>
         </div>
 
-        
-        <div class="formfield">
-            @Html.LabelFor(m => m.ProbationaryPeriod)&nbsp;@Html.ValidationMessageFor(m => m.ProbationaryPeriod)<br />
+        <div class="formfield ">
+            @Html.LabelFor(m => m.ProbationaryPeriod)&nbsp;@Html.ValidationMessageFor(m => m.ProbationaryPeriod)
             @Html.EditorFor(m => m.ProbationaryPeriod)
         </div>
-        @*
+        
+        <div class="clear">
+            <div class="portlet">
+                <div class="portlet-header">Оклад</div>
+                <div id="DivSalary" class="portlet-content">
+                    <table>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.SalaryBasis)</td>
+                            <td>@Html.TextBoxFor(m => m.SalaryBasis, new { @class = "calc halfwidth", @readonly = "readonly" })&nbsp;@Html.ValidationMessageFor(m => m.SalaryBasis)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.SalaryMultiplier)</td>
+                            <td>@Html.TextBoxFor(m => m.SalaryMultiplier, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.SalaryMultiplier)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.AreaMultiplier)</td>
+                            <td>@Html.TextBoxFor(m => m.AreaMultiplier, new { @class = "calc halfwidth", @readonly = "readonly" })&nbsp;@Html.ValidationMessageFor(m => m.AreaMultiplier)</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="clear">
+            <div class="portlet">
+                <div class="portlet-header">Персональные надбавки</div>
+                <div id="DivAdditional" class="portlet-content">
+                    <table>
+                        <tr><td colspan="2" style="background-color:#FFCCCC;">Персональные(ная) надбавки(а) должны быть согласованы в системе Pyrus.</td></tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.PersonalAddition)</td>
+                            <td>@Html.TextBoxFor(m => m.PersonalAddition, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.PersonalAddition)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.AreaAddition)</td>
+                            <td>@Html.TextBoxFor(m => m.AreaAddition, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.AreaAddition)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.TravelRelatedAddition)</td>
+                            <td>@Html.TextBoxFor(m => m.TravelRelatedAddition, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.TravelRelatedAddition)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.CompetenceAddition)</td>
+                            <td>@Html.TextBoxFor(m => m.CompetenceAddition, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.CompetenceAddition)</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.FrontOfficeExperienceAddition)</td>
+                            <td>@Html.TextBoxFor(m => m.FrontOfficeExperienceAddition, new { @class = "calc halfwidth" })&nbsp;@Html.ValidationMessageFor(m => m.FrontOfficeExperienceAddition)</td>
+                        </tr>
+                        @if (Model.IsConsultant && !string.IsNullOrEmpty(Model.PyrusNumber) && !string.IsNullOrWhiteSpace(Model.PyrusNumber))
+                        {
+                            <tr>
+                                <td>@Html.LabelFor(m => m.PyrusNumber)</td>
+                                <td>@Html.TextBoxFor(m => m.PyrusNumber, new { @class = "calc" })&nbsp;@Html.ValidationMessageFor(m => m.PyrusNumber)</td>
+                            </tr>
+                        }
+                        <tr>
+                            @if (!string.IsNullOrEmpty(Model.PyrusNumber) && !string.IsNullOrWhiteSpace(Model.PyrusNumber))
+                            {
+                                <td colspan="2">
+                                    <a href="@("https://pyrus.com/t#id" + Model.PyrusNumber)" target="_blank">Задача в системе Pyrus</a><br />
+                                </td>
+                            }
+                            else
+                            {
+                                <td>@Html.LabelFor(m => m.PyrusNumber)</td>
+                                <td>@Html.TextBoxFor(m => m.PyrusNumber, new { @class = "calc" })&nbsp;@Html.ValidationMessageFor(m => m.PyrusNumber)</td>
+                            }
+                        </tr>
+                    </table>
+                    <a href="https://pyrus.com/" target="_blank">Для создания задачи перейдите по ссылке</a>
+                </div>
+            </div>
+        </div>
+
         <div class="formfield clear">
-            @Html.LabelFor(m => m.SalaryBasis)@Html.ValidationMessageFor(m => m.SalaryBasis)<br />
-            @Html.TextBoxFor(m => m.SalaryBasis, new { @class = "calc" })
+            @Html.DisplayFor(m => m.SalaryTotalCaption)&nbsp;@Html.DisplayFor(m => m.SalaryTotal)
+        </div>
+
+        @*
+        не нужно
+        <div class="formfield">
+            @Html.LabelFor(m => m.PositionAddition)&nbsp;@Html.ValidationMessageFor(m => m.PositionAddition)<br />
+            @Html.TextBoxFor(m => m.PositionAddition, new { @class = "calc halfwidth" })
         </div>
         *@
-        <div class="formfield">
-            @Html.LabelFor(m => m.SalaryMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.SalaryMultiplier)<br />
-            @Html.TextBoxFor(m => m.SalaryMultiplier, new { @class = "calc halfwidth" })
-        </div>
+
         <div class="formfield clear">
             @Html.LabelFor(m => m.WorkCity)&nbsp;@Html.ValidationMessageFor(m => m.WorkCity)<br />
             @Html.EditorFor(m => m.WorkCity)
@@ -149,8 +231,13 @@
     </fieldset>
     
     
-    
     <div class="clear">
+        @if (Model.IsPyrusDialogVisible)
+        {
+            <label>Создать задачу в Пайрусе на регистрацию доступов для кандидата</label>
+            <button type="button" id="btnPyrus">Создать</button>
+            <br /><br />
+        }
         <label><b>Список руководителей: </b></label>
         @Model.ManagerApprovalList<br /><br />
 
@@ -169,6 +256,11 @@
             <button>Применить</button>
         }
         
+        @Html.HiddenFor(m => m.IsCancelApproveAvailale)
+        @if (Model.IsCancelApproveAvailale)
+        {
+            <input type="submit" value="Отменить согласование" />
+        }
         <br /><br />
     </div>
     
@@ -195,14 +287,82 @@
         {
             <button>Применить</button>
         }
+        @Html.HiddenFor(m => m.IsCancelApproveHigherAvailale)
+        @if (Model.IsCancelApproveHigherAvailale)
+        {
+            <input type="submit" value="Отменить согласование" />
+        }
     </div>
 }
+
+<div id="DivPyrus" style="display:none;">
+    <table class="grid">
+        <thead>
+            <tr>
+                <th>Категория сотрудников</th>
+                <th>Название формы</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tr>
+            <td>Менеджер по обслуживанию клиентов</td>
+            <td>Регистрация нового МОКа</td>
+            <td><a href="https://pyrus.com/t#uf166701" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Менеджер по развитию торговой сети</td>
+            <td>Регистрация нового МРТС</td>
+            <td><a href="https://pyrus.com/t#uf167041" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Сотрудник Службы дистанционного взыскания</td>
+            <td>Регистрация нового сотрудника СДВ</td>
+            <td><a href="https://pyrus.com/t#uf194178" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Сотрудник Службы судебного взыскания</td>
+            <td>Регистрация нового сотрудника ССВ</td>
+            <td><a href="https://pyrus.com/t#uf180510" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Сотрудник СЭБ</td>
+            <td>Регистрация нового сотрудника СЭБ</td>
+            <td><a href="https://pyrus.com/t#uf196474" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Специалист Отдела по андеррайтингу физ. и юр. лиц</td>
+            <td>Регистрация нового спец. Отдела по андеррайтингу физ. и юр. лиц</td>
+            <td><a href="https://pyrus.com/t#uf177525" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Специалист Отдела прямых продаж</td>
+            <td>Регистрация нового спец. Отдела прямых продаж</td>
+            <td><a href="https://pyrus.com/t#uf173528" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Специалист Отдела сопровождения клиентов</td>
+            <td>Регистрация нового спец. Отдела сопр. клиентов</td>
+            <td><a href="https://pyrus.com/t#uf167008" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Сотрудник ТСП</td>
+            <td>Регистрация нового сотрудника ТСП</td>
+            <td><a href="https://pyrus.com/t#uf167006" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+        <tr>
+            <td>Сотрудники других подразделений</td>
+            <td>Доступы в информационные системы (Общая форма)</td>
+            <td><a href="https://pyrus.com/t#uf7520" target="_blank" onclick="$('#DivPyrus').dialog('close');">Создать</a></td>
+        </tr>
+    </table>
+</div>
 
 <div id="add-managers-comment-dialog" title="Добавление комментария">
     @using (Html.BeginForm("ManagersAddComments", "Employment", FormMethod.Post))
     {
         <label for="IssuedBy" style="display:block;">@Html.LabelFor(m => m.Comment)</label>@Html.TextAreaFor(m => m.Comment) @Html.ValidationMessageFor(m => m.Comment)
         <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+        
     }
 </div>
 
@@ -237,6 +397,29 @@
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
 
     $(document).ready(function () {
+//        $("#DepartmentId").change(function(){ 
+//            $("#IsSP").val(true);
+//            GetSPDetails();
+//        });
+
+//        $("#UserLinkId").change(function(){ 
+//            $("#IsSP").val(false);
+//            GetSPDetails();
+//        });
+
+        $(".portlet")
+            .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
+            .find(".portlet-header")
+            .addClass("ui-state-default ui-corner-all")
+            .prepend("<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
+
+        $(".portlet-toggle").click(function () {
+            var icon = $(this);
+            icon.toggleClass("ui-icon-minusthick ui-icon-plusthick");
+            icon.closest(".portlet").find(".portlet-content").toggle();
+        });
+
+        
         setActiveMenuItem("empManagers");
         UIHelpers.attachDatepickerToInputs($('#RegistrationDate'), "-1:+1", true);
         $('#isSecondaryJobContainer').buttonset();
@@ -244,15 +427,15 @@
         $('#isExternalWorkContainer').buttonset();
         $('#IsLiableContainer').buttonset();
 
-
         $("#btnManagerDraft").click(function(){
             $("#IsDraftM").val(true);
+            $("#IsSP").val(false);
             $("#ManagerForm").submit();
         });
 
         if($("#IsSecondaryJob").val() == 'True'){$('#isExternalWorkContainer').show();}
         else {$('#isExternalWorkContainer').hide();}
-
+        
         //подкрашиваем вид занятости
         $("#IsSecondaryJobTrue").click(function(){
             $("#lblSJTrue").css("border-color", "red");
@@ -264,6 +447,8 @@
             $("#lblSJFalse").css("border-color", "red");
             $("#isExternalWorkContainer").hide();
         });
+
+      
 
         //подкрашиваем вид совместительства
         $("#IsExternalWorkTrue").click(function(){
@@ -284,7 +469,7 @@
             $("#lblFTrue").css("border-color", "silver");
             $("#lblFFalse").css("border-color", "red");
         });
-        
+
         //подкрашиваем вид материальную ответственность
         $("#IsLiableTrue").click(function(){
             $("#lblLTrue").css("border-color", "red");
@@ -316,7 +501,6 @@
                   });
         });
 
-
         var $addManagersCommentDialog = $('#add-managers-comment-dialog').dialog(
         {
             autoOpen: false,
@@ -346,9 +530,55 @@
             e.preventDefault();
         });
 
+
+        var $PyrusDialog = $('#DivPyrus').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            title: "Список форм на регистрацию доступов в системе Pyrus",
+//            buttons:
+//            {
+//                "OK": function () {
+//                    //$('#add-higher-education-diploma-dialog form').submit();
+//                    //$(this).dialog("close");
+//                },
+//                "Отмена": function () {
+//                    //$(":text").val('');
+//                    $(this).dialog("close");
+//                }
+//            }
+        });
+
+        $("#btnPyrus").click(function(e){ 
+            $PyrusDialog.dialog("open");
+            e.preventDefault();
+        });
     });
 
     function changePosition(){
         if ($("#PositionName").val() == ""){$("#PositionId").val('0');}
     }
+
+//    function GetSPDetails(IsSP)
+//    {
+//        $("#IsSP").val(IsSP);
+//        var url = "@Url.Action("GetStaffEstablishmentPostDetails", "Employment")";
+//        var dataToSend = $("#ManagerForm").serialize();
+//        ShowFlash(true);    //это диалоговое окно находится на родительской странице
+//        $.post(url, dataToSend, function(data){
+//            if (data.ok == true){
+//                //FillBranchTableData(data);
+//                
+//                ShowFlash(false);
+//            }
+//            else{
+//                ShowFlash(false);
+//                alert(data.msg);
+//            }
+//        }, "json")
+//    };
+    
 </script>

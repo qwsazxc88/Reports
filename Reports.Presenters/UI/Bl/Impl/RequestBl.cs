@@ -6262,7 +6262,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             var currentuser = UserDao.Load(CurrentUser.Id);
             Expression<Func<VacationReturn,bool>> query = QueryCreator.Create<VacationReturn, VacationReturnListModel>(model,currentuser, CurrentUser.UserRole);
             int npp = 1;
-            var result = VacationReturnDao.Find(query.Compile()).Select(x => new VacationReturnDto 
+            var result = VacationReturnDao.QueryExpression(query).Select(x => new VacationReturnDto 
             { 
                 NPP = npp++,
                 Id= x.Id,
@@ -6302,10 +6302,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             var users = UserDao.GetUsersForManager(CurrentUser.Id, UserRole.Manager, user.Department.Id).Select(x=>x.Id).ToList();
             //Отпуска        
 
-            model.Users = VacationDao.Find(GetVacationSearchExpression<Vacation>(users).Compile()).Select(x=>new IdNameDto{ Id = x.User.Id, Name=x.User.Name + " Отпуск №"+x.Number}).ToList();
+            model.Users = VacationDao.QueryExpression(GetVacationSearchExpression<Vacation>(users)).Select(x=>new IdNameDto{ Id = x.User.Id, Name=x.User.Name + " Отпуск №"+x.Number}).ToList();
             //Отпуск по уходу за ребенком
 
-            model.Users.AddRange(ChildVacationDao.Find(GetVacationSearchExpression<ChildVacation>(users).Compile()).Select(x => new IdNameDto { Id = x.User.Id, Name = x.User.Name + " Отпуск по уходу за ребенком №" + x.Number }).ToList());
+            model.Users.AddRange(ChildVacationDao.QueryExpression(GetVacationSearchExpression<ChildVacation>(users)).Select(x => new IdNameDto { Id = x.User.Id, Name = x.User.Name + " Отпуск по уходу за ребенком №" + x.Number }).ToList());
             return model;
         }
         private void SetFlagState(VacationReturnViewModel model,VacationReturn entity)
@@ -6445,8 +6445,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Creator.Id = CurrentUser.Id;
             model.User.Id = UserId;
             model.StatusId = 1;
-            var childvacations = ChildVacationDao.Find(GetVacationSearchExpression<ChildVacation>(new List<int> { UserId }).Compile());
-            var vacations =VacationDao.Find(GetVacationSearchExpression<Vacation>(new List<int> { UserId }).Compile());
+            var childvacations = ChildVacationDao.QueryExpression(GetVacationSearchExpression<ChildVacation>(new List<int> { UserId }));
+            var vacations =VacationDao.QueryExpression(GetVacationSearchExpression<Vacation>(new List<int> { UserId }));
             vacations.NotNullAndAny()
                 .OnSuccess((x) =>
                     {
@@ -6506,8 +6506,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity = new VacationReturn();
                 entity.CreateDate = DateTime.Now;
-                var childvacations = ChildVacationDao.Find(GetVacationSearchExpression<ChildVacation>(new List<int> { model.User.Id }).Compile());
-                var vacations = VacationDao.Find(GetVacationSearchExpression<Vacation>(new List<int> { model.User.Id }).Compile());
+                var childvacations = ChildVacationDao.QueryExpression(GetVacationSearchExpression<ChildVacation>(new List<int> { model.User.Id }));
+                var vacations = VacationDao.QueryExpression(GetVacationSearchExpression<Vacation>(new List<int> { model.User.Id }));
                 vacations.NotNullAndAny()
                     .OnSuccess((x) =>
                     {
@@ -8626,7 +8626,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     try
                     {
-                        var storno = MissionReportDao.Find(x =>x.StornoDeduction!=null && x.StornoDeduction.Id == deduction.Id);
+                        var storno = MissionReportDao.QueryExpression(x =>x.StornoDeduction!=null && x.StornoDeduction.Id == deduction.Id);
                         if (storno != null && storno.Any())
                             model.MissionReportNumber = storno.First().Number;
                     }
@@ -11920,7 +11920,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             
             var mr=MissionReportDao.Load(MissionReportId);
-            var deductions = DeductionDao.Find(x => x.Number == StornoDeductionNumber);
+            var deductions = DeductionDao.QueryExpression(x => x.Number == StornoDeductionNumber);
             if (deductions == null || !deductions.Any())
             {
                 return new Result(false, "Не найдено удержание");
@@ -11933,12 +11933,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             MissionReportDao.SaveAndFlush(mr);
             if (mr != null)
             {
-                var md = ManualDeductionDao.Find(x => x.MissionReport.Id == mr.Id);
+                var md = ManualDeductionDao.QueryExpression(x => x.MissionReport.Id == mr.Id);
                 if (md!=null && md.Any())
                 {
                     foreach (var el in md)
                     {
-                        var deduction = DeductionDao.Find(x => x.ManualDeduction.Id == el.Id);
+                        var deduction = DeductionDao.QueryExpression(x => x.ManualDeduction.Id == el.Id);
                         if (deduction != null && deduction.Any()) continue;
                         //MR.UserSumReceived+MR.PurchaseBookAllSum-MR.StornoSum
                         el.AllSum = mr.UserSumReceived + mr.PurchaseBookAllSum - mr.StornoSum;
@@ -12484,7 +12484,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             ///Обработка автоматических удержаний
             if(entity!=null)
             {
-                var md=ManualDeductionDao.Find(x => x.MissionReport.Id == entity.Id);
+                var md=ManualDeductionDao.QueryExpression(x => x.MissionReport.Id == entity.Id);
                 if (md!=null && md.Any())
                 {
                     foreach (var el in md)

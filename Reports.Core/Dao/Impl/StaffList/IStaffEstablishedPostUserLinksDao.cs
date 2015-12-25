@@ -9,5 +9,12 @@ namespace Reports.Core.Dao
     /// </summary>
     public interface IStaffEstablishedPostUserLinksDao : IDao<StaffEstablishedPostUserLinks>
     {
+        /// <summary>
+        /// Достаем строку штатной расстановки по привязке к документу.
+        /// </summary>
+        /// <param name="DocId">Id документа.</param>
+        /// <param name="ReserveType">Тип резервирования (StaffReserveTypeEnum)</param>
+        /// <returns></returns>
+        StaffEstablishedPostUserLinks GetPostUserLinkByDocId(int DocId, int ReserveType);
     }
 }

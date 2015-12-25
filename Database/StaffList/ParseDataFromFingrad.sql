@@ -27,7 +27,7 @@ begin
 
 	drop table #checkpoint
 	--update TerraPoint set PossibleDepartmentId = null where id in (1241, 3995, 1823, 2409, 227)
-	--update TerraPoint set PossibleDepartmentId = null where name like '%(закрыто)%' or id in (3499)
+	--update TerraPoint set PossibleDepartmentId = null where name like '%(закрыто)%' or id in (3499, 1151)
 	return
 end
 else
@@ -196,7 +196,7 @@ print 'Закончена обработка несвязанных подразделений'
 		
 drop table #TPLink
 
---находим записи, которые связаны по коду 1С и потом уже с данными Финграда по ихнему коду
+--находим записи, которые связаны по коду 1С и потом уже с данными Финграда по их коду
 SELECT A.Id, A.ParentId, C.[Сокращенное_наименование] as FinDepName, 
 			 case A.BFGId when 1 then 'Бэк'
 										when 2 then 'Фронт'
