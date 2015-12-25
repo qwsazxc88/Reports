@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";
     ViewBag.PlaceId = Model.Id;
     ViewBag.PlaceTypeId = (int)Reports.Core.Enum.CommentsPlaceTypes.StaffMovements;
-    DateTime NextDay = DateTime.Now.AddDays(2);
+    DateTime NextDay = DateTime.Now.AddDays(1);
 }
 @using (Html.BeginForm("Edit", "StaffMovements", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {   
