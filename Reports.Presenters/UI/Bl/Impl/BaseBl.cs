@@ -13,7 +13,7 @@ using Reports.Core.Enum;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 using System.Linq;
-using Reports.Presenters.UI.ViewModel;
+//using Reports.Presenters.UI.ViewModel;
 namespace Reports.Presenters.UI.Bl.Impl
 {
     public class BaseBl : IBaseBl

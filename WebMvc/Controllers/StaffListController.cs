@@ -1159,7 +1159,7 @@ namespace WebMvc.Controllers
                         ModelState.AddModelError("Salary", "Укажите оклад!");
                 }
 
-                if (model.PostChargeLinks.Where(x => x.ActionId == 0).Count() != 0)
+                if (model.PostChargeLinks.Where(x => x.ActionId == 0 && x.Amount != 0).Count() != 0)
                 {
                     int i = 1;
                     foreach (var item in model.PostChargeLinks)
