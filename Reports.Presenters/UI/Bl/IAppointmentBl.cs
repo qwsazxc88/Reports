@@ -29,7 +29,7 @@ namespace Reports.Presenters.UI.Bl
         object CopyAppointmentReport(int AppointmentNumber, int AppointmentReportId);
         AttachmentModel GetFileContext(int id /*,int typeId*/);
         bool DeleteAttachment(DeleteAttacmentModel model);
-
+        ViewModel.Employment2.CreateCandidateModel FillCreateCandidateModelByReportId(int id);
         AppointmentSelectManagerModel GetSelectManagerModel();
     }
 }

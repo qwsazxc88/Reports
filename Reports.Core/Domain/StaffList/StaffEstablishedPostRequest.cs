@@ -10,6 +10,9 @@ namespace Reports.Core.Domain
     {
         public virtual DateTime? DateRequest { get; set; }
         public virtual StaffEstablishedPostRequestTypes RequestType { get; set; }
+        /// <summary>
+        /// Справочник штатных единиц.
+        /// </summary>
         public virtual StaffEstablishedPost StaffEstablishedPost { get; set; }
         public virtual Position Position { get; set; }
         public virtual Department Department { get; set; }
@@ -22,6 +25,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? DateSendToApprove { get; set; }
         public virtual DateTime? DateAccept { get; set; }
         public virtual DateTime? BeginAccountDate { get; set; }
+        public virtual DateTime? SendTo1C { get; set; }
         public virtual AppointmentReason Reason { get; set; }
         public virtual User Creator { get; set; }
         public virtual DateTime? CreateDate { get; set; }

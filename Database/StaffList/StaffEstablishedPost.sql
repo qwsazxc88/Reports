@@ -252,6 +252,36 @@ SELECT Id
 FROM StaffEstablishedPost
 
 
+--заполняем таблицу связей сотрудника и надбавок
+SELECT B.Id as UserId, C.Id as StaffExtraChargeId, A.Amount as Salary, D.Id as ActionId,  
+			 case when A.ActionName = 'Начать' then 1 
+						when A.ActionName = 'Изменить' then 2 
+						when A.ActionName = 'Не изменять' then 3 
+						else 4 end as IsActive, A.GUID, A.ChargeName--A.*
+INTO #TMP
+FROM UserExtraCharges as A
+INNER JOIN Users as B ON B.Code = A.UserCode
+INNER JOIN StaffExtraCharges as C ON C.GUID = A.GUID
+INNER JOIN StaffExtraChargeActions as D ON D.Name = A.ActionName
+
+--исключаем оклады и районный коэффициент
+INSERT INTO StaffPostChargeLinks(UserId, StaffExtraChargeId, Salary, ActionId, IsActive)
+SELECT UserId, StaffExtraChargeId, Salary, ActionId, IsActive FROM #TMP
+WHERE GUID not in ('35c7a5dd-d8e9-4aa0-8378-2a7e501d846a', '537ff7ed-5e51-48d1-bf5e-4f680cb3e1b7', '66f08438-f006-44e8-b9ee-32a8dcf557ba')
+ORDER BY UserId, ChargeName
+
+
+--удаляем все кроме районого коэффициента
+DELETE FROM #TMP WHERE GUID not in ('66f08438-f006-44e8-b9ee-32a8dcf557ba')
+
+--заносим надбавки к штатным единицам
+INSERT INTO StaffEstablishedPostChargeLinks(Version, SEPRequestId, SEPId, StaffExtraChargeId, Amount, ActionId)
+SELECT 1 as Version, C.Id as SEPRequestId, B.SEPId, A.StaffExtraChargeId, A.Salary as Amount, A.ActionId
+FROM #TMP as A
+INNER JOIN StaffEstablishedPostUserLinks as B ON B.UserId = A.UserId
+INNER JOIN StaffEstablishedPostRequest as C ON C.SEPId = B.SEPId
+GROUP BY C.Id, B.SEPId, A.StaffExtraChargeId, A.Salary, A.ActionId
+
 --проставляем Id штатной единицы для пользователей по текущим данным
 --UPDATE Users SET SEPId = B.Id
 --FROM Users as A
@@ -264,5 +294,58 @@ FROM StaffEstablishedPost
 --UPDATE StaffEstablishedPostArchive SET Salary = 0
 
 
+--на основе данных кадровиков банка добавляем вакансии в штатные единицы
+SELECT A.[Код подразделения7] as DepartmentId, A.[Код расстановки], A.[Код ш#е#], A.[Код должности], B.Id as PositionId
+			 ,case when not exists(SELECT * FROM StaffEstablishedPost WHERE DepartmentId = A.[Код подразделения7] and PositionId = B.Id) and A.[Код расстановки] is null and A.[Код ш#е#] is null
+						 then 1 else 0 end as IsNewSP
+			 ,case when exists(SELECT * FROM StaffEstablishedPost WHERE DepartmentId = A.[Код подразделения7] and PositionId = B.Id) and A.[Код расстановки] is null and A.[Код ш#е#] is null
+						 then 1 else 0 end as IsEditSP
+INTO #SP
+FROM StaffEstablishedPostUserLinksTemp as A
+INNER JOIN Position as B ON B.Code = A.[Код должности]
+WHERE isnull(A.[Признак для подразделений], N'') = N'1' and A.[Код подразделения7] is not null 
+			and isnull(A.[Признак для должностей], N'') <> N'2' and A.[Код должности] is not null
+ORDER BY A.[Код должности], A.[Код подразделения7]
+
+
+--select * from #SP
+--добавить записи в расстановку
+
+INSERT INTO StaffEstablishedPostUserLinks(Version, SEPId, UserId, IsUsed, ReserveType, DocId, IsDismissal)
+SELECT 1, B.Id, null, 1, null, null, 0
+FROM #SP as A
+INNER JOIN StaffEstablishedPost as B ON B.DepartmentId = A.DepartmentId and B.PositionId = A.PositionId
+WHERE IsEditSP = 1
+
+
+--количество, которое нужно добавить в штатные единицы
+
+SELECT A.Id, B.cnt INTO #SPAdd
+FROM StaffEstablishedPost as A
+INNER JOIN (SELECT  DepartmentId, PositionId, sum(IsEditSP) as cnt
+						FROM #SP 
+						WHERE IsEditSP = 1
+						GROUP BY DepartmentId, PositionId) as B ON B.DepartmentId = A.DepartmentId and B.PositionId = A.PositionId
+
+
+UPDATE StaffEstablishedPost SET Quantity = A.Quantity + B.cnt
+FROM StaffEstablishedPost as A
+INNER JOIN #SPAdd as B ON B.Id = A.Id
+
+UPDATE StaffEstablishedPostRequest SET Quantity = B.Quantity
+FROM StaffEstablishedPostRequest as A
+INNER JOIN StaffEstablishedPost as B ON B.Id = A.SEPId
+WHERE A.IsUsed = 1
+
+
+
+IF (select sum(Quantity) from StaffEstablishedPost) <> (select count(*) from StaffEstablishedPostUserLinks)
+	PRINT 'Количество позиций в расстановке отличается от суммы количества штатных единиц'
+ELSE
+	PRINT 'Данные успешно обработаны!'
+
+drop table #SP
+drop table #SPAdd
 drop table #Users
 drop table #Vacation
+drop table #TMP

@@ -42,7 +42,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Уровень подразделения")]
         public int? ItemLevel { get; set; }
 
-        [Display(Name = "Назание структурного подразделения")]
+        [Display(Name = "Название структурного подразделения")]
         public string Name { get; set; }
 
         [Display(Name = "Принадлежность подразделения")]
@@ -54,6 +54,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Дата приказа")]
         public DateTime? OrderDate { get; set; }
+
+        [Display(Name = "Дата вступления приказа в силу")]
+        public DateTime? BeginAccountDate { get; set; }
 
         [Display(Name = "Юридический адрес")]
         public int? LegalAddressId { get; set; }
@@ -92,6 +95,37 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Признак действующей заявки")]
         public bool IsUsed { get; set; }
+
+        [Display(Name = "Депозитное подразделение:")]
+        public int DepDepositId { get; set; }
+        public string DepDepositName { get; set; }
+
+        [Display(Name = "Дирекция")]
+        public string ManagementName { get; set; }
+
+        [Display(Name = "ID Дирекции")]
+        public string ManagementCode { get; set; }
+
+        [Display(Name = "Управление")]
+        public string AdminName { get; set; }
+
+        [Display(Name = "ID Управления")]
+        public string AdminCode { get; set; }
+
+        [Display(Name = "Бизнес-группа")]
+        public string BGName { get; set; }
+
+        [Display(Name = "ID Бизнес-группы")]
+        public string BGCode { get; set; }
+
+        [Display(Name = "РП-привязка")]
+        public string RPLInkName { get; set; }
+
+        [Display(Name = "ID РП-привязки")]
+        public string RPLInkCode { get; set; }
+
+        [Display(Name = "Форма С-09-3-1 отправлена")]
+        public bool IsTaxRequest { get; set; }
         #endregion
 
         #region Налоговые реквизиты
@@ -103,6 +137,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "ОКАТО")]
         public string OKATO { get; set; }
+
+        [Display(Name = "ОКПО")]
+        public string OKPO { get; set; }
 
         [Display(Name = "Код региона")]
         public string RegionCode { get; set; }
@@ -121,7 +158,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Количество банкоматов всего")]
         public int ATMCountTotal { get; set; }
 
-        [Display(Name = "Количество запущенных банкоматов с функцией кэшин")]
+        [Display(Name = "Кол-во запущенных кэшинов")]
         public int ATMCashInStarted { get; set; }
 
         [Display(Name = "Количество банкоматов с функцией кэшин")]
@@ -149,7 +186,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Id управленческих реквизитов")]
         public int DMDetailId { get; set; }
         //поля с кодами для Финграда есть в таблице, но сюда их пока не вносил
-        [Display(Name = "Краткое название подразделения")]
+        [Display(Name = "Сокращенное наименование")]
         public string NameShort { get; set; }
 
         [Display(Name = "Код подразделения")]

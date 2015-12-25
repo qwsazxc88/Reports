@@ -1432,7 +1432,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.SalaryBasis = entity.SalaryBasis;
                 model.SalaryMultiplier = entity.SalaryMultiplier;
-                model.AreaMultiplier = entity.Candidate.PersonnelManagers.AreaMultiplier.Value;
+                model.AreaMultiplier = entity.Candidate.PersonnelManagers.AreaMultiplier.HasValue ? entity.Candidate.PersonnelManagers.AreaMultiplier.Value : 0;
             }
 
             model.IsConsultant = AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ? true : false;
@@ -2728,7 +2728,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     });
                 }
                 model.IsMarried = candidate.Family.FamilyMembers.Any(fm => fm.RelationshipId == FamilyRelationship.SPOUSE);
-                if (EmploymentFamilyDao.GetFamilyStatuses() != null && EmploymentFamilyDao.GetFamilyStatuses().ToList().Count != 0)
+                if (EmploymentFamilyDao.GetFamilyStatuses() != null && EmploymentFamilyDao.GetFamilyStatuses().ToList().Count != 0 && candidate.Family.FamilyStatusId != null)
                     model.FamilyStatusName = EmploymentFamilyDao.GetFamilyStatuses().Where(x => x.Id == candidate.Family.FamilyStatusId).Single().Name;
 
             } 
@@ -5965,6 +5965,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
 
+
+                    //если дата приема стоит прошлым месяцем относительно текущей даты, то можно принять только до 5 числа текущего месяца (Экспресс-Волга до 8 числа)
+                    if (entity.RegistrationDate.Value.Year != DateTime.Today.Year || entity.RegistrationDate.Value.Month != DateTime.Today.Month)
+                    {
+                        if (entity.RegistrationDate.Value.AddMonths(1).Year == DateTime.Today.Year && entity.RegistrationDate.Value.AddMonths(1).Month == DateTime.Today.Month && DateTime.Today.Day > 5/*(model.IsVolga ? 8 : 5)*/)
+                        {
+                            error = "Прием сотрудника в прошлом периоде запрещен!";
+                            return false;
+                        }
+                    }
 
                     if (!IsCurrentUserChiefForCreator(current, entity.Candidate.AppointmentCreator))
                     {

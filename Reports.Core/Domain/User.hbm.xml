@@ -53,7 +53,7 @@
     <property name="IsPregnant" not-null="false" />
 
     <property name="IsMainManager" not-null="true" />
-    
+    <many-to-one name="HoursType" class="Schedule" column="HoursTypeId" foreign-key="FK_Users_HoursType" not-null="false"/>
 	<!--<many-to-one name="Role" class="Role" column="RoleId" foreign-key="FK_USER_ROLE" index="IX_USER_ROLE_ID"  not-null="true"/>-->
 	<many-to-one name="Manager" class="User" column="ManagerId" foreign-key="FK_User_UserManager" index="IX_User_UserManager_Id"  not-null="false"/>
 	<!--<many-to-one name="PersonnelManager" class="User" column="PersonnelManagerId" foreign-key="FK_User_PersonnelManager" index="IX_User_PersonnelManager_Id"  not-null="false"/>-->
@@ -80,6 +80,11 @@
     <bag name="StaffPostCharges" table="StaffPostChargeLinks" lazy="true" cascade="save-update">
       <key column="UserId" foreign-key="FK_StaffPostChargeLinks_Staff"/>
       <one-to-many class="StaffPostChargeLinks" />
+    </bag>
+
+    <bag name="UserNorthAdditionals" table="StaffUserNorthAdditional" lazy="true" cascade="save-update">
+      <key column="UserId" foreign-key="FK_StaffUserNorthAdditional_Users"/>
+      <one-to-many class="StaffUserNorthAdditional" />
     </bag>
     <!--
     <many-to-one name="StaffEstablishedPost" class="StaffEstablishedPost" column="SEPId" foreign-key="FK_Users_StaffEstablishedPost" index="Users_StaffEstablishedPost"  not-null="false"/>

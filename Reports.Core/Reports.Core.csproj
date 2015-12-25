@@ -308,6 +308,7 @@
     <Compile Include="Dao\Impl\StaffList\Impl\StaffPostReplacementDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffRequestPyrusTasksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffUnitReferenceDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffUserNorthAdditionalDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffWorkingConditionsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffDepartmentAccessoryDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffEstablishedPostUserLinksDao.cs" />
@@ -315,6 +316,7 @@
     <Compile Include="Dao\Impl\StaffList\IStaffPostReplacementDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffRequestPyrusTasksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffUnitReferenceDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffUserNorthAdditionalDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffWorkingConditionsDao.cs" />
     <Compile Include="Dao\Impl\StaffMovements\IrefStaffMovementsRejectReasonDao.cs" />
     <Compile Include="Dao\Impl\StaffMovements\IrefStaffMovementsStatusDao.cs" />
@@ -322,6 +324,7 @@
     <Compile Include="Dao\Impl\StaffMovements\IStaffMovementsDao.cs" />
     <Compile Include="Dao\Impl\StaffMovements\IStaffMovementsDataDao.cs" />
     <Compile Include="Dao\Impl\StaffMovements\IStaffMovementsDocsDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\IStaffMovementsFactDao.cs" />
     <Compile Include="Dao\Impl\StaffMovements\refStaffMovementsStatusDao.cs" />
     <Compile Include="Dao\Impl\StaffMovements\refStaffMovementsTypesDao.cs" />
     <Compile Include="Dao\Impl\StaffMovements\StaffMovementsDao.cs" />
@@ -399,6 +402,7 @@
     <Compile Include="Dao\Impl\StaffList\IStaffPostChargeLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffProgramCodesDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffProgramReferenceDao.cs" />
+    <Compile Include="Dao\Impl\StaffMovements\StaffMovementsFactDao.cs" />
     <Compile Include="Dao\Impl\SurchargeDao.cs" />
     <Compile Include="Dao\Impl\SurchargeNoteDao.cs" />
     <Compile Include="Dao\Impl\TerraGraphicDao.cs" />
@@ -524,11 +528,13 @@
     <Compile Include="Domain\StaffList\StaffPostReplacement.cs" />
     <Compile Include="Domain\StaffList\StaffRequestPyrusTasks.cs" />
     <Compile Include="Domain\StaffList\StaffUnitReference.cs" />
+    <Compile Include="Domain\StaffList\StaffUserNorthAdditional.cs" />
     <Compile Include="Domain\StaffList\StaffWorkingConditions.cs" />
     <Compile Include="Domain\StaffMovements\refStaffMovementsRejectReason.cs" />
     <Compile Include="Dao\Impl\StaffMovements\refStaffMovementsRejectReasonDao.cs" />
     <Compile Include="Domain\StaffMovements\refStaffMovementsStatus.cs" />
     <Compile Include="Domain\StaffMovements\refStaffMovementsTypes.cs" />
+    <Compile Include="Domain\StaffMovements\StaffMovementsFact.cs" />
     <Compile Include="Domain\StandartRequestEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntityWithVersion.cs" />
@@ -822,12 +828,15 @@
     <Compile Include="Dto\NoteTypeDto.cs" />
     <Compile Include="Dto\PrintVacationOrderDto.cs" />
     <Compile Include="Dto\SaveTypeResult.cs" />
+    <Compile Include="Dto\StaffList\StaffDepartmentFingradStructureDto.cs" />
     <Compile Include="Dto\StaffList\StaffDepartmentInstallSoftDto.cs" />
     <Compile Include="Dto\StaffList\StaffDepartmentOperationGroupsDto.cs" />
     <Compile Include="Dto\StaffList\StaffDepartmentOperationLinksDto.cs" />
     <Compile Include="Dto\StaffList\StaffDepartmentOperationsDto.cs" />
     <Compile Include="Dto\StaffList\StaffDepartmentSoftGroupDto.cs" />
+    <Compile Include="Dto\StaffMovements\AdditionsDto.cs" />
     <Compile Include="Dto\StaffMovements\StaffMovementsDto.cs" />
+    <Compile Include="Dto\StaffMovements\StaffMovementsFactDto.cs" />
     <Compile Include="Dto\StandartUserDto.cs" />
     <Compile Include="Dto\StaffList\DepartmentRequestListDto.cs" />
     <Compile Include="Dto\StaffList\DepLandmarkDto.cs" />
@@ -1417,6 +1426,8 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\StaffMovements\StaffMovementsFact.hbm.xml" />
+    <EmbeddedResource Include="Domain\StaffList\StaffUserNorthAdditional.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffExtraChargeActions.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffUnitReference.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffPostReplacement.hbm.xml" />

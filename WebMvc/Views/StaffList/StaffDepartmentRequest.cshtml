@@ -11,7 +11,7 @@
     @Html.HiddenFor(m => m.UserId)
     @Html.HiddenFor(m => m.DMDetailId)
     @Html.HiddenFor(m => m.IsAgreeButtonAvailable)
-    @*@Html.HiddenFor(m => m.IsDraftButtonAvailable)*@
+    @Html.HiddenFor(m => m.IsImportance)
     @Html.HiddenFor(m => m.ItemLevel)
     @Html.HiddenFor(m => m.IsUsed)
     @Html.HiddenFor(m => m.DepartmentId)
@@ -32,6 +32,40 @@
             <h3>Общие реквизиты</h3>
             <div>
                 <table>
+                @*
+                    <tr>
+                        <td>@Html.LabelFor(m => m.ManagementCode)</td>
+                        <td>@Html.DisplayFor(m => m.ManagementCode)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.ManagementName)</td>
+                        <td>@Html.DisplayFor(m => m.ManagementName)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.AdminCode)</td>
+                        <td>@Html.DisplayFor(m => m.AdminCode)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.AdminName)</td>
+                        <td>@Html.DisplayFor(m => m.AdminName)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.BGCode)</td>
+                        <td>@Html.DisplayFor(m => m.BGCode)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.BGName)</td>
+                        <td>@Html.DisplayFor(m => m.BGName)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.RPLInkCode)</td>
+                        <td>@Html.DisplayFor(m => m.RPLInkCode)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.RPLInkName)</td>
+                        <td>@Html.DisplayFor(m => m.RPLInkName)</td>
+                    </tr>
+                    *@
                     <tr>
                         <td>
                             @Html.LabelFor(m => m.DateState)
@@ -97,7 +131,10 @@
                         <td>@Html.LabelFor(m => m.OrderDate)</td>
                         <td>@Html.TextBoxFor(m => m.OrderDate) @Html.ValidationMessageFor(model => model.OrderDate)</td>
                     </tr>
-                    
+                    <tr>
+                        <td>@Html.LabelFor(m => m.BeginAccountDate)</td>
+                        <td>@Html.TextBoxFor(m => m.BeginAccountDate) @Html.ValidationMessageFor(model => model.BeginAccountDate)</td>
+                    </tr>
 
                     <tr>
                         <td>
@@ -179,6 +216,18 @@
                         </td>
                     </tr>
                     <tr>
+                            <td>
+                                @Html.LabelFor(m => m.DepDepositId)<br />
+                                <input type="button" value="Выбрать" title="Выбрать подразделение" onclick="changeDepartment(8);"/>
+                            </td>
+                            <td colspan="2">
+                                <label id="DepDepositNameLabel">@Model.DepDepositName</label>
+                                @Html.HiddenFor(m => m.DepDepositId)
+                                @Html.HiddenFor(m => m.DepDepositName)
+                                @Html.ValidationMessageFor(model => model.DepDepositId)
+                            </td>
+                        </tr>
+                    <tr>
                         <td>
                             @Html.LabelFor(m => m.IsPlan)
                         </td>
@@ -230,6 +279,10 @@
                     <tr>
                         <td>@Html.LabelFor(m => m.OKATO)</td>
                         <td>@Model.OKATO</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.OKPO)</td>
+                        <td>@Model.OKPO</td>
                     </tr>
                     <tr>
                         <td>@Html.LabelFor(m => m.RegionCode)</td>
@@ -482,10 +535,10 @@
                                                     }
                                                 </td>
                                                 <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i].IsWorkDay)</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
                                             </tr>
                                                     { i++; }
                                         }
@@ -556,10 +609,10 @@
                                                     }
                                                 </td>
                                                 <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i].IsWorkDay)</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
                                             </tr>
                                                     { i++; }
                                         }
@@ -630,10 +683,10 @@
                                                     }
                                                 </td>
                                                 <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i].IsWorkDay)</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
                                             </tr>
                                                     { i++; }
                                         }
@@ -704,10 +757,10 @@
                                                     }
                                                 </td>
                                                 <td align="center" style="text-align:center;">@Html.CheckBoxFor(m => m.OperationModes[i].IsWorkDay)</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
-                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00-00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].WorkEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakBegin, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
+                                                <td style="text-align:center;">@Html.TextBoxFor(m => m.OperationModes[i].BreakEnd, new { maxlength = "5", style = "width:50px;", placeholder = "00:00", @class = "TimeMask" })</td>
                                             </tr>
                                                     { i++; }
                                         }
@@ -922,7 +975,7 @@
                                 @Html.LabelFor(m => m.PyrusNumber)
                                 @Html.TextBoxFor(m => m.PyrusNumber, Model.IsAgreeButtonAvailable ? (object)new { style = "width:100px;" } : (object)new { style = "width:100px;", disabled = "disabled" })
                             </td>
-                            <td></td>
+                            <td><a href='@Model.InitiatorPyrusRef' target="_blank">@Model.InitiatorPyrusName</a></td>
                             <td>
                                 @Html.LabelFor(m => m.IsInitiatorApprove)
                                 @Html.HiddenFor(m => m.IsInitiatorApprove)
@@ -938,38 +991,41 @@
                                 {
                                     @Html.HiddenFor(m => m.InitiatorId)
                                 }
-                                <br />
-                                <a href='@Model.InitiatorPyrusRef' target="_blank">@Model.InitiatorPyrusName</a>
                             </td>
                         </tr>
+
+                        @if (Model.BFGId == 2 || Model.BFGId == 6)
+                        {
+                            <tr>
+                                <td><a href='@Model.CuratorPyrusRef' target="_blank">@Model.CuratorPyrusName</a></td>
+                                <td>
+                                    @Html.LabelFor(m => m.IsCuratorApprove)
+                                    @Html.HiddenFor(m => m.IsCuratorApprove)
+                                </td>
+                                <td>@Html.CheckBoxFor(m => m.IsCuratorApprove, (object)new { disabled = "disabled" })</td>
+                                <td>
+                                    @Html.DisplayFor(m => m.CuratorApproveName)
+                                </td>
+                            </tr>
+                        }
+                        
+                        @if(Model.BFGId == 1)
+                        {
+                            <tr>
+                                <td><a href='@Model.PersonnelBankPyrusRef' target="_blank">@Model.PersonnelBankPyrusName</a></td>
+                                <td>
+                                    @Html.LabelFor(m => m.IsPersonnelBankApprove)
+                                    @Html.HiddenFor(m => m.IsPersonnelBankApprove)
+                                </td>
+                                <td>@Html.CheckBoxFor(m => m.IsPersonnelBankApprove, (object)new { disabled = "disabled" })</td>
+                                <td>
+                                    @Html.DisplayFor(m => m.PersonnelBankApproveName)
+                                </td>
+                            </tr>
+                        }
+                            
                         <tr>
-                            <td></td>
-                            <td>
-                                @Html.LabelFor(m => m.IsCuratorApprove)
-                                @Html.HiddenFor(m => m.IsCuratorApprove)
-                            </td>
-                            <td>@Html.CheckBoxFor(m => m.IsCuratorApprove, (object)new { disabled = "disabled" })</td>
-                            <td>
-                                @Html.DisplayFor(m => m.CuratorApproveName)
-                                <br />
-                                <a href='@Model.CuratorPyrusRef' target="_blank">@Model.CuratorPyrusName</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>
-                                @Html.LabelFor(m => m.IsPersonnelBankApprove)
-                                @Html.HiddenFor(m => m.IsPersonnelBankApprove)
-                            </td>
-                            <td>@Html.CheckBoxFor(m => m.IsPersonnelBankApprove, (object)new { disabled = "disabled" })</td>
-                            <td>
-                                @Html.DisplayFor(m => m.PersonnelBankApproveName)
-                                <br />
-                                <a href='@Model.PersonnelBankPyrusRef' target="_blank">@Model.PersonnelBankPyrusName</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
+                            <td><a href='@Model.TopManagerPyrusRef' target="_blank">@Model.TopManagerPyrusName</a></td>
                             <td>
                                 @Html.LabelFor(m => m.IsTopManagerApprove)
                                 @Html.HiddenFor(m => m.IsTopManagerApprove)
@@ -982,12 +1038,10 @@
                                 {
                                     @Html.DropDownListFor(m => m.TopManagerId, new SelectList(Model.TopManagers, "ID", "Name"), !Model.IsTopManagerApproveAvailable ? (object)new { disabled = "disabled" } : null)
                                 }
-                                <br />
-                                <a href='@Model.TopManagerPyrusRef' target="_blank">@Model.TopManagerPyrusName</a>
                             </td>
                         </tr>
                         <tr>
-                            <td></td>
+                            <td><a href='@Model.BoardMemberPyrusRef' target="_blank">@Model.BoardMemberPyrusName</a></td>
                             <td>
                                 @Html.LabelFor(m => m.IsBoardMemberApprove)
                                 @Html.HiddenFor(m => m.IsBoardMemberApprove)
@@ -995,13 +1049,10 @@
                             <td>@Html.CheckBoxFor(m => m.IsBoardMemberApprove, (object)new { disabled = "disabled" })</td>
                             <td>
                                 @Html.DisplayFor(m => m.BoardMemberApproveName)
-                                @*@Html.HiddenFor(m => m.BoardMemberId)*@
                                 @if (Model.IsBoardMemberApproveAvailable && (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant))
                                 {
                                     @Html.DropDownListFor(m => m.BoardMemberId, new SelectList(Model.BoardMembers, "ID", "Name"), !Model.IsBoardMemberApproveAvailable ? (object)new { disabled = "disabled" } : null)
                                 }
-                                <br />
-                                <a href='@Model.BoardMemberPyrusRef' target="_blank">@Model.BoardMemberPyrusName</a>
                             </td>
                         </tr>
                     </table>
@@ -1028,6 +1079,11 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>@Html.LabelFor(m => m.IsTaxRequest)</td>
+                            <td>@Html.CheckBoxFor(m => m.IsTaxRequest, !Model.IsTaxCollectorApproveAvailable ? new {disabled = "disabled"} : null)</td>
+                            <td></td>
+                        </tr>
+                        <tr>
                             <td>
                                 @Html.LabelFor(m => m.IsTaxCollectorApprove)
                                 @Html.HiddenFor(m => m.IsTaxCollectorApprove)
@@ -1039,6 +1095,34 @@
                         </tr>
                         <tr><td colspan="3"><br /></td></tr>
                         <tr><td colspan="3" style="font-weight:bold;">Ответственные по приказам</td></tr>
+                        @*<tr><td colspan="3"><button type="button">Печать приказа</button></td></tr>*@
+                        @if(Model.RequestTypeId == 1 || Model.RequestTypeId == 4)
+                        {
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/BlankOrderForOpenMO.doc")" target="_blank">Бланк приказа об открытии МО</a></td></tr>
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/BlankOrderForOpenURM.doc")" target="_blank">Бланк приказа об открытии УРМ</a></td></tr>
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/OrderEstablishedOparatingMode.doc")" target="_blank">Распоряжение об установлении режима работы</a></td></tr>
+                        }
+                        @if (Model.RequestTypeId == 2 || Model.RequestTypeId == 4)
+                        {
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/BlankOrderForChangeAdressMO.doc")" target="_blank">Бланк приказа об изменении адреса МО</a></td></tr>
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/BlankOrderForChangeAdressURM.doc")" target="_blank">Бланк приказа об изменении адреса УРМ</a></td></tr>
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/BlankForRenameDepartment.doc")" target="_blank">Бланк приказа о переименовании подразделения</a></td></tr>
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/BlankChangeURMToMO.doc")" target="_blank">Бланк приказа о преобразовании УРМ в МО</a></td></tr>
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/OrderChangeOparatingMode.doc")" target="_blank">Распоряжение об изменении режима работы</a></td></tr>
+                        }
+                        @if (Model.RequestTypeId == 3 || Model.RequestTypeId == 4)
+                        {
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/BlankOrderForCloseMO.doc")" target="_blank">Бланк приказа о закрытии МО</a></td></tr>
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/BlankOrderForCloseURM.doc")" target="_blank">Бланк приказа о закрытии УРМ</a></td></tr>
+                        }
+                        @if (Model.RequestTypeId != 3)
+                        {
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/OrderInputEquipment.doc")" target="_blank">Приказ о вводе оборудования</a></td></tr>
+                        }
+                        @if (Model.RequestTypeId != 1)
+                        {
+                            <tr><td colspan="3"><a href="@Url.Content("~/Templates/OrderOutputEquipment.doc")" target="_blank">Приказ о выводе оборудования</a></td></tr>
+                        }
                         <tr>
                             <td>
                                 @Html.LabelFor(m => m.IsOrderApprove)
@@ -1103,7 +1187,6 @@
                                                  {<text>"Редактировать заявку"</text>}) 
                                                 @if (!Model.IsDraftButtonAvailable)
                                                 {<text>disabled="disabled"</text>}>@(Model.Id == 0 ? "Сохранить" : "Редактировать")</button>
-
         <button id="btnAgree" type="button" title="Согласовать заявку/Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
                                                                                                         {<text>disabled="disabled"</text>}>Согласовать</button>
     </div>
@@ -1131,7 +1214,7 @@
 
     $(document).ready(function () {
         setActiveMenuItem("moDepRequest");
-        $(document).tooltip({ track: false });
+        $(document).tooltip({ track: false, duration: 1000 });
         //ShowFlash(true);
         //ShowFlash(false);
         $(".TimeMask").focus(function(e){
@@ -1148,7 +1231,7 @@
             }
 
             $("#IsDraft").val(false); 
-            $("#IsImportance").val(true);
+            //$("#IsImportance").val(true);
             ShowFlash(true); 
             $("#StaffDepartmentRequestForm").submit(); 
         });
@@ -1239,6 +1322,7 @@
         $("#CloseDate").datepicker({ changeYear: true, changeMonth: true });
         $("#BeginIdleDate").datepicker({ changeYear: true, changeMonth: true });
         $("#EndIdleDate").datepicker({ changeYear: true, changeMonth: true });
+        $("#BeginAccountDate").datepicker({ changeYear: true, changeMonth: true });
         $(".hasDatepicker").width("85px");
 
         

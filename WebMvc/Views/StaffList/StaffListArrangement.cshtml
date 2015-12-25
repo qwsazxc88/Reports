@@ -12,18 +12,36 @@
         <table id="tbl" class="grid">
             <thead>
                 <tr>
-                    <th>Уровень<br />подразделений</th>
-                    <th>Структура подразделений</th>
-                    <th>Должность</th>
-                    <th>Количество<br />штатных<br />единиц</th>
-                    <th>Оклад</th>
-                    <th>Ставка</th>
-                    <th>ФИО<br />сотрудника</th>
-                    <th>ОЖ</th>
-                    <th>Название в<br />Финграде</th>
-                    <th>Комментарий</th>
-                    <th>Код в<br />Финграде</th>
-                </tr>    
+                    <th rowspan="3">Уровень<br />подразделений</th>
+                    <th rowspan="3">Структура подразделений</th>
+                    <th rowspan="3">Должность</th>
+                    <th rowspan="3">Кол-во<br />шт. ед.</th>
+                    <th rowspan="3">Оклад</th>
+                    <th rowspan="3">Ставка</th>
+                    <th colspan="7">Надбавки</th>
+                    <th rowspan="3">Итого</th>
+                    <th rowspan="3">ФИО<br />сотрудника</th>
+                    <th rowspan="3">ОЖ</th>
+                    <th rowspan="3">Резерв<br />вакансии</th>
+                    @*
+                    <th rowspan="3">Название в<br />Финграде</th>
+                    <th rowspan="3">Комментарий</th>
+                    <th rowspan="3">Код в<br />Финграде</th>
+                    *@
+                </tr>   
+                <tr>
+                    <th>Должностная</th>
+                    <th colspan="6">Персональные</th>
+                </tr>
+                <tr>
+                    <th>Районный<br />коэфф.</th>
+                    <th>Персон.</th>
+                    <th>Терр.</th>
+                    <th>Фронт</th>
+                    <th>Разъезд.<br />характер<br />работы</th>
+                    <th>Северная</th>
+                    <th>Квал-ция</th>
+                </tr>
             </thead>
             
             @{ int i = 0; }
@@ -44,9 +62,18 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td>@item.DepFingradName</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    @*<td>@item.DepFingradName</td>
                     <td>@item.DepFingradNameComment</td>
-                    <td>@item.FinDepPointCode</td>
+                    <td>@item.FinDepPointCode</td>*@
                 </tr>
             }
             @{ i++; }
@@ -70,7 +97,9 @@
         setActiveMenuItem("moStaffArrangement");
 
          $(document).tooltip({track: false,
-            show: { /*effect: "blind",*/ duration: 300 }});
+            show: { /*effect: "blind",*/ duration: 1000 }});
+
+        $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
 
         ShowFlash(true);
         ShowFlash(false);
@@ -184,9 +213,18 @@
                                     "<td></td>" +
                                     "<td></td>" +
                                     "<td></td>" +
-                                    "<td>" + (result.Departments[i].DepFingradName == null ? "" : result.Departments[i].DepFingradName) + "</td>" +
-                                    "<td>" + (result.Departments[i].DepFingradNameComment == null ? "" : result.Departments[i].DepFingradNameComment) + "</td>" +
-                                    "<td>" + (result.Departments[i].FinDepPointCode == null ? "" : result.Departments[i].FinDepPointCode) + "</td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+//                                        "<td>" + (result.Departments[i].DepFingradName == null ? "" : result.Departments[i].DepFingradName) + "</td>" +
+//                                        "<td>" + (result.Departments[i].DepFingradNameComment == null ? "" : result.Departments[i].DepFingradNameComment) + "</td>" +
+//                                        "<td>" + (result.Departments[i].FinDepPointCode == null ? "" : result.Departments[i].FinDepPointCode) + "</td>" +
                                     "</tr>";
 
                         var ParentRowName = "#tr-" + (i == 0 ? Id : result.Departments[i - 1].Code1C);//определяем Id строки после которой нужно добавить новую строку
@@ -233,15 +271,38 @@
                                     "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
                                     "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
                                     "<td>" + (result.EstablishedPosts[i].Rate != null ? result.EstablishedPosts[i].Rate : "") + "</td>" +
-                                    "<td>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>" +
-                                    "<td>" + (result.EstablishedPosts[i].ReplacedName == null ? "" : result.EstablishedPosts[i].ReplacedName) + "</td>" +
-                                    "<td></td>" +
-                                    "<td></td>" +
-                                    "<td></td>" +
+                                        
+                                        "<td>" + (result.EstablishedPosts[i].Regional != null ? result.EstablishedPosts[i].Regional : "") + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].Personnel != null ? result.EstablishedPosts[i].Personnel : "") + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].Territory != null ? result.EstablishedPosts[i].Territory : "") + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].Front != null ? result.EstablishedPosts[i].Front : "") + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].Drive != null ? result.EstablishedPosts[i].Drive : "") + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].North != null ? result.EstablishedPosts[i].North : "") + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].Qualification != null ? result.EstablishedPosts[i].Qualification : "") + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].TotalSalary != null ? result.EstablishedPosts[i].TotalSalary : "") + "</td>" 
+                                        //красим увольняющихся
+                                        if(!result.EstablishedPosts[i].IsDismiss && !result.EstablishedPosts[i].IsDismissal)
+                                        {
+                                            if(result.EstablishedPosts[i].IsVacation || result.EstablishedPosts[i].IsReserve)
+                                            {
+                                                tblStr += "<td>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>"
+                                            }
+                                            else
+                                            {
+                                                tblStr += "<td><a class='CallModal' href='#' onclick='GetStaffMovementRequest(" + result.EstablishedPosts[i].UserId + ");'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</a></td>"
+                                            }
+                                        }
+                                        else
+                                        {
+                                            tblStr += "<td style='color:Red;'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>"
+                                        }
+                                        tblStr += "<td>" + (result.EstablishedPosts[i].ReplacedName == null ? "" : result.EstablishedPosts[i].ReplacedName) + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].Reserve == null ? "" : result.EstablishedPosts[i].Reserve) + "</td>" +
                                     "</tr>";
 
                         var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
                         $(ParentRowName).after(tblStr);//вставляем новую строку
+                            $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
                     }
                 }
                     
@@ -312,6 +373,63 @@
         actionUrl += "?DepId=" + DepCode + "&IsParentDepOnly=true";
         location.href = actionUrl;
     }
+
+
+    //переходим в создание заявки на перемещение
+    function GetStaffMovementRequest(UserId)
+    {
+        var elem = document.createElement('div');
+        elem.id = "divSelectTypeDialog";
+        var newDiv = $(elem);
+
+        var actionDetailDialogUrl = "@Url.Action("SelectMovementType", "StaffList")";
+        actionDetailDialogUrl += "?UserId=" + UserId;
+
+        var title = "Выбор типа заявки";
+        
+
+        $(newDiv).text('Подождите, идет загрузка данных ...');
+        $.ajaxSetup({ cache: false });
+        $(newDiv).load(actionDetailDialogUrl + " #SelectMovementType"
+            , function (response, status, xhr) {
+                if (status == "error") {
+                    var msg = "Произошла ошибка: ";
+                    $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                }
+            }
+        );
+                $(newDiv).dialog(
+        { 
+            autoOpen: false,
+            modal: true,
+            title: title,
+            draggable: false,
+            resizable: false,
+            width: "auto",
+            //position: { my: "left top", at: "left bottom", of: button },
+            //position: "center",
+            closeOnEscape: true,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $(newDiv).dialog("open");
+    }
+    /*
+    для выхода на создание заявки по кадровому перемещению
+    User.Id,
+RequestType
+
+action = Edit
+    */
+    
 </script>
 
 

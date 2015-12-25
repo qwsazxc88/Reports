@@ -25,9 +25,14 @@ namespace Reports.Core.Domain
         /// Подразделение с налоговыми реквизитами (сосед)
         /// </summary>
         public virtual Department DepNext { get; set; }
+        /// <summary>
+        /// Депозитное подразделение.
+        /// </summary>
+        public virtual Department DepDeposit { get; set; }
         public virtual bool IsPlan { get; set; } 
         public virtual bool IsUsed { get; set; } 
-        public virtual bool IsDraft { get; set; } 
+        public virtual bool IsDraft { get; set; }
+        public virtual bool IsTaxRequest { get; set; } 
         public virtual DateTime? DateSendToApprove { get; set; } 
         public virtual DateTime? BeginAccountDate { get; set; } 
         public virtual DateTime? DateState { get; set; } 

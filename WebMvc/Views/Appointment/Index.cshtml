@@ -112,13 +112,13 @@
         {                               
             <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
             <input type="button" value="Создать заявку на поиск кандидата" onclick="location.href='@Url.Action("AppointmentEdit", "Appointment", new { id = 0 })'"/>                                                                             
-            <input type="button" value="Согласование кандидата от Руководителя" onclick="location.href='@Url.Action("AppointmentWithoutStaffEdit", "Appointment", new { id = 0 })'"/>      
+            @*<input type="button" value="Согласование кандидата от Руководителя" onclick="location.href='@Url.Action("AppointmentWithoutStaffEdit", "Appointment", new { id = 0 })'"/>      *@
             
         }
         @if (Model.IsAddForStaffAvailable)
         {
             <input type="button" value="Создать заявку на поиск кандидата" onclick="return createAppointmentForStaff();"/>  
-            <input type="button" value="Согласование кандидата от Руководителя" onclick="return createAppointmentWithoutStaffForStaff();" />
+           @* <input type="button" value="Согласование кандидата от Руководителя" onclick="return createAppointmentWithoutStaffForStaff();" />*@
         }
         
         <input type="submit" value="Печать" style="float: right; margin-right:10px;" onclick="$('#ForPrint').val(1);"/>

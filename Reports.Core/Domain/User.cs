@@ -163,7 +163,7 @@ namespace Reports.Core.Domain
         //public virtual Department Department { get; set; }
         public virtual Position Position { get; set; }
         public virtual Department Department { get; set; }
-
+        public virtual Schedule HoursType { get; set; }
         public virtual string Cnilc { get; set; }
         public virtual string Address { get; set; }
         public virtual IList<Dismissal> Dismissals { get; set; }
@@ -184,6 +184,10 @@ namespace Reports.Core.Domain
         /// Штатная единица.
         /// </summary>
         //public virtual StaffEstablishedPost StaffEstablishedPost { get; set; }
+        /// <summary>
+        /// Северные надбавки.
+        /// </summary>
+        public virtual IList<StaffUserNorthAdditional> UserNorthAdditionals { get; set; }
         #endregion
 
         #region Constructors

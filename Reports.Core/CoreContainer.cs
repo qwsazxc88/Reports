@@ -99,6 +99,9 @@ namespace Reports.Core
 
         public virtual void AddComponents()
         {
+            Register(Component.For<IStaffMovementsFactDao>().
+                    ImplementedBy<StaffMovementsFactDao>().
+                    LifeStyle.Is(type));
             Register(Component.For<IDocumentMovementsDao>().
                     ImplementedBy<DocumentMovementsDao>().
                     LifeStyle.Is(type));
@@ -799,6 +802,9 @@ namespace Reports.Core
                 .LifeStyle.Is(type));
             Register(Component.For<IStaffExtraChargeActionsDao>()
                 .ImplementedBy<StaffExtraChargeActionsDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffUserNorthAdditionalDao>()
+                .ImplementedBy<StaffUserNorthAdditionalDao>()
                 .LifeStyle.Is(type));
             #endregion
             

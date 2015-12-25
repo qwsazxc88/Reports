@@ -59,10 +59,13 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Количество")]
         public int Quantity { get; set; }
-        public int QuantityOld { get; set; }//для проверки в заявке на изменение
+        public int QuantityPrev { get; set; }
 
-        [Display(Name = "Оклад")]
+        [Display(Name = "Новый оклад")]
         public decimal Salary { get; set; }
+
+        [Display(Name = "Оклад текущий")]
+        public decimal SalaryPrev { get; set; }
 
         [Display(Name = "Причина создания ШЕ")]
         public int? ReasonId { get; set; }
@@ -80,6 +83,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Данные по ШЕ")]
         public string EPInfo { get; set; }
+
+        [Display(Name = "Сотрудники")]
+        public IList<StaffEstablishedPostDto> Personnels { get; set; }
 
         #region Согласование
         [Display(Name = "Инициатор")]

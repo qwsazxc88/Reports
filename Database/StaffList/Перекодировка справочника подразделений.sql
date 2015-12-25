@@ -7,7 +7,7 @@ GO
 
 set nocount on
 
-
+update Department set Code1COld = Code1C, CodeOld = Code, ParentIdOld = ParentId, PathOld = Path
 
 declare @id int, @code1c int
 select * into #tmp from Department order by ItemLevel

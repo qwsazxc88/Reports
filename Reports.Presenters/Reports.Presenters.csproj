@@ -286,6 +286,7 @@
     <Compile Include="UI\ViewModel\SicklistEditModel.cs" />
     <Compile Include="UI\ViewModel\SicklistListModel.cs" />
     <Compile Include="UI\ViewModel\SortableModel.cs" />
+    <Compile Include="UI\ViewModel\StaffList\SelectMovementTypeModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentInstallSoftModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentOperationGroupsModel.cs" />
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentOperationLinksModel.cs" />
@@ -295,6 +296,8 @@
     <Compile Include="UI\ViewModel\StaffList\StaffDepartmentSoftGroupModel.cs" />
     <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsCreateRequestModel.cs" />
     <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsEditModel.cs" />
+    <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsFactEditModel.cs" />
+    <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsFactListModel.cs" />
     <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsListModel.cs" />
     <Compile Include="UI\ViewModel\StaffMovements\StaffMovementsPrintModel.cs" />
     <Compile Include="UI\ViewModel\StandartEditModel.cs" />
