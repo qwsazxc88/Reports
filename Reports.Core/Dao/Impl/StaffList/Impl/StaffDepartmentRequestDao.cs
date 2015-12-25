@@ -20,6 +20,17 @@ namespace Reports.Core.Dao.Impl
             : base(sessionManager)
         {
         }
+
+        #region Dependencies
+        protected IDepartmentDao departmentDao;
+        public IDepartmentDao DepartmentDao
+        {
+            get { return Validate.Dependency(departmentDao); }
+            set { departmentDao = value; }
+        }
+
+        #endregion
+
         /// <summary>
         /// Список заявок для подразделений.
         /// </summary>
@@ -81,6 +92,7 @@ namespace Reports.Core.Dao.Impl
             
 
             SqlQuery = string.Format(@"SELECT * FROM ({0}) as A", SqlQuery);
+            SqlQuery += @" INNER JOIN Department as B ON B.Id = isnull(A.DepartmentId, A.ParentId)";
 
             if (role == UserRole.Manager)
             {
@@ -166,7 +178,12 @@ namespace Reports.Core.Dao.Impl
         {
             //string SqlWhere = string.Empty;
             if (DepartmentId != 0)
-                sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "A.ParentId = :DepartmentId";
+            {
+                
+                Department department = DepartmentDao.Load(DepartmentId);
+                sqlWhere += string.Format(@" B.Path  like '{0}' and B.ItemLevel = {1}", department.Path + "%", 7);
+                //sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "A.ParentId = :DepartmentId";
+            }
             
             if (Id != 0)
                 sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "A.Id = :Id";
