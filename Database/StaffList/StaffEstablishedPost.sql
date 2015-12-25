@@ -332,6 +332,12 @@ UPDATE StaffEstablishedPost SET Quantity = A.Quantity + B.cnt
 FROM StaffEstablishedPost as A
 INNER JOIN #SPAdd as B ON B.Id = A.Id
 
+UPDATE StaffEstablishedPostRequest SET Quantity = B.Quantity
+FROM StaffEstablishedPostRequest as A
+INNER JOIN StaffEstablishedPost as B ON B.Id = A.SEPId
+WHERE A.IsUsed = 1
+
+
 
 IF (select sum(Quantity) from StaffEstablishedPost) <> (select count(*) from StaffEstablishedPostUserLinks)
 	PRINT 'Количество позиций в расстановке отличается от суммы количества штатных единиц'
