@@ -24,6 +24,7 @@ namespace Reports.Core.Dao.Impl
         /// Список заявок для штатных единиц.
         /// </summary>
         /// <param name="curUser">Текущий пользователь.</param>
+        /// <param name="role">Роль пользователя (из-за байт-кода дополнительный параметр).</param>
         /// <param name="DepartmentId">Id подразделения.</param>
         /// <param name="Id">Номер заявки</param>
         /// <param name="Surname">ФИО инициатора</param>
@@ -33,7 +34,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="SortBy">Номер колонки для сортировки</param>
         /// <param name="SortDescending">Признак направления сортировки.</param>
         /// <returns></returns>
-        public IList<EstablishedPostRequestDto> GetEstablishedPostRequestList(User curUser, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending)
+        public IList<EstablishedPostRequestDto> GetEstablishedPostRequestList(User curUser, UserRole role, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending)
         {
             string SqlQuery = @"SELECT A.Id, 
                                        A.SEPId,
@@ -75,7 +76,23 @@ namespace Reports.Core.Dao.Impl
 
             SqlQuery = string.Format(@"SELECT * FROM ({0}) as A", SqlQuery);
 
-            SqlQuery += GetWhereForUserRole(curUser);
+//            if (role == UserRole.Manager)
+//            {
+//                SqlQuery += @"
+//                                 INNER JOIN (SELECT C.*
+//                                             FROM Users as A
+//                                             INNER JOIN Department as B ON B.Id = A.DepartmentId
+//                                             INNER JOIN Department as C ON C.Path like B.Path + N'%' --and C.ItemLevel <> B.ItemLevel
+//						                     WHERE A.Id = :userId) as F ON F.Id = isnull(A.DepartmentId, A.ParentId)";
+//            }
+
+//            if (role == UserRole.PersonnelManager)
+//            {
+//                SqlQuery += @"
+//                                 INNER JOIN vwDepartmentToPersonnels as F ON F.DepartmentId = isnull(A.DepartmentId, A.ParentId) and F.PersonnelId = :userId";
+//            }
+
+            SqlQuery += GetWhereForUserRole(curUser, role);
             SqlQuery += GetWhereForParameters(DepartmentId, Id, Surname, DateBegin, DateEnd, StatusId);
             SqlQuery += GetOrderByForSqlQuery(SortBy, SortDescending);
 
@@ -112,10 +129,10 @@ namespace Reports.Core.Dao.Impl
         /// </summary>
         /// <param name="curUser">Текущий пользователь.</param>
         /// <returns></returns>
-        protected string GetWhereForUserRole(User curUser)
+        protected string GetWhereForUserRole(User curUser, UserRole role)
         {
             string sqlWhere = string.Empty;
-            switch (curUser.UserRole)
+            switch (role)
             {
                 case UserRole.Manager:
                     sqlWhere = @"
@@ -124,6 +141,9 @@ namespace Reports.Core.Dao.Impl
                                              INNER JOIN Department as B ON B.Id = A.DepartmentId
                                              INNER JOIN Department as C ON C.Path like B.Path + N'%' and C.ItemLevel <> B.ItemLevel
 						                     WHERE A.Id = :userId) as F ON F.Id = isnull(A.DepartmentId, A.ParentId)";
+                    break;
+                case UserRole.PersonnelManager:
+                    sqlWhere = @" INNER JOIN vwDepartmentToPersonnels as F ON F.DepartmentId = isnull(A.DepartmentId, A.ParentId) and F.PersonnelId = :userId";
                     break;
             }
             return sqlWhere;

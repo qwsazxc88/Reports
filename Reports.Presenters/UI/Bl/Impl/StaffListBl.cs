@@ -334,13 +334,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             Department dep = DepartmentDao.GetByCode(DepId);
             int DepartmentId = dep.Id;
             int itemLevel = dep.ItemLevel.Value;
-            bool SalaryEnabel = AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector ? false :  true;
+            bool IsSalaryEnable = AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector ? false : true;
             
             //достаем уровень подразделений и штатных единиц к ним
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
             if (itemLevel != 7)
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, SalaryEnabel);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, IsSalaryEnable);
                 //уровень подразделений
                 model.Departments = GetDepartmentListByParent(DepId, false)
                     .OrderBy(x => x.Priority)
@@ -349,7 +349,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, SalaryEnabel);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, IsSalaryEnable);
             }
 
             return model;
@@ -2528,6 +2528,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public StaffEstablishedPostRequestListModel SetStaffEstablishedPostRequestList(StaffEstablishedPostRequestListModel model)
         {
             model.EPRequestList = StaffEstablishedPostRequestDao.GetEstablishedPostRequestList(userDao.Load(AuthenticationService.CurrentUser.Id),
+                AuthenticationService.CurrentUser.UserRole,
                 model.DepartmentId,
                 model.Id.HasValue ? model.Id.Value : 0,
                 model.Creator,
@@ -3022,6 +3023,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.StaffEstablishedPost = sep;
                 entity.DateSendToApprove = !entity.DateSendToApprove.HasValue ? DateTime.Now : entity.DateSendToApprove.Value;//отправлено на согласование
                 entity.DateAccept = DateTime.Now;//согласовано
+                //если создается новая штатная единица и в ней нет сотрудников, то надо указать признак выгрузки в 1С, чтобы пустые заявки не попали в выгрузку кадровых перемещений.
+                if (entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.User != null).Count() == 0)
+                {
+                    entity.SendTo1C = DateTime.Now;
+                }
             }
             catch (Exception ex)
             {
@@ -4904,18 +4910,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             int DepartmentId = dep.Id;
             int itemLevel = dep.ItemLevel.Value;
 
+            int PersonnelId = AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager ? AuthenticationService.CurrentUser.Id : 0;
 
             //достаем уровень подразделений и сотрудников с должностями к ним
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
             if (itemLevel != 7)
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId, PersonnelId);
                 //уровень подразделений
                 model.Departments = GetDepartmentListByParent(DepId, false).OrderBy(x => x.Priority).ToList();
             }
             else
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId, PersonnelId);
             }
 
             return model;
