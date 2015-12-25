@@ -940,8 +940,8 @@
     <Content Include="Views\DocumentMovements\DocumentMovementsEdit.cshtml" />
     <Content Include="Views\Shared\_LayoutModern.cshtml" />
     <Content Include="Views\DocumentMovements\CreateWithoutSend.cshtml" />
-    <Content Include="Views\StaffMovements\StaffMovementsFactList.cshtml" />
     <Content Include="Views\StaffList\SelectMovementType.cshtml" />
+    <Content Include="Views\StaffMovements\StaffMovementsFactList.cshtml" />
     <Content Include="Views\StaffMovements\StaffMovementsFactEdit.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
