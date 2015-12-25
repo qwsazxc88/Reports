@@ -1,7 +1,7 @@
 --яйпхор напюанрйх х гюйювйх дюммшу хг тхмцпюдю б аюгс дюммшу 
 --еякх намнбхкюяэ аюгю хкх яопюбнвмхй рнвей дкъ цпютхйнб, яопюбнвмхй ондпюгдекемхи, рн хг яопюбнвмхйю ондпюгдекемхи бнглнфмн мсфмн сдюкхрэ гюохях я гмювемхел 4 б онке BFGId
 
-use WebAppTest2
+use WebAppTest
 go
 
 SET NOCOUNT ON
@@ -27,7 +27,7 @@ begin
 
 	drop table #checkpoint
 	--update TerraPoint set PossibleDepartmentId = null where id in (1241, 3995, 1823, 2409, 227)
-	--update TerraPoint set PossibleDepartmentId = null where name like '%(ГЮЙПШРН)%' or id in (3499)
+	--update TerraPoint set PossibleDepartmentId = null where name like '%(ГЮЙПШРН)%' or id in (3499, 1151)
 	return
 end
 else

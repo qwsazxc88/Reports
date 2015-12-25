@@ -1432,7 +1432,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.SalaryBasis = entity.SalaryBasis;
                 model.SalaryMultiplier = entity.SalaryMultiplier;
-                model.AreaMultiplier = entity.Candidate.PersonnelManagers.AreaMultiplier.Value;
+                model.AreaMultiplier = entity.Candidate.PersonnelManagers.AreaMultiplier.HasValue ? entity.Candidate.PersonnelManagers.AreaMultiplier.Value : 0;
             }
 
             model.IsConsultant = AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ? true : false;

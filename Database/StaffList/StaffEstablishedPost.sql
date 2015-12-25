@@ -1,4 +1,4 @@
-use WebAppTest2
+use WebAppTest
 go
 
 --— –»œ“ ‘Œ–Ã»–”≈“ ÿ“¿“Õ€≈ ≈ƒ»Õ»÷€ » «¿ﬂ¬ » Õ¿ »’ —Œ«ƒ¿Õ»≈
@@ -331,6 +331,12 @@ INNER JOIN (SELECT  DepartmentId, PositionId, sum(IsEditSP) as cnt
 UPDATE StaffEstablishedPost SET Quantity = A.Quantity + B.cnt
 FROM StaffEstablishedPost as A
 INNER JOIN #SPAdd as B ON B.Id = A.Id
+
+UPDATE StaffEstablishedPostRequest SET Quantity = B.Quantity
+FROM StaffEstablishedPostRequest as A
+INNER JOIN StaffEstablishedPost as B ON B.Id = A.SEPId
+WHERE A.IsUsed = 1
+
 
 
 IF (select sum(Quantity) from StaffEstablishedPost) <> (select count(*) from StaffEstablishedPostUserLinks)
