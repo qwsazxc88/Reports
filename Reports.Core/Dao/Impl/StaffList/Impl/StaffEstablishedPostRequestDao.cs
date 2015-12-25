@@ -20,6 +20,17 @@ namespace Reports.Core.Dao.Impl
             : base(sessionManager)
         {
         }
+
+        #region Dependencies
+        protected IDepartmentDao departmentDao;
+        public IDepartmentDao DepartmentDao
+        {
+            get { return Validate.Dependency(departmentDao); }
+            set { departmentDao = value; }
+        }
+
+        #endregion
+
         /// <summary>
         /// Список заявок для штатных единиц.
         /// </summary>
@@ -75,22 +86,8 @@ namespace Reports.Core.Dao.Impl
                                 LEFT JOIN Position as E ON E.Id = D.PositionId";
 
             SqlQuery = string.Format(@"SELECT * FROM ({0}) as A", SqlQuery);
+            SqlQuery += @" INNER JOIN Department as B ON B.Id = A.DepartmentId";
 
-//            if (role == UserRole.Manager)
-//            {
-//                SqlQuery += @"
-//                                 INNER JOIN (SELECT C.*
-//                                             FROM Users as A
-//                                             INNER JOIN Department as B ON B.Id = A.DepartmentId
-//                                             INNER JOIN Department as C ON C.Path like B.Path + N'%' --and C.ItemLevel <> B.ItemLevel
-//						                     WHERE A.Id = :userId) as F ON F.Id = isnull(A.DepartmentId, A.ParentId)";
-//            }
-
-//            if (role == UserRole.PersonnelManager)
-//            {
-//                SqlQuery += @"
-//                                 INNER JOIN vwDepartmentToPersonnels as F ON F.DepartmentId = isnull(A.DepartmentId, A.ParentId) and F.PersonnelId = :userId";
-//            }
 
             SqlQuery += GetWhereForUserRole(curUser, role);
             SqlQuery += GetWhereForParameters(DepartmentId, Id, Surname, DateBegin, DateEnd, StatusId);
@@ -161,7 +158,11 @@ namespace Reports.Core.Dao.Impl
         {
             string SqlWhere = string.Empty;
             if (DepartmentId != 0)
-                SqlWhere += "A.ParentId = :DepartmentId";
+            {
+                Department department = DepartmentDao.Load(DepartmentId);
+                SqlWhere += string.Format(@" B.Path  like '{0}' and B.ItemLevel = {1}", department.Path + "%", 7);
+                //SqlWhere += "A.ParentId = :DepartmentId";
+            }
 
             if (Id != 0)
                 SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "A.Id = :Id";
