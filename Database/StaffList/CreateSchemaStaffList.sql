@@ -4158,6 +4158,31 @@ GROUP BY A.UserId, B.Rate, isnull(Amount, 0)
 GO
 
 
+IF OBJECT_ID ('vwDepartmentToPersonnels', 'V') IS NOT NULL
+	DROP VIEW [dbo].[vwDepartmentToPersonnels]
+GO
+
+
+
+--доступ кадровиков к подразделениям по группам доступа (определяем по сотрудникам)
+CREATE VIEW [dbo].[vwDepartmentToPersonnels]
+AS
+SELECT D.Id as DepartmentId, A.PersonnelId 
+FROM UserToPersonnel as A
+INNER JOIN Users as B ON B.Id = A.UserId
+INNER JOIN Department as C ON C.Id = B.DepartmentId
+INNER JOIN Department as D ON C.Path like D.Path + N'%'
+WHERE B.IsActive = 1
+GROUP BY D.Id, A.PersonnelId 
+
+GO
+
+
+
+
+
+
+
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
 --StaffExtraChargeActions
 INSERT INTO StaffExtraChargeActions(Name) VALUES('Начать'), ('Изменить'), ('Не изменять'), ('Прекратить')

@@ -5,7 +5,8 @@ GO
 --функция достает штатную расстановку по выбранному подразделению + текущее состояние надбавок 
 CREATE FUNCTION [dbo].[fnGetStaffEstablishedArrangements]
 (
-	@DepartmentId int
+	@DepartmentId int	
+	,@PersonnelId int
 )
 RETURNS 
 @ReturnTable TABLE 
@@ -46,8 +47,24 @@ RETURNS
 )
 AS
 BEGIN
+DECLARE 
+	@IsSalaryEnable bit
+
+	SET @IsSalaryEnable = 0
+
+	IF @PersonnelId = 0
+		SET @IsSalaryEnable = 1
+	ELSE
+	BEGIN
+		IF EXISTS (SELECT * FROM vwDepartmentToPersonnels WHERE PersonnelId = @PersonnelId and DepartmentId = @DepartmentId)
+			SET @IsSalaryEnable = 1
+	END
+
+
 	INSERT INTO @ReturnTable
-	SELECT F.Id, A.Id as SEPId, A.PositionId, B.Name as PositionName, A.DepartmentId, 1 as Quantity, A.Salary, C.Path, D.Id as RequestId, 
+	SELECT F.Id, A.Id as SEPId, A.PositionId, B.Name as PositionName, A.DepartmentId, 1 as Quantity
+				 ,case when @IsSalaryEnable = 1 then A.Salary else 0 end as Salary
+				 ,C.Path, D.Id as RequestId, 
 				 E.Rate,	--ставка
 				 --если в отпуске о уходу за ребенокм и нет замены показываем в колонках для заменяемых
 				 case when E.IsPregnant = 1 then null else E.Id end as UserId, 
@@ -70,16 +87,16 @@ BEGIN
 				 ,case when J.UserId is null then 0 else 1 end as IsDismiss	--увольнение
 				 ,F.IsDismissal		--сокращение
 				 --оклад и надбавки
-				 ,I.Salary as SalaryPersonnel
-				 ,I.Regional
-				 ,I.Personnel
-				 ,I.Territory
-				 ,I.Front
-				 ,I.Drive
+				 ,case when @IsSalaryEnable = 1 then I.Salary else 0 end as SalaryPersonnel
+				 ,case when @IsSalaryEnable = 1 then I.Regional else 0 end as Regional
+				 ,case when @IsSalaryEnable = 1 then I.Personnel else 0 end as Personnel
+				 ,case when @IsSalaryEnable = 1 then I.Territory else 0 end as Territory
+				 ,case when @IsSalaryEnable = 1 then I.Front else 0 end as Front
+				 ,case when @IsSalaryEnable = 1 then I.Drive else 0 end as Drive
 				 --,case when I.NorthAuto = 0 then I.North else I.NorthAuto end as North
-				 ,I.North
-				 ,I.Qualification
-				 ,isnull(I.TotalSalary, A.Salary) as TotalSalary	--если вакансия, то надо показать оклад штатной единицы
+				 ,case when @IsSalaryEnable = 1 then I.North else 0 end as North
+				 ,case when @IsSalaryEnable = 1 then I.Qualification else 0 end as Qualification
+				 ,case when @IsSalaryEnable = 1 then isnull(I.TotalSalary, A.Salary) else 0 end as TotalSalary	--если вакансия, то надо показать оклад штатной единицы
 	FROM StaffEstablishedPost as A
 	INNER JOIN Position as B ON B.Id = A.PositionId
 	INNER JOIN Department as C ON C.Id = A.DepartmentId
@@ -99,7 +116,7 @@ BEGIN
 	ORDER BY A.Priority
 
 		
---select * from dbo.fnGetStaffEstablishedArrangements(23230) 
+--select * from dbo.fnGetStaffEstablishedArrangements(23230, 0) 
 
 	RETURN 
 END
