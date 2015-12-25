@@ -564,6 +564,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             MailMessage mailMessage = null;
             try
             {
+                Log.Debug("Try to send mail to "+ dto.To+" from "+dto.From+" "+ dto.UserName);
                 mailMessage = new MailMessage
                                   {
                                       From = new MailAddress(dto.From, dto.From)
