@@ -2307,15 +2307,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 }
 
                                 //открываем согласование для следующего участника процесса
-                                if (entity.DepartmentAccessory.Id == 2)//кураторы согласуют фронты
+                                if (entity.DepartmentAccessory != null)
                                 {
-                                    model.IsCuratorApproveAvailable = model.IsCurator || model.IsConsultant ? true : false;
-                                    model.IsAgreeButtonAvailable = model.IsCuratorApproveAvailable;
-                                }
-                                else
-                                {
-                                    model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
-                                    model.IsAgreeButtonAvailable = model.IsPersonnelBankApproveAvailable;
+                                    if (entity.DepartmentAccessory.Id == 2)//кураторы согласуют фронты
+                                    {
+                                        model.IsCuratorApproveAvailable = model.IsCurator || model.IsConsultant ? true : false;
+                                        model.IsAgreeButtonAvailable = model.IsCuratorApproveAvailable;
+                                    }
+                                    else
+                                    {
+                                        model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
+                                        model.IsAgreeButtonAvailable = model.IsPersonnelBankApproveAvailable;
+                                    }
                                 }
                                 break;
                             case 2://куратор
@@ -2329,15 +2332,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 }
 
                                 //открываем согласование для следующего участника процесса
-                                if (entity.DepartmentAccessory.Id == 1)//кадровики согласуют только бэк
+                                if (entity.DepartmentAccessory != null)
                                 {
-                                    model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
-                                    model.IsAgreeButtonAvailable = model.IsPersonnelBankApproveAvailable;
-                                }
-                                else
-                                {
-                                    model.IsTopManagerApproveAvailable = model.TopManagers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.TopManagers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
-                                    model.IsAgreeButtonAvailable = model.IsTopManagerApproveAvailable;
+                                    if (entity.DepartmentAccessory.Id == 1)//кадровики согласуют только бэк
+                                    {
+                                        model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
+                                        model.IsAgreeButtonAvailable = model.IsPersonnelBankApproveAvailable;
+                                    }
+                                    else
+                                    {
+                                        model.IsTopManagerApproveAvailable = model.TopManagers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.TopManagers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
+                                        model.IsAgreeButtonAvailable = model.IsTopManagerApproveAvailable;
+                                    }
                                 }
                                 break;
                             case 3://кадровик
