@@ -3049,11 +3049,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected bool SaveStaffEstablishedPostChangeUserLinks(StaffEstablishedPostRequest entity, StaffEstablishedPost sep, User curUser, out string error)
         {
             error = string.Empty;
-            int CountLinks = 0;
+            int CountLinks = sep.EstablishedPostUserLinks != null ? sep.EstablishedPostUserLinks.Count() : 0;
             //если количество штатных единиц увеличилось, то нужно добавить необходимое количество записей для связей
-            if (entity.Quantity > sep.Quantity)
+            if (entity.Quantity > CountLinks)
             {
-                CountLinks = entity.Quantity - sep.Quantity;
+                CountLinks = entity.Quantity - CountLinks;
 
                 if(sep.EstablishedPostUserLinks == null)
                     sep.EstablishedPostUserLinks = new List<StaffEstablishedPostUserLinks>();
