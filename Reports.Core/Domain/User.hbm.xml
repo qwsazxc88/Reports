@@ -86,6 +86,11 @@
       <key column="UserId" foreign-key="FK_StaffUserNorthAdditional_Users"/>
       <one-to-many class="StaffUserNorthAdditional" />
     </bag>
+
+    <bag name="ChildVacation" table="ChildVacation" lazy="true" cascade="save-update">
+      <key column="UserId" foreign-key="FK_ChildVacation_User"/>
+      <one-to-many class="ChildVacation" />
+    </bag>
     <!--
     <many-to-one name="StaffEstablishedPost" class="StaffEstablishedPost" column="SEPId" foreign-key="FK_Users_StaffEstablishedPost" index="Users_StaffEstablishedPost"  not-null="false"/>
     -->
