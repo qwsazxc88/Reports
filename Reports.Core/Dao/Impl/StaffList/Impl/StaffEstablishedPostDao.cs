@@ -67,6 +67,8 @@ namespace Reports.Core.Dao.Impl
                                               ,North
                                               ,Qualification
                                               ,TotalSalary
+                                              ,DateDistribNote
+                                              ,DateReceivNote
                                        FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId, 0)");
 
             
@@ -104,6 +106,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("North", NHibernateUtil.Decimal)
                 .AddScalar("Qualification", NHibernateUtil.Decimal)
                 .AddScalar("TotalSalary", NHibernateUtil.Decimal)
+                .AddScalar("DateDistribNote", NHibernateUtil.DateTime)
+                .AddScalar("DateReceivNote", NHibernateUtil.DateTime)
                 .SetInt32("DepartmentId", DepartmentId)
                 .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
                 List<StaffEstablishedPostDto>();

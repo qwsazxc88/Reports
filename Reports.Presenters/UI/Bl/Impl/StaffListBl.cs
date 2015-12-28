@@ -2796,57 +2796,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.EditDate = DateTime.Now;
             entity.BeginAccountDate = model.BeginAccountDate;
 
-
-            //создаем запись в справочнике штатных единиц.
-            if (!model.IsDraft)
-            {
-
-                int Result = entity.RequestType.Id == 4 ? 0 : SaveStaffEstablishedPostApprovals(model, entity, curUser, out error);
-                if (Result == -1) return false;
-
-                if (Result == 0)
-                {
-                    //для первоначальных данных
-                    if (entity.RequestType.Id == 4)
-                    {
-                        entity.DateSendToApprove = DateTime.Now;
-                        entity.BeginAccountDate = DateTime.Now;
-                        entity.DateAccept = DateTime.Now;
-                    }
-
-                    if (!SaveStaffEstablishedPostReference(entity, curUser, out error))
-                    {
-                        return false;
-                    }
-
-                    //если уже была заявка, то у нее убираем признак использования, это для изменения/удаления
-                    if (entity.RequestType.Id != 1 && entity.RequestType.Id != 4)
-                    {
-                        int OldRequestId = StaffEstablishedPostRequestDao.GetCurrentRequestId(entity.StaffEstablishedPost.Id);
-                        if (OldRequestId != 0)
-                        {
-                            StaffEstablishedPostRequest OldEntity = StaffEstablishedPostRequestDao.Get(OldRequestId);
-                            OldEntity.IsUsed = false;
-
-                            try
-                            {
-                                StaffEstablishedPostRequestDao.SaveAndFlush(OldEntity);
-                            }
-                            catch (Exception ex)
-                            {
-                                StaffEstablishedPostRequestDao.RollbackTran();
-                                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
-                                return false;
-                            }
-                        }
-                    }
-
-                    entity.IsUsed = true;
-                    error = "Заявка утверждена!";
-                }
-                
-            }
-
             //при сокращении ставим метки в расстановке (до начала согласования)
             if ((entity.RequestType.Id == 3 || entity.RequestType.Id == 4) && !entity.DateSendToApprove.HasValue)
             {
@@ -2907,6 +2856,59 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 }
             }
+
+
+            //создаем запись в справочнике штатных единиц.
+            if (!model.IsDraft)
+            {
+
+                int Result = entity.RequestType.Id == 4 ? 0 : SaveStaffEstablishedPostApprovals(model, entity, curUser, out error);
+                if (Result == -1) return false;
+
+                if (Result == 0)
+                {
+                    //для первоначальных данных
+                    if (entity.RequestType.Id == 4)
+                    {
+                        entity.DateSendToApprove = DateTime.Now;
+                        entity.BeginAccountDate = DateTime.Now;
+                        entity.DateAccept = DateTime.Now;
+                    }
+
+                    if (!SaveStaffEstablishedPostReference(entity, curUser, out error))
+                    {
+                        return false;
+                    }
+
+                    //если уже была заявка, то у нее убираем признак использования, это для изменения/удаления
+                    if (entity.RequestType.Id != 1)
+                    {
+                        int OldRequestId = StaffEstablishedPostRequestDao.GetCurrentRequestId(entity.StaffEstablishedPost.Id);
+                        if (OldRequestId != 0)
+                        {
+                            StaffEstablishedPostRequest OldEntity = StaffEstablishedPostRequestDao.Get(OldRequestId);
+                            OldEntity.IsUsed = false;
+
+                            try
+                            {
+                                StaffEstablishedPostRequestDao.SaveAndFlush(OldEntity);
+                            }
+                            catch (Exception ex)
+                            {
+                                StaffEstablishedPostRequestDao.RollbackTran();
+                                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                                return false;
+                            }
+                        }
+                    }
+
+                    entity.IsUsed = true;
+                    error = "Заявка утверждена!";
+                }
+                
+            }
+
+            
             
 
             if (model.Id != 0)
@@ -3026,7 +3028,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.DateSendToApprove = !entity.DateSendToApprove.HasValue ? DateTime.Now : entity.DateSendToApprove.Value;//отправлено на согласование
                 entity.DateAccept = DateTime.Now;//согласовано
                 //если создается новая штатная единица и в ней нет сотрудников, то надо указать признак выгрузки в 1С, чтобы пустые заявки не попали в выгрузку кадровых перемещений.
-                if (entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.User != null).Count() == 0)
+                //или сокращаются пустые места в расстановке
+                if (entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.User != null).Count() == 0
+                    || entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.User != null && x.IsDismissal && x.IsUsed).Count() == 0)
                 {
                     entity.SendTo1C = DateTime.Now;
                 }
@@ -3075,8 +3079,14 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             //сокращение
-            if (entity.RequestType.Id == 3 || entity.RequestType.Id == 4)
+            if ((entity.RequestType.Id == 3 || entity.RequestType.Id == 4) && sep.EstablishedPostUserLinks.Where(x => x.IsUsed && x.IsDismissal).Count() != 0)
             {
+                //если частичное сокращение в расстановке, то меняем количество единиц в заявке
+                if (sep.EstablishedPostUserLinks.Where(x => x.IsUsed && x.IsDismissal).Count() != 0 && sep.EstablishedPostUserLinks.Where(x => x.IsUsed && !x.IsDismissal).Count() != 0)
+                {
+                    entity.Quantity = sep.EstablishedPostUserLinks.Where(x => x.IsUsed && !x.IsDismissal).Count();
+                }
+
                 foreach (var item in sep.EstablishedPostUserLinks
                     .Where(x => x.IsUsed && x.IsDismissal))
                 {
@@ -5007,14 +5017,54 @@ namespace Reports.Presenters.UI.Bl.Impl
             GetDepRequestInfo(model);
 
 
-            model.Personnels = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId).Where(x => x.SEPId == model.SEPId).ToList();
+            
 
             //согласование - расстановка флажков и т.д.
             StaffEstablishedPostRequest entity = StaffEstablishedPostRequestDao.Get(model.Id);
             if (entity != null)
+            {
+                //model.Personnels = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId).Where(x => x.SEPId == model.SEPId).ToList();
+                if (entity.StaffEstablishedPost != null)
+                {
+                    //поля UserId, Surname, IsPregnant определяем так же, как в функции показывающей штатную расстановку
+                    model.Personnels = entity.StaffEstablishedPost.EstablishedPostUserLinks
+                        .Where(x => x.IsUsed || (!x.IsUsed && x.ReserveType == 3 && x.DocId == entity.Id)).ToList()
+                        .ConvertAll(x => new StaffUserLinkDto
+                        {
+                            Id = x.Id
+                            ,SEPId = x.StaffEstablishedPost.Id
+                            ,UserId = x.User != null && x.User.IsPregnant == true && x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() == 0 ? x.User.Id : 0
+                            ,Surname = x.User != null && x.User.IsPregnant == true && x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() == 0 ? x.User.Name : ""
+                            ,IsPregnant = x.User != null ? (x.User.IsPregnant == true || x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() != 0 ? true : false) : false
+                            ,IsUsed = x.IsUsed
+                            ,ReserveType = x.ReserveType.HasValue ? x.ReserveType.Value : 0
+                            ,DocId = x.DocId.HasValue ? x.DocId.Value : 0
+                            ,IsDismissal = x.IsDismissal
+                            ,DateDistribNote = x.DateDistribNote
+                            ,DateReceivNote = x.DateReceivNote
+                        }).OrderBy(x => x.Surname).ToList();
+                }
+
                 SetApprovalFlags(model, entity);
+            }
             else
             {
+                model.Personnels = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId).Where(x => x.SEPId == model.SEPId).ToList()
+                    .ConvertAll(x => new StaffUserLinkDto
+                    {
+                        Id = x.Id
+                        ,SEPId = x.SEPId
+                        ,UserId = x.UserId
+                        ,Surname = x.Surname
+                        ,IsPregnant = x.IsPregnant
+                        ,IsUsed = true
+                        ,ReserveType = x.ReserveType
+                        ,DocId = x.DocId
+                        ,IsDismissal = x.IsDismissal
+                        ,DateDistribNote = x.DateDistribNote
+                        ,DateReceivNote = x.DateReceivNote
+                    }).OrderBy(x => x.Surname).ToList(); 
+
                 model.IsCurator = (AuthenticationService.CurrentUser.UserRole == UserRole.Inspector);
                 model.IsPersonnelBank = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel);
                 model.IsConsultant = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing);

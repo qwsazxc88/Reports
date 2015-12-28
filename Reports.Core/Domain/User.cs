@@ -188,6 +188,10 @@ namespace Reports.Core.Domain
         /// Северные надбавки.
         /// </summary>
         public virtual IList<StaffUserNorthAdditional> UserNorthAdditionals { get; set; }
+        /// <summary>
+        /// Отпуска по уходу за ребенком.
+        /// </summary>
+        public virtual IList<ChildVacation> ChildVacation { get; set; }
         #endregion
 
         #region Constructors
