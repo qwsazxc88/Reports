@@ -305,6 +305,7 @@
                         <td>@Html.LabelFor(m => m.BeginAccountDate)</td>
                         <td>
                             @Html.EditorFor(m => m.BeginAccountDate)
+                            @Html.ValidationMessageFor(m => m.BeginAccountDate)
                         </td>
                     </tr>
                     @if (Model.RequestTypeId != 1)
@@ -319,6 +320,8 @@
                                                 <tr>
                                                     <th>ФИО</th>
                                                     <th style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}">Сократить</th>
+                                                    <th style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}">Дата выдачи<br />уведомления</th>
+                                                    <th style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}">Дата получения<br />уведомления</th>
                                                 </tr>
                                             <//thead>
                                             @{ i = 1; }
@@ -335,6 +338,16 @@
                                                                {<text>text-align:center;</text>}">@Html.CheckBoxFor(m => m.Personnels[i - 1].IsDismissal)
                                                         @Html.ValidationMessageFor(m => m.Personnels[i - 1].IsDismissal)
                                                     </td>
+                                                    <td style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}
+                                                               else
+                                                               {<text>text-align:center;</text>}">@Html.TextBoxFor(m => m.Personnels[i - 1].DateDistribNote, new { style = "width:85px;", @class = "SetDatePicker" })
+                                                        @Html.ValidationMessageFor(m => m.Personnels[i - 1].DateDistribNote)
+                                                    </td>
+                                                    <td style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}
+                                                               else
+                                                               {<text>text-align:center;</text>}">@Html.TextBoxFor(m => m.Personnels[i - 1].DateReceivNote, new { style = "width:85px;", @class = "SetDatePicker" })
+                                                        @Html.ValidationMessageFor(m => m.Personnels[i - 1].DateReceivNote)
+                                                    </td>
                                                 </tr>
                                                 { i++; }
                                             }
@@ -343,6 +356,13 @@
                                 </div>
                             </td>
                         </tr>
+                        
+                        if (Model.RequestTypeId != 2)
+                        {
+                            <tr><td colspan="2"><a href="@Url.Content("~/Templates/BlankOrderForDismissal.docx")" target="_blank">Приказ о сокращении штата</a></td></tr>
+                            <tr><td colspan="2"><a href="@Url.Content("~/Templates/BlankNoteForDismissialWithoutVacation.docx")" target="_blank">Уведомление о сокращении без вакансии</a></td></tr>
+                            <tr><td colspan="2"><a href="@Url.Content("~/Templates/BlankNoteForDismissialWithVacation.docx")" target="_blank">Уведомление о сокращении с вакансией</a></td></tr>
+                        }
                     }
                 </table>
             </div>
@@ -433,10 +453,12 @@
         <button id="btnAgree" type="button" title="Согласовать заявку/Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
                                                                                                         {<text>disabled=disabled</text>}>Согласовать</button>
     </div>
+    
                                                                                                         if (Model.Id != 0)
                                                                                                         {
         @Html.Partial("~/Views/Info/Comments.cshtml")
                                                                                                         }
+    
     <div id="DivIndicator" style="display:none;">
         <table>
             <tr>
@@ -470,6 +492,12 @@
         $(":button").button();
         $("#BeginAccountDate").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
         $(".hasDatepicker").width("85px");
+        
+        $(".SetDatePicker").click(function(e){
+            $(this).datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
+            $(this).datepicker("show");
+        });
+        
 
         $("#btnSave").click(function () { $("#IsDraft").val(true); ShowFlash(true); $("#StaffEstablishedPostRequestForm").submit(); });
         $("#btnAgree").click(function () {

@@ -85,7 +85,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public string EPInfo { get; set; }
 
         [Display(Name = "Сотрудники")]
-        public IList<StaffEstablishedPostDto> Personnels { get; set; }
+        //public IList<StaffEstablishedPostDto> Personnels { get; set; }
+        public IList<StaffUserLinkDto> Personnels { get; set; }
+        
 
         #region Согласование
         [Display(Name = "Инициатор")]

@@ -1484,6 +1484,8 @@ CREATE TABLE [dbo].[StaffEstablishedPostUserLinks](
 	[ReserveType] [int] NULL,
 	[DocId] [int] NULL,
 	[IsDismissal] [bit] NULL,
+	[DateDistribNote] [datetime] NULL,
+	[DateReceivNote] [datetime] NULL,
 	[CreatorId] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorId] [int] NULL,
@@ -2668,6 +2670,12 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id документа/з
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак сокращения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'IsDismissal'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата выдачи уведомления о сокращении' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'DateDistribNote'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата получения уведомления о сокращении' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'DateReceivNote'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'CreatorId'
@@ -4847,6 +4855,8 @@ RETURNS
 	,North numeric(18, 2)
 	,Qualification numeric(18, 2)
 	,TotalSalary numeric(18, 2)
+	,DateDistribNote datetime
+	,DateReceivNote datetime
 )
 AS
 BEGIN
@@ -4880,7 +4890,9 @@ DECLARE
 				 case when isnull(E.IsPregnant, 0) = 1 then E.Id else G.ReplacedId end as ReplacedId
 				 ,case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, E.Id), E.Name)  else isnull(dbo.fnGetReplacedName(F.Id, null), H.Name) end as ReplacedName
 				 ,F.ReserveType
-				 ,case when F.ReserveType = 1 then N'Перемещение' when F.ReserveType = 2 then N'Прием' end as Reserve
+				 ,case when F.ReserveType = 1 then N'Перемещение' 
+							 when F.ReserveType = 2 then N'Прием'
+							 when F.ReserveType = 3 then N'Сокращение' end as Reserve
 				 ,F.DocId
 				 ,cast(case when isnull(F.DocId, 0) = 0 then 0 else 1 end as bit) as IsReserve
 				 ,isnull(E.IsPregnant, 0) as IsPregnant
@@ -4900,6 +4912,8 @@ DECLARE
 				 ,case when @IsSalaryEnable = 1 then I.North else 0 end as North
 				 ,case when @IsSalaryEnable = 1 then I.Qualification else 0 end as Qualification
 				 ,case when @IsSalaryEnable = 1 then isnull(I.TotalSalary, A.Salary) else 0 end as TotalSalary	--если вакансия, то надо показать оклад штатной единицы
+				 ,F.DateDistribNote
+				 ,F.DateReceivNote
 	FROM StaffEstablishedPost as A
 	INNER JOIN Position as B ON B.Id = A.PositionId
 	INNER JOIN Department as C ON C.Id = A.DepartmentId
@@ -4925,6 +4939,9 @@ DECLARE
 END
 
 GO
+
+
+
 
 
 

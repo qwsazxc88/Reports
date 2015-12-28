@@ -44,6 +44,8 @@ RETURNS
 	,North numeric(18, 2)
 	,Qualification numeric(18, 2)
 	,TotalSalary numeric(18, 2)
+	,DateDistribNote datetime
+	,DateReceivNote datetime
 )
 AS
 BEGIN
@@ -99,6 +101,8 @@ DECLARE
 				 ,case when @IsSalaryEnable = 1 then I.North else 0 end as North
 				 ,case when @IsSalaryEnable = 1 then I.Qualification else 0 end as Qualification
 				 ,case when @IsSalaryEnable = 1 then isnull(I.TotalSalary, A.Salary) else 0 end as TotalSalary	--если вакансия, то надо показать оклад штатной единицы
+				 ,F.DateDistribNote
+				 ,F.DateReceivNote
 	FROM StaffEstablishedPost as A
 	INNER JOIN Position as B ON B.Id = A.PositionId
 	INNER JOIN Department as C ON C.Id = A.DepartmentId
