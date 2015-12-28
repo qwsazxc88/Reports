@@ -1048,7 +1048,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     case "a5ceb324-a745-11de-b733-003048359abd":
                         element.IsValueEditable = false;
                         element.IsEditable = (role & UserRole.PersonnelManager) > 0 && isEditable;
-                        element.IsVisible = false//(role & ShowAllToRoles) > 0;
+                        element.IsVisible = false;//(role & ShowAllToRoles) > 0;
                         break;
                     //Отпуск по уходу за ребенком без оплаты
                     case "9e6ec242-49f2-4320-a5aa-024c5d607aa3":
