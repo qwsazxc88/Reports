@@ -5049,25 +5049,28 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                model.Personnels = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId).Where(x => x.SEPId == model.SEPId).ToList()
-                    .ConvertAll(x => new StaffUserLinkDto
-                    {
-                        Id = x.Id
-                        ,SEPId = x.SEPId
-                        ,UserId = x.UserId
-                        ,Surname = x.Surname
-                        ,IsPregnant = x.IsPregnant
-                        ,IsUsed = true
-                        ,ReserveType = x.ReserveType
-                        ,DocId = x.DocId
-                        ,IsDismissal = x.IsDismissal
-                        ,DateDistribNote = x.DateDistribNote
-                        ,DateReceivNote = x.DateReceivNote
-                    }).OrderBy(x => x.Surname).ToList(); 
-
                 model.IsCurator = (AuthenticationService.CurrentUser.UserRole == UserRole.Inspector);
                 model.IsPersonnelBank = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel);
                 model.IsConsultant = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing);
+            }
+
+            if (model.Personnels == null)
+            {
+                model.Personnels = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId).Where(x => x.SEPId == model.SEPId).ToList()
+                        .ConvertAll(x => new StaffUserLinkDto
+                        {
+                            Id = x.Id
+                            ,SEPId = x.SEPId
+                            ,UserId = x.UserId
+                            ,Surname = x.Surname
+                            ,IsPregnant = x.IsPregnant
+                            ,IsUsed = true
+                            ,ReserveType = x.ReserveType
+                            ,DocId = x.DocId
+                            ,IsDismissal = x.IsDismissal
+                            ,DateDistribNote = x.DateDistribNote
+                            ,DateReceivNote = x.DateReceivNote
+                        }).OrderBy(x => x.Surname).ToList();
             }
         }
         /// <summary>
