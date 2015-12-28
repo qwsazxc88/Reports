@@ -11,6 +11,10 @@ namespace Reports.Core.Enum
         /// <summary>
         /// Прием
         /// </summary>
-        Employment = 2
+        Employment = 2,
+        /// <summary>
+        /// Сокращение
+        /// </summary>
+        Dismissal = 3
     }
 }
