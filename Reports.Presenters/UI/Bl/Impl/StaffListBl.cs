@@ -2855,6 +2855,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (model.Personnels.Where(x => x.Id == ul.Id && x.IsDismissal != ul.IsDismissal).Count() != 0)
                     {
                         ul.IsDismissal = model.Personnels.Where(x => x.Id == ul.Id).Single().IsDismissal;
+                        ul.ReserveType = (int)StaffReserveTypeEnum.Dismissal;
+                        ul.DocId = entity.Id;
                         ul.Editor = curUser;
                         ul.EditDate = DateTime.Now;
                     }
@@ -3073,7 +3075,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             //сокращение
-            if (entity.RequestType.Id == 3)
+            if (entity.RequestType.Id == 3 || entity.RequestType.Id == 4)
             {
                 foreach (var item in sep.EstablishedPostUserLinks
                     .Where(x => x.IsUsed && x.IsDismissal))
