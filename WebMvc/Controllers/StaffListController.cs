@@ -1171,6 +1171,22 @@ namespace WebMvc.Controllers
                         i += 1;
                     }
                 }
+
+                if (model.Personnels != null)
+                {
+                    if ((model.RequestTypeId == 3 || model.RequestTypeId == 4) && model.Personnels.Where(x => x.UserId != 0 && x.IsDismissal).Count() != 0)
+                    {
+                        int i = 1;
+                        foreach (var item in model.Personnels)
+                        {
+                            if (item.UserId != 0 && item.IsDismissal)
+                            {
+                                ModelState.AddModelError("Personnels[" + (i - 1) + "].IsDismissal", "На данный момент можно сократить свободные вакансии! Сокращение вакансия занятых сотрудниками в разработке и будет доступным в ближайшее время!");
+                            }
+                            i += 1;
+                        }
+                    }
+                }
             }
 
             return ModelState.IsValid;

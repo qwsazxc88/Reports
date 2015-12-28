@@ -77,7 +77,9 @@ DECLARE
 				 case when isnull(E.IsPregnant, 0) = 1 then E.Id else G.ReplacedId end as ReplacedId
 				 ,case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, E.Id), E.Name)  else isnull(dbo.fnGetReplacedName(F.Id, null), H.Name) end as ReplacedName
 				 ,F.ReserveType
-				 ,case when F.ReserveType = 1 then N'Перемещение' when F.ReserveType = 2 then N'Прием' end as Reserve
+				 ,case when F.ReserveType = 1 then N'Перемещение' 
+							 when F.ReserveType = 2 then N'Прием'
+							 when F.ReserveType = 3 then N'Сокращение' end as Reserve
 				 ,F.DocId
 				 ,cast(case when isnull(F.DocId, 0) = 0 then 0 else 1 end as bit) as IsReserve
 				 ,isnull(E.IsPregnant, 0) as IsPregnant

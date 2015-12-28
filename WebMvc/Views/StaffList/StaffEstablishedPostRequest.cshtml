@@ -200,6 +200,10 @@
                             @Html.ValidationMessageFor(model => model.PositionId)
                         </td>
                     </tr>
+                    @if (Model.RequestTypeId == 4)
+                    {
+                        <tr><td colspan="2" style="color:Red;">Выбран вид заявки - Ввод начальных данных!<br />Если вам нужно провести сокращение штатной единицы, то редактировать количество не нужно.<br />Нужно поставить отметки в соответсвующее поле в строках списка сотрудников.</td></tr>
+                    }
                     <tr>
                         <td>@Html.LabelFor(m => m.Quantity)</td>
                         <td>
@@ -314,7 +318,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>ФИО</th>
-                                                    <th style="@if(Model.RequestTypeId != 3){<text>display:none;</text>}">Сократить</th>
+                                                    <th style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}">Сократить</th>
                                                 </tr>
                                             <//thead>
                                             @{ i = 1; }
@@ -326,7 +330,11 @@
                                                         @(string.IsNullOrEmpty(item.Surname) ? "вакансия" + (item.IsPregnant.HasValue && item.IsPregnant.Value ? " по срочному ТД" : "") : item.Surname)
                                                     
                                                     </td>
-                                                    <td style="@if(Model.RequestTypeId != 3){<text>display:none;</text>}else{<text>text-align:center;</text>}">@Html.CheckBoxFor(m => m.Personnels[i - 1].IsDismissal)</td>
+                                                    <td style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}
+                                                               else
+                                                               {<text>text-align:center;</text>}">@Html.CheckBoxFor(m => m.Personnels[i - 1].IsDismissal)
+                                                        @Html.ValidationMessageFor(m => m.Personnels[i - 1].IsDismissal)
+                                                    </td>
                                                 </tr>
                                                 { i++; }
                                             }

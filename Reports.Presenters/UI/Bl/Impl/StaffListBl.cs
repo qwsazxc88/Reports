@@ -2848,13 +2848,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             //при сокращении ставим метки в расстановке (до начала согласования)
-            if (entity.RequestType.Id == 3 && !entity.DateSendToApprove.HasValue)
+            if ((entity.RequestType.Id == 3 || entity.RequestType.Id == 4) && !entity.DateSendToApprove.HasValue)
             {
                 foreach (StaffEstablishedPostUserLinks ul in entity.StaffEstablishedPost.EstablishedPostUserLinks)
                 {
                     if (model.Personnels.Where(x => x.Id == ul.Id && x.IsDismissal != ul.IsDismissal).Count() != 0)
                     {
                         ul.IsDismissal = model.Personnels.Where(x => x.Id == ul.Id).Single().IsDismissal;
+                        ul.ReserveType = (int)StaffReserveTypeEnum.Dismissal;
+                        ul.DocId = entity.Id;
                         ul.Editor = curUser;
                         ul.EditDate = DateTime.Now;
                     }
@@ -3049,11 +3051,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected bool SaveStaffEstablishedPostChangeUserLinks(StaffEstablishedPostRequest entity, StaffEstablishedPost sep, User curUser, out string error)
         {
             error = string.Empty;
-            int CountLinks = 0;
+            int CountLinks = sep.EstablishedPostUserLinks != null ? sep.EstablishedPostUserLinks.Count() : 0;
             //если количество штатных единиц увеличилось, то нужно добавить необходимое количество записей для связей
-            if (entity.Quantity > sep.Quantity)
+            if (entity.Quantity > CountLinks)
             {
-                CountLinks = entity.Quantity - sep.Quantity;
+                CountLinks = entity.Quantity - CountLinks;
 
                 if(sep.EstablishedPostUserLinks == null)
                     sep.EstablishedPostUserLinks = new List<StaffEstablishedPostUserLinks>();
@@ -3073,7 +3075,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             //сокращение
-            if (entity.RequestType.Id == 3)
+            if (entity.RequestType.Id == 3 || entity.RequestType.Id == 4)
             {
                 foreach (var item in sep.EstablishedPostUserLinks
                     .Where(x => x.IsUsed && x.IsDismissal))
