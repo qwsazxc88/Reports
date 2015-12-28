@@ -3229,14 +3229,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 //налоговые реквизиты
-                StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.Get(dep.Id);
-                model.KPP = dt != null ? dt.KPP : string.Empty;
-                model.OKTMO = dt != null ? dt.OKTMO : string.Empty;
-                model.OKATO = dt != null ? dt.OKATO : string.Empty;
-                model.RegionCode = dt != null ? dt.RegionCode : string.Empty;
-                model.TaxAdminCode = dt != null ? dt.TaxAdminCode : string.Empty;
-                model.TaxAdminName = dt != null ? dt.TaxAdminName : string.Empty;
-                model.PostAddress = dt != null ? dt.PostAddress : string.Empty;
+                //StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.Get(dep.Id);
+                model.KPP = dep.DepartmentTaxDetails != null && dep.DepartmentTaxDetails.Count != 0 ? dep.DepartmentTaxDetails[0].KPP : string.Empty;
+                model.OKTMO = dep.DepartmentTaxDetails != null && dep.DepartmentTaxDetails.Count != 0 ? dep.DepartmentTaxDetails[0].OKTMO : string.Empty;
+                model.OKATO = dep.DepartmentTaxDetails != null && dep.DepartmentTaxDetails.Count != 0 ? dep.DepartmentTaxDetails[0].OKATO : string.Empty;
+                model.RegionCode = dep.DepartmentTaxDetails != null && dep.DepartmentTaxDetails.Count != 0 ? dep.DepartmentTaxDetails[0].RegionCode : string.Empty;
+                model.TaxAdminCode = dep.DepartmentTaxDetails != null && dep.DepartmentTaxDetails.Count != 0 ? dep.DepartmentTaxDetails[0].TaxAdminCode : string.Empty;
+                model.TaxAdminName = dep.DepartmentTaxDetails != null && dep.DepartmentTaxDetails.Count != 0 ? dep.DepartmentTaxDetails[0].TaxAdminName : string.Empty;
+                model.PostAddress = dep.DepartmentTaxDetails != null && dep.DepartmentTaxDetails.Count != 0 ? dep.DepartmentTaxDetails[0].PostAddress : string.Empty;
             }
 
         }
