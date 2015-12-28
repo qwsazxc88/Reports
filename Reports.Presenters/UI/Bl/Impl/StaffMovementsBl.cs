@@ -756,8 +756,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             var docs = entity.Docs;
             #region файлики
             var tmp = "";
-            var MovementNote = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementNote).First();
-            SaveAttachment(MovementNote.Id, MovementNote.Attachment != null ? MovementNote.Attachment.Id : 0, model.MovementNoteDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
+            var MovementNote = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementNote).First();           
+            var id = SaveAttachment(MovementNote.Id, MovementNote.Attachment != null ? MovementNote.Attachment.Id : 0, model.MovementNoteDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
+            if (id.HasValue)
+            {
+                var at = RequestAttachmentDao.Load(id.Value);
+                MovementNote.Attachment = at;
+                StaffMovementsDocsDao.SaveAndFlush(MovementNote);
+            }
             #endregion
         }
         /// <summary>
