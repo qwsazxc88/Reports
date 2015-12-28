@@ -5033,9 +5033,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             Id = x.Id
                             ,SEPId = x.StaffEstablishedPost.Id
-                            ,UserId = x.User != null && x.User.IsPregnant == true && x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() == 0 ? x.User.Id : 0
-                            ,Surname = x.User != null && x.User.IsPregnant == true && x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() == 0 ? x.User.Name : ""
-                            ,IsPregnant = x.User != null ? (x.User.IsPregnant == true || x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() != 0 ? true : false) : false
+                            ,UserId = x.User != null && (!x.User.IsPregnant.HasValue || !x.User.IsPregnant.Value) && x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() == 0 ? x.User.Id : 0
+                            ,Surname = x.User != null && (!x.User.IsPregnant.HasValue || !x.User.IsPregnant.Value) && x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() == 0 ? x.User.Name : ""
+                            ,IsPregnant = x.User != null ? ((x.User.IsPregnant.HasValue && x.User.IsPregnant.Value) || x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() != 0 ? true : false) : false
                             ,IsUsed = x.IsUsed
                             ,ReserveType = x.ReserveType.HasValue ? x.ReserveType.Value : 0
                             ,DocId = x.DocId.HasValue ? x.DocId.Value : 0

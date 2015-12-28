@@ -305,6 +305,7 @@
                         <td>@Html.LabelFor(m => m.BeginAccountDate)</td>
                         <td>
                             @Html.EditorFor(m => m.BeginAccountDate)
+                            @Html.ValidationMessageFor(m => m.BeginAccountDate)
                         </td>
                     </tr>
                     @if (Model.RequestTypeId != 1)
@@ -355,6 +356,13 @@
                                 </div>
                             </td>
                         </tr>
+                        
+                        if (Model.RequestTypeId != 2)
+                        {
+                            <tr><td colspan="2"><a href="@Url.Content("~/Templates/BlankOrderForDismissal.doc")" target="_blank">Приказ о сокращении штата</a></td></tr>
+                            <tr><td colspan="2"><a href="@Url.Content("~/Templates/BlankNoteForDismissialWithoutVacation.doc")" target="_blank">Уведомление о сокращении без вакансии</a></td></tr>
+                            <tr><td colspan="2"><a href="@Url.Content("~/Templates/BlankNoteForDismissialWithVacation.doc")" target="_blank">Уведомление о сокращении с вакансией</a></td></tr>
+                        }
                     }
                 </table>
             </div>
@@ -446,10 +454,10 @@
                                                                                                         {<text>disabled=disabled</text>}>Согласовать</button>
     </div>
     
-    if (Model.Id != 0)
-    {
+                                                                                                        if (Model.Id != 0)
+                                                                                                        {
         @Html.Partial("~/Views/Info/Comments.cshtml")
-    }
+                                                                                                        }
     
     <div id="DivIndicator" style="display:none;">
         <table>

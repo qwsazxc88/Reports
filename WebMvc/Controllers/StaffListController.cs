@@ -1151,6 +1151,9 @@ namespace WebMvc.Controllers
             }
             else
             {
+                if (model.BeginAccountDate < new DateTime(2015, 12, 1))
+                    ModelState.AddModelError("BeginAccountDate", "Дата начала учета в системе не может быть меньше 1 декабря 2015 года!");
+
                 if (model.RequestTypeId == 1 || model.RequestTypeId == 2)
                 {
                     if (model.Quantity <= 0)
