@@ -1151,7 +1151,7 @@ namespace WebMvc.Controllers
             }
             else
             {
-                if (model.RequestTypeId != 3)
+                if (model.RequestTypeId == 1 || model.RequestTypeId == 2)
                 {
                     if (model.Quantity <= 0)
                         ModelState.AddModelError("Quantity", "Укажите количество!");
