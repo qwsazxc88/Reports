@@ -2848,7 +2848,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             //при сокращении ставим метки в расстановке (до начала согласования)
-            if (entity.RequestType.Id == 3 && !entity.DateSendToApprove.HasValue)
+            if ((entity.RequestType.Id == 3 || entity.RequestType.Id == 4) && !entity.DateSendToApprove.HasValue)
             {
                 foreach (StaffEstablishedPostUserLinks ul in entity.StaffEstablishedPost.EstablishedPostUserLinks)
                 {
