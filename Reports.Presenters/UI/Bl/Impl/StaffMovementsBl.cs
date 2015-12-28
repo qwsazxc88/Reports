@@ -1048,27 +1048,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                     case "a5ceb324-a745-11de-b733-003048359abd":
                         element.IsValueEditable = false;
                         element.IsEditable = (role & UserRole.PersonnelManager) > 0 && isEditable;
-                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        element.IsVisible = false//(role & ShowAllToRoles) > 0;
                         break;
                     //Отпуск по уходу за ребенком без оплаты
                     case "9e6ec242-49f2-4320-a5aa-024c5d607aa3":
                         element.IsEditable = false;
-                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        element.IsVisible = false;//(role & ShowAllToRoles) > 0;
                         break;
                     //Пособие по уходу за ребёнком до 1.5 лет#1502
                     case "1671e1b6-0281-489c-b191-50e6fb241e75":
                         element.IsEditable = false;
-                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        element.IsVisible = false;//(role & ShowAllToRoles) > 0;
                         break;
                     //Пособие по уходу за ребёнком до 3 лет#1503
                     case "db5cc88b-4080-4061-8bba-42f22b500bb4":
                         element.IsEditable = false;
-                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        element.IsVisible = false;//(role & ShowAllToRoles) > 0;
                         break;
                     //Доплата за совмещение
                     case "91a004fc-d13e-11dd-b086-00308d000000":
                         element.IsEditable = false;
-                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        element.IsVisible = false;//(role & ShowAllToRoles) > 0;
                         break;
                     default:
                         element.IsVisible = true;
