@@ -200,6 +200,10 @@
                             @Html.ValidationMessageFor(model => model.PositionId)
                         </td>
                     </tr>
+                    @if (Model.RequestTypeId == 4)
+                    {
+                        <tr><td colspan="2" style="color:Red;">Выбран вид заявки - Ввод начальных данных!<br />Если вам нужно провести сокращение штатной единицы, то редактировать количество не нужно.<br />Нужно поставить отметки в соответсвующее поле в строках списка сотрудников.</td></tr>
+                    }
                     <tr>
                         <td>@Html.LabelFor(m => m.Quantity)</td>
                         <td>
