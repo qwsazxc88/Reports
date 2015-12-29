@@ -494,7 +494,7 @@
                               <td>
                                 @if (Model.MovementNoteDto != null && !string.IsNullOrEmpty(Model.MovementNoteDto.FileName))
                                 {
-                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MovementNoteAttachmentId })' style="cursor:hand" target="_blank" >@Model.MovementNoteDto.FileName</a>
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", "Help", new { Id = Model.MovementNoteAttachmentId })' style="cursor:hand" target="_blank" >@Model.MovementNoteDto.FileName</a>
                                 }
                                 @if (Model.IsDocsAddAvailable && Model.MovementNoteIsRequired)
                                 {
