@@ -3030,7 +3030,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //если создается новая штатная единица и в ней нет сотрудников, то надо указать признак выгрузки в 1С, чтобы пустые заявки не попали в выгрузку кадровых перемещений.
                 //или сокращаются пустые места в расстановке
                 if (entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.User != null).Count() == 0
-                    || entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.User != null && x.IsDismissal && x.IsUsed).Count() == 0)
+                    && entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.User != null && x.IsDismissal && x.IsUsed).Count() == 0)
                 {
                     entity.SendTo1C = DateTime.Now;
                 }
@@ -5033,7 +5033,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             Id = x.Id
                             ,SEPId = x.StaffEstablishedPost.Id
-                            ,UserId = x.User != null && (!x.User.IsPregnant.HasValue || !x.User.IsPregnant.Value) && x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() == 0 ? x.User.Id : 0
+                            //,UserId = x.User != null && (!x.User.IsPregnant.HasValue || !x.User.IsPregnant.Value) && x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() == 0 ? x.User.Id : 0
+                            ,UserId = x.User != null ? x.User.Id : 0
                             ,Surname = x.User != null && (!x.User.IsPregnant.HasValue || !x.User.IsPregnant.Value) && x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() == 0 ? x.User.Name : ""
                             ,IsPregnant = x.User != null ? ((x.User.IsPregnant.HasValue && x.User.IsPregnant.Value) || x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() != 0 ? true : false) : false
                             ,IsUsed = x.IsUsed
