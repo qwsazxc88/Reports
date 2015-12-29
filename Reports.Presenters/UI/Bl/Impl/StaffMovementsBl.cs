@@ -1197,6 +1197,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.Salary = model.TargetSalaryCount;
                 entity.Data.Grade = model.Grade;//Грейд
                 entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
+                entity.Data.TargetCasingType = model.TargetCasingType;
                 SaveAdditions(entity, model);
             }
             #endregion
@@ -1205,6 +1206,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.Data.Grade = model.Grade;//Грейд
                 entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
+                entity.Data.TargetCasingType = model.TargetCasingType;
                 entity.Data.Salary = model.TargetSalaryCount;
                 //entity.Data.AccessGroup = AccessGroupDao.Load(model.AccessGroup);//Группа доступа
                 //Ставим галочки в документах

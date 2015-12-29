@@ -894,15 +894,15 @@ label { font-size:1.1em; }
               error: function(){ ShowFlash(false); alert('Ошибка при получении данных');}
             });
         });
-        $('#IsHourlyContainer').buttonset(@if (!Model.IsPersonnelManagerEditable)
+        $('#IsHourlyContainer').buttonset(@if (!(Model.IsPersonnelManagerEditable || Model.IsManagerEditable))
                                           {<text>{disabled: true}</text>});
-        $('#IsTempMovingContainer').buttonset(@if (!Model.IsManagerEditable)
+        $('#IsTempMovingContainer').buttonset(@if (!(Model.IsPersonnelManagerEditable || Model.IsManagerEditable))
                                               {<text>{disabled: true}</text>});
-        $('#ConjunctionContainer').buttonset(@if (!Model.IsManagerEditable)
+        $('#ConjunctionContainer').buttonset(@if (!(Model.IsPersonnelManagerEditable || Model.IsManagerEditable))
                                              {<text>{disabled: true}</text>});
         $(':button, :input[type=button], :input[type=submit], .button').button();
         $(':input[type=text]').addClass("widget");
-        @if (Model.IsManagerEditable)
+        @if (Model.IsManagerEditable || Model.IsPersonnelManagerEditable)
         {<text>
         $("#IsConjunctionTrue").click(function(){
             $("#lblIsConjunctionTrue").css("border-color", "#248BAD");
@@ -922,10 +922,7 @@ label { font-size:1.1em; }
             $("#lblIsTempMovingFalse").css("border-color", "#248BAD");
             $(".TempMovingContainer").hide();
         });
-        </text>
-        }
-        @if (Model.IsPersonnelManagerEditable)
-        {<text>
+        
         $("#IsHourlyTrue").click(function(){
             $("#lblHourlyTrue").css("border-color", "#248BAD");
             $("#lblHourlyFalse").css("border-color", "silver");
