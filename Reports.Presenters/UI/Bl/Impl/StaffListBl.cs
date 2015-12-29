@@ -2439,7 +2439,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             //для администратора ПО банка
-            if (model.IsSoftAdmin)
+            if (model.IsSoftAdmin || model.IsCurator || model.IsConsultant)
             {
                 model.IsSoftAdminApprove = true;
                 model.IsSoftAdminApproveAvailable = true;
