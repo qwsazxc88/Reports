@@ -27,9 +27,12 @@
                             @Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)
                         }
                         else if ((dto.UserRole & UserRole.Manager) > 0
+                              || (dto.UserRole & UserRole.ConsultantPersonnel) > 0
                               || (dto.UserRole & UserRole.PersonnelManager) > 0
                               || (dto.UserRole & UserRole.Inspector) > 0
-                              || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                              || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                              || (dto.UserRole & UserRole.Estimator) > 0
+                              || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0)
                         {
                             @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
                         }
