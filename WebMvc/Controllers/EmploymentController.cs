@@ -2123,6 +2123,17 @@ namespace WebMvc.Controllers
 
             if (string.IsNullOrEmpty(model.PyrusNumber) || string.IsNullOrWhiteSpace(model.PyrusNumber))
                 ModelState.AddModelError("PyrusNumber", "Укажите номер задачи в системе Pyrus!");
+            else
+            {
+                try
+                {
+                    Convert.ToInt32(model.PyrusNumber);
+                }
+                catch
+                {
+                    ModelState.AddModelError("PyrusNumber", "Номер задачи в системе Пайрус должен содержать только цифры!");
+                }
+            }
 
             return ModelState.IsValid;
         }
@@ -2489,6 +2500,17 @@ namespace WebMvc.Controllers
             {
                 if(string.IsNullOrEmpty(model.PyrusNumber) || string.IsNullOrWhiteSpace(model.PyrusNumber))
                     ModelState.AddModelError("PyrusNumber", "Введите номер задачи в системе Pyrus!");
+                else
+                {
+                    try
+                    {
+                        Convert.ToInt32(model.PyrusNumber);
+                    }
+                    catch
+                    {
+                        ModelState.AddModelError("PyrusNumber", "Номер задачи в системе Пайрус должен содержать только цифры!");
+                    }
+                }
             }
             //model.PyrusNumber;
             
