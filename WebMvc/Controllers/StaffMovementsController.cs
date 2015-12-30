@@ -12,7 +12,7 @@ using WebMvc.Attributes;
 namespace WebMvc.Controllers
 {
     [PreventSpam]
-    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.PersonnelManager)]
+    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.PersonnelManager | UserRole.ConsultantPersonnel)]
     public class StaffMovementsController : BaseController
     {
         #region BL
