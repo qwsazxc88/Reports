@@ -3324,6 +3324,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+
             User newUser = new User
             {
                 Login = string.Empty,
