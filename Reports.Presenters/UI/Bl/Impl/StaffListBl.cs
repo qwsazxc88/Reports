@@ -418,6 +418,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DateBegin = new DateTime(today.Year, today.Month, 1);
             model.DateEnd = today;
             model.Statuses = GetDepRequestStatuses();
+            model.RequestTypes = StaffDepartmentRequestTypesDao.LoadAll();
+            model.RequestTypes.Insert(0, new StaffDepartmentRequestTypes() { Id = 0, Name = "Все" });
 
             return model;
         }
@@ -437,9 +439,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateEnd, 
                 model.StatusId,
                 model.SortBy, 
-                model.SortDescending);
+                model.SortDescending,
+                model.RequestTypeId);
 
             model.Statuses = GetDepRequestStatuses();
+            model.RequestTypes = StaffDepartmentRequestTypesDao.LoadAll();
+            model.RequestTypes.Insert(0, new StaffDepartmentRequestTypes() { Id = 0, Name = "Все" });
 
             return model;
         }
@@ -2517,6 +2522,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DateBegin = new DateTime(today.Year, today.Month, 1);
             model.DateEnd = today;
             model.Statuses = GetDepRequestStatuses();
+            model.RequestTypes = StaffEstablishedPostRequestTypesDao.LoadAll();
+            model.RequestTypes.Insert(0, new StaffEstablishedPostRequestTypes() { Id = 0, Name = "Все" });
 
             return model;
         }
@@ -2536,10 +2543,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateEnd,
                 model.StatusId,
                 model.SortBy,
-                model.SortDescending);
+                model.SortDescending,
+                model.RequestTypeId);
 
             model.Statuses = GetDepRequestStatuses();
-
+            model.RequestTypes = StaffEstablishedPostRequestTypesDao.LoadAll();
+            model.RequestTypes.Insert(0, new StaffEstablishedPostRequestTypes() { Id = 0, Name = "Все" });
             return model;
         }
         /// <summary>

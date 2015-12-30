@@ -2481,7 +2481,7 @@ namespace WebMvc.Controllers
 
             //проверка на задачу в пайрусе
             if ((model.PersonalAddition.HasValue && model.PersonalAddition.Value != 0)
-                || (model.PositionAddition.HasValue && model.PositionAddition.Value != 0)
+                //|| (model.PositionAddition.HasValue && model.PositionAddition.Value != 0)
                 || (model.AreaAddition.HasValue && model.AreaAddition.Value != 0)
                 || (model.TravelRelatedAddition.HasValue && model.TravelRelatedAddition.Value != 0)
                 || (model.CompetenceAddition.HasValue && model.CompetenceAddition.Value != 0)

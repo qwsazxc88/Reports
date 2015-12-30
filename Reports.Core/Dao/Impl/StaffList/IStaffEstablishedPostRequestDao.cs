@@ -27,8 +27,9 @@ namespace Reports.Core.Dao
         /// <param name="StatusId">Id статуса заявки.</param>
         /// <param name="SortBy">Номер колонки для сортировки</param>
         /// <param name="SortDescending">Признак направления сортировки.</param>
+        /// <param name="RequestTypeId">Вид заявки</param>
         /// <returns></returns>
-        IList<EstablishedPostRequestDto> GetEstablishedPostRequestList(User curUser, UserRole role, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending);
+        IList<EstablishedPostRequestDto> GetEstablishedPostRequestList(User curUser, UserRole role, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending, int RequestTypeId);
         /// <summary>
         /// Достаем Id действующей заявки для данной штатной единицы.
         /// </summary>

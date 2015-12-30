@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto;
+using Reports.Core.Domain;
 
 namespace Reports.Presenters.UI.ViewModel.StaffList
 {
@@ -31,6 +32,10 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = " по ")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DateEnd { get; set; }
+
+        [Display(Name = "Вид заявки")]
+        public int RequestTypeId { get; set; }
+        public IList<StaffEstablishedPostRequestTypes> RequestTypes { get; set; }
 
         public IList<EstablishedPostRequestDto> EPRequestList { get; set; }
 
