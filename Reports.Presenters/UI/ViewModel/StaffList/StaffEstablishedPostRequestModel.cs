@@ -40,6 +40,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Назание структурного подразделения")]
         public int DepartmentId { get; set; }
         public string DepartmentName { get; set; }
+        public int BFGId { get; set; }
 
         [Display(Name = "Принадлежность подразделения")]
         public string AccessoryName { get; set; }

@@ -1418,7 +1418,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsPyrusDialogVisible = AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || AuthenticationService.CurrentUser.UserRole == UserRole.Manager ? true : false;
 
 
-            StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByDocId(entity.Candidate.Id, (int)StaffReserveTypeEnum.Employment);
+            StaffEstablishedPostUserLinks PostUserLink = null;
+            if(!entity.Candidate.SendTo1C.HasValue)
+                PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByDocId(entity.Candidate.Id, (int)StaffReserveTypeEnum.Employment);
+            else
+                PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByUserId(entity.Candidate.User.Id);
 
             if (PostUserLink != null)
             {
@@ -3009,7 +3013,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PositionItems = GetPositions();
             model.ApprovalStatuses = GetApprovalStatuses();
             model.PostUserLinks = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId)
-                .Where(x => x.IsVacation || (x.IsReserve && x.Id == model.UserLinkId))
+                .Where(x => x.IsVacation || (x.IsReserve && x.Id == model.UserLinkId || x.UserId == model.UserId))
                 .ToList()
                 .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") + (x.ReplacedId != 0 ? " - " + x.ReplacedName : "") });
             model.PostUserLinks.Insert(0, new IdNameDto { Id = 0, Name = "" });
@@ -3335,6 +3339,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Name = model.Surname,//string.Empty,
                 RoleId = (int)UserRole.Candidate,
                 Department = department,
+                Position = PostUserLink.StaffEstablishedPost.Position,
+                SEPId = PostUserLink.StaffEstablishedPost.Id,
                 GivesCredit = false,
                 IsMainManager = false,
                 IsFixedTermContract = model.IsFixedTermContract,
@@ -5083,15 +5089,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Bonus = viewModel.Bonus;
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Managers = entity;
-            entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
-            //entity.Candidate.User.Department = DepartmentDao.Load(viewModel.DepartmentId);
+            if (entity.Candidate.Status != EmploymentStatus.SENT_TO_1C)
+            {
+                entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                entity.Position = PositionDao.Load(Vacation.PositionId);
+                entity.Candidate.User.Position = PositionDao.Load(Vacation.PositionId);
+                entity.Candidate.User.SEPId = Vacation.SEPId;
+                //entity.Candidate.User.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                //entity.Position = PositionDao.Load(viewModel.PositionId);
+            }
             entity.EmploymentConditions = viewModel.EmploymentConditions;            
             entity.IsFront = viewModel.IsFront;
             entity.IsLiable = viewModel.IsLiable;
             entity.IsSecondaryJob = viewModel.IsSecondaryJob;
             entity.IsExternalPTWorker = !viewModel.IsSecondaryJob ? false : viewModel.IsExternalPTWorker;
-            //entity.Position = PositionDao.Load(viewModel.PositionId);
-            entity.Position = PositionDao.Load(Vacation.PositionId);
             entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
             entity.RequestNumber = viewModel.RequestNumber;
             entity.SalaryBasis = viewModel.SalaryBasis;
@@ -5828,12 +5839,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Bonus = viewModel.Bonus;
                         entity.Candidate = GetCandidate(viewModel.UserId);
                         entity.Candidate.Managers = entity;
-                        entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                        if (entity.Candidate.Status != EmploymentStatus.SENT_TO_1C)
+                        {
+                            entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                            entity.Position = PositionDao.Load(Vacation.PositionId);
+                            entity.Candidate.User.Position = PositionDao.Load(Vacation.PositionId);
+                            entity.Candidate.User.SEPId = Vacation.SEPId;
+                            //entity.Candidate.User.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                            //entity.Position = PositionDao.Load(viewModel.PositionId);
+                        }
                         entity.EmploymentConditions = viewModel.EmploymentConditions;
                         entity.IsFront = viewModel.IsFront;
                         entity.IsLiable = viewModel.IsLiable;
-                        //entity.Position = PositionDao.Load(viewModel.PositionId);
-                        entity.Position = PositionDao.Load(Vacation.PositionId);
                         entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
                         entity.RequestNumber = viewModel.RequestNumber;
                         entity.SalaryBasis = viewModel.SalaryBasis;

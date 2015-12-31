@@ -42,6 +42,9 @@ namespace Reports.Core.Dto
         public decimal? TotalSalary { get; set; }
         public DateTime? DateDistribNote { get; set; }
         public DateTime? DateReceivNote { get; set; }
+        public bool IsTemporary { get; set; }
+        public DateTime? DateTempBegin { get; set; }
+        public DateTime? DateTempEnd { get; set; }
     }
 
     public class StaffUserLinkDto
@@ -57,5 +60,8 @@ namespace Reports.Core.Dto
         public bool IsDismissal { get; set; }
         public DateTime? DateDistribNote { get; set; }
         public DateTime? DateReceivNote { get; set; }
+        public bool IsTemporary { get; set; }
+        public DateTime? DateTempBegin { get; set; }
+        public DateTime? DateTempEnd { get; set; }
     }
 }

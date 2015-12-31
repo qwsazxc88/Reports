@@ -176,6 +176,7 @@ namespace Reports.Core.Domain
         public virtual bool? IsFixedTermContract { get; set; }
         public virtual string AccessGroupCode { get; set; }
         public virtual bool? IsPregnant { get; set; }
+        public virtual int? SEPId { get; set; }
         /// <summary>
         /// Надбавки
         /// </summary>
