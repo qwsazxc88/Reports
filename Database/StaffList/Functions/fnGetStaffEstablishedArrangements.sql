@@ -46,6 +46,9 @@ RETURNS
 	,TotalSalary numeric(18, 2)
 	,DateDistribNote datetime
 	,DateReceivNote datetime
+	,IsTemporary bit
+	,DateTempBegin datetime
+	,DateTempEnd datetime
 )
 AS
 BEGIN
@@ -103,13 +106,15 @@ DECLARE
 				 ,case when @IsSalaryEnable = 1 then isnull(I.TotalSalary, A.Salary) else 0 end as TotalSalary	--если вакансия, то надо показать оклад штатной единицы
 				 ,F.DateDistribNote
 				 ,F.DateReceivNote
+				 ,F.IsTemporary
+				 ,F.DateTempBegin
+				 ,F.DateTempEnd
 	FROM StaffEstablishedPost as A
 	INNER JOIN Position as B ON B.Id = A.PositionId
 	INNER JOIN Department as C ON C.Id = A.DepartmentId
 	INNER JOIN StaffEstablishedPostRequest as D ON D.SEPId = A.Id and D.IsUsed = 1
-	--INNER JOIN Users as E ON E.SEPId = A.Id and E.IsActive = 1 and E.RoleId & 2 > 0
 	INNER JOIN StaffEstablishedPostUserLinks as F ON F.SEPId = A.Id and F.IsUsed = 1
-	LEFT JOIN Users as E ON E.Id = F.UserId and E.IsActive = 1 and E.RoleId & 2 > 0 --and E.IsPregnant = 0
+	LEFT JOIN Users as E ON E.Id = F.UserId and E.IsActive = 1 and (E.RoleId & 2 > 0 or E.RoleId & 16384 > 0) --and E.IsPregnant = 0
 	LEFT JOIN StaffPostReplacement as G ON G.UserLinkId = F.Id and F.IsUsed = 1
 	LEFT JOIN Users as H ON H.Id = G.ReplacedId
 	LEFT JOIN vwStaffPostSalary as I ON I.UserId = E.Id

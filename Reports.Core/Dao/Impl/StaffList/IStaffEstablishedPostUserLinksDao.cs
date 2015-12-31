@@ -16,5 +16,11 @@ namespace Reports.Core.Dao
         /// <param name="ReserveType">Тип резервирования (StaffReserveTypeEnum)</param>
         /// <returns></returns>
         StaffEstablishedPostUserLinks GetPostUserLinkByDocId(int DocId, int ReserveType);
+        /// <summary>
+        /// Достаем строку штатной расстановки по Id сотрудника.
+        /// </summary>
+        /// <param name="UserId">Id документа.</param>
+        /// <returns></returns>
+        StaffEstablishedPostUserLinks GetPostUserLinkByUserId(int UserId);
     }
 }
