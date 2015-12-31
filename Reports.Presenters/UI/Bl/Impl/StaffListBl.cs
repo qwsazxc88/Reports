@@ -2610,7 +2610,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
                 model.DateRequest = entity.DateRequest;
                 model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
-                model.BFGId = entity.Department != null ? entity.Department.DepartmentAccessory.Id : 0;
+                model.BFGId = entity.Department != null && entity.Department.DepartmentAccessory != null ? entity.Department.DepartmentAccessory.Id : 0;
                 model.PositionId = entity.Position != null ? entity.Position.Id : 0;
                 model.PositionName = entity.Position != null ? entity.Position.Name : string.Empty;
                 model.Quantity = entity.Quantity;
