@@ -5126,28 +5126,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Candidate.PersonnelManagers.EmploymentDate = viewModel.RegistrationDate;
             }
 
-
-            //убираем резервирование
-            if (!RemoveStaffPostReserve(entity.Candidate.Id, currentUser))
-                return false;
-
-            //резервируем
-            if (viewModel.UserLinkId != 0)
+            if (!entity.Candidate.SendTo1C.HasValue)
             {
-                StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(viewModel.UserLinkId);    
-                //резервируем место в штатной расстановке
-                PostUserLink.DocId = entity.Candidate.Id;
-                PostUserLink.ReserveType = (int)StaffReserveTypeEnum.Employment;
-                PostUserLink.Editor = currentUser;
-                PostUserLink.EditDate = DateTime.Now;
+                //убираем резервирование
+                if (!RemoveStaffPostReserve(entity.Candidate.Id, currentUser))
+                    return false;
 
-                //для вкладки руководителя
-                entity.Position = PostUserLink.StaffEstablishedPost.Position;
-                entity.Department = PostUserLink.StaffEstablishedPost.Department;
+                //резервируем
+                if (viewModel.UserLinkId != 0)
+                {
+                    StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(viewModel.UserLinkId);
+                    //резервируем место в штатной расстановке
+                    PostUserLink.DocId = entity.Candidate.Id;
+                    PostUserLink.ReserveType = (int)StaffReserveTypeEnum.Employment;
+                    PostUserLink.Editor = currentUser;
+                    PostUserLink.EditDate = DateTime.Now;
 
-                StaffEstablishedPostUserLinksDao.SaveAndFlush(PostUserLink);
+                    //для вкладки руководителя
+                    entity.Position = PostUserLink.StaffEstablishedPost.Position;
+                    entity.Department = PostUserLink.StaffEstablishedPost.Department;
+
+                    StaffEstablishedPostUserLinksDao.SaveAndFlush(PostUserLink);
+                }
             }
-
             return true;
         }
 
