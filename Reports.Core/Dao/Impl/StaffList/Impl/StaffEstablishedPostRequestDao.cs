@@ -44,8 +44,9 @@ namespace Reports.Core.Dao.Impl
         /// <param name="StatusId">Id статуса заявки.</param>
         /// <param name="SortBy">Номер колонки для сортировки</param>
         /// <param name="SortDescending">Признак направления сортировки.</param>
+        /// <param name="RequestTypeId">Вид заявки</param>
         /// <returns></returns>
-        public IList<EstablishedPostRequestDto> GetEstablishedPostRequestList(User curUser, UserRole role, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending)
+        public IList<EstablishedPostRequestDto> GetEstablishedPostRequestList(User curUser, UserRole role, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending, int RequestTypeId)
         {
             string SqlQuery = @"SELECT A.Id, 
                                        A.SEPId,
@@ -90,7 +91,7 @@ namespace Reports.Core.Dao.Impl
 
 
             SqlQuery += GetWhereForUserRole(curUser, role);
-            SqlQuery += GetWhereForParameters(DepartmentId, Id, Surname, DateBegin, DateEnd, StatusId);
+            SqlQuery += GetWhereForParameters(DepartmentId, Id, Surname, DateBegin, DateEnd, StatusId, RequestTypeId);
             SqlQuery += GetOrderByForSqlQuery(SortBy, SortDescending);
 
             IQuery query = Session.CreateSQLQuery(SqlQuery)
@@ -118,6 +119,7 @@ namespace Reports.Core.Dao.Impl
             if (SqlQuery.Contains(":DateBegin")) query.SetDateTime("DateBegin", DateBegin.Value);
             if (SqlQuery.Contains(":DateEnd")) query.SetDateTime("DateEnd", DateEnd.Value.AddDays(1));
             if (SqlQuery.Contains(":StatusId")) query.SetInt32("StatusId", StatusId);
+            if (SqlQuery.Contains(":RequestTypeId")) query.SetInt32("RequestTypeId", RequestTypeId);
 
             return query.SetResultTransformer(Transformers.AliasToBean<EstablishedPostRequestDto>()).List<EstablishedPostRequestDto>();
         }
@@ -142,6 +144,10 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.PersonnelManager:
                     sqlWhere = @" INNER JOIN vwDepartmentToPersonnels as F ON F.DepartmentId = isnull(A.DepartmentId, A.ParentId) and F.PersonnelId = :userId";
                     break;
+                case UserRole.Inspector:
+                    //кураторам показываем фронты и бэкфронты
+                    sqlWhere = @" INNER JOIN Department as F ON F.Id = isnull(A.DepartmentId, A.ParentId) and isnull(F.BFGId, 2) in (2, 6)";
+                    break;
             }
             return sqlWhere;
         }
@@ -154,7 +160,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="DateBegin">Начало периода</param>
         /// <param name="DateEnd">Конец периода</param>
         /// <returns></returns>
-        protected string GetWhereForParameters(int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId)
+        protected string GetWhereForParameters(int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int RequestTypeId)
         {
             string SqlWhere = string.Empty;
             if (DepartmentId != 0)
@@ -185,6 +191,9 @@ namespace Reports.Core.Dao.Impl
             if (StatusId != 0)
                 SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "StatusId = :StatusId";
 
+            if (RequestTypeId != 0)
+                SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "A.RequestTypeId = :RequestTypeId";
+            
             return (string.IsNullOrEmpty(SqlWhere) ? "" : " WHERE " + SqlWhere);
         }
         /// <summary>

@@ -1418,7 +1418,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsPyrusDialogVisible = AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || AuthenticationService.CurrentUser.UserRole == UserRole.Manager ? true : false;
 
 
-            StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByDocId(entity.Candidate.Id, (int)StaffReserveTypeEnum.Employment);
+            StaffEstablishedPostUserLinks PostUserLink = null;
+            if(!entity.Candidate.SendTo1C.HasValue)
+                PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByDocId(entity.Candidate.Id, (int)StaffReserveTypeEnum.Employment);
+            else
+                PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByUserId(entity.Candidate.User.Id);
 
             if (PostUserLink != null)
             {
@@ -3009,7 +3013,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PositionItems = GetPositions();
             model.ApprovalStatuses = GetApprovalStatuses();
             model.PostUserLinks = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId)
-                .Where(x => x.IsVacation || (x.IsReserve && x.Id == model.UserLinkId))
+                .Where(x => x.IsVacation || (x.IsReserve && x.Id == model.UserLinkId || x.UserId == model.UserId))
                 .ToList()
                 .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") + (x.ReplacedId != 0 ? " - " + x.ReplacedName : "") });
             model.PostUserLinks.Insert(0, new IdNameDto { Id = 0, Name = "" });
@@ -3324,6 +3328,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+
             User newUser = new User
             {
                 Login = string.Empty,
@@ -3334,6 +3339,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Name = model.Surname,//string.Empty,
                 RoleId = (int)UserRole.Candidate,
                 Department = department,
+                Position = PostUserLink.StaffEstablishedPost.Position,
+                SEPId = PostUserLink.StaffEstablishedPost.Id,
                 GivesCredit = false,
                 IsMainManager = false,
                 IsFixedTermContract = model.IsFixedTermContract,
@@ -5082,15 +5089,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Bonus = viewModel.Bonus;
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Managers = entity;
-            entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
-            //entity.Candidate.User.Department = DepartmentDao.Load(viewModel.DepartmentId);
+            if (entity.Candidate.Status != EmploymentStatus.SENT_TO_1C)
+            {
+                entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                entity.Position = PositionDao.Load(Vacation.PositionId);
+                entity.Candidate.User.Position = PositionDao.Load(Vacation.PositionId);
+                entity.Candidate.User.SEPId = Vacation.SEPId;
+                //entity.Candidate.User.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                //entity.Position = PositionDao.Load(viewModel.PositionId);
+            }
             entity.EmploymentConditions = viewModel.EmploymentConditions;            
             entity.IsFront = viewModel.IsFront;
             entity.IsLiable = viewModel.IsLiable;
             entity.IsSecondaryJob = viewModel.IsSecondaryJob;
             entity.IsExternalPTWorker = !viewModel.IsSecondaryJob ? false : viewModel.IsExternalPTWorker;
-            //entity.Position = PositionDao.Load(viewModel.PositionId);
-            entity.Position = PositionDao.Load(Vacation.PositionId);
             entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
             entity.RequestNumber = viewModel.RequestNumber;
             entity.SalaryBasis = viewModel.SalaryBasis;
@@ -5114,28 +5126,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Candidate.PersonnelManagers.EmploymentDate = viewModel.RegistrationDate;
             }
 
-
-            //убираем резервирование
-            if (!RemoveStaffPostReserve(entity.Candidate.Id, currentUser))
-                return false;
-
-            //резервируем
-            if (viewModel.UserLinkId != 0)
+            if (!entity.Candidate.SendTo1C.HasValue)
             {
-                StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(viewModel.UserLinkId);    
-                //резервируем место в штатной расстановке
-                PostUserLink.DocId = entity.Candidate.Id;
-                PostUserLink.ReserveType = (int)StaffReserveTypeEnum.Employment;
-                PostUserLink.Editor = currentUser;
-                PostUserLink.EditDate = DateTime.Now;
+                //убираем резервирование
+                if (!RemoveStaffPostReserve(entity.Candidate.Id, currentUser))
+                    return false;
 
-                //для вкладки руководителя
-                entity.Position = PostUserLink.StaffEstablishedPost.Position;
-                entity.Department = PostUserLink.StaffEstablishedPost.Department;
+                //резервируем
+                if (viewModel.UserLinkId != 0)
+                {
+                    StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(viewModel.UserLinkId);
+                    //резервируем место в штатной расстановке
+                    PostUserLink.DocId = entity.Candidate.Id;
+                    PostUserLink.ReserveType = (int)StaffReserveTypeEnum.Employment;
+                    PostUserLink.Editor = currentUser;
+                    PostUserLink.EditDate = DateTime.Now;
 
-                StaffEstablishedPostUserLinksDao.SaveAndFlush(PostUserLink);
+                    //для вкладки руководителя
+                    entity.Position = PostUserLink.StaffEstablishedPost.Position;
+                    entity.Department = PostUserLink.StaffEstablishedPost.Department;
+
+                    StaffEstablishedPostUserLinksDao.SaveAndFlush(PostUserLink);
+                }
             }
-
             return true;
         }
 
@@ -5794,20 +5807,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                             }
                         }
 
-                        //проверка на увольнение сотрудника при приеме кандидата на его должность
-                        if (entity.Candidate.Appointment.Reason.Id == 5)
-                        {
-                            if (entity.Candidate.Appointment.ReasonPositionUser != null)
-                            {
-                                User DismissUser = UserDao.Load(entity.Candidate.Appointment.ReasonPositionUser.Id);
-                                IList<Dismissal> dml = DismissalDao.LoadAll().Where(x => x.User == DismissUser && x.SendTo1C.HasValue).ToList();
-                                if (dml.Count == 0)
-                                {
-                                    error = "Данная ставка еще не освобождена! Согласовать кандидата на данный момент невозможно!";
-                                    return false;
-                                }
-                            }
-                        }
+
+                        //отключил проверку 30.12.2015, так как заработало новое штатное расписание, а заявки на подбор еще продолжают работать в старом режиме
+                        ////проверка на увольнение сотрудника при приеме кандидата на его должность
+                        //if (entity.Candidate.Appointment.Reason.Id == 5)
+                        //{
+                        //    if (entity.Candidate.Appointment.ReasonPositionUser != null)
+                        //    {
+                        //        User DismissUser = UserDao.Load(entity.Candidate.Appointment.ReasonPositionUser.Id);
+                        //        IList<Dismissal> dml = DismissalDao.LoadAll().Where(x => x.User == DismissUser && x.SendTo1C.HasValue).ToList();
+                        //        if (dml.Count == 0)
+                        //        {
+                        //            error = "Данная ставка еще не освобождена! Согласовать кандидата на данный момент невозможно!";
+                        //            return false;
+                        //        }
+                        //    }
+                        //}
                     }
 
                     StaffEstablishedPostDto Vacation = StaffEstablishedPostDao.GetStaffEstablishedArrangements(viewModel.DepartmentId)
@@ -5825,12 +5840,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Bonus = viewModel.Bonus;
                         entity.Candidate = GetCandidate(viewModel.UserId);
                         entity.Candidate.Managers = entity;
-                        entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                        if (entity.Candidate.Status != EmploymentStatus.SENT_TO_1C)
+                        {
+                            entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                            entity.Position = PositionDao.Load(Vacation.PositionId);
+                            entity.Candidate.User.Position = PositionDao.Load(Vacation.PositionId);
+                            entity.Candidate.User.SEPId = Vacation.SEPId;
+                            //entity.Candidate.User.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                            //entity.Position = PositionDao.Load(viewModel.PositionId);
+                        }
                         entity.EmploymentConditions = viewModel.EmploymentConditions;
                         entity.IsFront = viewModel.IsFront;
                         entity.IsLiable = viewModel.IsLiable;
-                        //entity.Position = PositionDao.Load(viewModel.PositionId);
-                        entity.Position = PositionDao.Load(Vacation.PositionId);
                         entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
                         entity.RequestNumber = viewModel.RequestNumber;
                         entity.SalaryBasis = viewModel.SalaryBasis;

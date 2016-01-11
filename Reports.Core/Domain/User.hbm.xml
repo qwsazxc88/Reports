@@ -51,6 +51,7 @@
     <property name="IsFixedTermContract" not-null="false" />
     <property name="AccessGroupCode" not-null="false" />
     <property name="IsPregnant" not-null="false" />
+    <property name="SEPId" not-null="false" />
 
     <property name="IsMainManager" not-null="true" />
     <many-to-one name="HoursType" class="Schedule" column="HoursTypeId" foreign-key="FK_Users_HoursType" not-null="false"/>
@@ -67,6 +68,7 @@
   <many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_User_Department" index="IX_User_Department_Id"  not-null="false"/>
 	<!--<many-to-one name="BudgetManager" class="User" column="BudgetManagerId" foreign-key="FK_User_BudgetManager" index="IX_User_BudgetManager_Id"  not-null="false"/>
 	<many-to-one name="OutsourcingManager" class="User" column="OutsourcingManagerId" foreign-key="FK_User_OutsourcingManager" index="IX_User_OutsourcingManager_Id"  not-null="false"/>-->
+    <many-to-one name="RegularEstablishedPostUserLinks" class="StaffEstablishedPostUserLinks" column="RegularUserLinkId" foreign-key="FK_Users_StaffEstablishedPostUserLinks" index="Users_StaffEstablishedPostUserLinks" not-null="false"/>
 
 	<bag name="AcceptRequests" lazy="true" inverse="true" cascade="all-delete-orphan">
 		<key column="UserId" foreign-key="FK_AcceptRequestDate_User"/>

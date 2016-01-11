@@ -418,6 +418,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DateBegin = new DateTime(today.Year, today.Month, 1);
             model.DateEnd = today;
             model.Statuses = GetDepRequestStatuses();
+            model.RequestTypes = StaffDepartmentRequestTypesDao.LoadAll();
+            model.RequestTypes.Insert(0, new StaffDepartmentRequestTypes() { Id = 0, Name = "Все" });
 
             return model;
         }
@@ -437,9 +439,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateEnd, 
                 model.StatusId,
                 model.SortBy, 
-                model.SortDescending);
+                model.SortDescending,
+                model.RequestTypeId);
 
             model.Statuses = GetDepRequestStatuses();
+            model.RequestTypes = StaffDepartmentRequestTypesDao.LoadAll();
+            model.RequestTypes.Insert(0, new StaffDepartmentRequestTypes() { Id = 0, Name = "Все" });
 
             return model;
         }
@@ -2309,7 +2314,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 //открываем согласование для следующего участника процесса
                                 if (entity.DepartmentAccessory != null)
                                 {
-                                    if (entity.DepartmentAccessory.Id == 2)//кураторы согласуют фронты
+                                    if (entity.DepartmentAccessory.Id == 2 || entity.DepartmentAccessory.Id == 6)//кураторы согласуют фронты и бэкфронты
                                     {
                                         model.IsCuratorApproveAvailable = model.IsCurator || model.IsConsultant ? true : false;
                                         model.IsAgreeButtonAvailable = model.IsCuratorApproveAvailable;
@@ -2517,6 +2522,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DateBegin = new DateTime(today.Year, today.Month, 1);
             model.DateEnd = today;
             model.Statuses = GetDepRequestStatuses();
+            model.RequestTypes = StaffEstablishedPostRequestTypesDao.LoadAll();
+            model.RequestTypes.Insert(0, new StaffEstablishedPostRequestTypes() { Id = 0, Name = "Все" });
 
             return model;
         }
@@ -2536,10 +2543,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateEnd,
                 model.StatusId,
                 model.SortBy,
-                model.SortDescending);
+                model.SortDescending,
+                model.RequestTypeId);
 
             model.Statuses = GetDepRequestStatuses();
-
+            model.RequestTypes = StaffEstablishedPostRequestTypesDao.LoadAll();
+            model.RequestTypes.Insert(0, new StaffEstablishedPostRequestTypes() { Id = 0, Name = "Все" });
             return model;
         }
         /// <summary>
@@ -2601,6 +2610,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
                 model.DateRequest = entity.DateRequest;
                 model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
+                model.BFGId = entity.Department != null && entity.Department.DepartmentAccessory != null ? entity.Department.DepartmentAccessory.Id : 0;
                 model.PositionId = entity.Position != null ? entity.Position.Id : 0;
                 model.PositionName = entity.Position != null ? entity.Position.Name : string.Empty;
                 model.Quantity = entity.Quantity;
@@ -2681,14 +2691,48 @@ namespace Reports.Presenters.UI.Bl.Impl
                     });
                 }
 
-                //при сокращении ставим метки в расстановке
-                if (entity.RequestType.Id == 3)
+                //расстановка
+                //при сокращении или вводе ременной вакансии ставим метки в расстановке
+                if (entity.RequestType.Id == 2 || entity.RequestType.Id == 3 || (entity.RequestType.Id == 4 && model.Personnels.Count != 0))
                 {
+                    ////на случай добавления вакансии
+                    //if (entity.RequestType.Id == 2 || (entity.RequestType.Id == 4 && model.Personnels.Count != 0))
+                    //{
+                    //    int CountLinks = entity.StaffEstablishedPost.EstablishedPostUserLinks != null ? entity.StaffEstablishedPost.EstablishedPostUserLinks.Count() : 0;
+                    //    if (entity.Quantity > CountLinks)
+                    //    {
+                    //        CountLinks = entity.Quantity - CountLinks;
+                    //        for (int i = 0; i < CountLinks; i++)
+                    //        {
+                    //            entity.StaffEstablishedPost.EstablishedPostUserLinks.Add(new StaffEstablishedPostUserLinks()
+                    //            {
+                    //                StaffEstablishedPost = entity.StaffEstablishedPost,
+                    //                User = null,
+                    //                IsUsed = false,
+                    //                Creator = curUser,
+                    //                CreateDate = DateTime.Now
+                    //            });
+                    //        }
+                    //    }
+                    //}
+
                     foreach (StaffEstablishedPostUserLinks ul in entity.StaffEstablishedPost.EstablishedPostUserLinks)
                     {
                         if (model.Personnels.Where(x => x.Id == ul.Id).Count() != 0)
                         {
-                            ul.IsDismissal = model.Personnels.Where(x => x.Id == ul.Id).Single().IsDismissal;
+                            StaffUserLinkDto item = model.Personnels.Where(x => x.Id == ul.Id).FirstOrDefault();
+                            if (entity.RequestType.Id == 3 || entity.RequestType.Id == 4)
+                            {
+                                ul.IsDismissal = item.IsDismissal;//model.Personnels.Where(x => x.Id == ul.Id).Single().IsDismissal;
+                                ul.DateDistribNote = item.DateDistribNote;
+                                ul.DateReceivNote = item.DateReceivNote;
+                            }
+                            if (entity.RequestType.Id == 2 || entity.RequestType.Id == 4)
+                            {
+                                ul.IsTemporary = item.IsTemporary;
+                                ul.DateTempBegin = item.DateTempBegin;
+                                ul.DateTempEnd = item.DateTempEnd;
+                            }
                             ul.Editor = curUser;
                             ul.EditDate = DateTime.Now;
                         }
@@ -2796,21 +2840,39 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.EditDate = DateTime.Now;
             entity.BeginAccountDate = model.BeginAccountDate;
 
-            //при сокращении ставим метки в расстановке (до начала согласования)
-            if ((entity.RequestType.Id == 3 || entity.RequestType.Id == 4) && !entity.DateSendToApprove.HasValue && entity.StaffEstablishedPost != null)
+            //при сокращении или вводе временной вакансии ставим метки в расстановке (до начала согласования)
+            if ((entity.RequestType.Id == 2 || entity.RequestType.Id == 3 || entity.RequestType.Id == 4) && !entity.DateSendToApprove.HasValue && entity.StaffEstablishedPost != null)
             {
                 foreach (StaffEstablishedPostUserLinks ul in entity.StaffEstablishedPost.EstablishedPostUserLinks)
                 {
                     if (model.Personnels.Where(x => x.Id == ul.Id && x.IsDismissal != ul.IsDismissal).Count() != 0)
                     {
-                        ul.IsDismissal = model.Personnels.Where(x => x.Id == ul.Id).Single().IsDismissal;
+                        StaffUserLinkDto item = model.Personnels.Where(x => x.Id == ul.Id && x.IsDismissal != ul.IsDismissal).FirstOrDefault();
+                        //ul.IsDismissal = model.Personnels.Where(x => x.Id == ul.Id).Single().IsDismissal;
+                        ul.IsDismissal = item.IsDismissal;
+                        ul.DateDistribNote = item.DateDistribNote;
+                        ul.DateReceivNote = item.DateReceivNote;
                         ul.ReserveType = (int)StaffReserveTypeEnum.Dismissal;
                         ul.DocId = entity.Id;
                         ul.Editor = curUser;
                         ul.EditDate = DateTime.Now;
                     }
+
+                    if (model.Personnels.Where(x => x.Id == ul.Id && x.IsTemporary != ul.IsTemporary).Count() != 0)
+                    {
+                        StaffUserLinkDto item = model.Personnels.Where(x => x.Id == ul.Id && x.IsTemporary != ul.IsTemporary).FirstOrDefault();
+                        ul.IsTemporary = item.IsTemporary;
+                        ul.DateTempBegin = item.DateTempBegin;
+                        ul.DateTempEnd = item.DateTempEnd;
+                        ul.Editor = curUser;
+                        ul.EditDate = DateTime.Now;
+                    }
                 }
             }
+
+
+            
+
 
             //надбавки 
             //сохраняем только при открытии и изменении до отправки на согласование
@@ -3078,6 +3140,37 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
 
+            ////редактирование временных вакансий
+            //if ((entity.RequestType.Id == 1 || entity.RequestType.Id == 2 || entity.RequestType.Id == 4) && sep.EstablishedPostUserLinks.Where(x => !x.IsDismissal && x.IsTemporary).Count() != 0)
+            //{
+            //    //на случай добавления временной вакансии
+            //    CountLinks = sep.EstablishedPostUserLinks != null ? sep.EstablishedPostUserLinks.Count() : 0;
+            //    if (entity.Quantity > CountLinks)
+            //    {
+            //        CountLinks = entity.Quantity - CountLinks;
+            //        for (int i = 0; i < CountLinks; i++)
+            //        {
+            //            sep.EstablishedPostUserLinks.Add(new StaffEstablishedPostUserLinks()
+            //            {
+            //                StaffEstablishedPost = sep,
+            //                User = null,
+            //                IsUsed = true,
+            //                Creator = curUser,
+            //                CreateDate = DateTime.Now
+            //            });
+            //        }
+            //    }
+
+            //    foreach (var item in sep.EstablishedPostUserLinks
+            //        .Where(x => x.IsUsed && x.IsDismissal))
+            //    {
+            //        item.IsUsed = false;
+            //        item.Editor = curUser;
+            //        item.EditDate = DateTime.Now;
+            //    }
+            //}
+
+
             //сокращение
             if ((entity.RequestType.Id == 3 || entity.RequestType.Id == 4) && sep.EstablishedPostUserLinks.Where(x => x.IsUsed && x.IsDismissal).Count() != 0)
             {
@@ -3095,6 +3188,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     item.EditDate = DateTime.Now;
                 }
             }
+
             return true;
         }
         /// <summary>
@@ -3214,6 +3308,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 Department dep = DepartmentDao.Get(model.DepartmentId);
                 model.DepartmentName = dep.Name;
+                model.FingradCode = dep.FingradCode;
                 int DepId = StaffDepartmentRequestDao.GetCurrentRequestId(dep != null ? dep.Id : 0);
                 if (DepId != 0)
                 {
@@ -3228,6 +3323,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.AccessoryName = DepEntity.DepartmentAccessory != null ? DepEntity.DepartmentAccessory.Name : string.Empty;
                 }
 
+                
                 //налоговые реквизиты
                 //StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.Get(dep.Id);
                 model.KPP = dep.DepartmentTaxDetails != null && dep.DepartmentTaxDetails.Count != 0 ? dep.DepartmentTaxDetails[0].KPP : string.Empty;
@@ -3287,6 +3383,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                             //открываем согласование для следующего участника процесса
                             model.IsCuratorApproveAvailable = model.IsCurator || model.IsConsultant ? true : false;
                             model.IsAgreeButtonAvailable = model.IsCuratorApproveAvailable;
+
+                            //открываем согласование для следующего участника процесса
+                            if (entity.Department.DepartmentAccessory != null)
+                            {
+                                if (entity.Department.DepartmentAccessory.Id == 2 || entity.Department.DepartmentAccessory.Id == 6)//кураторы согласуют фронты и бэкфронты
+                                {
+                                    model.IsCuratorApproveAvailable = model.IsCurator || model.IsConsultant ? true : false;
+                                    model.IsAgreeButtonAvailable = model.IsCuratorApproveAvailable;
+                                }
+                                else
+                                {
+                                    model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
+                                    model.IsAgreeButtonAvailable = model.IsPersonnelBankApproveAvailable;
+                                }
+                            }
                             break;
                         case 2://куратор
                             model.IsCuratorApprove = true;
@@ -5019,7 +5130,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             
 
-            //согласование - расстановка флажков и т.д.
+            //пытаемся показать правильную расстановку для штатной единицы
             StaffEstablishedPostRequest entity = StaffEstablishedPostRequestDao.Get(model.Id);
             if (entity != null)
             {
@@ -5043,9 +5154,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                             ,IsDismissal = x.IsDismissal
                             ,DateDistribNote = x.DateDistribNote
                             ,DateReceivNote = x.DateReceivNote
+                            ,IsTemporary = x.IsTemporary
+                            ,DateTempBegin = x.DateTempBegin
+                            ,DateTempEnd = x.DateTempEnd
                         }).OrderBy(x => x.Surname).ToList();
                 }
 
+                //согласование - расстановка флажков и т.д.
                 SetApprovalFlags(model, entity);
             }
             else
@@ -5071,6 +5186,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                             ,IsDismissal = x.IsDismissal
                             ,DateDistribNote = x.DateDistribNote
                             ,DateReceivNote = x.DateReceivNote
+                            ,IsTemporary = x.IsTemporary
+                            ,DateTempBegin = x.DateTempBegin
+                            ,DateTempEnd = x.DateTempEnd
                         }).OrderBy(x => x.Surname).ToList();
             }
         }
