@@ -339,6 +339,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             StaffMovementsListModel model = new StaffMovementsListModel();
             model.BeginDate =new DateTime( DateTime.Now.Year,DateTime.Now.Month,1);
+            model.Types = StaffMovementsTypesDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            model.Types.Add(new IdNameDto { Id = 0, Name = "Все" });
+            model.TypeId = 0;
             model.Statuses = StaffMovementsStatusDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             model.Statuses.Add(new IdNameDto { Id = 0, Name = "Все" });
             model.Status = 0;
@@ -352,9 +355,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="Number"></param>
         /// <param name="Status"></param>
         /// <returns></returns>
-        public IList<StaffMovementsDto> GetDocuments(int DepartmentId, string UserName, int Number, int Status)
+        public IList<StaffMovementsDto> GetDocuments(int DepartmentId, string UserName, int Number, int Status, int TypeId)
         {
-            var docs = StaffMovementsDao.GetDocuments(CurrentUser.Id, CurrentUser.UserRole ,DepartmentId, UserName, Number, Status);
+            var docs = StaffMovementsDao.GetDocuments(CurrentUser.Id, CurrentUser.UserRole ,DepartmentId, UserName, Number, Status, TypeId);
             int iterator = 1;
             if (docs != null && docs.Any())
                 return docs.Select(x => new StaffMovementsDto
@@ -369,13 +372,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     MoveDate = x.MovementDate,
                     NPP = iterator++,
                     Number = x.Id,
+                    TypeId = x.Type.Id,
                     Salary = x.Data.Salary,
                     Position = x.User != null ? (x.User.Position!=null?x.User.Position.Name:"") : "",
                     UserName = x.User!=null?x.User.Name:"",
                     PositionCurrent = x.SourcePosition !=null ? x.SourcePosition.Name:"",
-                    PositionTarget = x.TargetPosition != null ? x.TargetPosition.Name : "",
-                    TargetDep7Name = x.TargetDepartment!=null ? x.TargetDepartment.Name:"",
-                    TargetDep3Name = x.TargetDepartment!=null ? ((x.TargetDepartment.Dep3 != null && x.TargetDepartment.Dep3.Any()) ? x.TargetDepartment.Dep3.First().Name : ""):""
+                    PositionTarget = x.Type.Id>=2?(x.TargetPosition != null ? x.TargetPosition.Name : ""):"",
+                    TargetDep7Name = x.Type.Id==2?(x.TargetDepartment!=null ? x.TargetDepartment.Name:""):"",
+                    TargetDep3Name = x.Type.Id==2?(x.TargetDepartment!=null ? ((x.TargetDepartment.Dep3 != null && x.TargetDepartment.Dep3.Any()) ? x.TargetDepartment.Dep3.First().Name : ""):""):""
                 }).ToList();
             else return new List<StaffMovementsDto>();
         }

@@ -146,7 +146,7 @@
                             <table>
                                 
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.SourceManager.Name)</td>
+                                    <td>ФИО @(Model.RequestType == 2 ? "отпускающего" : "") руководителя</td>
                                     <td>
                                         @Html.HiddenFor(m => m.SourceManager.Name)
                                         @Html.HiddenFor(m => m.SourceManager.Id)
@@ -154,7 +154,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.SourceManager.PositionName)</td>
+                                    <td>Должность @(Model.RequestType == 2 ? "отпускающего" : "") руководителя</td>
                                     <td>
                                         @Html.HiddenFor(m => m.SourceManager.PositionName)
                                         @Html.HiddenFor(m => m.SourceManager.PositionId)
@@ -205,7 +205,7 @@
                             <table>
                                 
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.TargetManager.Name)</td>
+                                    <td>ФИО принимающего руководителя</td>
                                     <td>
                                         @Html.HiddenFor(m => m.TargetManager.Name)
                                         @Html.HiddenFor(m => m.TargetManager.Id)
@@ -213,7 +213,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.TargetManager.PositionName)</td>
+                                    <td>Должность принимающего руководителя</td>
                                     <td>
                                         @Html.HiddenFor(m => m.TargetManager.PositionName)
                                         @Html.HiddenFor(m => m.TargetManager.PositionId)

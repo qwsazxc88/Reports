@@ -18,6 +18,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name="Статус")]
         public int Status { get; set; }
         public IList<IdNameDto> Statuses { get; set; }
+        [Display(Name = "Вид заявки")]
+        public int TypeId { get; set; }
+        public IList<IdNameDto> Types { get; set; }
         [Display(Name="Период с")]
         public DateTime? BeginDate { get; set; }
         [Display(Name="По")]

@@ -9,6 +9,7 @@ namespace Reports.Core.Dto
     {
         public int NPP { get; set; }
         public DateTime CreateDate { get; set; }
+        public int TypeId { get; set; }
         public int Number { get; set; }
         public string Creator { get; set; }
         public string UserName { get; set; }
