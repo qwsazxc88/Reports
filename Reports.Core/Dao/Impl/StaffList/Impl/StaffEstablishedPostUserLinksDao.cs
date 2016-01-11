@@ -31,5 +31,15 @@ namespace Reports.Core.Dao.Impl
         {
             return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.DocId == DocId && x.ReserveType == ReserveType).FirstOrDefault();
         }
+
+        /// <summary>
+        /// Достаем строку штатной расстановки по Id сотрудника.
+        /// </summary>
+        /// <param name="UserId">Id документа.</param>
+        /// <returns></returns>
+        public StaffEstablishedPostUserLinks GetPostUserLinkByUserId(int UserId)
+        {
+            return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.User.Id == UserId).FirstOrDefault();
+        }
     }
 }

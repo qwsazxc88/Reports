@@ -23,15 +23,35 @@ namespace Reports.Core.Domain
         /// <summary>
         /// Тип бронирования вакансии (StaffReserveTypeEnum).
         /// </summary>
-        public virtual int ReserveType { get; set; }
+        public virtual int? ReserveType { get; set; }
         /// <summary>
         /// Id документа/заявки
         /// </summary>
-        public virtual int DocId { get; set; }
+        public virtual int? DocId { get; set; }
         /// <summary>
         /// Признак сокращения
         /// </summary>
         public virtual bool IsDismissal { get; set; }
+        /// <summary>
+        /// Дата выдачи уведомления о сокращении
+        /// </summary>
+        public virtual DateTime? DateDistribNote { get; set; }
+        /// <summary>
+        /// Дата получения уведомления о сокращении
+        /// </summary>
+        public virtual DateTime? DateReceivNote { get; set; }
+        /// <summary>
+        /// Признак временной вакансии.
+        /// </summary>
+        public virtual bool IsTemporary { get; set; }
+        /// <summary>
+        /// Дата начала периода действия временной вакансии.
+        /// </summary>
+        public virtual DateTime? DateTempBegin { get; set; }
+        /// <summary>
+        /// Дата конца периода действия временной вакансии.
+        /// </summary>
+        public virtual DateTime? DateTempEnd { get; set; }
         /// <summary>
         /// Автор записи
         /// </summary>

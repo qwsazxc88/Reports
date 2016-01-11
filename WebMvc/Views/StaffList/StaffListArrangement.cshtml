@@ -22,7 +22,7 @@
                     <th rowspan="3">Итого</th>
                     <th rowspan="3">ФИО<br />сотрудника</th>
                     <th rowspan="3">ОЖ</th>
-                    <th rowspan="3">Вакансия<br />зарезервирована</th>
+                    <th rowspan="3">Резерв<br />вакансии</th>
                     @*
                     <th rowspan="3">Название в<br />Финграде</th>
                     <th rowspan="3">Комментарий</th>
@@ -97,7 +97,9 @@
         setActiveMenuItem("moStaffArrangement");
 
          $(document).tooltip({track: false,
-            show: { /*effect: "blind",*/ duration: 300 }});
+            show: { /*effect: "blind",*/ duration: 1000 }});
+
+        $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
 
         ShowFlash(true);
         ShowFlash(false);
@@ -281,9 +283,14 @@
                                         //красим увольняющихся
                                         if(!result.EstablishedPosts[i].IsDismiss && !result.EstablishedPosts[i].IsDismissal)
                                         {
-                                            tblStr += "<td><a href='#' onclick='GetStaffMovementRequest(" + result.EstablishedPosts[i].UserId + ");'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</a></td>"
-                                            //"<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
-                                            //GetStaffMovementRequest(UserId)
+                                            if(result.EstablishedPosts[i].IsVacation || result.EstablishedPosts[i].IsReserve)
+                                            {
+                                                tblStr += "<td>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>"
+                                            }
+                                            else
+                                            {
+                                                tblStr += "<td><a class='CallModal' href='#' onclick='GetStaffMovementRequest(" + result.EstablishedPosts[i].UserId + ");'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</a></td>"
+                                            }
                                         }
                                         else
                                         {
@@ -291,13 +298,11 @@
                                         }
                                         tblStr += "<td>" + (result.EstablishedPosts[i].ReplacedName == null ? "" : result.EstablishedPosts[i].ReplacedName) + "</td>" +
                                         "<td>" + (result.EstablishedPosts[i].Reserve == null ? "" : result.EstablishedPosts[i].Reserve) + "</td>" +
-//                                        "<td></td>" +
-//                                        "<td></td>" +
-//                                        "<td></td>" +
                                     "</tr>";
 
                         var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
                         $(ParentRowName).after(tblStr);//вставляем новую строку
+                            $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
                     }
                 }
                     
@@ -394,30 +399,24 @@
             }
         );
                 $(newDiv).dialog(
-        { // initialize dialog box
+        { 
             autoOpen: false,
             modal: true,
             title: title,
-            // fix IE6  
-            bgiframe: true,
             draggable: false,
             resizable: false,
             width: "auto",
-            height: "auto",
+            //position: { my: "left top", at: "left bottom", of: button },
+            //position: "center",
             closeOnEscape: true,
             close: function (event, ui) {
-                //$("SelectMovementType").submit();
                 $(this).dialog("destroy").remove();
             },
             buttons:
             {
-//                "OK": function () {
-//                    $(this).dialog("close");
-//                }
-//                ,
-//                "Отмена": function () {
-//                    $(this).dialog("close");
-//                }
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
             }
         });
 

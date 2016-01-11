@@ -207,6 +207,8 @@
     {
     
         var url = "@Url.Action("AddEditStaffDepartmentRPLink", "StaffList")";
+        url += "?BGFilterId=" + $("#BGFilterId").val() + "&AdminFilterId=" + $("#AdminFilterId").val() + "&ManagementFilterId=" + $("#ManagementFilterId").val() + "&BranchFilterId="+ $("#BranchFilterId").val();
+        console.log(url);
         var dataToSend = $("#AddEditRPLinkDialog form").serialize();
         ShowFlash(true);    //это диалоговое окно находится на родительской странице
         $.post(url, dataToSend, function(data){
@@ -225,10 +227,14 @@
                 $("#rMsg").text(data.msg);
             }
         }, "json")
-        .fail(function(data){
+        .fail(function(data, str1, str2){
+            if(str1 == "parsererror")
+                $("#rMessageStr").text("Доступ запрещен!");
+            else
+                $("#rMessageStr").text("При загрузке данных произошла ошибка!");
             ShowFlash(false);
             $('#AddEditRPLinkDialog').dialog("close");
-            $("#rMessageStr").text("У вас нет прав для выполнения данной операции!");
+            
         });
     };
 
@@ -263,7 +269,7 @@
 
     function SetRPFilter(){
         var actionUrl="@Url.Action("StaffDepartmentRPLink", "StaffList")";
-        var url = actionUrl + "?BGFilterID=" + $("#BGFilterID").val() + "&AdminFilterId=" + $("#AdminFilterId").val() + "&ManagementFilterId=" + $("#ManagementFilterId").val() + "&BranchFilterId="+ $("#BranchFilterId").val();
+        var url = actionUrl + "?BGFilterId=" + $("#BGFilterId").val() + "&AdminFilterId=" + $("#AdminFilterId").val() + "&ManagementFilterId=" + $("#ManagementFilterId").val() + "&BranchFilterId="+ $("#BranchFilterId").val();
         ShowFlash(true);
         var dataToSend = $("#StaffDepartmentRPLinkForm").serialize();
             $.post(url, dataToSend, function(data){

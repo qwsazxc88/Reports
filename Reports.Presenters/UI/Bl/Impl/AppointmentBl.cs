@@ -195,6 +195,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else return new { status = "Error", message = "Заявка не найдена." };
         }
+        public ViewModel.Employment2.CreateCandidateModel FillCreateCandidateModelByReportId(int id)
+        {
+            var model = Ioc.Resolve<IEmploymentBl>().GetCreateCandidateModel();
+            var entity = AppointmentReportDao.Load(id);
+            model.AppointmentId = entity.Appointment.Id;
+            model.AppointmentReportId = entity.Id;
+            model.DepartmentId = entity.Appointment.Department.Id;
+            model.DepartmentName = entity.Appointment.Department.Name;
+            model.Surname = entity.Name;
+            model.PlanRegistrationDate = entity.Appointment.ReasonBeginDate;
+            model.IsFixedTermContract = entity.Appointment.Type;
+            return model;
+        }
         public AppointmentListModel GetAppointmentListModel()
         {
             //User user = UserDao.Load(AuthenticationService.CurrentUser.Id);

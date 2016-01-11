@@ -27,30 +27,36 @@
                             @Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)
                         }
                         else if ((dto.UserRole & UserRole.Manager) > 0
+                              || (dto.UserRole & UserRole.ConsultantPersonnel) > 0
                               || (dto.UserRole & UserRole.PersonnelManager) > 0
                               || (dto.UserRole & UserRole.Inspector) > 0
-                              || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                              || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                              || (dto.UserRole & UserRole.Estimator) > 0
+                              || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0)
                         {
                             @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
                         }
                     </div> 
                   }
-                @if ((dto.UserRole & UserRole.DismissedEmployee) == 0)
-                {
-                    <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)</div>   
-                    
-                    @*<div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)</div>  *@
-                }
-
-                @if(UserDto.IsStaffDepartmentAvailable(dto))
-                {
-                    <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
-                }
-
-                <div id="liStaffMovements" class="mainMenuItem">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")</div> 
+                <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "Index", "Home", new { menuId = "1" }, null)
+                </div> 
 
                 <div id="liStaffMovements" class="mainMenuItem">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
                 </div>
+
+                @if(UserDto.IsStaffDepartmentAvailable(dto))
+                {
+                    if ((dto.UserRole & UserRole.PersonnelManager) > 0)
+                    {
+                        <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffListArrangement", "StaffList")</div>
+                    }
+                    else
+                    {
+                        <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
+                    }
+                }
+
+
                 <div id="liDeduction" class="mainMenuItem">
                 @if ((dto.UserRole & UserRole.Accountant) > 0
                     || (dto.UserRole & UserRole.OutsourcingManager) > 0)
@@ -88,8 +94,17 @@
                 <div id="liTemplate" class="mainMenuItem">@Html.ActionLink("Шаблоны", "Index", "Template")
                 </div> *@
 
-                @if ((dto.UserRole & UserRole.OutsourcingManager) > 0 || (dto.UserRole & UserRole.Manager) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0 || (dto.UserRole & UserRole.Candidate) > 0 ||
-                    (dto.UserRole & UserRole.Security) > 0 || (dto.UserRole & UserRole.Trainer) > 0)
+                @if ((dto.UserRole &
+                                    (UserRole.OutsourcingManager |
+                                    UserRole.ConsultantPersonnel |
+                                    UserRole.Estimator |
+                                    UserRole.Manager |
+                                    UserRole.PersonnelManager |
+                                    UserRole.Candidate |
+                                    UserRole.Security |
+                                    UserRole.Trainer |
+                                    UserRole.StaffManager |
+                                    UserRole.ConsultantOutsourcing)) > 0)
                 {
                     <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
                 }
@@ -127,13 +142,21 @@
 
         </div>  
         <div class="podmenu">
-            <div class="menuitem" id="moStaffPost">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
-            <div class="menuitem" id="moStaffArrangement">@Html.ActionLink("Штатная расстановка", "StaffListArrangement", "StaffList")</div>
-            <div class="menuitem" id="moDepRequest">@Html.ActionLink("Заявки для подразделений", "StaffDepartmentRequestList", "StaffList")</div>
-            <div class="menuitem" id="moSEPRequest">@Html.ActionLink("Заявки для штатных единиц", "StaffEstablishedPostRequestList", "StaffList")</div>
-            <div class="menuitem" id="moSoftReference">@Html.ActionLink("Справочник ПО", "StaffDepartmentSoftReference", "StaffList")</div>
-            <div class="menuitem" id="moDepEncoding">@Html.ActionLink("Справочник кодировок", "StaffDepartmentEncoding", "StaffList")</div>
-            <div class="menuitem" id="moDepOperRef">@Html.ActionLink("Справочник операций", "StaffDepartmentOperationReference", "StaffList")</div>
+            @if ((dto.UserRole & UserRole.PersonnelManager) > 0)
+            {
+                <div class="menuitem" id="moStaffArrangement">@Html.ActionLink("Штатная расстановка", "StaffListArrangement", "StaffList")</div>
+                <div class="menuitem" id="moSEPRequest">@Html.ActionLink("Заявки для штатных единиц", "StaffEstablishedPostRequestList", "StaffList")</div>
+            }
+            else
+            {
+                <div class="menuitem" id="moStaffPost">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
+                <div class="menuitem" id="moStaffArrangement">@Html.ActionLink("Штатная расстановка", "StaffListArrangement", "StaffList")</div>
+                <div class="menuitem" id="moDepRequest">@Html.ActionLink("Заявки для подразделений", "StaffDepartmentRequestList", "StaffList")</div>
+                <div class="menuitem" id="moSEPRequest">@Html.ActionLink("Заявки для штатных единиц", "StaffEstablishedPostRequestList", "StaffList")</div>
+                <div class="menuitem" id="moSoftReference">@Html.ActionLink("Справочник ПО", "StaffDepartmentSoftReference", "StaffList")</div>
+                <div class="menuitem" id="moDepEncoding">@Html.ActionLink("Справочник кодировок", "StaffDepartmentEncoding", "StaffList")</div>
+                <div class="menuitem" id="moDepOperRef">@Html.ActionLink("Справочник операций", "StaffDepartmentOperationReference", "StaffList")</div>
+            }
             <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
         </div>
     </div>   

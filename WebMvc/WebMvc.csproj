@@ -244,6 +244,7 @@
     <Content Include="Scripts\json2.js" />
     <Content Include="Scripts\localization\messages_ru.js" />
     <Content Include="Scripts\mustache.js" />
+    <Content Include="Scripts\StaffMovements\StaffMovementsFactList.js" />
     <Content Include="Scripts\TableSort.js" />
     <Content Include="Scripts\TerraGraphicsShortNameDialog.js" />
     <Content Include="Scripts\textAngular-rangy.min.js" />
@@ -260,9 +261,11 @@
     <Content Include="Views\StaffMovements\Templates\Prilozhenie1.cshtml">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Views\StaffMovements\Templates\Prilozhenie1.css" />
     <Content Include="Views\StaffMovements\Templates\prilozhenie2.cshtml">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Views\StaffMovements\Templates\Prilozhenie2.css" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -937,8 +940,9 @@
     <Content Include="Views\DocumentMovements\DocumentMovementsEdit.cshtml" />
     <Content Include="Views\Shared\_LayoutModern.cshtml" />
     <Content Include="Views\DocumentMovements\CreateWithoutSend.cshtml" />
-    <Content Include="Views\StaffMovements\StaffMovementsFactList.cshtml" />
     <Content Include="Views\StaffList\SelectMovementType.cshtml" />
+    <Content Include="Views\StaffMovements\StaffMovementsFactList.cshtml" />
+    <Content Include="Views\StaffMovements\StaffMovementsFactEdit.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

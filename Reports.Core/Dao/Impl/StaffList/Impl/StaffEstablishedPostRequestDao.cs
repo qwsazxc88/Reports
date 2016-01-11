@@ -20,10 +20,22 @@ namespace Reports.Core.Dao.Impl
             : base(sessionManager)
         {
         }
+
+        #region Dependencies
+        protected IDepartmentDao departmentDao;
+        public IDepartmentDao DepartmentDao
+        {
+            get { return Validate.Dependency(departmentDao); }
+            set { departmentDao = value; }
+        }
+
+        #endregion
+
         /// <summary>
         /// Список заявок для штатных единиц.
         /// </summary>
         /// <param name="curUser">Текущий пользователь.</param>
+        /// <param name="role">Роль пользователя (из-за байт-кода дополнительный параметр).</param>
         /// <param name="DepartmentId">Id подразделения.</param>
         /// <param name="Id">Номер заявки</param>
         /// <param name="Surname">ФИО инициатора</param>
@@ -32,8 +44,9 @@ namespace Reports.Core.Dao.Impl
         /// <param name="StatusId">Id статуса заявки.</param>
         /// <param name="SortBy">Номер колонки для сортировки</param>
         /// <param name="SortDescending">Признак направления сортировки.</param>
+        /// <param name="RequestTypeId">Вид заявки</param>
         /// <returns></returns>
-        public IList<EstablishedPostRequestDto> GetEstablishedPostRequestList(User curUser, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending)
+        public IList<EstablishedPostRequestDto> GetEstablishedPostRequestList(User curUser, UserRole role, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending, int RequestTypeId)
         {
             string SqlQuery = @"SELECT A.Id, 
                                        A.SEPId,
@@ -74,9 +87,11 @@ namespace Reports.Core.Dao.Impl
                                 LEFT JOIN Position as E ON E.Id = D.PositionId";
 
             SqlQuery = string.Format(@"SELECT * FROM ({0}) as A", SqlQuery);
+            SqlQuery += @" INNER JOIN Department as B ON B.Id = A.DepartmentId";
 
-            SqlQuery += GetWhereForUserRole(curUser);
-            SqlQuery += GetWhereForParameters(DepartmentId, Id, Surname, DateBegin, DateEnd, StatusId);
+
+            SqlQuery += GetWhereForUserRole(curUser, role);
+            SqlQuery += GetWhereForParameters(DepartmentId, Id, Surname, DateBegin, DateEnd, StatusId, RequestTypeId);
             SqlQuery += GetOrderByForSqlQuery(SortBy, SortDescending);
 
             IQuery query = Session.CreateSQLQuery(SqlQuery)
@@ -104,6 +119,7 @@ namespace Reports.Core.Dao.Impl
             if (SqlQuery.Contains(":DateBegin")) query.SetDateTime("DateBegin", DateBegin.Value);
             if (SqlQuery.Contains(":DateEnd")) query.SetDateTime("DateEnd", DateEnd.Value.AddDays(1));
             if (SqlQuery.Contains(":StatusId")) query.SetInt32("StatusId", StatusId);
+            if (SqlQuery.Contains(":RequestTypeId")) query.SetInt32("RequestTypeId", RequestTypeId);
 
             return query.SetResultTransformer(Transformers.AliasToBean<EstablishedPostRequestDto>()).List<EstablishedPostRequestDto>();
         }
@@ -112,10 +128,10 @@ namespace Reports.Core.Dao.Impl
         /// </summary>
         /// <param name="curUser">Текущий пользователь.</param>
         /// <returns></returns>
-        protected string GetWhereForUserRole(User curUser)
+        protected string GetWhereForUserRole(User curUser, UserRole role)
         {
             string sqlWhere = string.Empty;
-            switch (curUser.UserRole)
+            switch (role)
             {
                 case UserRole.Manager:
                     sqlWhere = @"
@@ -124,6 +140,13 @@ namespace Reports.Core.Dao.Impl
                                              INNER JOIN Department as B ON B.Id = A.DepartmentId
                                              INNER JOIN Department as C ON C.Path like B.Path + N'%' and C.ItemLevel <> B.ItemLevel
 						                     WHERE A.Id = :userId) as F ON F.Id = isnull(A.DepartmentId, A.ParentId)";
+                    break;
+                case UserRole.PersonnelManager:
+                    sqlWhere = @" INNER JOIN vwDepartmentToPersonnels as F ON F.DepartmentId = isnull(A.DepartmentId, A.ParentId) and F.PersonnelId = :userId";
+                    break;
+                case UserRole.Inspector:
+                    //кураторам показываем фронты и бэкфронты
+                    sqlWhere = @" INNER JOIN Department as F ON F.Id = isnull(A.DepartmentId, A.ParentId) and isnull(F.BFGId, 2) in (2, 6)";
                     break;
             }
             return sqlWhere;
@@ -137,11 +160,15 @@ namespace Reports.Core.Dao.Impl
         /// <param name="DateBegin">Начало периода</param>
         /// <param name="DateEnd">Конец периода</param>
         /// <returns></returns>
-        protected string GetWhereForParameters(int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId)
+        protected string GetWhereForParameters(int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int RequestTypeId)
         {
             string SqlWhere = string.Empty;
             if (DepartmentId != 0)
-                SqlWhere += "A.ParentId = :DepartmentId";
+            {
+                Department department = DepartmentDao.Load(DepartmentId);
+                SqlWhere += string.Format(@" B.Path  like '{0}' and B.ItemLevel = {1}", department.Path + "%", 7);
+                //SqlWhere += "A.ParentId = :DepartmentId";
+            }
 
             if (Id != 0)
                 SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "A.Id = :Id";
@@ -164,6 +191,9 @@ namespace Reports.Core.Dao.Impl
             if (StatusId != 0)
                 SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "StatusId = :StatusId";
 
+            if (RequestTypeId != 0)
+                SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "A.RequestTypeId = :RequestTypeId";
+            
             return (string.IsNullOrEmpty(SqlWhere) ? "" : " WHERE " + SqlWhere);
         }
         /// <summary>

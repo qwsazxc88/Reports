@@ -8,14 +8,45 @@
     ViewBag.Title = "Кадровые перемещения - реестр перемещений";
     Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";
 }
-@using (Html.BeginBlock("block-wrap"))
+@Html.AddStyles("../../Content/artem.css",
+                "../../Content/uigrid/ui-grid.min.css")          
+@Html.AddScripts("../../Scripts/jQueryUIDefaults.js",
+                "../../Scripts/angular.min.js",
+                "../../Scripts/uigrid/ui-grid.min.js",
+                "../../Scripts/angular-modules/DataService.js",
+                    "../../Scripts/StaffMovements/StaffMovementsFactList.js")
+<div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+@using (Html.BeginBlock("block-wrap", "ng-app='StaffMovementsFactList'", "ng-controller='StaffMovementsFactListController'"))
 {
     using (Html.BeginBlock("filter-wrap"))
     {
-        @Html.CreateField(m => m.UserName)
-        @Html.CreateField(m => m.StaffMovementsId)
-        @Html.CreateField(m => m.StaffEstablishedPostRequestId)
-        @Html.CreateField(m => m.MovemntDate)
+        @Html.CreateHeader("Реестр перемещений")
+        <div>
+            <span style="width:220px">
+                @Html.LabelFor(m => m.DepartmentName):
+            </span>
+            <span>
+                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                <input type="hidden" id="DepartmentId" ng-model="Model.DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+            </span>
+        </div>
+        <div>
+            <div>
+                <input type="button" value="Выбрать" onclick="changeDepartment();"/>                                           
+            </div>
+        </div>
+        @Html.CreateField(m => m.UserName, true, new Dictionary<string, object> { { "ng-model", "Model.UserName" } })
+        @Html.CreateField(m => m.StaffMovementsId, true, new Dictionary<string, object> { { "ng-model", "Model.StaffMovementsId" } })
+        @Html.CreateField(m => m.StaffEstablishedPostRequestId, true, new Dictionary<string, object> { { "ng-model", "Model.StaffEstablishedPostRequestId" } })
+        @Html.CreateField(m => m.MovemntDate, true, new Dictionary<string, object> { { "class", "DatePicker" }, { "ng-model", "Model.MovemntDate" } })
     }
     using (Html.BeginBlock("toolbar ui-widget-header ui-corner-all"))
     {
@@ -23,6 +54,11 @@
         @Html.CreateButton(false, true, "Очистить", new Dictionary<string, object> { { "ng-click", "'ClearForm()'" } }, "")
     }
     <div id="changes-height">
-        <div ui-grid="GridOptions" class="full-height" ui-grid-expandable ui-grid-resize-columns ></div>
+        <div ui-grid="GridOptions" class="full-height" ui-grid-resize-columns ></div>
     </div>
 }
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("StaffMovementsFacts");
+    });
+</script>

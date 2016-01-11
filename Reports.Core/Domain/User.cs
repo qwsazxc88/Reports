@@ -163,7 +163,7 @@ namespace Reports.Core.Domain
         //public virtual Department Department { get; set; }
         public virtual Position Position { get; set; }
         public virtual Department Department { get; set; }
-
+        public virtual Schedule HoursType { get; set; }
         public virtual string Cnilc { get; set; }
         public virtual string Address { get; set; }
         public virtual IList<Dismissal> Dismissals { get; set; }
@@ -176,6 +176,11 @@ namespace Reports.Core.Domain
         public virtual bool? IsFixedTermContract { get; set; }
         public virtual string AccessGroupCode { get; set; }
         public virtual bool? IsPregnant { get; set; }
+        public virtual int? SEPId { get; set; }
+        /// <summary>
+        /// Постоянное место работы в штатной расстановке.
+        /// </summary>
+        public virtual StaffEstablishedPostUserLinks RegularEstablishedPostUserLinks { get; set; }
         /// <summary>
         /// Надбавки
         /// </summary>
@@ -184,6 +189,14 @@ namespace Reports.Core.Domain
         /// Штатная единица.
         /// </summary>
         //public virtual StaffEstablishedPost StaffEstablishedPost { get; set; }
+        /// <summary>
+        /// Северные надбавки.
+        /// </summary>
+        public virtual IList<StaffUserNorthAdditional> UserNorthAdditionals { get; set; }
+        /// <summary>
+        /// Отпуска по уходу за ребенком.
+        /// </summary>
+        public virtual IList<ChildVacation> ChildVacation { get; set; }
         #endregion
 
         #region Constructors

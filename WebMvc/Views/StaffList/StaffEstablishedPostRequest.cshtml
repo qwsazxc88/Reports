@@ -15,6 +15,7 @@
     @Html.HiddenFor(m => m.IsDraftButtonAvailable)
     @Html.HiddenFor(m => m.IsUsed)
     @Html.HiddenFor(m => m.QuantityPrev)
+    @Html.HiddenFor(m => m.BFGId)
    
     
     <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
@@ -79,6 +80,14 @@
                         </td>
                         <td>
                             @(string.IsNullOrEmpty(Model.AccessoryName) ? "" : Model.AccessoryName)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.FingradCode)
+                        </td>
+                        <td>
+                            @(string.IsNullOrEmpty(Model.FingradCode) ? "" : Model.FingradCode)
                         </td>
                     </tr>
                     <tr>
@@ -200,6 +209,10 @@
                             @Html.ValidationMessageFor(model => model.PositionId)
                         </td>
                     </tr>
+                    @if (Model.RequestTypeId == 4)
+                    {
+                        <tr><td colspan="2" style="color:Red;">Выбран вид заявки - Ввод начальных данных!<br />Если вам нужно провести сокращение штатной единицы, то редактировать количество не нужно.<br />Нужно поставить отметки в соответсвующее поле в строках списка сотрудников.</td></tr>
+                    }
                     <tr>
                         <td>@Html.LabelFor(m => m.Quantity)</td>
                         <td>
@@ -280,7 +293,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>@("Причина " + (Model.RequestTypeId == 1 ? "создания" : (Model.RequestTypeId == 2 ? "изменения" : "сокращения")) + " ШЕ")</td>
+                        <td>@("Причина " + (Model.RequestTypeId == 1 ? "создания" : (Model.RequestTypeId == 3 ? "сокращения" : "изменения")) + " ШЕ")</td>
                         <td>
                             @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name")) 
                         </td>
@@ -301,6 +314,7 @@
                         <td>@Html.LabelFor(m => m.BeginAccountDate)</td>
                         <td>
                             @Html.EditorFor(m => m.BeginAccountDate)
+                            @Html.ValidationMessageFor(m => m.BeginAccountDate)
                         </td>
                     </tr>
                     @if (Model.RequestTypeId != 1)
@@ -312,9 +326,29 @@
                                     <div class="portlet-content">
                                         <table class="grid">
                                             <thead>
+                                            @*
+                                                <tr>
+                                                    <th rowspan ="2">ФИО</th>
+                                                    <th colspan="3">Временная вакансия</th>
+                                                    <th colspan="3">Сокращение</th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="@if(Model.RequestTypeId == 3){<text>display:none;</text>}">Временная<br />вакансия</th>
+                                                    <th style="@if(Model.RequestTypeId == 3){<text>display:none;</text>}">Дата начала<br />периода</th>
+                                                    <th style="@if(Model.RequestTypeId == 3){<text>display:none;</text>}">Дата конца<br />периода</th>
+
+                                                    <th style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}">Сократить</th>
+                                                    <th style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}">Дата выдачи<br />уведомления</th>
+                                                    <th style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}">Дата получения<br />уведомления</th>
+                                                </tr>
+                                                *@
+                                                
                                                 <tr>
                                                     <th>ФИО</th>
-                                                    <th style="@if(Model.RequestTypeId != 3){<text>display:none;</text>}">Сократить</th>
+
+                                                    <th style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}">Сократить</th>
+                                                    <th style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}">Дата выдачи<br />уведомления</th>
+                                                    <th style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}">Дата получения<br />уведомления</th>
                                                 </tr>
                                             <//thead>
                                             @{ i = 1; }
@@ -326,7 +360,40 @@
                                                         @(string.IsNullOrEmpty(item.Surname) ? "вакансия" + (item.IsPregnant.HasValue && item.IsPregnant.Value ? " по срочному ТД" : "") : item.Surname)
                                                     
                                                     </td>
-                                                    <td style="@if(Model.RequestTypeId != 3){<text>display:none;</text>}else{<text>text-align:center;</text>}">@Html.CheckBoxFor(m => m.Personnels[i - 1].IsDismissal)</td>
+                                                    @*поля для временной вакансии*@
+                                                    @*
+                                                    <td style="@if(Model.RequestTypeId == 3){<text>display:none;</text>}
+                                                               else
+                                                               {<text>text-align:center;</text>}">@Html.CheckBoxFor(m => m.Personnels[i - 1].IsTemporary)
+                                                        @Html.ValidationMessageFor(m => m.Personnels[i - 1].IsTemporary)
+                                                    </td>
+                                                    <td style="@if(Model.RequestTypeId == 3){<text>display:none;</text>}
+                                                               else
+                                                               {<text>text-align:center;</text>}">@Html.TextBoxFor(m => m.Personnels[i - 1].DateTempBegin, new { style = "width:85px;", @class = "SetDatePicker" })
+                                                        @Html.ValidationMessageFor(m => m.Personnels[i - 1].DateTempBegin)
+                                                    </td>
+                                                    <td style="@if(Model.RequestTypeId == 3){<text>display:none;</text>}
+                                                               else
+                                                               {<text>text-align:center;</text>}">@Html.TextBoxFor(m => m.Personnels[i - 1].DateTempEnd, new { style = "width:85px;", @class = "SetDatePicker" })
+                                                        @Html.ValidationMessageFor(m => m.Personnels[i - 1].DateTempEnd)
+                                                    </td>
+                                                    *@
+                                                    @*поля для сокращения*@
+                                                    <td style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}
+                                                               else
+                                                               {<text>text-align:center;</text>}">@Html.CheckBoxFor(m => m.Personnels[i - 1].IsDismissal)
+                                                        @Html.ValidationMessageFor(m => m.Personnels[i - 1].IsDismissal)
+                                                    </td>
+                                                    <td style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}
+                                                               else
+                                                               {<text>text-align:center;</text>}">@Html.TextBoxFor(m => m.Personnels[i - 1].DateDistribNote, new { style = "width:85px;", @class = "SetDatePicker" })
+                                                        @Html.ValidationMessageFor(m => m.Personnels[i - 1].DateDistribNote)
+                                                    </td>
+                                                    <td style="@if(Model.RequestTypeId == 1 || Model.RequestTypeId == 2){<text>display:none;</text>}
+                                                               else
+                                                               {<text>text-align:center;</text>}">@Html.TextBoxFor(m => m.Personnels[i - 1].DateReceivNote, new { style = "width:85px;", @class = "SetDatePicker" })
+                                                        @Html.ValidationMessageFor(m => m.Personnels[i - 1].DateReceivNote)
+                                                    </td>
                                                 </tr>
                                                 { i++; }
                                             }
@@ -335,6 +402,13 @@
                                 </div>
                             </td>
                         </tr>
+                        
+                        if (Model.RequestTypeId != 2)
+                        {
+                            <tr><td colspan="2"><a href="@Url.Content("~/Templates/BlankOrderForDismissal.docx")" target="_blank">Приказ о сокращении штата</a></td></tr>
+                            <tr><td colspan="2"><a href="@Url.Content("~/Templates/BlankNoteForDismissialWithoutVacation.docx")" target="_blank">Уведомление о сокращении без вакансии</a></td></tr>
+                            <tr><td colspan="2"><a href="@Url.Content("~/Templates/BlankNoteForDismissialWithVacation.docx")" target="_blank">Уведомление о сокращении с вакансией</a></td></tr>
+                        }
                     }
                 </table>
             </div>
@@ -364,16 +438,19 @@
                                 }
                             </td>
                         </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.IsCuratorApprove)
-                                @Html.HiddenFor(m => m.IsCuratorApprove)
-                            </td>
-                            <td>@Html.CheckBoxFor(m => m.IsCuratorApprove, (object)new { disabled = "disabled" })</td>
-                            <td>
-                                @Html.DisplayFor(m => m.CuratorApproveName)
-                            </td>
-                        </tr>
+                        @if (Model.BFGId == 2 || Model.BFGId == 6)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.IsCuratorApprove)
+                                    @Html.HiddenFor(m => m.IsCuratorApprove)
+                                </td>
+                                <td>@Html.CheckBoxFor(m => m.IsCuratorApprove, (object)new { disabled = "disabled" })</td>
+                                <td>
+                                    @Html.DisplayFor(m => m.CuratorApproveName)
+                                </td>
+                            </tr>
+                        }
                         <tr>
                             <td>
                                 @Html.LabelFor(m => m.IsPersonnelBankApprove)
@@ -425,10 +502,12 @@
         <button id="btnAgree" type="button" title="Согласовать заявку/Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
                                                                                                         {<text>disabled=disabled</text>}>Согласовать</button>
     </div>
+    
                                                                                                         if (Model.Id != 0)
                                                                                                         {
         @Html.Partial("~/Views/Info/Comments.cshtml")
                                                                                                         }
+    
     <div id="DivIndicator" style="display:none;">
         <table>
             <tr>
@@ -458,10 +537,16 @@
         //ShowFlash(true);
         //ShowFlash(false);
 
-        $(document).tooltip({ track: true });
+        $(document).tooltip({ track: false, duration: 1000 });
         $(":button").button();
         $("#BeginAccountDate").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
         $(".hasDatepicker").width("85px");
+        
+        $(".SetDatePicker").click(function(e){
+            $(this).datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
+            $(this).datepicker("show");
+        });
+        
 
         $("#btnSave").click(function () { $("#IsDraft").val(true); ShowFlash(true); $("#StaffEstablishedPostRequestForm").submit(); });
         $("#btnAgree").click(function () {

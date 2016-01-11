@@ -40,6 +40,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Назание структурного подразделения")]
         public int DepartmentId { get; set; }
         public string DepartmentName { get; set; }
+        public int BFGId { get; set; }
 
         [Display(Name = "Принадлежность подразделения")]
         public string AccessoryName { get; set; }
@@ -84,8 +85,14 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Данные по ШЕ")]
         public string EPInfo { get; set; }
 
+        [Display(Name = "Код подразделения")]
+        public string FingradCode { get; set; }
+        
+
         [Display(Name = "Сотрудники")]
-        public IList<StaffEstablishedPostDto> Personnels { get; set; }
+        //public IList<StaffEstablishedPostDto> Personnels { get; set; }
+        public IList<StaffUserLinkDto> Personnels { get; set; }
+        
 
         #region Согласование
         [Display(Name = "Инициатор")]

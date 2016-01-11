@@ -146,7 +146,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Надбавка за стаж работы специалистом фронт-офиса (руб)")]
         public decimal? FrontOfficeExperienceAddition { get; set; }
 
-        [Display(Name = "Итого оплата труда (руб)")]
+        [Display(Name = "Итого")]
+        public string SalaryTotalCaption { get; set; }
         public string SalaryTotal { get; set; }
 
         [Display(Name = "Укажите номер задачи в системе Pyrus")]

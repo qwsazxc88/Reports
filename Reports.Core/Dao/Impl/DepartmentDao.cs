@@ -37,6 +37,13 @@ namespace Reports.Core.Dao.Impl
             return (Department)Session.CreateCriteria(typeof(Department))
                    .Add(Restrictions.Eq("Name", name)).UniqueResult();
         }
+        public IList<Department> GetChildDepartments(Department dep)
+        {
+            return Session.CreateCriteria<Department>()
+                .Add(Expression.Like("Path", dep.Path + "%"))
+                .Add(Expression.Not(Expression.Eq("Id", dep.Id)))
+                .List<Department>();
+        }
         public Department GetRootDepartment()
         {
             return (Department)Session.CreateCriteria(typeof(Department))
@@ -234,11 +241,12 @@ namespace Reports.Core.Dao.Impl
         /// </summary>
         /// <param name="Id">Id родительского подразделения</param>
         /// <param name="IsParentDepOnly">Признак достать только родительское подразделение.</param>
+        /// <param name="role">Роль текущего пользователя</param>
         /// <returns></returns>
-        public IList<StaffListDepartmentDto> DepFingradName(string Id, bool IsParentDepOnly)
+        public IList<StaffListDepartmentDto> DepFingradName(string Id, bool IsParentDepOnly, UserRole role)
         {
             string SqlWhere = (!IsParentDepOnly ? (string.IsNullOrEmpty(Id) ? "A.ParentId is null" : "A.ParentId = " + Id) : "A.Code1C = " + Id);
-            SqlWhere += " and isnull(BFGId, 0) not in (3, 5)";
+            SqlWhere += (role == UserRole.Inspector ? " and (BFGId in (2, 6) or BFGId is null) " : "") + " and isnull(BFGId, 0) not in (3, 5)";
             return Session.CreateSQLQuery(string.Format(@"SELECT Id, Code, Name, Code1C, ParentId, Path, ItemLevel, CodeSKD, Priority, DepFingradName, DepFingradNameComment, FinDepPointCode, dbo.fnGetStaffEstablishedPostCountByDepartment(A.Id) as SEPCount
                                             FROM vwStaffListDepartment as A
                                             WHERE {0} ORDER BY Priority, Name", SqlWhere))

@@ -21,5 +21,9 @@ namespace Reports.Presenters.UI.ViewModel
         [SearchField(Comparer = ComparerEnum.Equals, ModelParam = "SendTo1C")]
         [Display(Name = "Дата перемещения")]
         public DateTime? MovemntDate { get; set; }
+        [Display(Name = "Подразделение")]
+        public string DepartmentName { get; set; }
+        public int DepartmentId { get; set; }
+        public int Number { get; set; }
     }
 }

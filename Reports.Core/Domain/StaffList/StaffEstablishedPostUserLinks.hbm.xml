@@ -12,6 +12,11 @@
     <property name="ReserveType" not-null="false"/>
     <property name="DocId" not-null="false"/>
     <property name="IsDismissal" not-null="false"/>
+    <property name="DateDistribNote" not-null="false"/>
+    <property name="DateReceivNote" not-null="false"/>
+    <property name="IsTemporary" not-null="false"/>
+    <property name="DateTempBegin" not-null="false"/>
+    <property name="DateTempEnd" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentAdministration_CreatorUser" index="StaffDepartmentAdministration_CreatorUser" not-null="false"/>
     <property name="CreateDate" not-null="false"/>
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentAdministration_EditorUser" index="StaffDepartmentAdministration_EditorUser" not-null="false"/>

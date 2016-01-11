@@ -8,6 +8,7 @@ namespace Reports.Core.Dao
         //IList<Department> LoadAllSorted();
         IList<Department> SearchByName(string name);
         Department SearchByNameDistinct(string name);
+        IList<Department> GetChildDepartments(Department dep);
         Department GetRootDepartment();
         IList<Department> GetDepartmentsTree(int departmentId);
         IList<Department> SearchByParentId(int parentId);
@@ -39,7 +40,8 @@ namespace Reports.Core.Dao
         /// </summary>
         /// <param name="Id">Id родительского подразделения</param>
         /// <param name="IsParentDepOnly">Признак достать только родительское подразделение.</param>
+        /// <param name="role">Роль текущего пользователя</param>
         /// <returns></returns>
-        IList<StaffListDepartmentDto> DepFingradName(string Id, bool IsParentDepOnly);
+        IList<StaffListDepartmentDto> DepFingradName(string Id, bool IsParentDepOnly, UserRole role);
     }
 }

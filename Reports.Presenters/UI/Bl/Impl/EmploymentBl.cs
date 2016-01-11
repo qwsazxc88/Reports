@@ -1310,8 +1310,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ProbationaryPeriod = entity.ProbationaryPeriod;
                 model.RequestNumber = entity.RequestNumber;
                 //оклад и надбавки
-                model.SalaryBasis = entity.SalaryBasis;
-                model.SalaryMultiplier = entity.SalaryMultiplier;
                 model.AreaMultiplier = entity.Candidate.PersonnelManagers.AreaMultiplier;
                 model.PersonalAddition = entity.Candidate.PersonnelManagers.PersonalAddition;
                 model.PositionAddition = entity.Candidate.PersonnelManagers.PositionAddition;
@@ -1420,12 +1418,29 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsPyrusDialogVisible = AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || AuthenticationService.CurrentUser.UserRole == UserRole.Manager ? true : false;
 
 
-            StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByDocId(entity.Candidate.Id, (int)StaffReserveTypeEnum.Employment);
+            StaffEstablishedPostUserLinks PostUserLink = null;
+            if(!entity.Candidate.SendTo1C.HasValue)
+                PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByDocId(entity.Candidate.Id, (int)StaffReserveTypeEnum.Employment);
+            else
+                PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByUserId(entity.Candidate.User.Id);
 
             if (PostUserLink != null)
+            {
                 model.UserLinkId = PostUserLink.Id;
+                model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
+                model.SalaryMultiplier = entity.SalaryMultiplier;
+                model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Count() == 0 ? 0 :
+                    PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Single().Amount;
+            }
+            else
+            {
+                model.SalaryBasis = entity.SalaryBasis;
+                model.SalaryMultiplier = entity.SalaryMultiplier;
+                model.AreaMultiplier = entity.Candidate.PersonnelManagers.AreaMultiplier.HasValue ? entity.Candidate.PersonnelManagers.AreaMultiplier.Value : 0;
+            }
 
             model.IsConsultant = AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ? true : false;
+            model.SalaryTotalCaption = entity.Candidate.PersonnelManagers.NorthernAreaAddition.HasValue ? "Итого оплата труда с учетом северной надбавки (руб)" : "Итого оплата труда без учета северной надбавки (руб)";
             model.SalaryTotal = CalculateCandidateSalary(entity).ToString("C", System.Globalization.CultureInfo.CurrentCulture);
             
             LoadDictionaries(model);
@@ -1517,6 +1532,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             model.IsConsultant = AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing ? true : false;
+            model.SalaryTotalCaption = entity.Candidate.PersonnelManagers.NorthernAreaAddition.HasValue ? "Итого оплата труда с учетом северной надбавки (руб)" : "Итого оплата труда без учета северной надбавки (руб)";
             model.SalaryTotal = CalculateCandidateSalary(entity).ToString("C", System.Globalization.CultureInfo.CurrentCulture);
 
             LoadDictionaries(model);
@@ -1614,7 +1630,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SendTo1C = entity.Candidate.SendTo1C;
             }
 
-            
+            model.SalaryTotalCaption = entity.NorthernAreaAddition.HasValue ? "Итого оплата труда с учетом северной надбавки (руб)" : "Итого оплата труда без учета северной надбавки (руб)";
+            model.SalaryTotal = CalculateCandidateSalary(entity.Candidate.Managers).ToString("C", System.Globalization.CultureInfo.CurrentCulture);
+
             //состояние кандидата
             model.CandidateStateModel = new CandidateStateModel();
             model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
@@ -1632,6 +1650,10 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             LoadDictionaries(model);
+
+            model.SalaryTotalCaption = entity.NorthernAreaAddition.HasValue ? "Итого оплата труда с учетом северной надбавки (руб)" : "Итого оплата труда без учета северной надбавки (руб)";
+            model.SalaryTotal = CalculateCandidateSalary(entity.Candidate.Managers).ToString("C", System.Globalization.CultureInfo.CurrentCulture);
+
             //состояние кандидата
             model.CandidateStateModel = new CandidateStateModel();
             model.CandidateStateModel.CandidateState = EmploymentCandidateDao.GetCandidateState(entity == null ? -1 : entity.Candidate.Id);
@@ -2058,6 +2080,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsOnBehalfOfManagerAvailable = (AuthenticationService.CurrentUser.UserRole & (UserRole.Manager | UserRole.Chief | UserRole.Director )) == 0 ? true : false;
             model.Personnels = EmploymentCandidateDao.GetPersonnels();
             model.PostUserLinks = new List<IdNameDto>();
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Manager)
+            {
+                User manager = UserDao.Get(AuthenticationService.CurrentUser.Id);
+                model.DepartmentId = manager.Department.Id;
+                model.DepartmentName = manager.Department.Name;
+            }
             return model;
         }
 
@@ -2127,7 +2155,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 //model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
                 model.Department = candidate.Managers.Department != null ? DepartmentDao.LoadAll().Where(x => candidate.Managers.Department.Path.StartsWith(x.Path) && x.ItemLevel == 6).Single().Name : string.Empty;
-                model.City = candidate.Managers.Department != null ? (candidate.Managers.Department.Path.StartsWith("9900424.9901038.9901164.") ? "Владивосток" : "Кострома") : string.Empty;
+                //model.City = candidate.Managers.Department != null ? (candidate.Managers.Department.Path.StartsWith("9900424.9901038.9901164.") ? "Владивосток" : "Кострома") : string.Empty;
+                model.City = candidate.Managers.Department != null ? (candidate.Managers.Department.Path.StartsWith("4128.4132.4189.") ? "Владивосток" : "Кострома") : string.Empty;
                 model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
                 model.ProbationaryPeriod = GetProbationaryPeriodString(candidate.Managers.ProbationaryPeriod);
                 //model.WorkCity = candidate.Managers.WorkCity;
@@ -2397,7 +2426,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.EmployeePosition = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
                 model.EmployeeDepartment = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
                 model.EmployeeDepartment = candidate.Managers.Department != null ? DepartmentDao.LoadAll().Where(x => candidate.Managers.Department.Path.StartsWith(x.Path) && x.ItemLevel == 6).Single().Name : string.Empty;
-                model.City = candidate.Managers.Department != null ? (candidate.Managers.Department.Path.StartsWith("9900424.9901038.9901164.") ? "Владивосток" : "Кострома") : string.Empty;
+                //model.City = candidate.Managers.Department != null ? (candidate.Managers.Department.Path.StartsWith("9900424.9901038.9901164.") ? "Владивосток" : "Кострома") : string.Empty;
+                model.City = candidate.Managers.Department != null ? (candidate.Managers.Department.Path.StartsWith("4128.4132.4189.") ? "Владивосток" : "Кострома") : string.Empty;
             }
 
             if (candidate.PersonnelManagers != null)
@@ -2983,7 +3013,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PositionItems = GetPositions();
             model.ApprovalStatuses = GetApprovalStatuses();
             model.PostUserLinks = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId)
-                .Where(x => x.IsVacation || (x.IsReserve && x.Id == model.UserLinkId))
+                .Where(x => x.IsVacation || (x.IsReserve && x.Id == model.UserLinkId || x.UserId == model.UserId))
                 .ToList()
                 .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") + (x.ReplacedId != 0 ? " - " + x.ReplacedName : "") });
             model.PostUserLinks.Insert(0, new IdNameDto { Id = 0, Name = "" });
@@ -3298,6 +3328,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+
             User newUser = new User
             {
                 Login = string.Empty,
@@ -3308,6 +3339,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Name = model.Surname,//string.Empty,
                 RoleId = (int)UserRole.Candidate,
                 Department = department,
+                Position = PostUserLink.StaffEstablishedPost.Position,
+                SEPId = PostUserLink.StaffEstablishedPost.Id,
                 GivesCredit = false,
                 IsMainManager = false,
                 IsFixedTermContract = model.IsFixedTermContract,
@@ -3323,7 +3356,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 IsTrainingNeeded = model.IsTrainingNeeded,
                 IsBeforEmployment = model.IsTrainingNeeded ? model.IsBeforEmployment : false,
                 Appointment = (model.AppointmentId!=0)?AppointmentDao.Load(model.AppointmentId):null,
-                AppointmentReport =(model.AppointmentReportId!=0)?AppointmentReportDao.Load(model.AppointmentReportId):null
+                AppointmentReport =(model.AppointmentReportId!=0)?AppointmentReportDao.Load(model.AppointmentReportId):null,
+                PyrusNumber = model.PyrusNumber
             };
             
             EmploymentCommonDao.SaveAndFlush(candidate);
@@ -5055,14 +5089,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Bonus = viewModel.Bonus;
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Managers = entity;
-            entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
-            //entity.Candidate.User.Department = DepartmentDao.Load(viewModel.DepartmentId);
+            if (entity.Candidate.Status != EmploymentStatus.SENT_TO_1C)
+            {
+                entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                entity.Position = PositionDao.Load(Vacation.PositionId);
+                entity.Candidate.User.Position = PositionDao.Load(Vacation.PositionId);
+                entity.Candidate.User.SEPId = Vacation.SEPId;
+                //entity.Candidate.User.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                //entity.Position = PositionDao.Load(viewModel.PositionId);
+            }
             entity.EmploymentConditions = viewModel.EmploymentConditions;            
             entity.IsFront = viewModel.IsFront;
             entity.IsLiable = viewModel.IsLiable;
             entity.IsSecondaryJob = viewModel.IsSecondaryJob;
             entity.IsExternalPTWorker = !viewModel.IsSecondaryJob ? false : viewModel.IsExternalPTWorker;
-            //entity.Position = PositionDao.Load(viewModel.PositionId);
             entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
             entity.RequestNumber = viewModel.RequestNumber;
             entity.SalaryBasis = viewModel.SalaryBasis;
@@ -5086,28 +5126,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Candidate.PersonnelManagers.EmploymentDate = viewModel.RegistrationDate;
             }
 
-
-            //убираем резервирование
-            if (!RemoveStaffPostReserve(entity.Candidate.Id, currentUser))
-                return false;
-
-            //резервируем
-            if (viewModel.UserLinkId != 0)
+            if (!entity.Candidate.SendTo1C.HasValue)
             {
-                StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(viewModel.UserLinkId);    
-                //резервируем место в штатной расстановке
-                PostUserLink.DocId = entity.Candidate.Id;
-                PostUserLink.ReserveType = (int)StaffReserveTypeEnum.Employment;
-                PostUserLink.Editor = currentUser;
-                PostUserLink.EditDate = DateTime.Now;
+                //убираем резервирование
+                if (!RemoveStaffPostReserve(entity.Candidate.Id, currentUser))
+                    return false;
 
-                //для вкладки руководителя
-                entity.Position = PostUserLink.StaffEstablishedPost.Position;
-                entity.Department = PostUserLink.StaffEstablishedPost.Department;
+                //резервируем
+                if (viewModel.UserLinkId != 0)
+                {
+                    StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(viewModel.UserLinkId);
+                    //резервируем место в штатной расстановке
+                    PostUserLink.DocId = entity.Candidate.Id;
+                    PostUserLink.ReserveType = (int)StaffReserveTypeEnum.Employment;
+                    PostUserLink.Editor = currentUser;
+                    PostUserLink.EditDate = DateTime.Now;
 
-                StaffEstablishedPostUserLinksDao.SaveAndFlush(PostUserLink);
+                    //для вкладки руководителя
+                    entity.Position = PostUserLink.StaffEstablishedPost.Position;
+                    entity.Department = PostUserLink.StaffEstablishedPost.Department;
+
+                    StaffEstablishedPostUserLinksDao.SaveAndFlush(PostUserLink);
+                }
             }
-
             return true;
         }
 
@@ -5766,32 +5807,51 @@ namespace Reports.Presenters.UI.Bl.Impl
                             }
                         }
 
-                        //проверка на увольнение сотрудника при приеме кандидата на его должность
-                        if (entity.Candidate.Appointment.Reason.Id == 5)
-                        {
-                            if (entity.Candidate.Appointment.ReasonPositionUser != null)
-                            {
-                                User DismissUser = UserDao.Load(entity.Candidate.Appointment.ReasonPositionUser.Id);
-                                IList<Dismissal> dml = DismissalDao.LoadAll().Where(x => x.User == DismissUser && x.SendTo1C.HasValue).ToList();
-                                if (dml.Count == 0)
-                                {
-                                    error = "Данная ставка еще не освобождена! Согласовать кандидата на данный момент невозможно!";
-                                    return false;
-                                }
-                            }
-                        }
+
+                        //отключил проверку 30.12.2015, так как заработало новое штатное расписание, а заявки на подбор еще продолжают работать в старом режиме
+                        ////проверка на увольнение сотрудника при приеме кандидата на его должность
+                        //if (entity.Candidate.Appointment.Reason.Id == 5)
+                        //{
+                        //    if (entity.Candidate.Appointment.ReasonPositionUser != null)
+                        //    {
+                        //        User DismissUser = UserDao.Load(entity.Candidate.Appointment.ReasonPositionUser.Id);
+                        //        IList<Dismissal> dml = DismissalDao.LoadAll().Where(x => x.User == DismissUser && x.SendTo1C.HasValue).ToList();
+                        //        if (dml.Count == 0)
+                        //        {
+                        //            error = "Данная ставка еще не освобождена! Согласовать кандидата на данный момент невозможно!";
+                        //            return false;
+                        //        }
+                        //    }
+                        //}
                     }
+
+                    StaffEstablishedPostDto Vacation = StaffEstablishedPostDao.GetStaffEstablishedArrangements(viewModel.DepartmentId)
+                        .Where(x => x.Id == viewModel.UserLinkId)
+                        .FirstOrDefault();
+                    if (Vacation == null)
+                    {
+                        error = "Выберите доступную вакансию!";
+                        return false;
+                    }
+
 
                     if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_MANAGER)
                     {
                         entity.Bonus = viewModel.Bonus;
                         entity.Candidate = GetCandidate(viewModel.UserId);
                         entity.Candidate.Managers = entity;
-                        entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                        if (entity.Candidate.Status != EmploymentStatus.SENT_TO_1C)
+                        {
+                            entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                            entity.Position = PositionDao.Load(Vacation.PositionId);
+                            entity.Candidate.User.Position = PositionDao.Load(Vacation.PositionId);
+                            entity.Candidate.User.SEPId = Vacation.SEPId;
+                            //entity.Candidate.User.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                            //entity.Position = PositionDao.Load(viewModel.PositionId);
+                        }
                         entity.EmploymentConditions = viewModel.EmploymentConditions;
                         entity.IsFront = viewModel.IsFront;
                         entity.IsLiable = viewModel.IsLiable;
-                        entity.Position = PositionDao.Load(viewModel.PositionId);
                         entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
                         entity.RequestNumber = viewModel.RequestNumber;
                         entity.SalaryBasis = viewModel.SalaryBasis;
@@ -5928,6 +5988,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
 
+
+                    //если дата приема стоит прошлым месяцем относительно текущей даты, то можно принять только до 5 числа текущего месяца (Экспресс-Волга до 8 числа)
+                    if (entity.RegistrationDate.Value.Year != DateTime.Today.Year || entity.RegistrationDate.Value.Month != DateTime.Today.Month)
+                    {
+                        if (entity.RegistrationDate.Value.AddMonths(1).Year == DateTime.Today.Year && entity.RegistrationDate.Value.AddMonths(1).Month == DateTime.Today.Month && DateTime.Today.Day > 5/*(model.IsVolga ? 8 : 5)*/)
+                        {
+                            error = "Прием сотрудника в прошлом периоде запрещен!";
+                            return false;
+                        }
+                    }
 
                     if (!IsCurrentUserChiefForCreator(current, entity.Candidate.AppointmentCreator))
                     {

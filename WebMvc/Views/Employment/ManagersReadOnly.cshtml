@@ -19,6 +19,7 @@
     @Html.HiddenFor(m => m.IsVolga)
     @Html.HiddenFor(m => m.IsSP)
     
+    
     <fieldset class="bordered doc-wrap panel">
     <legend>Руководители</legend>
 @*
@@ -146,6 +147,7 @@
                         <tr>
                             @if (!string.IsNullOrEmpty(Model.PyrusNumber) && !string.IsNullOrWhiteSpace(Model.PyrusNumber))
                             {
+                                @Html.HiddenFor(m => m.PyrusNumber)
                                 <td colspan="2">
                                     <a href="@("https://pyrus.com/t#id" + Model.PyrusNumber)" target="_blank">Задача в системе Pyrus</a><br />
                                 </td>
@@ -163,7 +165,7 @@
         </div>
 
         <div class="formfield clear">
-            @Html.LabelFor(m => m.SalaryTotal)&nbsp;@Html.DisplayFor(m => m.SalaryTotal)
+            @Html.DisplayFor(m => m.SalaryTotalCaption)&nbsp;@Html.DisplayFor(m => m.SalaryTotal)
         </div>
 
         @*
@@ -215,12 +217,12 @@
             @Html.LabelFor(m => m.MentorName)&nbsp;@Html.ValidationMessageFor(m => m.MentorName)<br />
             @Html.EditorFor(m => m.MentorName)
         </div>
-
+        @*
         <div class="formfield clear">
             @Html.LabelFor(m => m.RequestNumber)&nbsp;@Html.ValidationMessageFor(m => m.RequestNumber)<br />
             @Html.EditorFor(m => m.RequestNumber)
         </div>
-
+        *@
         @if ((!Model.ManagerApprovalStatus.HasValue || !Model.ManagerApprovalStatus.Value) || (dto.UserRole & UserRole.PersonnelManager) > 0)
         {
             <div class="formfield clear">

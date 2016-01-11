@@ -13,7 +13,7 @@ using Reports.Core.Enum;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 using System.Linq;
-using Reports.Presenters.UI.ViewModel;
+//using Reports.Presenters.UI.ViewModel;
 namespace Reports.Presenters.UI.Bl.Impl
 {
     public class BaseBl : IBaseBl
@@ -564,6 +564,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             MailMessage mailMessage = null;
             try
             {
+                Log.Debug("Try to send mail to "+ dto.To+" from "+dto.From+" "+ dto.UserName);
                 mailMessage = new MailMessage
                                   {
                                       From = new MailAddress(dto.From, dto.From)
