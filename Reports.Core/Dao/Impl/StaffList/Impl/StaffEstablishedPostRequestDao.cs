@@ -144,6 +144,10 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.PersonnelManager:
                     sqlWhere = @" INNER JOIN vwDepartmentToPersonnels as F ON F.DepartmentId = isnull(A.DepartmentId, A.ParentId) and F.PersonnelId = :userId";
                     break;
+                case UserRole.Inspector:
+                    //кураторам показываем фронты и бэкфронты
+                    sqlWhere = @" INNER JOIN Department as F ON F.Id = isnull(A.DepartmentId, A.ParentId) and isnull(F.BFGId, 2) in (2, 6)";
+                    break;
             }
             return sqlWhere;
         }

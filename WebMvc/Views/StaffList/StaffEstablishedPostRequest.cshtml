@@ -84,6 +84,14 @@
                     </tr>
                     <tr>
                         <td>
+                            @Html.LabelFor(m => m.FingradCode)
+                        </td>
+                        <td>
+                            @(string.IsNullOrEmpty(Model.FingradCode) ? "" : Model.FingradCode)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
                             @Html.HiddenFor(m => m.LegalAddress)
                             @Html.LabelFor(m => m.LegalAddress)
                         </td>

@@ -85,6 +85,10 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Данные по ШЕ")]
         public string EPInfo { get; set; }
 
+        [Display(Name = "Код подразделения")]
+        public string FingradCode { get; set; }
+        
+
         [Display(Name = "Сотрудники")]
         //public IList<StaffEstablishedPostDto> Personnels { get; set; }
         public IList<StaffUserLinkDto> Personnels { get; set; }
