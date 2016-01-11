@@ -3308,6 +3308,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 Department dep = DepartmentDao.Get(model.DepartmentId);
                 model.DepartmentName = dep.Name;
+                model.FingradCode = dep.FingradCode;
                 int DepId = StaffDepartmentRequestDao.GetCurrentRequestId(dep != null ? dep.Id : 0);
                 if (DepId != 0)
                 {
@@ -3322,6 +3323,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.AccessoryName = DepEntity.DepartmentAccessory != null ? DepEntity.DepartmentAccessory.Name : string.Empty;
                 }
 
+                
                 //налоговые реквизиты
                 //StaffDepartmentTaxDetails dt = StaffDepartmentTaxDetailsDao.Get(dep.Id);
                 model.KPP = dep.DepartmentTaxDetails != null && dep.DepartmentTaxDetails.Count != 0 ? dep.DepartmentTaxDetails[0].KPP : string.Empty;
