@@ -53,6 +53,14 @@
                              </td>
                         </tr>
                         <tr>
+                             <td>
+                                @Html.LabelFor(m => m.TypeId):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name")) 
+                             </td>
+                        </tr>
+                        <tr>
                             <td>
                                 @Html.LabelFor(m => m.UserName):
                             </td>
@@ -111,7 +119,7 @@
         <td colspan="2">            
             <table id="DataGrid" class="grid" style="width:100%;border-bottom:0px;border-right:0px"><thead>
                 <tr style='cursor: pointer; ' class="noselect">
-                     <th ng-click="Sort('NPP')">
+                     <th ng-click="Sort('NPP')" width="30px">
                        <a>№<br /> П/П</a>
                        <span class="sortorder" ng-show="predicate === 'NPP'" ng-class="{reverse:reverse}"></span>
                     </th>
@@ -122,6 +130,10 @@
                     <th ng-click="Sort('Number')">
                         <a>Номер<br />заявки</a>
                         <span class="sortorder" ng-show="predicate === 'Number'" ng-class="{reverse:reverse}"></span>
+                    </th>
+                    <th ng-click="Sort('TypeId')">
+                        <a>Вид<br />заявки</a>
+                        <span class="sortorder" ng-show="predicate === 'TypeId'" ng-class="{reverse:reverse}"></span>
                     </th>
                     <th ng-click="Sort('UserName')">
                         <a>ФИО<br />сотрудника</a>
@@ -192,6 +204,7 @@
                     <td><input ng-model="search.NPP" class="filterinput" /></td>
                     <td><input ng-model="search.CreateDate" class="filterinput"  /></td>
                     <td><input ng-model="search.Number" class="filterinput"  /></td>
+                    <td><input ng-model="search.TypeId" class="filterinput"  /></td>
                     <td><input ng-model="search.UserName" class="filterinput"  /></td>
                     <td><input ng-model="search.Position" class="filterinput"  /></td>
                     <td><input ng-model="search.Creator" class="filterinput"  /></td>
@@ -214,7 +227,8 @@
                 <tr ng-repeat="row in Grid.Data| orderBy:predicate:reverse | filter: search">
 			        <td>{{row.NPP}}</td>
                     <td>{{row.CreateDate| date: 'dd.MM.yyyy'}}</td>
-                    <td><a href="/StaffMovements/Edit/{{row.Number}}">{{row.Number}}</a></td>
+                    <td><a target="_blank" href="/StaffMovements/Edit/{{row.Number}}">{{row.Number}}</a></td>
+                    <td><span>{{movementtypes[row.TypeId]}}</span></td>
                     <td>{{row.UserName }}</td>
                     <td>{{row.Position}}</td>
                     <td>{{row.Creator}}</td>
@@ -299,13 +313,13 @@
             $scope.IsWorking = false;
             $(':button').button('enable');
         }
-
+        $scope.movementtypes=["","Заявка на изменение надбавок","Заявка на перевод в другое подразделение","Заявка на перевод внутри подразделения"];
         $scope.GetData = function () {
             $scope.IsWorking = true;
             ShowFlash(true);
             $(':button').button('disable');
             $scope.TotalSum = 0;
-            $http.post('/StaffMovements/', { DepartmentId: $('#DepartmentId').val(), Status: $('#Status').val(), UserName: $('#UserName').val(), Number: $('#Number').val() }).
+            $http.post('/StaffMovements/', { DepartmentId: $('#DepartmentId').val(), TypeId: $('#TypeId').val(), Status: $('#Status').val(), UserName: $('#UserName').val(), Number: $('#Number').val() }).
               success(function (data, status, headers, config) {
                   
                   for (var i = 0; i < data.length; i++) {
@@ -324,7 +338,7 @@
         }
     });	
 </script>
-<script type="text/javascript">
+<script type="text/javascript">    
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     $(document).ready(function () {
@@ -337,6 +351,7 @@
     function resetFilter() {
         $("#BeginDate").val('');
         $("#EndDate").val('');
+        $("#TypeId").val('0');
         
         $("#DepartmentId").val('0');
         $("#DepartmentNameLabel").text('');

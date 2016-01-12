@@ -40,7 +40,7 @@ namespace Reports.Core.Dao.Impl
                 return result.First();
             return 0;*/
         }
-        public IList<StaffMovements> GetDocuments(int UserId, UserRole role, int DepartmentId, string UserName, int Number, int Status)
+        public IList<StaffMovements> GetDocuments(int UserId, UserRole role, int DepartmentId, string UserName, int Number, int Status, int TypeId)
         {
             var CurrentUser = UserDao.Load(UserId);            
             var mandepts=Session.Query<ManualRoleRecord>()
@@ -76,6 +76,8 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.ConsultantPersonnel:
                     break;
             }
+            if (TypeId > 0)
+                query = query.Where(x => x.Type.Id == TypeId);
             if (DepartmentId > 0)
                 query=query.Where(x => x.SourceDepartment.Id == DepartmentId);
             if(!String.IsNullOrWhiteSpace(UserName))

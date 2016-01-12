@@ -2016,3 +2016,7 @@ legend {
     margin: 0 1em 1em 0;
     height: 50px;
   }
+.filterinput
+{
+    width:100%;
+}

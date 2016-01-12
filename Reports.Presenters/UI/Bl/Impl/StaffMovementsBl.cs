@@ -339,6 +339,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             StaffMovementsListModel model = new StaffMovementsListModel();
             model.BeginDate =new DateTime( DateTime.Now.Year,DateTime.Now.Month,1);
+            model.Types = StaffMovementsTypesDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            model.Types.Add(new IdNameDto { Id = 0, Name = "Все" });
+            model.TypeId = 0;
             model.Statuses = StaffMovementsStatusDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             model.Statuses.Add(new IdNameDto { Id = 0, Name = "Все" });
             model.Status = 0;
@@ -352,9 +355,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="Number"></param>
         /// <param name="Status"></param>
         /// <returns></returns>
-        public IList<StaffMovementsDto> GetDocuments(int DepartmentId, string UserName, int Number, int Status)
+        public IList<StaffMovementsDto> GetDocuments(int DepartmentId, string UserName, int Number, int Status, int TypeId)
         {
-            var docs = StaffMovementsDao.GetDocuments(CurrentUser.Id, CurrentUser.UserRole ,DepartmentId, UserName, Number, Status);
+            var docs = StaffMovementsDao.GetDocuments(CurrentUser.Id, CurrentUser.UserRole ,DepartmentId, UserName, Number, Status, TypeId);
             int iterator = 1;
             if (docs != null && docs.Any())
                 return docs.Select(x => new StaffMovementsDto
@@ -369,13 +372,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     MoveDate = x.MovementDate,
                     NPP = iterator++,
                     Number = x.Id,
+                    TypeId = x.Type.Id,
                     Salary = x.Data.Salary,
                     Position = x.User != null ? (x.User.Position!=null?x.User.Position.Name:"") : "",
                     UserName = x.User!=null?x.User.Name:"",
                     PositionCurrent = x.SourcePosition !=null ? x.SourcePosition.Name:"",
-                    PositionTarget = x.TargetPosition != null ? x.TargetPosition.Name : "",
-                    TargetDep7Name = x.TargetDepartment!=null ? x.TargetDepartment.Name:"",
-                    TargetDep3Name = x.TargetDepartment!=null ? ((x.TargetDepartment.Dep3 != null && x.TargetDepartment.Dep3.Any()) ? x.TargetDepartment.Dep3.First().Name : ""):""
+                    PositionTarget = x.Type.Id>=2?(x.TargetPosition != null ? x.TargetPosition.Name : ""):"",
+                    TargetDep7Name = x.Type.Id==2?(x.TargetDepartment!=null ? x.TargetDepartment.Name:""):"",
+                    TargetDep3Name = x.Type.Id==2?(x.TargetDepartment!=null ? ((x.TargetDepartment.Dep3 != null && x.TargetDepartment.Dep3.Any()) ? x.TargetDepartment.Dep3.First().Name : ""):""):""
                 }).ToList();
             else return new List<StaffMovementsDto>();
         }
@@ -756,8 +760,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             var docs = entity.Docs;
             #region файлики
             var tmp = "";
-            var MovementNote = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementNote).First();
-            SaveAttachment(MovementNote.Id, MovementNote.Attachment != null ? MovementNote.Attachment.Id : 0, model.MovementNoteDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
+            var MovementNote = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementNote).First();           
+            var id = SaveAttachment(MovementNote.Id, MovementNote.Attachment != null ? MovementNote.Attachment.Id : 0, model.MovementNoteDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
+            if (id.HasValue)
+            {
+                var at = RequestAttachmentDao.Load(id.Value);
+                MovementNote.Attachment = at;
+                StaffMovementsDocsDao.SaveAndFlush(MovementNote);
+            }
             #endregion
         }
         /// <summary>
@@ -1048,27 +1058,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                     case "a5ceb324-a745-11de-b733-003048359abd":
                         element.IsValueEditable = false;
                         element.IsEditable = (role & UserRole.PersonnelManager) > 0 && isEditable;
-                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        element.IsVisible = false;//(role & ShowAllToRoles) > 0;
                         break;
                     //Отпуск по уходу за ребенком без оплаты
                     case "9e6ec242-49f2-4320-a5aa-024c5d607aa3":
                         element.IsEditable = false;
-                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        element.IsVisible = false;//(role & ShowAllToRoles) > 0;
                         break;
                     //Пособие по уходу за ребёнком до 1.5 лет#1502
                     case "1671e1b6-0281-489c-b191-50e6fb241e75":
                         element.IsEditable = false;
-                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        element.IsVisible = false;//(role & ShowAllToRoles) > 0;
                         break;
                     //Пособие по уходу за ребёнком до 3 лет#1503
                     case "db5cc88b-4080-4061-8bba-42f22b500bb4":
                         element.IsEditable = false;
-                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        element.IsVisible = false;//(role & ShowAllToRoles) > 0;
                         break;
                     //Доплата за совмещение
                     case "91a004fc-d13e-11dd-b086-00308d000000":
                         element.IsEditable = false;
-                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        element.IsVisible = false;//(role & ShowAllToRoles) > 0;
                         break;
                     default:
                         element.IsVisible = true;
@@ -1191,6 +1201,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.Salary = model.TargetSalaryCount;
                 entity.Data.Grade = model.Grade;//Грейд
                 entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
+                entity.Data.TargetCasingType = model.TargetCasingType;
                 SaveAdditions(entity, model);
             }
             #endregion
@@ -1199,6 +1210,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.Data.Grade = model.Grade;//Грейд
                 entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
+                entity.Data.TargetCasingType = model.TargetCasingType;
                 entity.Data.Salary = model.TargetSalaryCount;
                 //entity.Data.AccessGroup = AccessGroupDao.Load(model.AccessGroup);//Группа доступа
                 //Ставим галочки в документах
