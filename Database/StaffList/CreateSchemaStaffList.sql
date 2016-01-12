@@ -74,6 +74,10 @@ IF OBJECT_ID ('FK_StaffPostReplacement_User', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffPostReplacement] DROP CONSTRAINT [FK_StaffPostReplacement_User]
 GO
 
+IF OBJECT_ID ('FK_StaffPostReplacement_StaffReplacementReasons', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffPostReplacement] DROP CONSTRAINT [FK_StaffPostReplacement_StaffReplacementReasons]
+GO
+
 IF OBJECT_ID ('FK_StaffPostReplacement_StaffEstablishedPostUserLinks', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[StaffPostReplacement] DROP CONSTRAINT [FK_StaffPostReplacement_StaffEstablishedPostUserLinks]
 GO
@@ -1458,6 +1462,7 @@ CREATE TABLE [dbo].[StaffPostReplacement](
 	[UserId] [int] NULL,
 	[ReplacedId] [int] NULL,
 	[IsUsed] [bit] NULL,
+	[ReasonId] [int] NULL,
 	[CreatorId] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorId] [int] NULL,
@@ -1554,6 +1559,13 @@ GO
 
 
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffPostReplacement]  WITH CHECK ADD  CONSTRAINT [FK_StaffPostReplacement_StaffReplacementReasons] FOREIGN KEY([ReasonId])
+REFERENCES [dbo].[StaffReplacementReasons] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffPostReplacement] CHECK CONSTRAINT [FK_StaffPostReplacement_StaffReplacementReasons]
+GO
+
 ALTER TABLE [dbo].[StaffPostReplacement]  WITH CHECK ADD  CONSTRAINT [FK_StaffPostReplacement_StaffEstablishedPostUserLinks] FOREIGN KEY([UserLinkId])
 REFERENCES [dbo].[StaffEstablishedPostUserLinks] ([Id])
 GO
@@ -2718,6 +2730,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id замещенного
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'IsUsed'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id основания замещения сотрудника' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'ReasonId'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffPostReplacement', @level2type=N'COLUMN',@level2name=N'CreatorId'
@@ -4204,6 +4219,9 @@ GO
 
 
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
+--StaffReplacementReasons
+INSERT INTO StaffReplacementReasons(Name) VALUES(N'ОЖ'), (N'Временный перевод'), (N'Длительное отсутствие')
+
 --StaffExtraChargeActions
 INSERT INTO StaffExtraChargeActions(Name) VALUES('Начать'), ('Изменить'), ('Не изменять'), ('Прекратить')
 
