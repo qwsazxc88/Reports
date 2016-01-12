@@ -29,11 +29,12 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffDepartmentAdministrationDto> GetDepartmentAdministrations(int ManagementFilterId, int BranchFilterId)
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT A.Id as aId, A.Code as aCode, A.Name as aName, A.ManagementId, B.Name as ManagementName, A.DepartmentId as aDepartmentId, C.Name as DepName, D.Name as BranchName
+            IQuery query = Session.CreateSQLQuery(@"SELECT A.Id as aId, A.Code as aCode, A.Name as aName, A.ManagementId, B.Name as ManagementName, A.DepartmentId as aDepartmentId, C.Name as DepName, D.Name as BranchName, E.Name as DepManager
                                                     FROM StaffDepartmentAdministration as A
                                                     LEFT JOIN StaffDepartmentManagement as B ON B.Id = A.ManagementId
                                                     LEFT JOIN Department as C ON C.Id = A.DepartmentId
-                                                    LEFT JOIN StaffDepartmentBranch as D ON D.Id = B.BranchId " + SqlWhere(ManagementFilterId, BranchFilterId))
+                                                    LEFT JOIN StaffDepartmentBranch as D ON D.Id = B.BranchId " + SqlWhere(ManagementFilterId, BranchFilterId) + @"
+                                                    LEFT JOIN vwStaffListDepartmentManagers as E ON E.DepartmentId = A.DepartmentId and E.IsMainManager = 1 and isnull(E.IsPregnant, 0) = 0")
                 .AddScalar("aId", NHibernateUtil.Int32)
                 .AddScalar("aCode", NHibernateUtil.String)
                 .AddScalar("aName", NHibernateUtil.String)
@@ -41,7 +42,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("ManagementName", NHibernateUtil.String)
                 .AddScalar("aDepartmentId", NHibernateUtil.Int32)
                 .AddScalar("DepName", NHibernateUtil.String)
-                .AddScalar("BranchName", NHibernateUtil.String);
+                .AddScalar("BranchName", NHibernateUtil.String)
+                .AddScalar("DepManager", NHibernateUtil.String);
 
             return query.SetResultTransformer(Transformers.AliasToBean<StaffDepartmentAdministrationDto>()).List<StaffDepartmentAdministrationDto>();
         }
