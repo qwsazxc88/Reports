@@ -46,5 +46,5 @@ Application.controller('StaffMovementsFactListController', function ($scope, $ht
 
 });
 $(document).ready(function () {
-    setActiveMenuItem("documentMovements");
+    setActiveMenuItem("StaffMovementsFacts");
 });
