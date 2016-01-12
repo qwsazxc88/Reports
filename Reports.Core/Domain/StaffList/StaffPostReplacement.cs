@@ -25,6 +25,10 @@ namespace Reports.Core.Domain
         /// </summary>
         public virtual bool IsUsed { get; set; }
         /// <summary>
+        /// Основание для замещения сотрудника.
+        /// </summary>
+        public virtual StaffReplacementReasons ReplacementReason { get; set; }
+        /// <summary>
         /// Автор записи
         /// </summary>
         public virtual User Creator { get; set; }
