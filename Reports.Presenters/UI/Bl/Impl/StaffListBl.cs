@@ -1037,6 +1037,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             //поля общих реквизитов
             entity.Name = model.Name;
             entity.DepartmentAccessory = model.BFGId == 0 ? null : StaffDepartmentAccessoryDao.Load(model.BFGId);
+            if (entity.Department != null)
+            {
+                entity.Department.DepartmentAccessory = StaffDepartmentAccessoryDao.Load(model.BFGId);
+            }
             entity.OrderNumber = model.OrderNumber;
             entity.OrderDate = model.OrderDate;
             entity.BeginAccountDate = model.BeginAccountDate;
@@ -2448,9 +2452,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.IsSoftAdminApprove = true;
                 model.IsSoftAdminApproveAvailable = true;
-                model.IsDraftButtonAvailable = false;
-                model.IsAgreeButtonAvailable = false;
-                model.IsImportance = false;
+                if (model.IsSoftAdmin)
+                {
+                    model.IsDraftButtonAvailable = false;
+                    model.IsAgreeButtonAvailable = false;
+                    model.IsImportance = false;
+                }
             }
 
 

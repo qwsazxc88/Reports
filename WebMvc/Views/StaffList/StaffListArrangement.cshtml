@@ -22,6 +22,8 @@
                     <th rowspan="3">Итого</th>
                     <th rowspan="3">ФИО<br />сотрудника</th>
                     <th rowspan="3">ОЖ</th>
+                    <th rowspan="3">Временный<br />перевод</th>
+                    <th rowspan="3">Длительное<br />отсутствие</th>
                     <th rowspan="3">Резерв<br />вакансии</th>
                     @*
                     <th rowspan="3">Название в<br />Финграде</th>
@@ -58,6 +60,8 @@
                     </td>
                     <td></td>
                     <td>@item.SEPCount</td>
+                    <td></td>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -222,6 +226,8 @@
                                         "<td></td>" +
                                         "<td></td>" +
                                         "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
 //                                        "<td>" + (result.Departments[i].DepFingradName == null ? "" : result.Departments[i].DepFingradName) + "</td>" +
 //                                        "<td>" + (result.Departments[i].DepFingradNameComment == null ? "" : result.Departments[i].DepFingradNameComment) + "</td>" +
 //                                        "<td>" + (result.Departments[i].FinDepPointCode == null ? "" : result.Departments[i].FinDepPointCode) + "</td>" +
@@ -297,6 +303,8 @@
                                             tblStr += "<td style='color:Red;'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>"
                                         }
                                         tblStr += "<td>" + (result.EstablishedPosts[i].ReplacedName == null ? "" : result.EstablishedPosts[i].ReplacedName) + "</td>" +
+                                        //"<td></td>" +
+                                        //"<td></td>" +
                                         "<td>" + (result.EstablishedPosts[i].Reserve == null ? "" : result.EstablishedPosts[i].Reserve) + "</td>" +
                                     "</tr>";
 
