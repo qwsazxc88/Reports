@@ -70,27 +70,27 @@ namespace Reports.Presenters.UI.ViewModel
         public StandartUserDto TargetManager { get; set; }
         #endregion
         #region Согласования
-        [Display(Name="Согласовано сотрудником")]
+        [Display(Name="Сотрудник")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
                ApplyFormatInEditMode = true)]
         public DateTime? SendDate { get; set; }
-        [Display(Name = "Согласовано отпускающим руководителем")]
+        [Display(Name = "Отпускающий руководитель")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
                ApplyFormatInEditMode = true)]
         public DateTime? SourceManagerAccept { get; set; }
-        [Display(Name = "Согласовано принимающим руководителем")]
+        [Display(Name = "Принимающий руководитель")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
                ApplyFormatInEditMode = true)]
         public DateTime? TargetManagerAccept { get; set; }
-        [Display(Name = "Согласовано кадровиком банка")]
+        [Display(Name = "Кадровик банка")]
         public DateTime? PersonnelManagerBankAccept { get; set; }
         public string PersonnelManagerBank { get; set; }
-        [Display(Name = "Согласовано вышестоящим руководителем")]
+        [Display(Name = "Вышестоящий руководитель")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",
                ApplyFormatInEditMode = true)]
         public DateTime? ChiefAccept { get; set; }
         public string Chief { get; set; }
-        [Display(Name = "Согласовано кадровиком")]
+        [Display(Name = "Кадровик")]
         public DateTime? PersonnelManagerAccept { get; set; }
         public string PersonnelManager { get; set; }
         #endregion

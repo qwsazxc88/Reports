@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";
     ViewBag.PlaceId = Model.Id;
     ViewBag.PlaceTypeId = (int)Reports.Core.Enum.CommentsPlaceTypes.StaffMovements;
-    DateTime NextDay = DateTime.Now.AddDays(2);
+    DateTime NextDay = DateTime.Now.AddDays(1);
 }
 @using (Html.BeginForm("Edit", "StaffMovements", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {   
@@ -146,7 +146,7 @@
                             <table>
                                 
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.SourceManager.Name)</td>
+                                    <td>ФИО @(Model.RequestType == 2 ? "отпускающего" : "") руководителя</td>
                                     <td>
                                         @Html.HiddenFor(m => m.SourceManager.Name)
                                         @Html.HiddenFor(m => m.SourceManager.Id)
@@ -154,7 +154,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.SourceManager.PositionName)</td>
+                                    <td>Должность @(Model.RequestType == 2 ? "отпускающего" : "") руководителя</td>
                                     <td>
                                         @Html.HiddenFor(m => m.SourceManager.PositionName)
                                         @Html.HiddenFor(m => m.SourceManager.PositionId)
@@ -205,7 +205,7 @@
                             <table>
                                 
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.TargetManager.Name)</td>
+                                    <td>ФИО принимающего руководителя</td>
                                     <td>
                                         @Html.HiddenFor(m => m.TargetManager.Name)
                                         @Html.HiddenFor(m => m.TargetManager.Id)
@@ -213,7 +213,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@Html.LabelFor(m => m.TargetManager.PositionName)</td>
+                                    <td>Должность принимающего руководителя</td>
                                     <td>
                                         @Html.HiddenFor(m => m.TargetManager.PositionName)
                                         @Html.HiddenFor(m => m.TargetManager.PositionId)
@@ -494,7 +494,7 @@
                               <td>
                                 @if (Model.MovementNoteDto != null && !string.IsNullOrEmpty(Model.MovementNoteDto.FileName))
                                 {
-                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MovementNoteAttachmentId })' style="cursor:hand" target="_blank" >@Model.MovementNoteDto.FileName</a>
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", "Help", new { Id = Model.MovementNoteAttachmentId })' style="cursor:hand" target="_blank" >@Model.MovementNoteDto.FileName</a>
                                 }
                                 @if (Model.IsDocsAddAvailable && Model.MovementNoteIsRequired)
                                 {
@@ -894,15 +894,15 @@ label { font-size:1.1em; }
               error: function(){ ShowFlash(false); alert('Ошибка при получении данных');}
             });
         });
-        $('#IsHourlyContainer').buttonset(@if (!Model.IsPersonnelManagerEditable)
+        $('#IsHourlyContainer').buttonset(@if (!(Model.IsPersonnelManagerEditable || Model.IsManagerEditable))
                                           {<text>{disabled: true}</text>});
-        $('#IsTempMovingContainer').buttonset(@if (!Model.IsManagerEditable)
+        $('#IsTempMovingContainer').buttonset(@if (!(Model.IsPersonnelManagerEditable || Model.IsManagerEditable))
                                               {<text>{disabled: true}</text>});
-        $('#ConjunctionContainer').buttonset(@if (!Model.IsManagerEditable)
+        $('#ConjunctionContainer').buttonset(@if (!(Model.IsPersonnelManagerEditable || Model.IsManagerEditable))
                                              {<text>{disabled: true}</text>});
         $(':button, :input[type=button], :input[type=submit], .button').button();
         $(':input[type=text]').addClass("widget");
-        @if (Model.IsManagerEditable)
+        @if (Model.IsManagerEditable || Model.IsPersonnelManagerEditable)
         {<text>
         $("#IsConjunctionTrue").click(function(){
             $("#lblIsConjunctionTrue").css("border-color", "#248BAD");
@@ -922,10 +922,7 @@ label { font-size:1.1em; }
             $("#lblIsTempMovingFalse").css("border-color", "#248BAD");
             $(".TempMovingContainer").hide();
         });
-        </text>
-        }
-        @if (Model.IsPersonnelManagerEditable)
-        {<text>
+        
         $("#IsHourlyTrue").click(function(){
             $("#lblHourlyTrue").css("border-color", "#248BAD");
             $("#lblHourlyFalse").css("border-color", "silver");

@@ -17,7 +17,7 @@ namespace Reports.Presenters.UI.Bl
         void SaveModel(StaffMovementsEditModel model);
         StaffMovementsListModel GetListModel();
         IList<IdNameDto> GetPositionsForDepartment(int id);
-        IList<StaffMovementsDto> GetDocuments( int DepartmentId, string UserName, int Number, int Status);
+        IList<StaffMovementsDto> GetDocuments( int DepartmentId, string UserName, int Number, int Status, int TypeId);
         bool CheckMovementsExist(DateTime date, int UserId,int id);
         void SaveDocsModel(StaffMovementsEditModel model);
         StaffMovementsPrintModel GetPrintModel(int id, int SignerId=0);
