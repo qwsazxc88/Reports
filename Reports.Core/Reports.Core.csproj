@@ -306,6 +306,7 @@
     <Compile Include="Dao\Impl\StaffList\Impl\StaffEstablishedPostUserLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffExtraChargeActionsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffPostReplacementDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\Impl\StaffReplacementReasonsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffRequestPyrusTasksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffUnitReferenceDao.cs" />
     <Compile Include="Dao\Impl\StaffList\Impl\StaffUserNorthAdditionalDao.cs" />
@@ -314,6 +315,7 @@
     <Compile Include="Dao\Impl\StaffList\IStaffEstablishedPostUserLinksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffExtraChargeActionsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffPostReplacementDao.cs" />
+    <Compile Include="Dao\Impl\StaffList\IStaffReplacementReasonsDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffRequestPyrusTasksDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffUnitReferenceDao.cs" />
     <Compile Include="Dao\Impl\StaffList\IStaffUserNorthAdditionalDao.cs" />
@@ -526,6 +528,7 @@
     <Compile Include="Domain\StaffList\StaffEstablishedPostUserLinks.cs" />
     <Compile Include="Domain\StaffList\StaffExtraChargeActions.cs" />
     <Compile Include="Domain\StaffList\StaffPostReplacement.cs" />
+    <Compile Include="Domain\StaffList\StaffReplacementReasons.cs" />
     <Compile Include="Domain\StaffList\StaffRequestPyrusTasks.cs" />
     <Compile Include="Domain\StaffList\StaffUnitReference.cs" />
     <Compile Include="Domain\StaffList\StaffUserNorthAdditional.cs" />
@@ -1426,6 +1429,7 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\StaffList\StaffReplacementReasons.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffMovements\StaffMovementsFact.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffUserNorthAdditional.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffExtraChargeActions.hbm.xml" />

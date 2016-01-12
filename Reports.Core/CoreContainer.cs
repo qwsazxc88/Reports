@@ -805,6 +805,9 @@ namespace Reports.Core
             Register(Component.For<IStaffUserNorthAdditionalDao>()
                 .ImplementedBy<StaffUserNorthAdditionalDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffReplacementReasonsDao>()
+                .ImplementedBy<StaffReplacementReasonsDao>()
+                .LifeStyle.Is(type));
 
             #endregion
             
