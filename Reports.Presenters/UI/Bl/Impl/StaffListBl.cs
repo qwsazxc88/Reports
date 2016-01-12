@@ -2693,7 +2693,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //расстановка
                 //при сокращении или вводе ременной вакансии ставим метки в расстановке
-                if (entity.RequestType.Id == 2 || entity.RequestType.Id == 3 || (entity.RequestType.Id == 4 && model.Personnels.Count != 0))
+                if (entity.RequestType.Id == 2 || entity.RequestType.Id == 3 || (entity.RequestType.Id == 4 && (model.Personnels != null && model.Personnels.Count != 0)))
                 {
                     ////на случай добавления вакансии
                     //if (entity.RequestType.Id == 2 || (entity.RequestType.Id == 4 && model.Personnels.Count != 0))
