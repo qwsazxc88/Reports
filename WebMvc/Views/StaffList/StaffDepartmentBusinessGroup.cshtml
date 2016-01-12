@@ -13,6 +13,7 @@
                 <tr>
                     <th colspan="5">Финград</th>
                     <th rowspan="2">Название бизнес-группы в СКД</th>
+                    <th rowspan="2">Руководитель</th>
                     <th rowspan="2" colspan="2"><button type="button" title="Создать новую запись" onclick="AddEditBusinessGrouptRow(-1);">Создать</button></th>
                     @*<th rowspan="2" class="tdBtn"></th>*@
                 </tr>    
@@ -24,7 +25,7 @@
                     <th>Филиал</th>
                 </tr>
                 <tr>
-                    <td colspan="8">
+                    <td colspan="9">
                         <div id="BGFilterDiv">
                             <h3>Фильтры:</h3>
                             <div>
@@ -71,6 +72,9 @@
                         <td>
                             @Html.DisplayFor(m => m.BusinessGroups[i - 1].DepName)
                             @Html.HiddenFor(m => m.BusinessGroups[i - 1].bDepartmentId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => m.BusinessGroups[i - 1].DepManager)
                         </td>
                         <td class="tdBtn">
                             <a class="CallModal" onclick="AddEditBusinessGrouptRow(@i-1);" href="#" >Изменить</a>
