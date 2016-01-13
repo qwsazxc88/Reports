@@ -6529,9 +6529,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             decimal FrontOfficeExperienceAddition = (entity.Candidate.PersonnelManagers.FrontOfficeExperienceAddition.HasValue ? entity.Candidate.PersonnelManagers.FrontOfficeExperienceAddition.Value : 0);//Надбавка за стаж работы специалистом фронт-офиса (руб)
             decimal NorthernAreaAddition = (entity.Candidate.PersonnelManagers.NorthernAreaAddition.HasValue ? entity.Candidate.PersonnelManagers.NorthernAreaAddition.Value : 0);//северная %
 
-            return (SalaryBasis * SalaryMultiplier + PersonalAddition + AreaAddition + FrontOfficeExperienceAddition + TravelRelatedAddition + CompetenceAddition)
-                     + ((SalaryBasis * SalaryMultiplier + PersonalAddition + AreaAddition + FrontOfficeExperienceAddition + TravelRelatedAddition + CompetenceAddition) * (AreaMultiplier / 100))
-                     + ((SalaryBasis * SalaryMultiplier + PersonalAddition + AreaAddition + FrontOfficeExperienceAddition + TravelRelatedAddition + CompetenceAddition) * (NorthernAreaAddition / 100)); 
+            return ((SalaryBasis + PersonalAddition + AreaAddition + FrontOfficeExperienceAddition + TravelRelatedAddition + CompetenceAddition) * SalaryMultiplier)
+                     + ((SalaryBasis + PersonalAddition + AreaAddition + FrontOfficeExperienceAddition + TravelRelatedAddition + CompetenceAddition) * SalaryMultiplier * (AreaMultiplier / 100))
+                     + ((SalaryBasis + PersonalAddition + AreaAddition + FrontOfficeExperienceAddition + TravelRelatedAddition + CompetenceAddition) * SalaryMultiplier * (NorthernAreaAddition / 100)); 
         }
 
         public bool IsFixedTermContract(int userId)
