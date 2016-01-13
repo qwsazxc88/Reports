@@ -117,7 +117,7 @@ DECLARE
 	LEFT JOIN Users as E ON E.Id = F.UserId and E.IsActive = 1 and (E.RoleId & 2 > 0 or E.RoleId & 16384 > 0) --and E.IsPregnant = 0
 	LEFT JOIN StaffPostReplacement as G ON G.UserLinkId = F.Id and F.IsUsed = 1
 	LEFT JOIN Users as H ON H.Id = G.ReplacedId
-	LEFT JOIN vwStaffPostSalary as I ON I.UserId = E.Id
+	LEFT JOIN vwStaffPostSalary as I ON I.UserLinkId = F.Id
 	LEFT JOIN (SELECT UserId FROM Dismissal 
 						 WHERE UserDateAccept is not null and DeleteDate is null
 						 GROUP BY UserId) as J ON J.UserId = E.Id
