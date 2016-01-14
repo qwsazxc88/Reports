@@ -45,6 +45,7 @@ namespace Reports.Core.Dto
         public bool IsTemporary { get; set; }
         public DateTime? DateTempBegin { get; set; }
         public DateTime? DateTempEnd { get; set; }
+        public string BasicUser { get; set; }   //ФИО постоянного сотрудника
     }
 
     public class StaffUserLinkDto
