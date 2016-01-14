@@ -25,11 +25,7 @@
                     <th rowspan="3">Временный<br />перевод</th>
                     <th rowspan="3">Длительное<br />отсутствие</th>
                     <th rowspan="3">Резерв<br />вакансии</th>
-                    @*
-                    <th rowspan="3">Название в<br />Финграде</th>
-                    <th rowspan="3">Комментарий</th>
-                    <th rowspan="3">Код в<br />Финграде</th>
-                    *@
+                    <th rowspan="3">Основной<br />сотрудник</th>
                 </tr>   
                 <tr>
                     <th>Должностная</th>
@@ -75,20 +71,28 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    @*<td>@item.DepFingradName</td>
-                    <td>@item.DepFingradNameComment</td>
-                    <td>@item.FinDepPointCode</td>*@
+                    <td></td>
                 </tr>
             }
             @{ i++; }
         </table>             
 
     </div>
+    
     <div id="DivIndicator" style="display:none;">
         <table>
             <tr>
                 <td><span id="LoadingIndicator2"></span></td>
                 <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+    
+    <div id="DivTemporaryVacation" style="display:none;">
+        <table>
+            <tr>
+                <td>111</td>
+                <td>222</td>
             </tr>
         </table>
     </div>
@@ -228,9 +232,7 @@
                                         "<td></td>" +
                                         "<td></td>" +
                                         "<td></td>" +
-//                                        "<td>" + (result.Departments[i].DepFingradName == null ? "" : result.Departments[i].DepFingradName) + "</td>" +
-//                                        "<td>" + (result.Departments[i].DepFingradNameComment == null ? "" : result.Departments[i].DepFingradNameComment) + "</td>" +
-//                                        "<td>" + (result.Departments[i].FinDepPointCode == null ? "" : result.Departments[i].FinDepPointCode) + "</td>" +
+                                        "<td></td>" +
                                     "</tr>";
 
                         var ParentRowName = "#tr-" + (i == 0 ? Id : result.Departments[i - 1].Code1C);//определяем Id строки после которой нужно добавить новую строку
@@ -270,8 +272,8 @@
                                     "<td></td>" +
                                     "<td>" +
                                     "<span>" +
-                                        "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
-                                        "<span Id='span-tr'" + result.EstablishedPosts[i].Id + "' >&nbsp;</span> " + result.EstablishedPosts[i].PositionName + "</a>" +
+                                        "<a class='Acollapsible CallModal' accessKey='' href='#' id='' onclick='' style='color:green;'>" + //onclick='CreateTemporaryVacation();'
+                                        result.EstablishedPosts[i].PositionName + "</a>" +
                                     "</span>" +
                                     "</td>" + 
                                     "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
@@ -306,6 +308,7 @@
                                         "<td></td>" +
                                         "<td></td>" +
                                         "<td>" + (result.EstablishedPosts[i].Reserve == null ? "" : result.EstablishedPosts[i].Reserve) + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].BasicUser == null ? "" : result.EstablishedPosts[i].BasicUser) + "</td>" +
                                     "</tr>";
 
                         var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
@@ -393,7 +396,7 @@
         var actionDetailDialogUrl = "@Url.Action("SelectMovementType", "StaffList")";
         actionDetailDialogUrl += "?UserId=" + UserId;
 
-        var title = "Выбор типа заявки";
+        var title = "Выбор типа заявки для штатного перемещения";
         
 
         $(newDiv).text('Подождите, идет загрузка данных ...');
@@ -430,13 +433,36 @@
 
         $(newDiv).dialog("open");
     }
-    /*
-    для выхода на создание заявки по кадровому перемещению
-    User.Id,
-RequestType
 
-action = Edit
-    */
+    
+    function CreateTemporaryVacation(){
+        $("#DivTemporaryVacation").show();
+        $("#DivTemporaryVacation").dialog(
+        {
+            autoOpen: true,
+            modal: true,
+            title: "Создание временной вакансии",
+            draggable: false,
+            resizable: false,
+            width: "auto",
+            closeOnEscape: true,
+            close: function (event, ui) {
+                //$(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "Ок": function () {
+                    $("#DivTemporaryVacation").hide();
+                    window.location.reload();
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $("#DivTemporaryVacation").hide();
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
     
 </script>
 

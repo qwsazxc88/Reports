@@ -315,7 +315,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(refstaffmovementsTypesDao); }
             set { refstaffmovementsTypesDao = value; }
         }
-        
+
+        protected IStaffLongAbsencesTypesDao stafflongAbsencesTypesDao;
+        public IStaffLongAbsencesTypesDao StaffLongAbsencesTypesDao
+        {
+            get { return Validate.Dependency(stafflongAbsencesTypesDao); }
+            set { stafflongAbsencesTypesDao = value; }
+        }
+
+        protected IStaffTemporaryReleaseVacancyRequestDao stafftemporaryReleaseVacancyRequestDao;
+        public IStaffTemporaryReleaseVacancyRequestDao StaffTemporaryReleaseVacancyRequestDao
+        {
+            get { return Validate.Dependency(stafftemporaryReleaseVacancyRequestDao); }
+            set { stafftemporaryReleaseVacancyRequestDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
