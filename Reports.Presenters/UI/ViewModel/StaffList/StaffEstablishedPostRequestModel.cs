@@ -90,9 +90,10 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         
 
         [Display(Name = "Сотрудники")]
-        //public IList<StaffEstablishedPostDto> Personnels { get; set; }
         public IList<StaffUserLinkDto> Personnels { get; set; }
-        
+
+        [Display(Name = "Руководители")]
+        public string Managers { get; set; }
 
         #region Согласование
         [Display(Name = "Инициатор")]
