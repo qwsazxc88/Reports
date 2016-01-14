@@ -32,6 +32,28 @@ IF OBJECT_ID ('FK_Users_StaffEstablishedPost', 'F') IS NOT NULL
 GO
 
 
+
+
+IF OBJECT_ID ('FK_StaffTemporaryReleaseVacancyRequest_StaffLongAbsencesTypes', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest] DROP CONSTRAINT [FK_StaffTemporaryReleaseVacancyRequest_StaffLongAbsencesTypes]
+GO
+
+IF OBJECT_ID ('FK_StaffTemporaryReleaseVacancyRequest_StaffEstablishedPostUserLinks', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest] DROP CONSTRAINT [FK_StaffTemporaryReleaseVacancyRequest_StaffEstablishedPostUserLinks]
+GO
+
+IF OBJECT_ID ('FK_StaffTemporaryReleaseVacancyRequest_ReplacedUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest] DROP CONSTRAINT [FK_StaffTemporaryReleaseVacancyRequest_ReplacedUser]
+GO
+
+IF OBJECT_ID ('FK_StaffTemporaryReleaseVacancyRequest_EditorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest] DROP CONSTRAINT [FK_StaffTemporaryReleaseVacancyRequest_EditorUser]
+GO
+
+IF OBJECT_ID ('FK_StaffTemporaryReleaseVacancyRequest_CreatorUser', 'F') IS NOT NULL
+	ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest] DROP CONSTRAINT [FK_StaffTemporaryReleaseVacancyRequest_CreatorUser]
+GO
+
 IF OBJECT_ID ('FK_Department_StaffDepartmentAccessory', 'F') IS NOT NULL
 	ALTER TABLE [dbo].[Department] DROP CONSTRAINT [FK_Department_StaffDepartmentAccessory]
 GO
@@ -1557,8 +1579,89 @@ GO
 
 
 
+if OBJECT_ID (N'StaffLongAbsencesTypes', 'U') is not null
+	DROP TABLE [dbo].[StaffLongAbsencesTypes]
+GO
+CREATE TABLE [dbo].[StaffLongAbsencesTypes](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NULL,
+	[CreateDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffLongAbsencesTypes] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+
+if OBJECT_ID (N'StaffTemporaryReleaseVacancyRequest', 'U') is not null
+	DROP TABLE [dbo].[StaffTemporaryReleaseVacancyRequest]
+GO
+CREATE TABLE [dbo].[StaffTemporaryReleaseVacancyRequest](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL,
+	[UserLinkId] [int] NULL,
+	[ReplacedId] [int] NULL,
+	[DateBegin] [datetime] NULL,
+	[DateEnd] [datetime] NULL,
+	[AbsencesTypeId] [int] NULL,
+	[IsUsed] [bit] NULL,
+	[CreatorId] [int] NULL,
+	[CreateDate] [datetime] NULL,
+	[EditorId] [int] NULL,
+	[EditDate] [datetime] NULL,
+ CONSTRAINT [PK_StaffTemporaryReleaseVacancyRequest] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
 
 --3. СОЗДАНИЕ ССЫЛОК И ОГРАНИЧЕНИЙ
+ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest] ADD  CONSTRAINT [DF_StaffTemporaryReleaseVacancyRequest_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
+ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest]  WITH CHECK ADD  CONSTRAINT [FK_StaffTemporaryReleaseVacancyRequest_CreatorUser] FOREIGN KEY([CreatorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest] CHECK CONSTRAINT [FK_StaffTemporaryReleaseVacancyRequest_CreatorUser]
+GO
+
+ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest]  WITH CHECK ADD  CONSTRAINT [FK_StaffTemporaryReleaseVacancyRequest_EditorUser] FOREIGN KEY([EditorId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest] CHECK CONSTRAINT [FK_StaffTemporaryReleaseVacancyRequest_EditorUser]
+GO
+
+ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest]  WITH CHECK ADD  CONSTRAINT [FK_StaffTemporaryReleaseVacancyRequest_ReplacedUser] FOREIGN KEY([ReplacedId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest] CHECK CONSTRAINT [FK_StaffTemporaryReleaseVacancyRequest_ReplacedUser]
+GO
+
+ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest]  WITH CHECK ADD  CONSTRAINT [FK_StaffTemporaryReleaseVacancyRequest_StaffEstablishedPostUserLinks] FOREIGN KEY([UserLinkId])
+REFERENCES [dbo].[StaffEstablishedPostUserLinks] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest] CHECK CONSTRAINT [FK_StaffTemporaryReleaseVacancyRequest_StaffEstablishedPostUserLinks]
+GO
+
+ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest]  WITH CHECK ADD  CONSTRAINT [FK_StaffTemporaryReleaseVacancyRequest_StaffLongAbsencesTypes] FOREIGN KEY([AbsencesTypeId])
+REFERENCES [dbo].[StaffLongAbsencesTypes] ([Id])
+GO
+
+ALTER TABLE [dbo].[StaffTemporaryReleaseVacancyRequest] CHECK CONSTRAINT [FK_StaffTemporaryReleaseVacancyRequest_StaffLongAbsencesTypes]
+GO
+
+ALTER TABLE [dbo].[StaffLongAbsencesTypes] ADD  CONSTRAINT [DF_StaffLongAbsencesTypes_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+
 ALTER TABLE [dbo].[StaffPostReplacement]  WITH CHECK ADD  CONSTRAINT [FK_StaffPostReplacement_StaffReplacementReasons] FOREIGN KEY([ReasonId])
 REFERENCES [dbo].[StaffReplacementReasons] ([Id])
 GO
@@ -2621,6 +2724,57 @@ ALTER TABLE [dbo].[StaffMovementsFact] CHECK CONSTRAINT [FK_StaffMovementsFact_S
 GO
 
 --4. СОЗДАНИЕ ОПИСАНИЙ
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffTemporaryReleaseVacancyRequest', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffTemporaryReleaseVacancyRequest', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id штатной расстановки' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffTemporaryReleaseVacancyRequest', @level2type=N'COLUMN',@level2name=N'UserLinkId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id замещаемого/отсутствующего сотрудника' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffTemporaryReleaseVacancyRequest', @level2type=N'COLUMN',@level2name=N'ReplacedId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата начала периода действия временной вакансии' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffTemporaryReleaseVacancyRequest', @level2type=N'COLUMN',@level2name=N'DateBegin'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата конца периода действия временной вакансии' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffTemporaryReleaseVacancyRequest', @level2type=N'COLUMN',@level2name=N'DateEnd'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Вид длительного отсутствия' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffTemporaryReleaseVacancyRequest', @level2type=N'COLUMN',@level2name=N'AbsencesTypeId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак использования' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffTemporaryReleaseVacancyRequest', @level2type=N'COLUMN',@level2name=N'IsUsed'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffTemporaryReleaseVacancyRequest', @level2type=N'COLUMN',@level2name=N'CreatorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffTemporaryReleaseVacancyRequest', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffTemporaryReleaseVacancyRequest', @level2type=N'COLUMN',@level2name=N'EditorId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffTemporaryReleaseVacancyRequest', @level2type=N'COLUMN',@level2name=N'EditDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Заявки на временно освобождение вакансии' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffTemporaryReleaseVacancyRequest'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffLongAbsencesTypes', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Наименование' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffLongAbsencesTypes', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffLongAbsencesTypes', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник видов длительных отсутствий' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffLongAbsencesTypes'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Id записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffUserNorthAdditional', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 
@@ -4219,6 +4373,9 @@ GO
 
 
 --6. ЗАПОЛНЕНИЕ СПРАВОЧНИКОВ ДАННЫМИ
+--StaffLongAbsencesTypes
+INSERT INTO StaffLongAbsencesTypes(Name) VALUES(N'Досрочный декрет'), (N'Больничный свыше 1 месяца'), (N'Невыясненная причина отсутствия свыше 1 месяца'), (N'Командировка свыше 3 месяцев')
+,(N'Учебный отпуск свыше 1 месяца')
 --StaffReplacementReasons
 INSERT INTO StaffReplacementReasons(Name) VALUES(N'ОЖ'), (N'Временный перевод'), (N'Длительное отсутствие')
 

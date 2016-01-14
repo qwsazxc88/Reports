@@ -809,6 +809,12 @@ namespace Reports.Core
             Register(Component.For<IStaffReplacementReasonsDao>()
                 .ImplementedBy<StaffReplacementReasonsDao>()
                 .LifeStyle.Is(type));
+            Register(Component.For<IStaffLongAbsencesTypesDao>()
+                .ImplementedBy<StaffLongAbsencesTypesDao>()
+                .LifeStyle.Is(type));
+            Register(Component.For<IStaffTemporaryReleaseVacancyRequestDao>()
+                .ImplementedBy<StaffTemporaryReleaseVacancyRequestDao>()
+                .LifeStyle.Is(type));
             #endregion
             
             
