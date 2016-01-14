@@ -2651,7 +2651,38 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             }
+            /*
+            // Руководители до 4 уровня по ветке
+            IList<User> managers = null;
+            //для ветки руководства скб
+            managers = DepartmentDao.GetDepartmentManagers(model.DepartmentId, true)
+                    .OrderByDescending<User, int?>(manager => manager.Level)
+                    .ToList<User>();
 
+            // + руководители по ручным привязкам
+            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, manualRoleForManagersList);
+            foreach (var manualRoleManager in manualRoleManagers)
+            {
+                if (!managers.Contains(manualRoleManager))
+                {
+                    managers.Add(manualRoleManager);
+                }
+            }
+
+            StringBuilder managersBuilder = new StringBuilder();
+            foreach (var manager in managers)
+            {
+                managersBuilder.AppendFormat("{0} ({1}), ", manager.Name, manager.Position == null ? "<не указана>" : manager.Position.Name);
+            }
+
+            // Cut off trailing ", "
+            if (managersBuilder.Length >= 2)
+            {
+                managersBuilder.Remove(managersBuilder.Length - 2, 2);
+            }
+
+            model.Managers = managersBuilder.ToString();
+            */
             LoadDictionaries(model);
             //для новых заявок надо подгружать надбавки от текущего состояния штатной единицы, берем действующую заявку, иначе по заполняем по текущей заявке
             model.PostChargeLinks = StaffEstablishedPostChargeLinksDao.GetChargesForRequests(model.RequestTypeId != 1 && model.Id == 0 ? StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId) : model.Id).OrderBy(x => x.ChargeName).ToList();
@@ -2853,7 +2884,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Quantity = model.Quantity;
                 entity.Salary = model.Salary;
             }
-            entity.BeginAccountDate = model.BeginAccountDate;
+            //entity.BeginAccountDate = model.BeginAccountDate;
             entity.Reason = model.ReasonId.HasValue ? AppointmentReasonDao.Get(model.ReasonId.Value) : null;
             entity.IsDraft = entity.IsUsed ? false : model.IsDraft; 
             entity.Editor = curUser;
@@ -2953,7 +2984,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.RequestType.Id == 4)
                     {
                         entity.DateSendToApprove = DateTime.Now;
-                        entity.BeginAccountDate = DateTime.Now;
+                        //entity.BeginAccountDate = DateTime.Now;
                         entity.DateAccept = DateTime.Now;
                     }
 
