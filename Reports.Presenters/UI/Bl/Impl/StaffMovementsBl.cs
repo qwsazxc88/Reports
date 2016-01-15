@@ -1033,6 +1033,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     SetAdditionFlags(model.AdditionsToEdit, CurrentUser.UserRole, false);
                     break;
                 case UserRole.PersonnelManager:
+                    
                     model.IsDocsVisible = true;
                     model.IsPersonnelVisible = true;
                     model.IsManagerVisible = true;
@@ -1053,6 +1054,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsConfirmButtonAvailable = model.IsConfirmButtonAvailable && true;//Кнопка утверждения документов                   
                     model.IsStopButtonAvailable = false;//Конпка приостановки 
                     SetAdditionFlags(model.AdditionsToEdit, CurrentUser.UserRole, model.IsPersonnelManagerEditable);
+                    /*model.IsTargetManagerAcceptAvailable = true && !model.TargetManagerAccept.HasValue;
+                    model.IsSourceManagerAcceptAvailable = true && !model.SourceManagerAccept.HasValue;*/
                     break;
             }
             model.IsSaveAvailable = (model.StatusId == 1 && (model.Creator.Id == CurrentUser.Id || model.User.Id == CurrentUser.Id))
