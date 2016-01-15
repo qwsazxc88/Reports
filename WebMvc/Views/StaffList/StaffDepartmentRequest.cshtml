@@ -1195,7 +1195,7 @@
                                                  else
                                                  {<text>"Редактировать заявку"</text>}) 
                                                 @if (!Model.IsDraftButtonAvailable)
-                                                {<text>disabled="disabled"</text>}>@(Model.Id == 0 ? "Сохранить" : "Редактировать")</button>
+                                                {<text>disabled=disabled</text>}>@(Model.Id == 0 ? "Сохранить" : "Редактировать")</button>
         <button id="btnAgree" type="button" title="Согласовать заявку/Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
                                                                                                         {<text>disabled="disabled"</text>}>Согласовать</button>
         <button id="btnDelete" type="button" title="Отклонить заявку" @if (!Model.IsAgreeButtonAvailable)
@@ -1250,7 +1250,7 @@
             if (!confirm("Подтвердите выполнение данной операции!?")) {
                 return;
             }
-            $("#IsDraft").val(false);
+            $("#IsDraft").val(true);
             $("#IsDelete").val(true);
             ShowFlash(true);
             $("#StaffDepartmentRequestForm").submit();
