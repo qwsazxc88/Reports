@@ -10,6 +10,7 @@ BEGIN
 SET NOCOUNT ON
 DECLARE 
 	@UserId int	--Id сотрудника
+	,@UserLinkId int	--Id в расстановке
 	,@PersonalAddition numeric(18, 2)	--ѕерсональна€ надбавка (руб)
 	,@AreaAddition numeric(18, 2)	--“ерриториальна€ надбавка (руб)
 	,@TravelRelatedAddition numeric(18, 2)	--Ќадбавка за разъездной характер работы (руб)
@@ -18,18 +19,26 @@ DECLARE
 	,@NorthernAreaAddition numeric(18, 2)	--северна€ %
 BEGIN TRANSACTION	
 	SELECT @UserId = UserId FROM EmploymentCandidate WHERE Id = @CandidateId
+	SELECT @UserLinkId = Id FROM StaffEstablishedPostUserLinks WHERE DocId = @CandidateId and ReserveType = 2
 
 	--если прием по срочному тд, то в расстановке место зан€то другим сотрудником и стоит признак резерва из приема
 	--заносим запись в журнал замещени€
 	IF EXISTS (SELECT * FROM StaffEstablishedPostUserLinks WHERE DocId = @CandidateId and ReserveType = 2 and UserId is not null)
 	BEGIN
 		INSERT INTO StaffPostReplacement(UserLinkId, UserId, ReplacedId, IsUsed)
-		SELECT Id, @UserId, UserId, 1 FROM StaffEstablishedPostUserLinks WHERE DocId = @CandidateId and ReserveType = 2
+		SELECT Id, @UserId, UserId, 1 FROM StaffEstablishedPostUserLinks WHERE Id = @UserLinkId
+
+		--проставл€ем временное место работы
+		UPDATE Users SET TempUserLinkId = @UserLinkId WHERE Id = @UserId
+	END
+	ELSE--проставл€ем посто€нное место работы
+	BEGIN
+		UPDATE Users SET RegularUserLinkId = @UserLinkId WHERE Id = @UserId
 	END
 
 	--ставим прин€того сотрудника на зарезервированное место
 	UPDATE StaffEstablishedPostUserLinks SET UserId = @UserId, DocId = null, ReserveType = null, IsDismissal = 0, IsUsed = 1
-	WHERE DocId = @CandidateId and ReserveType = 2
+	WHERE Id = @UserLinkId
 
 	--заносим персональные надбавки
 	SELECT @PersonalAddition = isnull(B.PersonalAddition, 0)

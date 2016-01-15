@@ -69,6 +69,7 @@
 	<!--<many-to-one name="BudgetManager" class="User" column="BudgetManagerId" foreign-key="FK_User_BudgetManager" index="IX_User_BudgetManager_Id"  not-null="false"/>
 	<many-to-one name="OutsourcingManager" class="User" column="OutsourcingManagerId" foreign-key="FK_User_OutsourcingManager" index="IX_User_OutsourcingManager_Id"  not-null="false"/>-->
     <many-to-one name="RegularEstablishedPostUserLinks" class="StaffEstablishedPostUserLinks" column="RegularUserLinkId" foreign-key="FK_Users_StaffEstablishedPostUserLinks" index="Users_StaffEstablishedPostUserLinks" not-null="false"/>
+    <many-to-one name="TempEstablishedPostUserLinks" class="StaffEstablishedPostUserLinks" column="TempUserLinkId" foreign-key="FK_Users_StaffEstablishedPostUserLinksTemp" index="Users_StaffEstablishedPostUserLinksTemp" not-null="false"/>
 
 	<bag name="AcceptRequests" lazy="true" inverse="true" cascade="all-delete-orphan">
 		<key column="UserId" foreign-key="FK_AcceptRequestDate_User"/>

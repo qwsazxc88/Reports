@@ -2528,6 +2528,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.IsAgreeButtonAvailable = false;
             }
+
+
+            if (entity.DeleteDate.HasValue)
+            {
+                model.IsDraftButtonAvailable = false;
+                model.IsAgreeButtonAvailable = false;
+            }
         }
         /// <summary>
         /// Процедура заполняет списки согласовантов, на случай, если за них согласовывают кураторы или кадровики банка.
@@ -2694,8 +2701,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.EPInfo = "Занято - " + (UsersCount).ToString() + "; Вакантно - " + (entity.Quantity - UsersCount).ToString();
 
                 //кнопки
-                model.IsDraftButtonAvailable = true;
-                model.IsAgreeButtonAvailable = !entity.DateAccept.HasValue;
+                model.IsDraftButtonAvailable = entity.DeleteDate.HasValue ? false : true;
+                model.IsAgreeButtonAvailable = entity.DeleteDate.HasValue ? false : !entity.DateAccept.HasValue;
 
 
             }
@@ -2705,7 +2712,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             //для новых заявок надо подгружать надбавки от текущего состояния штатной единицы, берем действующую заявку, иначе по заполняем по текущей заявке
             model.PostChargeLinks = StaffEstablishedPostChargeLinksDao.GetChargesForRequests(model.RequestTypeId != 1 && model.Id == 0 ? StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId) : model.Id).OrderBy(x => x.ChargeName).ToList();
             
-
             return model;
         }
         /// <summary>
@@ -3561,6 +3567,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     && UserRole.ConsultantOutsourcing != AuthenticationService.CurrentUser.UserRole && UserRole.ConsultantPersonnel != AuthenticationService.CurrentUser.UserRole
                     && UserRole.Director != AuthenticationService.CurrentUser.UserRole)
             {
+                model.IsAgreeButtonAvailable = false;
+            }
+
+            if (entity.DeleteDate.HasValue)
+            {
+                model.IsDraftButtonAvailable = false;
                 model.IsAgreeButtonAvailable = false;
             }
         }
