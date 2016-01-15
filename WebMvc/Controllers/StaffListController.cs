@@ -381,6 +381,7 @@ namespace WebMvc.Controllers
         public ActionResult StaffListArrangement(string DepId, bool? IsParentDepOnly)
         {
             StaffListArrangementModel model = new StaffListArrangementModel();
+            model = StaffListBl.GetStaffListArrangementModel(model);
             model.Departments = StaffListBl.GetDepartmentListByParent(DepId, IsParentDepOnly.HasValue ? IsParentDepOnly.Value : false);
             return View(model);
         }

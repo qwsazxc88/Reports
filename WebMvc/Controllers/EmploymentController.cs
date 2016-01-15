@@ -2121,19 +2121,19 @@ namespace WebMvc.Controllers
             if (!model.PlanRegistrationDate.HasValue)
                 ModelState.AddModelError("PlanRegistrationDate", "Укажите планируемую дату приема!");
 
-            if (string.IsNullOrEmpty(model.PyrusNumber) || string.IsNullOrWhiteSpace(model.PyrusNumber))
-                ModelState.AddModelError("PyrusNumber", "Укажите номер задачи в системе Pyrus!");
-            else
-            {
-                try
-                {
-                    Convert.ToInt32(model.PyrusNumber);
-                }
-                catch
-                {
-                    ModelState.AddModelError("PyrusNumber", "Номер задачи в системе Пайрус должен содержать только цифры!");
-                }
-            }
+            //if (string.IsNullOrEmpty(model.PyrusNumber) || string.IsNullOrWhiteSpace(model.PyrusNumber))
+            //    ModelState.AddModelError("PyrusNumber", "Укажите номер задачи в системе Pyrus!");
+            //else
+            //{
+            //    try
+            //    {
+            //        Convert.ToInt32(model.PyrusNumber);
+            //    }
+            //    catch
+            //    {
+            //        ModelState.AddModelError("PyrusNumber", "Номер задачи в системе Пайрус должен содержать только цифры!");
+            //    }
+            //}
 
             return ModelState.IsValid;
         }

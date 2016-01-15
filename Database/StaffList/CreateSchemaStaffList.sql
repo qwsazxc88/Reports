@@ -1610,6 +1610,7 @@ CREATE TABLE [dbo].[StaffTemporaryReleaseVacancyRequest](
 	[DateEnd] [datetime] NULL,
 	[AbsencesTypeId] [int] NULL,
 	[IsUsed] [bit] NULL,
+	[Note] [nvarchar](250) NULL,
 	[CreatorId] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorId] [int] NULL,
