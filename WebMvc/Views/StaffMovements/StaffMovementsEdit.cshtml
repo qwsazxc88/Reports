@@ -133,7 +133,7 @@
                             {
                             <li><a href="#tabs-2">Данные заявки</a></li>
                             }                            
-                            @if (Model.IsDocsVisible)
+                            @if (Model.IsDocsVisible && Model.RequestType!=1)
                             {
                             <li><a href="#tabs-4">Документы</a></li>
                             }
