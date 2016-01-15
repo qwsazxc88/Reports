@@ -12,6 +12,7 @@
     <property name="DateEnd" not-null="false"/>
     <many-to-one name="AbsencesType" class="StaffLongAbsencesTypes" column="AbsencesTypeId" foreign-key="FK_StaffTemporaryReleaseVacancyRequest_StaffLongAbsencesTypes" index="StaffTemporaryReleaseVacancyRequest_StaffLongAbsencesTypes" not-null="false"/>
     <property name="IsUsed" not-null="false"/>
+    <property name="Note" length="250" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffTemporaryReleaseVacancyRequest_CreatorUser" index="StaffTemporaryReleaseVacancyRequest_CreatorUser" not-null="false"/>
     <property name="CreateDate" not-null="false"/>
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffTemporaryReleaseVacancyRequest_EditorUser" index="StaffTemporaryReleaseVacancyRequest_EditorUser" not-null="false"/>
