@@ -1990,6 +1990,54 @@ namespace Reports.Presenters.UI.Bl.Impl
             return true;
         }
         /// <summary>
+        /// Процедура отклонения существующей заявки для подразделения.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        public bool DeleteDepartmentRequest(StaffDepartmentRequestModel model, out string error)
+        {
+            error = string.Empty;
+            StaffDepartmentRequest entity = StaffDepartmentRequestDao.Get(model.Id);
+            if (entity == null)
+            {
+                error = "Заявка не найдена! Обратитесь к разработчикам!";
+                return false;
+            }
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            
+            //отклонение заявки
+            if (model.IsDelete)
+            {
+                entity.IsUsed = false;
+                entity.DeleteDate = DateTime.Now;
+                error = "Заявка отклонена!";
+
+                if (model.Id != 0)
+                {
+                    try
+                    {
+                        StaffDepartmentRequestDao.SaveAndFlush(entity);
+                        model.Id = entity.Id;
+                    }
+                    catch (Exception ex)
+                    {
+                        StaffDepartmentRequestDao.RollbackTran();
+                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                        return false;
+                    }
+
+                    return true;
+
+                }
+            }
+
+
+            //если не по той ветке пошли
+            error = "Произошла ошибка при сохранении данных! Обратитесь к разработчикам!";
+            return false;
+        }
+        /// <summary>
         /// Загрузка реквизитов инициатора к заявкам для подразделений
         /// </summary>
         /// <param name="Id">Id заявки.</param>
@@ -2498,7 +2546,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //относительно родительского ищем руководителей
             //помним, что начальника может не быть в родительском подразделении, по этому ищем вверх по ветке всех руководителей
-            IList<User> Initiators = DepartmentDao.GetDepartmentManagers(Parentdep.Id, true)
+            IList<User> Initiators = DepartmentDao.GetDepartmentManagersWithManualLinks(model.DepartmentId != 0 ? model.DepartmentId : model.ParentId)//DepartmentDao.GetDepartmentManagers(Parentdep.Id, true)
                 .OrderByDescending<User, int?>(manager => manager.Level)
                 .ToList<User>();
 
@@ -2651,38 +2699,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             }
-            /*
-            // Руководители до 4 уровня по ветке
-            IList<User> managers = null;
-            //для ветки руководства скб
-            managers = DepartmentDao.GetDepartmentManagers(model.DepartmentId, true)
-                    .OrderByDescending<User, int?>(manager => manager.Level)
-                    .ToList<User>();
-
-            // + руководители по ручным привязкам
-            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, manualRoleForManagersList);
-            foreach (var manualRoleManager in manualRoleManagers)
-            {
-                if (!managers.Contains(manualRoleManager))
-                {
-                    managers.Add(manualRoleManager);
-                }
-            }
-
-            StringBuilder managersBuilder = new StringBuilder();
-            foreach (var manager in managers)
-            {
-                managersBuilder.AppendFormat("{0} ({1}), ", manager.Name, manager.Position == null ? "<не указана>" : manager.Position.Name);
-            }
-
-            // Cut off trailing ", "
-            if (managersBuilder.Length >= 2)
-            {
-                managersBuilder.Remove(managersBuilder.Length - 2, 2);
-            }
-
-            model.Managers = managersBuilder.ToString();
-            */
+            
+            
             LoadDictionaries(model);
             //для новых заявок надо подгружать надбавки от текущего состояния штатной единицы, берем действующую заявку, иначе по заполняем по текущей заявке
             model.PostChargeLinks = StaffEstablishedPostChargeLinksDao.GetChargesForRequests(model.RequestTypeId != 1 && model.Id == 0 ? StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId) : model.Id).OrderBy(x => x.ChargeName).ToList();
@@ -3345,6 +3363,53 @@ namespace Reports.Presenters.UI.Bl.Impl
             return 0;
         }
         /// <summary>
+        /// Процедура отклонения существующей заявки для штатной единицы.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        public bool DeleteEstablishedPostRequest(StaffEstablishedPostRequestModel model, out string error)
+        {
+            error = string.Empty;
+            StaffEstablishedPostRequest entity = StaffEstablishedPostRequestDao.Get(model.Id);
+            if (entity == null)
+            {
+                error = "Заявка не найдена! Обратитесь к разработчикам!";
+                return false;
+            }
+
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            //отклонение заявки
+            if (model.IsDelete)
+            {
+                entity.IsUsed = false;
+                entity.DeleteDate = DateTime.Now;
+                error = "Заявка отклонена!";
+
+                if (model.Id != 0)
+                {
+                    try
+                    {
+                        StaffEstablishedPostRequestDao.SaveAndFlush(entity);
+                        model.Id = entity.Id;
+                    }
+                    catch (Exception ex)
+                    {
+                        StaffEstablishedPostRequestDao.RollbackTran();
+                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+
+            //если не по той ветке пошли
+            error = "Произошла ошибка при сохранении данных! Обратитесь к разработчикам!";
+            return false;
+        }
+        /// <summary>
         /// Загрузка реквизитов инициатора и подразделения к заявкам для штатных единиц
         /// </summary>
         /// <param name="model">Заполняемая модель заявки.</param>
@@ -3511,7 +3576,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //относительно родительского ищем руководителей
             //помним, что начальника может не быть в родительском подразделении, по этому ищем вверх по ветке всех руководителей
-            IList<User> Initiators = DepartmentDao.GetDepartmentManagers(Parentdep.Id, true)
+            IList<User> Initiators = DepartmentDao.GetDepartmentManagersWithManualLinks(model.DepartmentId)//DepartmentDao.GetDepartmentManagers(Parentdep.Id, true)
                 .OrderByDescending<User, int?>(manager => manager.Level)
                 .ToList<User>();
 
@@ -5146,6 +5211,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Accessoryes = StaffDepartmentAccessoryDao.GetAccessoryes();
             model.Accessoryes.Insert(0, new IdNameDto { Id = 0, Name = "" });
 
+            //список руководителей
+            IList<User> managers = DepartmentDao.GetDepartmentManagersWithManualLinks(model.DepartmentId != 0 ? model.DepartmentId : model.ParentId);
+            StringBuilder managersBuilder = new StringBuilder();
+            foreach (var manager in managers)
+            {
+                managersBuilder.AppendFormat("{0} ({1}), ", manager.Name, manager.Position == null ? "<не указана>" : manager.Position.Name);
+            }
+            model.Managers = managersBuilder.ToString();
+
+
             //согласование - расстановка флажков и т.д.
             StaffDepartmentRequest entity = StaffDepartmentRequestDao.Get(model.Id);
             if (entity != null)
@@ -5178,7 +5253,14 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             GetDepRequestInfo(model);
 
-
+            //список руководителей
+            IList<User> managers = DepartmentDao.GetDepartmentManagersWithManualLinks(model.DepartmentId);
+            StringBuilder managersBuilder = new StringBuilder();
+            foreach (var manager in managers)
+            {
+                managersBuilder.AppendFormat("{0} ({1}), ", manager.Name, manager.Position == null ? "<не указана>" : manager.Position.Name);
+            }
+            model.Managers = managersBuilder.ToString();
             
 
             //пытаемся показать правильную расстановку для штатной единицы
@@ -5254,6 +5336,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             dto.Add(new IdNameDto { Id = 1, Name = "Черновик" });
             dto.Add(new IdNameDto { Id = 2, Name = "На согласовании" });
             dto.Add(new IdNameDto { Id = 3, Name = "Утверждено" });
+            dto.Add(new IdNameDto { Id = 4, Name = "Отклонено" });
 
             return dto;
         }

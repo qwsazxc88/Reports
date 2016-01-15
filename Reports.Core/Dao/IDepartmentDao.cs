@@ -13,6 +13,12 @@ namespace Reports.Core.Dao
         IList<Department> GetDepartmentsTree(int departmentId);
         IList<Department> SearchByParentId(int parentId);
         IList<User> GetDepartmentManagers(int departmentId, bool allLevels = false);
+        /// <summary>
+        /// Определяем руководителей для подразделения по автоматическим правам и ручным привязкам.
+        /// </summary>
+        /// <param name="departmentId">Id подразделения для которго ищем руководителей</param>
+        /// <returns></returns>
+        IList<User> GetDepartmentManagersWithManualLinks(int departmentId);
         IList<Reports.Core.Dto.DepartmentDto> GetDepartmentsForManager23(int managerId, int level, bool dep3only);
         Department GetParentDepartmentWithLevel(Department dep, int level);
         IList<Terrapoint_DepartmentDto> GetTP_D_list();
