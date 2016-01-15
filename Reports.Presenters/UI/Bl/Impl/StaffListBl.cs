@@ -5146,6 +5146,16 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region Штатная расстановка.
         /// <summary>
+        /// Загрузка модели страницы (часть с заявкой для временной вакансии)
+        /// </summary>
+        /// <param name="model">Заполняемая модель.</param>
+        /// <returns></returns>
+        public StaffListArrangementModel GetStaffListArrangementModel(StaffListArrangementModel model)
+        {
+            model.AbsencesTypes = StaffLongAbsencesTypesDao.LoadAll().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            return model;
+        }
+        /// <summary>
         /// Загружаем структуру по заданному коду подразделения и штатную расстановку.
         /// </summary>
         /// <param name="DepId">Код родительского подразделения</param>

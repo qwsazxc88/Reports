@@ -413,6 +413,12 @@ namespace Reports.Presenters.UI.Bl
 
         #region Штатная расстановка.
         /// <summary>
+        /// Загрузка модели страницы (часть с заявкой для временной вакансии)
+        /// </summary>
+        /// <param name="model">Заполняемая модель.</param>
+        /// <returns></returns>
+        StaffListArrangementModel GetStaffListArrangementModel(StaffListArrangementModel model);
+        /// <summary>
         /// Загружаем структуру по заданному коду подразделения и штатную расстановку.
         /// </summary>
         /// <param name="DepId">Код родительского подразделения</param>

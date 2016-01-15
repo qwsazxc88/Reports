@@ -31,6 +31,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Вид длительного отсутствия")]
         public int AbsencesTypeId { get; set; }
         public IList<IdNameDto> AbsencesTypes { get; set; }
+
+        [Display(Name = "Примечание")]
+        public string Note { get; set; }
        
     }
 }

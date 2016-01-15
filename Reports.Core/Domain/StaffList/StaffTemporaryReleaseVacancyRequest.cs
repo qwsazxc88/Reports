@@ -34,6 +34,10 @@ namespace Reports.Core.Domain
         /// </summary>
         public virtual bool IsUsed { get; set; }
         /// <summary>
+        /// Примечание.
+        /// </summary>
+        public virtual string Note { get; set; }
+        /// <summary>
         /// Автор записи.
         /// </summary>
         public virtual User Creator { get; set; }
