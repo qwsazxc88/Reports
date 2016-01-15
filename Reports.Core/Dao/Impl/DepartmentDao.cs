@@ -177,6 +177,13 @@ namespace Reports.Core.Dao.Impl
             }
             return managers;
         }
+        public IList<User> GetDepartmentManagersByDepAndManualRole(int departmentId, int RoleId)
+        {
+            var strquery = string.Format("exec spGetManagersForDepartmentWithManualRole {0},{1}", departmentId, RoleId);
+            var query = Session.CreateSQLQuery(strquery).AddEntity(typeof(User));
+            IList<User> result = query.List<User>();
+            return result;
+        }
         /// <summary>
         /// Достаем подразделение по коду
         /// </summary>

@@ -11,7 +11,11 @@ namespace Reports.Core.Enum
         /// <summary>
         /// Заявки штатного расписания для штатных единиц.
         /// </summary>
-        StaffEstablishedPostRequest = 2
+        StaffEstablishedPostRequest = 2,
+        /// <summary>
+        /// Кадровые перемещения
+        /// </summary>
+        StaffMovements = 3
         
     }
 }
