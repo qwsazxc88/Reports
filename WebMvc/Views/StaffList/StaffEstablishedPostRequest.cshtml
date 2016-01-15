@@ -579,7 +579,7 @@
             if (!confirm("Подтвердите выполнение данной операции!?")) {
                 return;
             }
-            $("#IsDraft").val(false);
+            $("#IsDraft").val(true);
             $("#IsDelete").val(true);
             ShowFlash(true);
             $("#StaffEstablishedPostRequestForm").submit();
