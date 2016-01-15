@@ -2874,11 +2874,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
 
-                    //if (entity.RequestType.Id == 3 && StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0) != 0)
-                    //{
-                    //    error = "Нельзя сократить штатную единицу, так как она еще содержит работающих сотрудников!";
-                    //    return false;
-                    //}
+                    if (entity.RequestType.Id == 3 && StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0) != 0)
+                    {
+                        error = "Нельзя сократить штатную единицу, так как она еще содержит работающих сотрудников!";
+                        return false;
+                    }
 
                     //if (entity.Quantity < StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0))
                     //{
