@@ -476,7 +476,7 @@
                           </div>
                           }
                           
-                          @if (Model.IsDocsVisible)
+                          @if (Model.IsDocsVisible && Model.RequestType!=1)
                           {
                           <div id="tabs-4">
                           <fieldset class="bordered doc-wrap-blue panel">
@@ -486,6 +486,8 @@
                                 <th>Название документа</th><th>Образец</th><th>Скан</th><th>Для перевода требуется</th>
                               </tr>
                           </thead>
+                          @if (Model.RequestType != 1)
+                          {
                           <tr>
                               <td>
                               Заявление о переводе
@@ -503,6 +505,7 @@
                               </td>
                               <td>@Html.CheckBoxFor(m => m.MovementNoteIsRequired, (object)new { disabled = "disabled" })</td>
                             </tr>
+                          }
                            @* <tr>
                               <td>
                               Договор мат.ответственность
@@ -741,7 +744,7 @@ label { font-size:1.1em; }
                 },
               async:false
             });  
-        @if (Model.MovementNoteDto == null || string.IsNullOrEmpty(Model.MovementNoteDto.FileName))
+        @if((Model.MovementNoteDto == null || string.IsNullOrEmpty(Model.MovementNoteDto.FileName)) && Model.RequestType!=1)
         {<text>
         clearControlErrors($("input[name=MovementNote]"));
         var imgVal = $('input[name=MovementNote]').val();

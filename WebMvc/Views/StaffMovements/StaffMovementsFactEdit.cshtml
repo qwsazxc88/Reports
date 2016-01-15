@@ -152,7 +152,7 @@
                                 }
                                 @if (Model.AgreementAdditionalDocDto != null && !string.IsNullOrEmpty(Model.AgreementAdditionalDocDto.FileName))
                                 {
-                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AgreementAdditionalDocId })' style="cursor:hand" target="_blank" >@Model.AgreementAdditionalDocDto.FileName</a>
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment","Help", new { Id = Model.AgreementAdditionalDocId })' style="cursor:hand" target="_blank" >@Model.AgreementAdditionalDocDto.FileName</a>
                                 }
                                 </td>
                           </tr>
