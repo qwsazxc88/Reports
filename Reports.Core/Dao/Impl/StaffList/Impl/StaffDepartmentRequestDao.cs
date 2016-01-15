@@ -161,7 +161,7 @@ namespace Reports.Core.Dao.Impl
 										FROM ManualRoleRecord as A
                                         INNER JOIN Department as B ON B.Id = A.TargetDepartmentId
                                         INNER JOIN Department as C ON C.Path like B.Path + N'%' --and C.ItemLevel <> B.ItemLevel
-						                WHERE A.Id = :userId) as A ) as F ON F.Id = isnull(A.DepartmentId, A.ParentId) and isnull(F.BFGId, 0) = isnull(B.BFGId, 0) ";
+						                WHERE A.UserId = :userId) as A ) as F ON F.Id = isnull(A.DepartmentId, A.ParentId) and isnull(F.BFGId, 0) = isnull(B.BFGId, 0) ";
                     break;
                 case UserRole.Inspector:
                     //кураторам показываем фронты и бэкфронты
