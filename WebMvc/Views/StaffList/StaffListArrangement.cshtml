@@ -288,7 +288,7 @@
                                     "<td></td>" +
                                     "<td>" +
                                     "<span>" +
-                                        "<a class='Acollapsible CallModal' accessKey='' href='#' id='' onclick='' style='color:green;'>" +  //onclick='CreateTemporaryVacation();'
+                                        "<a class='Acollapsible CallModal' accessKey='' href='#' id='' onclick='' style='color:green;'>" +  //onclick='CreateTemporaryVacation(" + Id + ", " + result.EstablishedPosts[i].Id + ", " + result.EstablishedPosts[i].SEPId + ");'
                                         result.EstablishedPosts[i].PositionName + "</a>" +
                                     "</span>" +
                                     "</td>" + 
@@ -451,7 +451,7 @@
     }
 
     //создание временной вакансии
-    function CreateTemporaryVacation(){
+    function CreateTemporaryVacation(DepId, UserLinkId, SEPId){
         //$("#DivTemporaryVacation").show();
         $("#DivTemporaryVacation").dialog(
         {
@@ -470,9 +470,11 @@
                 "Ок": function () {
                     $("#DivTemporaryVacation").hide();
                     //window.location.reload();
+                    $("#AbsencesTypeId").val(1);
                     $("#DateBegin").val("");
                     $("#DateEnd").val("");
                     $("#Note").val("");
+                    ReplacePostUserLinkRow(DepId, UserLinkId, SEPId);
                     $(this).dialog("close");
                 },
                 "Отмена": function () {
@@ -482,6 +484,99 @@
             }
         });
     }
+
+
+    //создаем временную вакансию и делаем замену строки расстановки на измененную
+    function ReplacePostUserLinkRow(DepId, UserLinkId, SEPId){
+        var actionUrl="@Url.Action("StaffListArrangement", "StaffList")";
+        $("#DepId").val(DepId);
+        var dataToSend = $("#StaffListArrangementForm").serialize();
+        ShowFlash(true);
+
+        jQuery.ajax({
+            url: actionUrl,
+            type: 'POST',
+            dataType: 'json',
+            data: dataToSend,
+            async: true,
+            success: function(result){
+                // $liParent = $("#li-" + Id.toString());
+                var tblStr = "";
+                var OldRowId = "#tru-" + UserLinkId + "-" + SEPId;
+                  
+                if(result.EstablishedPosts != null)
+                {
+                    for (var i = 0; i < result.EstablishedPosts.length; i++)//штатные единицы
+                    {   
+                        if(result.EstablishedPosts[i].Id == UserLinkId){
+                            tblStr = "<tr id='tru-" + result.EstablishedPosts[i].Id + "-" + result.EstablishedPosts[i].SEPId + "' accessKey='" + result.EstablishedPosts[i].Path + "' class='IsVisible' ;'>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td>" +
+                                        "<span>" +
+                                            "<a class='Acollapsible CallModal' accessKey='' href='#' id='' onclick='CreateTemporaryVacation();' style='color:green;'>" +  //onclick='CreateTemporaryVacation();'
+                                            result.EstablishedPosts[i].PositionName + "</a>" +
+                                        "</span>" +
+                                        "</td>" + 
+                                        "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
+                                        "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].Rate != null ? result.EstablishedPosts[i].Rate : "") + "</td>" +
+                                        
+                                            "<td>" + (result.EstablishedPosts[i].Regional != null ? result.EstablishedPosts[i].Regional : "") + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].Personnel != null ? result.EstablishedPosts[i].Personnel : "") + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].Territory != null ? result.EstablishedPosts[i].Territory : "") + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].Front != null ? result.EstablishedPosts[i].Front : "") + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].Drive != null ? result.EstablishedPosts[i].Drive : "") + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].North != null ? result.EstablishedPosts[i].North : "") + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].Qualification != null ? result.EstablishedPosts[i].Qualification : "") + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].TotalSalary != null ? result.EstablishedPosts[i].TotalSalary : "") + "</td>" 
+                                            //красим увольняющихся
+                                            if(!result.EstablishedPosts[i].IsDismiss && !result.EstablishedPosts[i].IsDismissal)
+                                            {
+                                                if(result.EstablishedPosts[i].IsVacation || result.EstablishedPosts[i].IsReserve)
+                                                {
+                                                    tblStr += "<td>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>"
+                                                }
+                                                else
+                                                {
+                                                    tblStr += "<td><a class='CallModal' href='#' onclick='GetStaffMovementRequest(" + result.EstablishedPosts[i].UserId + ");'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</a></td>"
+                                                }
+                                            }
+                                            else
+                                            {
+                                                tblStr += "<td style='color:Red;'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>"
+                                            }
+                                            tblStr += "<td>" + (result.EstablishedPosts[i].ReplacedName == null ? "" : result.EstablishedPosts[i].ReplacedName) + "</td>" +
+                                            "<td></td>" +
+                                            "<td></td>" +
+                                            "<td>" + (result.EstablishedPosts[i].Reserve == null ? "" : result.EstablishedPosts[i].Reserve) + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].BasicUser == null ? "" : result.EstablishedPosts[i].BasicUser) + "</td>" +
+                                        "</tr>";
+                            
+                            //var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
+                            //$(ParentRowName).after(tblStr);//вставляем новую строку
+                            $(OldRowId).replaceWith(tblStr);
+                            $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
+                        }
+                    }
+                }
+                    
+
+                $(":button").button();
+
+                ShowFlash(false);
+            },
+            error: function(e, str1){
+                if(str1 == "parsererror")
+                    alert("Доступ запрещен!.");
+                else
+                    alert("При загрузке данных произошла ошибка.");
+
+                ShowFlash(false);
+            }
+        });
+    }
+
     
 </script>
 

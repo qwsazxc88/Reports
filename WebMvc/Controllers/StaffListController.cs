@@ -398,6 +398,19 @@ namespace WebMvc.Controllers
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
+        /// <summary>
+        /// Штатное расписание, подгружаем уровень подразделений с должностями и сотрудниками.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager)]
+        public ActionResult CreateTemporaryReleaseVacancyRequest(string DepId)
+        {
+            var jsonSerializer = new JavaScriptSerializer();
+            StaffListArrangementModel model = StaffListBl.GetDepartmentStructureWithStaffArrangement(DepId);
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
 
         /// <summary>
         /// Всплывающее окно для выбора типа заявки в кадровом перемещении.
