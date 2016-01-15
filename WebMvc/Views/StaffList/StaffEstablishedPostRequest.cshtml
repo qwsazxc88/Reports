@@ -17,6 +17,7 @@
     @Html.HiddenFor(m => m.QuantityPrev)
     @Html.HiddenFor(m => m.SalaryPrev)
     @Html.HiddenFor(m => m.BFGId)
+    @Html.HiddenFor(m => m.IsDelete)
    
     
     <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
@@ -516,6 +517,8 @@
                                                                                                                 {<text>disabled=disabled</text>}>Сохранить</button>
         <button id="btnAgree" type="button" title="Согласовать заявку/Отправить заявку на согласование" @if (!Model.IsAgreeButtonAvailable)
                                                                                                         {<text>disabled=disabled</text>}>Согласовать</button>
+        <button id="btnDelete" type="button" title="Отклонить заявку" @if (!Model.IsAgreeButtonAvailable)
+                                                                                                        {<text>disabled=disabled</text>}>Отклонить</button>
     </div>
     
                                                                                                         if (Model.Id != 0)
@@ -569,6 +572,15 @@
                 return;
             }
             $("#IsDraft").val(false);
+            ShowFlash(true);
+            $("#StaffEstablishedPostRequestForm").submit();
+        });
+        $("#btnDelete").click(function () {
+            if (!confirm("Подтвердите выполнение данной операции!?")) {
+                return;
+            }
+            $("#IsDraft").val(false);
+            $("#IsDelete").val(true);
             ShowFlash(true);
             $("#StaffEstablishedPostRequestForm").submit();
         });

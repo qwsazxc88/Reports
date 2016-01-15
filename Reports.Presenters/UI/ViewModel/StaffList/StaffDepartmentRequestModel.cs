@@ -19,6 +19,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         #endregion
 
         #region Общие реквизиты
+        [Display(Name = "Руководители")]
+        public string Managers { get; set; }
+
         [Display(Name = "Дата заявки")]
         public DateTime? DateRequest { get; set; }
 
@@ -407,7 +410,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public bool IsDraftButtonAvailable { get; set; }    //доступна кнопка сохранения черновика
         public bool IsAgreeButtonAvailable { get; set; }    //доступна кнопка отправки на согласование
         public bool IsImportance { get; set; }  //признак важности согласования
-
+        public bool IsDelete { get; set; }   //отклонить
         
         #endregion
     }

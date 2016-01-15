@@ -137,7 +137,12 @@ namespace WebMvc.Controllers
             {
                 if (model.IsDraft)  //сохранение черновика
                 {
-                    IsComplete = model.Id == 0 ? StaffListBl.SaveNewDepartmentRequest(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
+                    if (!model.IsDelete)
+                        IsComplete = model.Id == 0 ? StaffListBl.SaveNewDepartmentRequest(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
+                    else
+                        IsComplete = model.Id == 0 ? false : StaffListBl.DeleteDepartmentRequest(model, out error);
+                    
+
                     if (!IsComplete)
                     {
                         StaffListBl.LoadDictionaries(model);
@@ -151,7 +156,7 @@ namespace WebMvc.Controllers
                 }
                 else
                 {
-                    IsComplete = model.IsSoftAdminApprove ? StaffListBl.SaveProgramCodes(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
+                    IsComplete = model.IsSoftAdminApprove && model.IsSoftAdmin ? StaffListBl.SaveProgramCodes(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
 
                     if (!IsComplete)
                     {
@@ -161,7 +166,7 @@ namespace WebMvc.Controllers
                     else
                     {
                         model = StaffListBl.GetDepartmentRequest(model);
-                        ModelState.AddModelError("MessageStr", "Данные сохранены! " + error);
+                        ModelState.AddModelError("MessageStr", "Данные сохранены!");
                     }
                 }
             }
@@ -311,7 +316,11 @@ namespace WebMvc.Controllers
             {
                 if (model.IsDraft)  //сохранение черновика
                 {
-                    IsComplete = model.Id == 0 ? StaffListBl.SaveNewEstablishedPostRequest(model, out error) : StaffListBl.SaveEditEstablishedPostRequest(model, out error);
+                    if (!model.IsDelete)
+                        IsComplete = model.Id == 0 ? StaffListBl.SaveNewEstablishedPostRequest(model, out error) : StaffListBl.SaveEditEstablishedPostRequest(model, out error);
+                    else
+                        IsComplete = model.Id == 0 ? false : StaffListBl.DeleteEstablishedPostRequest(model, out error);
+
                     if (!IsComplete)
                     {
                         StaffListBl.LoadDictionaries(model);
