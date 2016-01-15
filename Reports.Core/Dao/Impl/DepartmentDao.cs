@@ -185,6 +185,41 @@ namespace Reports.Core.Dao.Impl
             return result;
         }
         /// <summary>
+        /// Определяем руководителей для подразделения по автоматическим правам и ручным привязкам.
+        /// </summary>
+        /// <param name="departmentId">Id подразделения для которго ищем руководителей</param>
+        /// <returns></returns>
+        public IList<User> GetDepartmentManagersWithManualLinks(int departmentId)
+        {
+            IList<User> managers;
+            Department department = Get(departmentId);
+
+            int BFGID = department.DepartmentAccessory == null ? 0 : department.DepartmentAccessory.Id;
+
+            if (department == null)
+            {
+                return new List<User>();
+            }
+            //автоматические права
+            managers = Session.Query<User>()
+                .Where<User>(user => (user.RoleId & (int)UserRole.Manager) > 0 && department.Path.StartsWith(user.Department.Path) && user.IsActive == true)
+                .OrderByDescending(x => x.Level)
+                .ToList<User>();
+
+
+            //ручные привязки с учетом принадлежности подразделения (бэк/фронт)
+            IList<User> ManualManagers = Session.Query<ManualRoleRecord>()
+                .Where(x => x.Role.Id == (BFGID != 0 && BFGID != 6 ? BFGID : x.Role.Id) && x.TargetDepartment != null && department.Path.StartsWith(x.TargetDepartment.Path))
+                .Select(x => x.User)
+                .OrderByDescending(x => x.Level).Distinct()
+                .ToList();
+
+            IList<User> ManagerList = new List<User>().Union(managers).Union(ManualManagers).ToList();
+
+            return ManagerList;
+        }
+
+        /// <summary>
         /// Достаем подразделение по коду
         /// </summary>
         /// <param name="Code">КодС</param>

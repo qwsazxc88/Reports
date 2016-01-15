@@ -182,6 +182,10 @@ namespace Reports.Core.Domain
         /// </summary>
         public virtual StaffEstablishedPostUserLinks RegularEstablishedPostUserLinks { get; set; }
         /// <summary>
+        /// Временное место работы в штатной расстановке.
+        /// </summary>
+        public virtual StaffEstablishedPostUserLinks TempEstablishedPostUserLinks { get; set; }
+        /// <summary>
         /// Надбавки
         /// </summary>
         public virtual IList<StaffPostChargeLinks> StaffPostCharges { get; set; }

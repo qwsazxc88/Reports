@@ -91,8 +91,20 @@
     <div id="DivTemporaryVacation" style="display:none;">
         <table>
             <tr>
-                <td>111</td>
-                <td>222</td>
+                <td>@Html.LabelFor(m => m.AbsencesTypeId)</td>
+                <td>@Html.DropDownListFor(m => m.AbsencesTypeId, new SelectList(Model.AbsencesTypes, "Id", "Name"))</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.DateBegin)</td>
+                <td>@Html.TextBoxFor(m => m.DateBegin)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.DateEnd)</td>
+                <td>@Html.TextBoxFor(m => m.DateEnd)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.Note)</td>
+                <td>@Html.TextAreaFor(m => m.Note, new { style = "width:400px;" })</td>
             </tr>
         </table>
     </div>
@@ -108,6 +120,10 @@
             show: { /*effect: "blind",*/ duration: 1000 }});
 
         $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
+
+        $("#DateBegin").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
+        $("#DateEnd").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
+        $(".hasDatepicker").width("85px");
 
         ShowFlash(true);
         ShowFlash(false);
@@ -272,7 +288,7 @@
                                     "<td></td>" +
                                     "<td>" +
                                     "<span>" +
-                                        "<a class='Acollapsible CallModal' accessKey='' href='#' id='' onclick='' style='color:green;'>" + //onclick='CreateTemporaryVacation();'
+                                        "<a class='Acollapsible CallModal' accessKey='' href='#' id='' onclick='' style='color:green;'>" +  //onclick='CreateTemporaryVacation();'
                                         result.EstablishedPosts[i].PositionName + "</a>" +
                                     "</span>" +
                                     "</td>" + 
@@ -434,9 +450,9 @@
         $(newDiv).dialog("open");
     }
 
-    
+    //создание временной вакансии
     function CreateTemporaryVacation(){
-        $("#DivTemporaryVacation").show();
+        //$("#DivTemporaryVacation").show();
         $("#DivTemporaryVacation").dialog(
         {
             autoOpen: true,
@@ -453,8 +469,11 @@
             {
                 "Ок": function () {
                     $("#DivTemporaryVacation").hide();
-                    window.location.reload();
-                    //$(this).dialog("close");
+                    //window.location.reload();
+                    $("#DateBegin").val("");
+                    $("#DateEnd").val("");
+                    $("#Note").val("");
+                    $(this).dialog("close");
                 },
                 "Отмена": function () {
                     $("#DivTemporaryVacation").hide();
