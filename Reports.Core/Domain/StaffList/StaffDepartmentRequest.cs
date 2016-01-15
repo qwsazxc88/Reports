@@ -35,7 +35,8 @@ namespace Reports.Core.Domain
         public virtual bool IsTaxRequest { get; set; } 
         public virtual DateTime? DateSendToApprove { get; set; } 
         public virtual DateTime? BeginAccountDate { get; set; } 
-        public virtual DateTime? DateState { get; set; } 
+        public virtual DateTime? DateState { get; set; }
+        public virtual DateTime? DeleteDate { get; set; } 
         public virtual User Creator { get; set; } 
         public virtual DateTime? CreateDate { get; set; } 
         public virtual User Editor { get; set; } 
