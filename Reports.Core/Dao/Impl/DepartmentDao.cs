@@ -287,6 +287,9 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<StaffListDepartmentDto> DepFingradName(string Id, bool IsParentDepOnly, UserRole role)
         {
+            /*
+             * придумать как прикрутить ручные привязки
+             */
             string SqlWhere = (!IsParentDepOnly ? (string.IsNullOrEmpty(Id) ? "A.ParentId is null" : "A.ParentId = " + Id) : "A.Code1C = " + Id);
             SqlWhere += (role == UserRole.Inspector ? " and (BFGId in (2, 6) or BFGId is null) " : "") + " and isnull(BFGId, 0) not in (3, 5)";
             return Session.CreateSQLQuery(string.Format(@"SELECT Id, Code, Name, Code1C, ParentId, Path, ItemLevel, CodeSKD, Priority, DepFingradName, DepFingradNameComment, FinDepPointCode, dbo.fnGetStaffEstablishedPostCountByDepartment(A.Id) as SEPCount
