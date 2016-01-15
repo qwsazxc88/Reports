@@ -474,14 +474,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TargetDepartmentName = entity.TargetDepartment.Name;
                 model.TargetManager = new StandartUserDto { Id = entity.TargetManager.Id };
                 LoadUserData(model.TargetManager);
-                var TargetUppers = DocumentApprovalDao.Find(x => x.DocId == entity.Id && x.Number == 2 && x.IsArchive != 1);
+                var TargetUppers = DocumentApprovalDao.Find(x => x.DocId == entity.Id && x.Number == 2 && !x.IsArchive );
                 if (TargetUppers != null && TargetUppers.Any())
                 {
                     model.TargetManager.Name += String.Format("({0})", TargetUppers.First().AssistantUser.Name);
                 }
                 model.SourceManager = new StandartUserDto { Id = entity.SourceManager.Id };
                 LoadUserData(model.SourceManager);
-                var SourceUppers = DocumentApprovalDao.Find(x => x.DocId == entity.Id && x.Number == 1 && x.IsArchive != 1);
+                var SourceUppers = DocumentApprovalDao.Find(x => x.DocId == entity.Id && x.Number == 1 && !x.IsArchive );
                 if (SourceUppers != null && SourceUppers.Any())
                 {
                     model.SourceManager.Name += String.Format("({0})", SourceUppers.First().AssistantUser.Name);
