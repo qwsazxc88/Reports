@@ -64,7 +64,7 @@ namespace WebMvc.Controllers
             model.OrderDocDto = GetFileContext(Request, ModelState, "OrderDoc");
             model.RequirementsOrderDocDto = GetFileContext(Request, ModelState, "RequirementsOrderDoc");
             model.ServiceOrderDocDto = GetFileContext(Request, ModelState, "ServiceOrderDoc");
-            StaffMovementsBl.SaveFact(model);
+            model = StaffMovementsBl.SaveFact(model);
             return View(model);
         }
         #endregion
