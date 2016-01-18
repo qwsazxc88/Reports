@@ -131,7 +131,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
 
 
-        [Display(Name = "Вышестоящий руководитель 3 ур.")]
+        [Display(Name = "Вышестоящий руководитель")]
         public bool IsTopManagerApprove { get; set; }   //4
         public bool IsTopManagerApproveAvailable { get; set; }
 
