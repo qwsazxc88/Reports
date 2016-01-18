@@ -3259,7 +3259,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             User onBehalfOfManager = model.OnBehalfOfManagerId.HasValue ? UserDao.Load(model.OnBehalfOfManagerId.Value) : null;
             User PersonnelUser = UserDao.Load(model.PersonnelId);
             Department department = DepartmentDao.Load(model.DepartmentId);
-            StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Load(model.UserLinkId.Value);
+            StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId.HasValue ? model.UserLinkId.Value : 0);
+
+            if (PostUserLink == null)
+            {
+                error = "Выберте штатную единицу!";
+                return null;
+            }
 
             if(department.ItemLevel != 7)
             {
