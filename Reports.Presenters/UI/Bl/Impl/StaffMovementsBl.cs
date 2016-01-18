@@ -195,10 +195,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.Id = entity.Id;
             model.User.Id = entity.User.Id;
-            if (CurrentUser.Id == model.User.Id && !model.IsDocsReceived)
-            {
-                model.IsDocsAddAvailable = true;
-            }
+            model.IsDocsAddAvailable = (CurrentUser.Id == model.User.Id || CheckIsChief(entity.User.Department.Id, CurrentUser)) && !model.IsDocsReceived;
             LoadUserData(model.User);
             var usr = UserDao.Load(model.User.Id);
             model.ActiveAdditions = GetUserActualAddition(model.User.Id);
