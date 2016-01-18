@@ -48,7 +48,9 @@ namespace Reports.Core.Dao
         /// <param name="Id">Id родительского подразделения</param>
         /// <param name="IsParentDepOnly">Признак достать только родительское подразделение.</param>
         /// <param name="role">Роль текущего пользователя</param>
+        /// <param name="UserId">Id сотрудника</param>
+        /// <param name="IsBegin"></param>
         /// <returns></returns>
-        IList<StaffListDepartmentDto> DepFingradName(string Id, bool IsParentDepOnly, UserRole role);
+        IList<StaffListDepartmentDto> DepFingradName(string Id, bool IsParentDepOnly, UserRole role, int UserId, bool IsBegin);
     }
 }
