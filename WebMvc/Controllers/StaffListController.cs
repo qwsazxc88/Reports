@@ -1169,8 +1169,12 @@ namespace WebMvc.Controllers
         }
         protected bool ValidateModel(StaffEstablishedPostRequestModel model)
         {
-            if (model.RequestTypeId != 3 && model.Quantity == 0)
+            if (model.RequestTypeId == 1 || model.RequestTypeId == 2)
+            {
                 ModelState.AddModelError("Quantity", "Укажите количество штатных единиц не равное 0!");
+                model.Quantity = model.QuantityPrev;
+                model.Salary = model.SalaryPrev;
+            }                
 
             if (model.IsDraft)
             {

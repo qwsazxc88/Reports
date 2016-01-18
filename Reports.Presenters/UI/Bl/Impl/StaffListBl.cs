@@ -1720,7 +1720,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         error = "Произошла ошибка при формировании кода подразделения!";
                         DepartmentDao.RollbackTran();
-                        DepartmentArchiveDao.RollbackTran();
+                        return false;
                     }
                 }
 
@@ -2902,7 +2902,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Department = model.DepartmentId != 0 ? DepartmentDao.Get(model.DepartmentId) : null;
             entity.Schedule = model.ScheduleId != 0 ? ScheduleDao.Get(model.ScheduleId) : null;
             entity.WorkingCondition = model.WCId != 0 ? StaffWorkingConditionsDao.Get(model.WCId) : null;
-            if (model.RequestTypeId != 3)
+            //(model.RequestTypeId == 3 || model.RequestTypeId == 4) && model.Personnels.Where(x => x.UserId != 0 && x.IsDismissal).Count() == 0
+            if (model.RequestTypeId == 1 || model.RequestTypeId == 2)
             {
                 entity.Quantity = model.Quantity;
                 entity.Salary = model.Salary;
