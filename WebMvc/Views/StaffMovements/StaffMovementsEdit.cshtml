@@ -364,6 +364,7 @@
                             <td>@Html.TextBoxFor(m => m.TargetRegion, new { disabled = "disabled" })</td>
                            </tr>               
                             <tr>
+                                <td>Срок занятости:</td>
                                     <td>
                                     <div id="IsTempMovingContainer" class="formfield clear">
                                         
@@ -379,6 +380,7 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td>Вид занятости:</td>
                                     <td>
                                     <div id="ConjunctionContainer" class="formfield clear">
                                         
@@ -403,33 +405,57 @@
                                 <td>@Html.LabelFor(m => m.MovementCondition)</td>
                                 <td>@Html.TextBoxFor(m => m.MovementCondition, Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                             </tr>
+                            @if ((Model.IsPersonnelVisible || Model.IsPersonnelManagerEditable))
+                            {
                             <tr>
+                                    <td>Условия оплаты:</td>
                                     <td>
                                     <div id="IsHourlyContainer" class="formfield clear">
                                         
                                         @Html.RadioButtonFor(m => m.TargetCasingType, false, new { @id = "IsHourlyFalse" })<label for="IsHourlyFalse" id="lblHourlyFalse" @if (!Model.TargetCasingType)
-                                                                                                                                                                  {<text>style="border-color:#248BAD;"</text>}
-                                                                                                                                                                  else
-                                                                                                                                                                  {<text> style="border-color:none;"</text>}>Оклад по дням</label>
+                                                                                                                                                                          {<text>style="border-color:#248BAD;"</text>}
+                                                                                                                                                                          else
+                                                                                                                                                                          {<text> style="border-color:none;"</text>}>Оклад по дням</label>
                                         @Html.RadioButtonFor(m => m.TargetCasingType, true, new { @id = "IsHourlyTrue" })<label for="IsHourlyTrue" id="lblHourlyTrue" @if (Model.TargetCasingType)
-                                                                                                                                                              {<text>style="border-color:#248BAD;"</text>}
-                                                                                                                                                              else
-                                                                                                                                                              {<text> style="border-color:none;"</text>}>Оклад по часам</label>
+                                                                                                                                                                      {<text>style="border-color:#248BAD;"</text>}
+                                                                                                                                                                      else
+                                                                                                                                                                      {<text> style="border-color:none;"</text>}>Оклад по часам</label>
                                     </div>
                                     </td>
                                 </tr>
+                            }
+                            else
+                            {
+                                @Html.HiddenFor(m=>m.TargetCasingType)
+                            }
                                 <tr>
                                 <td>@Html.LabelFor(m=>m.TargetSalaryCount)</td>
                                 <td>@Html.TextBoxFor(m=>m.TargetSalaryCount, Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                                 </tr>
+                                @if ((Model.IsPersonnelVisible || Model.IsPersonnelManagerEditable))
+                                {
                                 <tr>
                                     <td>@Html.LabelFor(m => m.Grade)</td>
                                     @*<td>@Html.TextBoxFor(m => m.Grade, Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>*@
-                                    <td>@Html.DropDownListFor(m => m.Grade, new SelectList(System.Linq.Enumerable.Range(1, 4),Model.Grade), Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    <td>@Html.DropDownListFor(m => m.Grade, new SelectList(System.Linq.Enumerable.Range(1, 4), Model.Grade), Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })
+                                    @if ((!Model.IsManagerEditable || Model.IsPersonnelManagerEditable))
+                                    {
+                                        @Html.HiddenFor(m => m.Grade)
+                                    }
+                                    </td>
                                 </tr>
+                                }
+                                else
+                                {
+                                    @Html.HiddenFor(m=>m.Grade)
+                                }
                                 <tr>
                                     <td>@Html.LabelFor(m => m.HoursType)</td>
                                     <td>@Html.DropDownListFor(m => m.HoursType, new SelectList(Model.HoursTypes, "Id", "Name"), Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                    @if ((!Model.IsManagerEditable || Model.IsPersonnelManagerEditable))
+                                    {
+                                        @Html.HiddenFor(m => m.HoursType)
+                                    }
                                 </tr>
                                 <tr>
                                 <td>
@@ -441,7 +467,7 @@
                                 </td>
                                 </tr>
                             <tr>    
-                                <td colspan="2">Надбавки
+                                <td colspan="2">Личные надбавки
                                 <table class="grid">
                                       <thead>
                                         <tr>

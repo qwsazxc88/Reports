@@ -195,10 +195,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.Id = entity.Id;
             model.User.Id = entity.User.Id;
-            if (CurrentUser.Id == model.User.Id && !model.IsDocsReceived)
-            {
-                model.IsDocsAddAvailable = true;
-            }
+            model.IsDocsAddAvailable = (CurrentUser.Id == model.User.Id || (CurrentUser.UserRole & UserRole.PersonnelManager)>0|| CheckIsChief(entity.User.Department.Id, CurrentUser)) && !model.IsDocsReceived;
             LoadUserData(model.User);
             var usr = UserDao.Load(model.User.Id);
             model.ActiveAdditions = GetUserActualAddition(model.User.Id);
@@ -255,14 +252,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsSaveAvailable = model.IsDocsAddAvailable || model.IsCheckByPersonelAvailable;
             return model;
         }
-        public void SaveFact(StaffMovementsFactEditModel model)
+        public StaffMovementsFactEditModel SaveFact(StaffMovementsFactEditModel model)
         {
             var entity = StaffMovementsFactDao.Load(model.Id);
+            model.IsDocsAddAvailable = (CurrentUser.Id == model.User.Id || (CurrentUser.UserRole & UserRole.PersonnelManager) > 0 || CheckIsChief(entity.User.Department.Id, CurrentUser)) && !entity.IsDocumentsReceived;
             if ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
             {
                 entity.IsDocumentsReceived = model.IsDocsReceived;
             }
-            if ((CurrentUser.UserRole & UserRole.Employee)>0)
+            if (model.IsDocsAddAvailable)
             {
                 if (model.AgreementAdditionalDocDto != null)
                 {
@@ -334,6 +332,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDocsAddAvailable = (CurrentUser.Id == model.User.Id) && !model.IsDocsReceived;
             model.IsSaveAvailable = model.IsDocsAddAvailable || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && !model.IsDocsReceived);
             model = GetFactEditModel(model.Id);
+            return model;
         }
         #endregion
         #region Реестр заявок
