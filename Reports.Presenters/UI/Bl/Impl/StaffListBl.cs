@@ -1782,7 +1782,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 .ToList<User>();
 
             bool IsInitiator = Initiators.Where(x => x.Id == AuthenticationService.CurrentUser.Id).Count() != 0 ? true : false;
-            bool IsTopManager = Initiators.Where(x => x.Id == AuthenticationService.CurrentUser.Id && x.Level == 3).Count() != 0 ? true : false;
+            bool IsTopManager = Initiators.Where(x => x.Id == AuthenticationService.CurrentUser.Id && x.Level <= 3).Count() != 0 ? true : false;
             bool IsBoardMember = AuthenticationService.CurrentUser.UserRole == UserRole.Director;
             bool IsCurator = (AuthenticationService.CurrentUser.UserRole == UserRole.Inspector);
             bool IsPersonnelBank = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel);
@@ -1793,7 +1793,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             
 
             //вышестоящее руководство
-            model.TopManagers = Initiators.Where(x => x.Level == 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+            model.TopManagers = Initiators.Where(x => x.Level <= 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
             
             //выбираем из согласования не архивные записи.
             IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffDepartmentRequest);
@@ -2573,7 +2573,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             
             //вышестоящее руководство
-            model.TopManagers = Initiators.Where(x => x.Level == 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+            model.TopManagers = Initiators.Where(x => x.Level <= 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
 
 
             //члены правления
@@ -3608,7 +3608,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             //вышестоящее руководство
-            model.TopManagers = Initiators.Where(x => x.Level == 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+            model.TopManagers = Initiators.Where(x => x.Level <= 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
 
 
             //члены правления

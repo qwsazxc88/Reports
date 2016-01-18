@@ -3259,7 +3259,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             User onBehalfOfManager = model.OnBehalfOfManagerId.HasValue ? UserDao.Load(model.OnBehalfOfManagerId.Value) : null;
             User PersonnelUser = UserDao.Load(model.PersonnelId);
             Department department = DepartmentDao.Load(model.DepartmentId);
-            StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId.Value);
+            StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Load(model.UserLinkId.Value);
 
             if(department.ItemLevel != 7)
             {
