@@ -5277,6 +5277,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //список руководителей
             IList<User> managers = DepartmentDao.GetDepartmentManagersWithManualLinks(model.DepartmentId);
+            //model.InitiatorId
             StringBuilder managersBuilder = new StringBuilder();
             foreach (var manager in managers)
             {
