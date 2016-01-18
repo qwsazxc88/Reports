@@ -214,7 +214,7 @@ namespace Reports.Core.Dao.Impl
                 .OrderByDescending(x => x.Level).Distinct()
                 .ToList();
 
-            IList<User> ManagerList = new List<User>().Union(managers).Union(ManualManagers).Distinct().ToList();
+            IList<User> ManagerList = new List<User>().Union(managers).Union(ManualManagers).ToList();
 
             return ManagerList;
         }
