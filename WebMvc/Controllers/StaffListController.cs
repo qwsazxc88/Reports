@@ -41,13 +41,14 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <param name="DepId">Id родительского подразделения</param>
         /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
+        /// <param name="IsBegin">Флажок показывающий, что это первоначальная загрузка.</param>
         /// <returns></returns>
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin | UserRole.StaffListOrder)]
-        public ActionResult StaffList(string DepId, bool? IsParentDepOnly)
+        public ActionResult StaffList(string DepId, bool? IsParentDepOnly, bool? IsBegin)
         {
             StaffListModel model = new StaffListModel();
-            model.Departments = StaffListBl.GetDepartmentListByParent(DepId, IsParentDepOnly.HasValue ? IsParentDepOnly.Value : false);
+            model.Departments = StaffListBl.GetDepartmentListByParent(DepId, IsParentDepOnly.HasValue ? IsParentDepOnly.Value : false, !IsBegin.HasValue ? true : IsBegin.Value);
             return View(model);
         }
         
@@ -61,7 +62,7 @@ namespace WebMvc.Controllers
         public ActionResult StaffListGetNodes(string DepId)
         {
             var jsonSerializer = new JavaScriptSerializer();
-            StaffListModel model = StaffListBl.GetDepartmentStructureWithStaffPost(DepId);
+            StaffListModel model = StaffListBl.GetDepartmentStructureWithStaffPost(DepId, false);
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
@@ -375,14 +376,15 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <param name="DepId">Id родительского подразделения</param>
         /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
+        /// <param name="IsBegin">Флажок показывающий, что это первоначальная загрузка.</param>
         /// <returns></returns>
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager)]
-        public ActionResult StaffListArrangement(string DepId, bool? IsParentDepOnly)
+        public ActionResult StaffListArrangement(string DepId, bool? IsParentDepOnly, bool? IsBegin)
         {
             StaffListArrangementModel model = new StaffListArrangementModel();
             model = StaffListBl.GetStaffListArrangementModel(model);
-            model.Departments = StaffListBl.GetDepartmentListByParent(DepId, IsParentDepOnly.HasValue ? IsParentDepOnly.Value : false);
+            model.Departments = StaffListBl.GetDepartmentListByParent(DepId, IsParentDepOnly.HasValue ? IsParentDepOnly.Value : false, !IsBegin.HasValue ? true : IsBegin.Value);
             return View(model);
         }
         /// <summary>
@@ -394,7 +396,7 @@ namespace WebMvc.Controllers
         public ActionResult StaffListArrangement(string DepId)
         {
             var jsonSerializer = new JavaScriptSerializer();
-            StaffListArrangementModel model = StaffListBl.GetDepartmentStructureWithStaffArrangement(DepId);
+            StaffListArrangementModel model = StaffListBl.GetDepartmentStructureWithStaffArrangement(DepId, false);
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
@@ -407,7 +409,7 @@ namespace WebMvc.Controllers
         public ActionResult CreateTemporaryReleaseVacancyRequest(string DepId)
         {
             var jsonSerializer = new JavaScriptSerializer();
-            StaffListArrangementModel model = StaffListBl.GetDepartmentStructureWithStaffArrangement(DepId);
+            StaffListArrangementModel model = StaffListBl.GetDepartmentStructureWithStaffArrangement(DepId, false);
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }

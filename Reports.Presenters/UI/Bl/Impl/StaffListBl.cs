@@ -336,8 +336,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// Загружаем структуру по заданному коду подразделения и штатные единицы
         /// </summary>
         /// <param name="DepId">Код родительского подразделения</param>
+        /// <param name="IsBegin">Флажок показывающий, что это первоначальная загрузка.</param>
         /// <returns></returns>
-        public StaffListModel GetDepartmentStructureWithStaffPost(string DepId)
+        public StaffListModel GetDepartmentStructureWithStaffPost(string DepId, bool IsBegin)
         {
             StaffListModel model = new StaffListModel();
 
@@ -355,7 +356,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, IsSalaryEnable);
                 //уровень подразделений
-                model.Departments = GetDepartmentListByParent(DepId, false)
+                model.Departments = GetDepartmentListByParent(DepId, false, IsBegin)
                     .OrderBy(x => x.Priority)
                     .ToList();
                     
@@ -374,8 +375,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// </summary>
         /// <param name="DepId">Id родительского подразделения</param>
         /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
+        /// <param name="IsBegin">Флажок показывающий, что это первоначальная загрузка.</param>
         /// <returns></returns>
-        public IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId, bool IsParentDepOnly)
+        public IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId, bool IsParentDepOnly, bool IsBegin)
         {
             //определяем подразделение по правам текущего пользователя для начальной загрузки страницы
             if (string.IsNullOrEmpty(DepId))
@@ -383,10 +385,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing
                     || AuthenticationService.CurrentUser.UserRole == UserRole.Inspector || AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager
                     || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel || AuthenticationService.CurrentUser.UserRole == UserRole.Director
-                    || AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector
-                    || AuthenticationService.CurrentUser.Id == 6638 //|| AuthenticationService.CurrentUser.Id == 22821
-                    || AuthenticationService.CurrentUser.Id == 664
-                    || AuthenticationService.CurrentUser.Id == 24926 || AuthenticationService.CurrentUser.Id == 513)//временно открыт доступ 4 сотрудникам к всей структуре
+                    || AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector)
                 {
                     //DepId = "9900424";
                     //return DepartmentDao.LoadAll().Where(x => x.Code1C.ToString() == DepId).ToList();
@@ -401,10 +400,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     
                 }
 
-                return GetDepListWithSEPCount(DepId, IsParentDepOnly);
+                return GetDepListWithSEPCount(DepId, IsParentDepOnly, IsBegin);
             }
 
-            return GetDepListWithSEPCount(DepId, IsParentDepOnly);
+            return GetDepListWithSEPCount(DepId, IsParentDepOnly, IsBegin);
         }
         /// <summary>
         /// Достаем уровень подчиненных подразделений и дополнительно к подразделениям делаем подсчет количества штатных единиц.
@@ -412,9 +411,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="DepId">Id родительского подразделения.</param>
         /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
         /// <returns></returns>
-        protected IList<StaffListDepartmentDto> GetDepListWithSEPCount(string DepId, bool IsParentDepOnly)
+        protected IList<StaffListDepartmentDto> GetDepListWithSEPCount(string DepId, bool IsParentDepOnly, bool IsBegin)
         {
-            IList<StaffListDepartmentDto> Sdeps = DepartmentDao.DepFingradName(DepId, IsParentDepOnly, AuthenticationService.CurrentUser.UserRole);
+            IList<StaffListDepartmentDto> Sdeps = DepartmentDao.DepFingradName(DepId, IsParentDepOnly, AuthenticationService.CurrentUser.UserRole, AuthenticationService.CurrentUser.Id, IsBegin);
             return Sdeps;
         }
         #endregion
@@ -5159,8 +5158,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// Загружаем структуру по заданному коду подразделения и штатную расстановку.
         /// </summary>
         /// <param name="DepId">Код родительского подразделения</param>
+        /// <param name="IsBegin">Флажок показывающий, что это первоначальная загрузка.</param>
         /// <returns></returns>
-        public StaffListArrangementModel GetDepartmentStructureWithStaffArrangement(string DepId)
+        public StaffListArrangementModel GetDepartmentStructureWithStaffArrangement(string DepId, bool IsBegin)
         {
             StaffListArrangementModel model = new StaffListArrangementModel();
 
@@ -5179,7 +5179,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId, PersonnelId);
                 //уровень подразделений
-                model.Departments = GetDepartmentListByParent(DepId, false).OrderBy(x => x.Priority).ToList();
+                model.Departments = GetDepartmentListByParent(DepId, false, IsBegin).OrderBy(x => x.Priority).ToList();
             }
             else
             {
