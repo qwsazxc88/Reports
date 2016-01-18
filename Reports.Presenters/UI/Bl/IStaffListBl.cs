@@ -15,8 +15,9 @@ namespace Reports.Presenters.UI.Bl
         /// Загружаем структуру по заданному коду подразделения и штатные единицы
         /// </summary>
         /// <param name="DepId">Код родительского подразделения</param>
+        /// <param name="IsBegin">Флажок показывающий, что это первоначальная загрузка.</param>
         /// <returns></returns>
-        StaffListModel GetDepartmentStructureWithStaffPost(string DepId);
+        StaffListModel GetDepartmentStructureWithStaffPost(string DepId, bool IsBegin);
 
         #region Заявки для подразделений
         /// <summary>
@@ -422,8 +423,9 @@ namespace Reports.Presenters.UI.Bl
         /// Загружаем структуру по заданному коду подразделения и штатную расстановку.
         /// </summary>
         /// <param name="DepId">Код родительского подразделения</param>
+        /// <param name="IsBegin">Флажок показывающий, что это первоначальная загрузка.</param>
         /// <returns></returns>
-        StaffListArrangementModel GetDepartmentStructureWithStaffArrangement(string DepId);
+        StaffListArrangementModel GetDepartmentStructureWithStaffArrangement(string DepId, bool IsBegin);
         /// <summary>
         /// Вызов формы для выбора типа заявки в штатном перемещении.
         /// </summary>
@@ -439,7 +441,7 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="DepId">Id родительского подразделения</param>
         /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
         /// <returns></returns>
-        IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId, bool IsParentDepOnly);
+        IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId, bool IsParentDepOnly, bool IsBegin);
         /// <summary>
         /// Загрузка справочников модели для заявок к подразделениям.
         /// </summary>

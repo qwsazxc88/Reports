@@ -214,7 +214,7 @@ namespace Reports.Core.Dao.Impl
                 .OrderByDescending(x => x.Level).Distinct()
                 .ToList();
 
-            IList<User> ManagerList = new List<User>().Union(managers).Union(ManualManagers).ToList();
+            IList<User> ManagerList = new List<User>().Union(managers).Union(ManualManagers).Distinct().ToList();
 
             return ManagerList;
         }
@@ -284,17 +284,33 @@ namespace Reports.Core.Dao.Impl
         /// <param name="Id">Id родительского подразделения</param>
         /// <param name="IsParentDepOnly">Признак достать только родительское подразделение.</param>
         /// <param name="role">Роль текущего пользователя</param>
+        /// <param name="UserId">Id сотрудника</param>
+        /// <param name="IsBegin"></param>
         /// <returns></returns>
-        public IList<StaffListDepartmentDto> DepFingradName(string Id, bool IsParentDepOnly, UserRole role)
+        public IList<StaffListDepartmentDto> DepFingradName(string Id, bool IsParentDepOnly, UserRole role, int UserId, bool IsBegin)
         {
-            /*
-             * придумать как прикрутить ручные привязки
-             */
-            string SqlWhere = (!IsParentDepOnly ? (string.IsNullOrEmpty(Id) ? "A.ParentId is null" : "A.ParentId = " + Id) : "A.Code1C = " + Id);
-            SqlWhere += (role == UserRole.Inspector ? " and (BFGId in (2, 6) or BFGId is null) " : "") + " and isnull(BFGId, 0) not in (3, 5)";
-            return Session.CreateSQLQuery(string.Format(@"SELECT Id, Code, Name, Code1C, ParentId, Path, ItemLevel, CodeSKD, Priority, DepFingradName, DepFingradNameComment, FinDepPointCode, dbo.fnGetStaffEstablishedPostCountByDepartment(A.Id) as SEPCount
-                                            FROM vwStaffListDepartment as A
-                                            WHERE {0} ORDER BY Priority, Name", SqlWhere))
+            string SqlQuery = @"SELECT A.Id, Code, Name, Code1C, ParentId, Path, A.ItemLevel, CodeSKD, Priority, DepFingradName, DepFingradNameComment, FinDepPointCode, dbo.fnGetStaffEstablishedPostCountByDepartment(A.Id) as SEPCount
+                                FROM vwStaffListDepartment as A ";
+
+            string SqlWhere = string.Empty;
+            if ((role & UserRole.Manager) > 0 && IsBegin)
+                SqlQuery += @"INNER JOIN dbo.fnGetBeginDeparmentForUser(" + UserId.ToString() + ") as B ON B.Id = A.Id ";
+            else
+                SqlWhere = (!IsParentDepOnly ? (string.IsNullOrEmpty(Id) ? "A.ParentId is null" : "A.ParentId = " + Id) : "A.Code1C = " + Id);
+
+            //string SqlWhere = (!IsParentDepOnly ? (string.IsNullOrEmpty(Id) ? "A.ParentId is null" : "A.ParentId = " + Id) : "A.Code1C = " + Id);
+            //string SqlWhere = (!IsParentDepOnly ? (string.IsNullOrEmpty(Id) ? "A.ParentId is null" : "A.ParentId = " + Id) : "");
+
+
+
+
+            SqlWhere += (role == UserRole.Inspector ? (string.IsNullOrEmpty(SqlWhere) && string.IsNullOrWhiteSpace(SqlWhere) ? "" : " and ") + " (BFGId in (2, 6) or BFGId is null) " : "");
+            SqlWhere += (string.IsNullOrEmpty(SqlWhere) && string.IsNullOrWhiteSpace(SqlWhere) ? "" : " and ") + " isnull(BFGId, 0) not in (3, 5)";
+//            return Session.CreateSQLQuery(string.Format(@"SELECT Id, Code, Name, Code1C, ParentId, Path, ItemLevel, CodeSKD, Priority, DepFingradName, DepFingradNameComment, FinDepPointCode, dbo.fnGetStaffEstablishedPostCountByDepartment(A.Id) as SEPCount
+//                                            FROM vwStaffListDepartment as A
+//                                            WHERE {0} ORDER BY Priority, Name", SqlWhere))
+            SqlWhere = string.Format(@" WHERE {0} ORDER BY Priority, Name", SqlWhere);
+            return Session.CreateSQLQuery(SqlQuery + SqlWhere)
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("Code", NHibernateUtil.String)
                 .AddScalar("Name", NHibernateUtil.String)

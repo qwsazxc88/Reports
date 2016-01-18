@@ -33,8 +33,8 @@ namespace Reports.Core.Dao.Impl
                                                     FROM StaffDepartmentAdministration as A
                                                     LEFT JOIN StaffDepartmentManagement as B ON B.Id = A.ManagementId
                                                     LEFT JOIN Department as C ON C.Id = A.DepartmentId
-                                                    LEFT JOIN StaffDepartmentBranch as D ON D.Id = B.BranchId " + SqlWhere(ManagementFilterId, BranchFilterId) + @"
-                                                    LEFT JOIN vwStaffListDepartmentManagers as E ON E.DepartmentId = A.DepartmentId and E.IsMainManager = 1 and isnull(E.IsPregnant, 0) = 0")
+                                                    LEFT JOIN StaffDepartmentBranch as D ON D.Id = B.BranchId  
+                                                    LEFT JOIN vwStaffListDepartmentManagers as E ON E.DepartmentId = A.DepartmentId and E.IsMainManager = 1 and isnull(E.IsPregnant, 0) = 0 " + SqlWhere(ManagementFilterId, BranchFilterId))
                 .AddScalar("aId", NHibernateUtil.Int32)
                 .AddScalar("aCode", NHibernateUtil.String)
                 .AddScalar("aName", NHibernateUtil.String)

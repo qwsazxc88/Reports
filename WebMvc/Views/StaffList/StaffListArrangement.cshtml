@@ -397,7 +397,7 @@
     function GetDepartments(DepCode)
     {
         var actionUrl="@Url.Action("StaffListArrangement", "StaffList")";
-        actionUrl += "?DepId=" + DepCode + "&IsParentDepOnly=true";
+        actionUrl += "?DepId=" + DepCode + "&IsParentDepOnly=true&IsBegin=false";
         location.href = actionUrl;
     }
 
