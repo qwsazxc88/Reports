@@ -152,7 +152,7 @@ namespace WebMvc.Controllers
                     else
                     {
                         model = StaffListBl.GetDepartmentRequest(model);
-                        ModelState.AddModelError("MessageStr", "Данные сохранены!");
+                        ModelState.AddModelError("MessageStr", error);
                     }
                 }
                 else
@@ -167,7 +167,7 @@ namespace WebMvc.Controllers
                     else
                     {
                         model = StaffListBl.GetDepartmentRequest(model);
-                        ModelState.AddModelError("MessageStr", "Данные сохранены!");
+                        ModelState.AddModelError("MessageStr", error);
                     }
                 }
             }
@@ -330,7 +330,7 @@ namespace WebMvc.Controllers
                     else
                     {
                         model = StaffListBl.GetEstablishedPostRequest(model);
-                        ModelState.AddModelError("MessageStr", "Данные сохранены!");
+                        ModelState.AddModelError("MessageStr", error);
                     }
                 }
                 else
@@ -343,7 +343,7 @@ namespace WebMvc.Controllers
                     else
                     {
                         model = StaffListBl.GetEstablishedPostRequest(model);
-                        ModelState.AddModelError("MessageStr", "Данные сохранены! " + error);
+                        ModelState.AddModelError("MessageStr", error);
                     }
                 }
             }
@@ -1169,15 +1169,17 @@ namespace WebMvc.Controllers
         }
         protected bool ValidateModel(StaffEstablishedPostRequestModel model)
         {
-            if (model.RequestTypeId == 1 || model.RequestTypeId == 2)
-            {
-                ModelState.AddModelError("Quantity", "Укажите количество штатных единиц не равное 0!");
-                model.Quantity = model.QuantityPrev;
-                model.Salary = model.SalaryPrev;
-            }                
+            
 
             if (model.IsDraft)
             {
+                if ((model.RequestTypeId == 1 || model.RequestTypeId == 2) && model.Quantity == 0)
+                {
+                    ModelState.AddModelError("Quantity", "Укажите количество штатных единиц не равное 0!");
+                    model.Quantity = model.QuantityPrev;
+                    model.Salary = model.SalaryPrev;
+                }                
+
                 if (model.RequestTypeId == 2 && model.QuantityPrev > model.Quantity)
                     ModelState.AddModelError("Quantity", "Изменение количества штатной единицы в меньшую сторону является сокращением! Создайте заявку на сокращение штатной единицы!");
             }

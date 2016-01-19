@@ -143,6 +143,8 @@
         $(document).tooltip({ track: true });
         $(":button").button();
 
+        $(":text").bind("keydown", function(e){if (e.keyCode == 13) $("#StaffEstablishedPostRequestListForm").submit();});
+
         ShowFlash(true);
         ShowFlash(false);
 
