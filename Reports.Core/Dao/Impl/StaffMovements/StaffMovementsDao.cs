@@ -40,6 +40,13 @@ namespace Reports.Core.Dao.Impl
                 return result.First();
             return 0;*/
         }
+        public bool CheckIfPersonnalChargeChanges(int smId)
+        {
+            string query = String.Format("SELECT top 1 SMCL.id FROM StaffMovements SM INNER JOIN USERS U ON Sm.UserId=U.Id INNER JOIN StaffPostChargeLinks SMCL ON SM.Id=SMCL.StaffMovementsId LEFT JOIN StaffPostChargeLinks UCL ON U.id=UCL.UserId and UCL.IsActive=1 and SMCL.StaffExtraChargeId=UCL.StaffExtraChargeId where SM.id={0} and not( ( SMCL.ActionId=4 and UCL.Id is null) or( SMCL.Salary=UCL.Salary and UCL.Salary is not null and (SMCL.ActionId=UCL.ActionId or SMCL.ActionId!=4))	)", smId);
+            var sqlquery = Session.CreateSQLQuery(query);
+            int res=sqlquery.UniqueResult<int>();
+            return res > 0;
+        }
         public IList<StaffMovements> GetDocuments(int UserId, UserRole role, int DepartmentId, string UserName, int Number, int Status, int TypeId)
         {
             var CurrentUser = UserDao.Load(UserId);            
