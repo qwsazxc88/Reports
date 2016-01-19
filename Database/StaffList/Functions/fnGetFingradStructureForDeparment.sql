@@ -34,7 +34,7 @@ DECLARE
 	IF @ItemLevel = 6
 		INSERT INTO @ReturnTable
 		SELECT A.Id
-					,B.Code as RPLinkCode, B.Name as RPLinkName, A.Name as RPLinkNameSKD
+					,AA.Code as RPLinkCode, AA.Name as RPLinkName, A.Name as RPLinkNameSKD
 					,BB.Code as BGCode, BB.Name as BGName, B.Name as BGNameSKD
 					,CC.Code as AdminCode, CC.Name as AdminName, C.Name as AdminNameSKD
 					,DD.Code as ManagementCode, DD.Name as ManagementName, D.Name as ManagementNameSKD
@@ -89,7 +89,7 @@ DECLARE
 		FROM Department as D
 		LEFT JOIN StaffDepartmentManagement as DD ON DD.DepartmentId = D.Id
 		WHERE D.Id = @DepartmentId		
---select * from dbo.fnGetFingradStructureForDeparment(4839) 
+--select * from dbo.fnGetFingradStructureForDeparment(12112) 
 
 	RETURN 
 END
