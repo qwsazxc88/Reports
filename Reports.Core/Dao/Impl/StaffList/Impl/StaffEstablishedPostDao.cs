@@ -142,9 +142,6 @@ namespace Reports.Core.Dao.Impl
                                               ,TotalSalary
                                               ,DateDistribNote
                                               ,DateReceivNote
-                                              ,IsTemporary
-                                              ,DateTempBegin
-                                              ,DateTempEnd
                                               ,BasicUser
                                        FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId, :PersonnelId)");
 
@@ -183,9 +180,6 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("TotalSalary", NHibernateUtil.Decimal)
                 .AddScalar("DateDistribNote", NHibernateUtil.DateTime)
                 .AddScalar("DateReceivNote", NHibernateUtil.DateTime)
-                .AddScalar("IsTemporary", NHibernateUtil.Boolean)
-                .AddScalar("DateTempBegin", NHibernateUtil.DateTime)
-                .AddScalar("DateTempEnd", NHibernateUtil.DateTime)
                 .AddScalar("BasicUser", NHibernateUtil.String)
                 .SetInt32("DepartmentId", DepartmentId)
                 .SetInt32("PersonnelId", PersonnelId)

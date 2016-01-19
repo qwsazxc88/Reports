@@ -46,9 +46,6 @@ RETURNS
 	,TotalSalary numeric(18, 2)
 	,DateDistribNote datetime
 	,DateReceivNote datetime
-	,IsTemporary bit
-	,DateTempBegin datetime
-	,DateTempEnd datetime
 	,BasicUser nvarchar(250)
 )
 AS
@@ -105,9 +102,6 @@ DECLARE
 				 ,case when @IsSalaryEnable = 1 then isnull(I.TotalSalary, A.Salary) else 0 end as TotalSalary	--если вакансия, то надо показать оклад штатной единицы
 				 ,F.DateDistribNote
 				 ,F.DateReceivNote
-				 ,F.IsTemporary
-				 ,F.DateTempBegin
-				 ,F.DateTempEnd
 				 ,K.Name as BasicUser
 	FROM StaffEstablishedPost as A
 	INNER JOIN Position as B ON B.Id = A.PositionId
