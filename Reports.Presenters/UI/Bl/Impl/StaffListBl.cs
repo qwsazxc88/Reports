@@ -500,12 +500,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.ManagementCode = FinStructure.ManagementCode;
                     model.ManagementName = FinStructure.ManagementName;
+                    model.ManagementNameSKD = FinStructure.ManagementNameSKD;
                     model.AdminCode = FinStructure.AdminCode;
                     model.AdminName = FinStructure.AdminName;
+                    model.AdminNameSKD = FinStructure.AdminNameSKD;
                     model.BGCode = FinStructure.BGCode;
                     model.BGName = FinStructure.BGName;
+                    model.BGNameSKD = FinStructure.BGNameSKD;
                     model.RPLInkCode = FinStructure.RPLinkCode;
                     model.RPLInkName = FinStructure.RPLinkName;
+                    model.RPLInkNameSKD = FinStructure.RPLinkNameSKD;
                 }
 
 
@@ -627,12 +631,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.ManagementCode = FinStructure.ManagementCode;
                     model.ManagementName = FinStructure.ManagementName;
+                    model.ManagementNameSKD = FinStructure.ManagementNameSKD;
                     model.AdminCode = FinStructure.AdminCode;
                     model.AdminName = FinStructure.AdminName;
+                    model.AdminNameSKD = FinStructure.AdminNameSKD;
                     model.BGCode = FinStructure.BGCode;
                     model.BGName = FinStructure.BGName;
+                    model.BGNameSKD = FinStructure.BGNameSKD;
                     model.RPLInkCode = FinStructure.RPLinkCode;
                     model.RPLInkName = FinStructure.RPLinkName;
+                    model.RPLInkNameSKD = FinStructure.RPLinkNameSKD;
                 }
 
                 //налоговые реквизиты
@@ -1716,11 +1724,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 
                 if (entity.RequestType.Id != 3)
                 {
-                    if (!CreateCodeForDepartment(entity, dep, curUser, out error))
+                    if (entity.DepartmentAccessory.Id == 2 || entity.DepartmentAccessory.Id == 6)
                     {
-                        error = string.IsNullOrEmpty(error) || string.IsNullOrWhiteSpace(error) ? "Произошла ошибка при формировании кода подразделения!" : error;
-                        DepartmentDao.RollbackTran();
-                        return false;
+                        if (!CreateCodeForDepartment(entity, dep, curUser, out error))
+                        {
+                            error = string.IsNullOrEmpty(error) || string.IsNullOrWhiteSpace(error) ? "Произошла ошибка при формировании кода подразделения!" : error;
+                            DepartmentDao.RollbackTran();
+                            return false;
+                        }
                     }
                 }
 
@@ -2556,20 +2567,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 .OrderByDescending<User, int?>(manager => manager.Level)
                 .ToList<User>();
 
-
-            ////если инициатором является куратор или кадровик банка, то по ветке подразделения находим руководителей на уровень выше создаваемого подразделения
-            if (entity.Creator.Id == AuthenticationService.CurrentUser.Id && AuthenticationService.CurrentUser.UserRole == UserRole.Manager)
+            if (entity.Creator != null) //у заявок созданных при переходе нет создателя
             {
-                model.Initiators = Initiators.Where(x => x.Id == AuthenticationService.CurrentUser.Id).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+                ////если инициатором является куратор или кадровик банка, то по ветке подразделения находим руководителей на уровень выше создаваемого подразделения
+                if (entity.Creator.Id == AuthenticationService.CurrentUser.Id && AuthenticationService.CurrentUser.UserRole == UserRole.Manager)
+                {
+                    model.Initiators = Initiators.Where(x => x.Id == AuthenticationService.CurrentUser.Id).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+                }
+                else
+                {
+                    model.Initiators = Initiators.Where(x => x.Level >= 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+                    //если создатель заявки руководитель, то позиционируемся на нем
+                    if (entity.Creator.UserRole == UserRole.Manager)
+                        model.InitiatorId = entity.Creator.Id;
+                }
             }
-            else
-            {
-                model.Initiators = Initiators.Where(x => x.Level >= 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
-                //если создатель заявки руководитель, то позиционируемся на нем
-                if (entity.Creator.UserRole == UserRole.Manager)
-                    model.InitiatorId = entity.Creator.Id;
-            }
-
             
             //вышестоящее руководство
             model.TopManagers = Initiators.Where(x => x.Level <= 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });

@@ -33,40 +33,50 @@
             <h3>Общие реквизиты</h3>
             <div>
                 <table>
-                @*
                     <tr>
-                        <td>@Html.LabelFor(m => m.ManagementCode)</td>
-                        <td>@Html.DisplayFor(m => m.ManagementCode)</td>
+                        <td colspan="2">
+                            <table border="1" style="@if(Model.ItemLevel.Value < 4){<text>display:none;</text>}">
+                                <tr>
+                                    <th style="text-align:center;">Уровень подр.</th>
+                                    <th style="text-align:center;">Название СКД</th>
+                                    <th style="text-align:center;">Код</th>
+                                    <th style="text-align:center;">Название Финград</th>
+                                </tr>
+
+                                <tr>
+                                    <td>3</td>
+                                    <td>@Html.DisplayFor(m => m.ManagementNameSKD)</td>
+                                    <td>@Html.DisplayFor(m => m.ManagementCode)</td>
+                                    <td>@Html.DisplayFor(m => m.ManagementName)</td>
+                                </tr>
+
+                                <tr style="@if(Model.ItemLevel.Value < 5){<text>display:none;</text>}">
+                                    <td>4</td>
+                                    <td>@Html.DisplayFor(m => m.AdminNameSKD)</td>
+                                    <td>@Html.DisplayFor(m => m.AdminCode)</td>
+                                    <td>@Html.DisplayFor(m => m.AdminName)</td>
+                                </tr>
+
+                    
+                                <tr style="@if(Model.ItemLevel.Value < 6){<text>display:none;</text>}">
+                                    <td>5</td>
+                                    <td>@Html.DisplayFor(m => m.BGNameSKD)</td>
+                                    <td>@Html.DisplayFor(m => m.BGCode)</td>
+                                    <td>@Html.DisplayFor(m => m.BGName)</td>
+                                </tr>
+
+                                <tr style="@if(Model.ItemLevel.Value < 7){<text>display:none;</text>}">
+                                    <td>6</td>
+                                    <td>@Html.DisplayFor(m => m.RPLInkNameSKD)</td>
+                                    <td>@Html.DisplayFor(m => m.RPLInkCode)</td>
+                                    <td>@Html.DisplayFor(m => m.RPLInkName)</td>
+                                </tr>
+                            </table>
+                        </td>
                     </tr>
-                    <tr>
-                        <td>@Html.LabelFor(m => m.ManagementName)</td>
-                        <td>@Html.DisplayFor(m => m.ManagementName)</td>
-                    </tr>
-                    <tr>
-                        <td>@Html.LabelFor(m => m.AdminCode)</td>
-                        <td>@Html.DisplayFor(m => m.AdminCode)</td>
-                    </tr>
-                    <tr>
-                        <td>@Html.LabelFor(m => m.AdminName)</td>
-                        <td>@Html.DisplayFor(m => m.AdminName)</td>
-                    </tr>
-                    <tr>
-                        <td>@Html.LabelFor(m => m.BGCode)</td>
-                        <td>@Html.DisplayFor(m => m.BGCode)</td>
-                    </tr>
-                    <tr>
-                        <td>@Html.LabelFor(m => m.BGName)</td>
-                        <td>@Html.DisplayFor(m => m.BGName)</td>
-                    </tr>
-                    <tr>
-                        <td>@Html.LabelFor(m => m.RPLInkCode)</td>
-                        <td>@Html.DisplayFor(m => m.RPLInkCode)</td>
-                    </tr>
-                    <tr>
-                        <td>@Html.LabelFor(m => m.RPLInkName)</td>
-                        <td>@Html.DisplayFor(m => m.RPLInkName)</td>
-                    </tr>
-                    *@
+                    
+
+                    
                     <tr>
                         <td>
                             @Html.LabelFor(m => m.Managers)

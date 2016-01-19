@@ -131,18 +131,21 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public StaffDepartmentFingradStructureDto GetFingradStructureForDeparment(int DepartmentId)
         {
-            IQuery query = Session.CreateSQLQuery(@"SELECT Id, Name, RPLinkCode, RPLinkName, BGCode, BGName, AdminCode, AdminName, ManagementCode, ManagementName
+            IQuery query = Session.CreateSQLQuery(@"SELECT Id, RPLinkCode, RPLinkName, RPLinkNameSKD, BGCode, BGName, BGNameSKD, AdminCode, AdminName, AdminNameSKD, ManagementCode, ManagementName, ManagementNameSKD
                                                     FROM dbo.fnGetFingradStructureForDeparment(:DepartmentId)")
                  .AddScalar("Id", NHibernateUtil.Int32)
-                 .AddScalar("Name", NHibernateUtil.String)
                  .AddScalar("RPLinkCode", NHibernateUtil.String)
                  .AddScalar("RPLinkName", NHibernateUtil.String)
+                 .AddScalar("RPLinkNameSKD", NHibernateUtil.String)
                  .AddScalar("BGCode", NHibernateUtil.String)
                  .AddScalar("BGName", NHibernateUtil.String)
+                 .AddScalar("BGNameSKD", NHibernateUtil.String)
                  .AddScalar("AdminCode", NHibernateUtil.String)
                  .AddScalar("AdminName", NHibernateUtil.String)
+                 .AddScalar("AdminNameSKD", NHibernateUtil.String)
                  .AddScalar("ManagementCode", NHibernateUtil.String)
                  .AddScalar("ManagementName", NHibernateUtil.String)
+                 .AddScalar("ManagementNameSKD", NHibernateUtil.String)
                  .SetInt32("DepartmentId", DepartmentId);
 
             return query.SetResultTransformer(Transformers.AliasToBean<StaffDepartmentFingradStructureDto>()).UniqueResult<StaffDepartmentFingradStructureDto>();
