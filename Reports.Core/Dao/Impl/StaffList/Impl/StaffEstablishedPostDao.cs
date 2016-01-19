@@ -72,6 +72,7 @@ namespace Reports.Core.Dao.Impl
                                               ,IsTemporary
                                               ,DateTempBegin
                                               ,DateTempEnd
+                                              ,BasicUser
                                        FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId, 0)");
 
             
@@ -114,6 +115,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("IsTemporary", NHibernateUtil.Boolean)
                 .AddScalar("DateTempBegin", NHibernateUtil.DateTime)
                 .AddScalar("DateTempEnd", NHibernateUtil.DateTime)
+                .AddScalar("BasicUser", NHibernateUtil.String)
                 .SetInt32("DepartmentId", DepartmentId)
                 .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
                 List<StaffEstablishedPostDto>();
@@ -138,6 +140,12 @@ namespace Reports.Core.Dao.Impl
                                               ,North
                                               ,Qualification
                                               ,TotalSalary
+                                              ,DateDistribNote
+                                              ,DateReceivNote
+                                              ,IsTemporary
+                                              ,DateTempBegin
+                                              ,DateTempEnd
+                                              ,BasicUser
                                        FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId, :PersonnelId)");
 
             return Session.CreateSQLQuery(sqlQuery)
@@ -173,6 +181,12 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("North", NHibernateUtil.Decimal)
                 .AddScalar("Qualification", NHibernateUtil.Decimal)
                 .AddScalar("TotalSalary", NHibernateUtil.Decimal)
+                .AddScalar("DateDistribNote", NHibernateUtil.DateTime)
+                .AddScalar("DateReceivNote", NHibernateUtil.DateTime)
+                .AddScalar("IsTemporary", NHibernateUtil.Boolean)
+                .AddScalar("DateTempBegin", NHibernateUtil.DateTime)
+                .AddScalar("DateTempEnd", NHibernateUtil.DateTime)
+                .AddScalar("BasicUser", NHibernateUtil.String)
                 .SetInt32("DepartmentId", DepartmentId)
                 .SetInt32("PersonnelId", PersonnelId)
                 .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
@@ -185,7 +199,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public int GetEstablishedPostUsed(int SEPId)
         {
-            return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.User.IsActive == true && !x.User.IsPregnant.HasValue).ToList().Count;
+            return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.User.IsActive == true && !x.User.IsPregnant.HasValue && !x.IsDismissal && x.IsUsed).ToList().Count;
         }
         /// <summary>
         /// Достаем связи штатной единицы и сотрудников.

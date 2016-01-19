@@ -26,6 +26,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? DateAccept { get; set; }
         public virtual DateTime? BeginAccountDate { get; set; }
         public virtual DateTime? SendTo1C { get; set; }
+        public virtual DateTime? DeleteDate { get; set; } 
         public virtual AppointmentReason Reason { get; set; }
         public virtual User Creator { get; set; }
         public virtual DateTime? CreateDate { get; set; }

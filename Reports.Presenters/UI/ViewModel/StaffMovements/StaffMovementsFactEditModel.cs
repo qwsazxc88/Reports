@@ -17,6 +17,7 @@ namespace Reports.Presenters.UI.ViewModel
         public IList<AdditionsDto> ActiveAdditions { get; set; }
         public bool IsAgreementAvailable { get; set; }
         public bool IsAgreementAdditionAvailable { get; set; }
+        public bool IsDMOAvailable { get; set; }
         public bool IsOrderAvailable { get; set; }
         public decimal RegionCoefficient {get;set;}
         public decimal Salary {get;set;}

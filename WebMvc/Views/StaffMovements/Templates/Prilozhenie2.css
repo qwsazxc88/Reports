@@ -1,4 +1,8 @@
-﻿ @font-face
+﻿ table tbody tr td p
+ {
+     font-size:6.5pt;
+ }
+ @font-face
 	{font-family:"Cambria Math";
 	panose-1:2 4 5 3 5 4 6 3 2 4;
 	mso-font-charset:1;

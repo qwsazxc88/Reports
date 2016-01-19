@@ -8,7 +8,7 @@ namespace Reports.Presenters.UI.Bl
 {
     public interface IStaffMovementsBl
     {
-        void SaveFact(StaffMovementsFactEditModel model);
+        StaffMovementsFactEditModel SaveFact(StaffMovementsFactEditModel model);
         StaffMovementsFactListModel GetFactListModel();
         StaffMovementsFactEditModel GetFactEditModel(int Id);
         GridDefinition GetFactDocuments(StaffMovementsFactListModel model);
@@ -17,7 +17,7 @@ namespace Reports.Presenters.UI.Bl
         void SaveModel(StaffMovementsEditModel model);
         StaffMovementsListModel GetListModel();
         IList<IdNameDto> GetPositionsForDepartment(int id);
-        IList<StaffMovementsDto> GetDocuments( int DepartmentId, string UserName, int Number, int Status);
+        IList<StaffMovementsDto> GetDocuments( int DepartmentId, string UserName, int Number, int Status, int TypeId);
         bool CheckMovementsExist(DateTime date, int UserId,int id);
         void SaveDocsModel(StaffMovementsEditModel model);
         StaffMovementsPrintModel GetPrintModel(int id, int SignerId=0);

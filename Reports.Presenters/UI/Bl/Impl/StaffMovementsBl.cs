@@ -19,6 +19,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Constants
         #endregion
         #region Dao
+        protected IDocumentApprovalDao documentApprovalDao;
+        public IDocumentApprovalDao DocumentApprovalDao
+        {
+            get { return Validate.Dependency(documentApprovalDao); }
+            set { documentApprovalDao = value; }
+        }
         protected IRequestPrintFormDao requestPrintFormDao;
         public IRequestPrintFormDao RequestPrintFormDao
         {
@@ -186,17 +192,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             StaffMovementsFactEditModel model = new StaffMovementsFactEditModel();
             model.Signers = EmploymentSignersDao.LoadAll().Select(x=>new IdNameDto{ Id=x.Id, Name=x.Name}).ToList();
             model.SignerId = model.Signers.First().Id;
-
+            model.IsDocsReceived = entity.IsDocumentsReceived;
             model.Id = entity.Id;
             model.User.Id = entity.User.Id;
-            if (CurrentUser.Id == model.User.Id && !model.IsDocsReceived)
-            {
-                model.IsDocsAddAvailable = true;
-            }
+            model.IsDocsAddAvailable = (CurrentUser.Id == model.User.Id || (CurrentUser.UserRole & UserRole.PersonnelManager)>0|| CheckIsChief(entity.User.Department.Id, CurrentUser)) && !model.IsDocsReceived;
             LoadUserData(model.User);
             var usr = UserDao.Load(model.User.Id);
             model.ActiveAdditions = GetUserActualAddition(model.User.Id);
             model.IsOrderAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsOrder).Count>0;
+            model.IsDMOAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsDMO).Count > 0;
             model.IsAgreementAdditionAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsAgreementAddition).Count > 0;
             model.IsAgreementAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsAgreement).Count > 0;
             if (entity.AgreementAdditionalDoc.HasValue)
@@ -249,14 +253,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsSaveAvailable = model.IsDocsAddAvailable || model.IsCheckByPersonelAvailable;
             return model;
         }
-        public void SaveFact(StaffMovementsFactEditModel model)
+        public StaffMovementsFactEditModel SaveFact(StaffMovementsFactEditModel model)
         {
             var entity = StaffMovementsFactDao.Load(model.Id);
+            model.IsDocsAddAvailable = (CurrentUser.Id == model.User.Id || (CurrentUser.UserRole & UserRole.PersonnelManager) > 0 || CheckIsChief(entity.User.Department.Id, CurrentUser)) && !entity.IsDocumentsReceived;
             if ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
             {
                 entity.IsDocumentsReceived = model.IsDocsReceived;
             }
-            if ((CurrentUser.UserRole & UserRole.Employee)>0)
+            if (model.IsDocsAddAvailable)
             {
                 if (model.AgreementAdditionalDocDto != null)
                 {
@@ -328,6 +333,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDocsAddAvailable = (CurrentUser.Id == model.User.Id) && !model.IsDocsReceived;
             model.IsSaveAvailable = model.IsDocsAddAvailable || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && !model.IsDocsReceived);
             model = GetFactEditModel(model.Id);
+            StaffMovementsFactDao.SaveAndFlush(entity);
+            return model;
         }
         #endregion
         #region Реестр заявок
@@ -339,6 +346,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             StaffMovementsListModel model = new StaffMovementsListModel();
             model.BeginDate =new DateTime( DateTime.Now.Year,DateTime.Now.Month,1);
+            model.Types = StaffMovementsTypesDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            model.Types.Add(new IdNameDto { Id = 0, Name = "Все" });
+            model.TypeId = 0;
             model.Statuses = StaffMovementsStatusDao.LoadAll().Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
             model.Statuses.Add(new IdNameDto { Id = 0, Name = "Все" });
             model.Status = 0;
@@ -352,9 +362,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="Number"></param>
         /// <param name="Status"></param>
         /// <returns></returns>
-        public IList<StaffMovementsDto> GetDocuments(int DepartmentId, string UserName, int Number, int Status)
+        public IList<StaffMovementsDto> GetDocuments(int DepartmentId, string UserName, int Number, int Status, int TypeId)
         {
-            var docs = StaffMovementsDao.GetDocuments(CurrentUser.Id, CurrentUser.UserRole ,DepartmentId, UserName, Number, Status);
+            var docs = StaffMovementsDao.GetDocuments(CurrentUser.Id, CurrentUser.UserRole ,DepartmentId, UserName, Number, Status, TypeId);
             int iterator = 1;
             if (docs != null && docs.Any())
                 return docs.Select(x => new StaffMovementsDto
@@ -369,13 +379,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     MoveDate = x.MovementDate,
                     NPP = iterator++,
                     Number = x.Id,
+                    TypeId = x.Type.Id,
                     Salary = x.Data.Salary,
                     Position = x.User != null ? (x.User.Position!=null?x.User.Position.Name:"") : "",
                     UserName = x.User!=null?x.User.Name:"",
                     PositionCurrent = x.SourcePosition !=null ? x.SourcePosition.Name:"",
-                    PositionTarget = x.TargetPosition != null ? x.TargetPosition.Name : "",
-                    TargetDep7Name = x.TargetDepartment!=null ? x.TargetDepartment.Name:"",
-                    TargetDep3Name = x.TargetDepartment!=null ? ((x.TargetDepartment.Dep3 != null && x.TargetDepartment.Dep3.Any()) ? x.TargetDepartment.Dep3.First().Name : ""):""
+                    PositionTarget = x.Type.Id>=2?(x.TargetPosition != null ? x.TargetPosition.Name : ""):"",
+                    TargetDep7Name = x.Type.Id==2?(x.TargetDepartment!=null ? x.TargetDepartment.Name:""):"",
+                    TargetDep3Name = x.Type.Id==2?(x.TargetDepartment!=null ? ((x.TargetDepartment.Dep3 != null && x.TargetDepartment.Dep3.Any()) ? x.TargetDepartment.Dep3.First().Name : ""):""):""
                 }).ToList();
             else return new List<StaffMovementsDto>();
         }
@@ -445,7 +456,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 #region Согласования
                 model.SendDate = entity.SendDate;
                 model.SourceManagerAccept = entity.SourceManagerAccept;
-                model.TargetManagerAccept = entity.TargetManagerAccept;
+                model.TargetManagerAccept = entity.TargetManagerAccept;                
                 model.PersonnelManagerBankAccept = entity.PersonnelManagerBankAccept;
                 model.PersonnelManagerBank = entity.PersonnelManagerBank != null ? entity.PersonnelManagerBank.Name : "";
                 model.ChiefAccept = entity.TargetChiefAccept;
@@ -464,8 +475,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TargetDepartmentName = entity.TargetDepartment.Name;
                 model.TargetManager = new StandartUserDto { Id = entity.TargetManager.Id };
                 LoadUserData(model.TargetManager);
+                var TargetUppers = DocumentApprovalDao.Find(x => x.DocId == entity.Id && x.Number == 2 && !x.IsArchive );
+                if (TargetUppers != null && TargetUppers.Any())
+                {
+                    model.TargetManager.Name += String.Format("({0})", TargetUppers.First().AssistantUser.Name);
+                }
                 model.SourceManager = new StandartUserDto { Id = entity.SourceManager.Id };
                 LoadUserData(model.SourceManager);
+                var SourceUppers = DocumentApprovalDao.Find(x => x.DocId == entity.Id && x.Number == 1 && !x.IsArchive );
+                if (SourceUppers != null && SourceUppers.Any())
+                {
+                    model.SourceManager.Name += String.Format("({0})", SourceUppers.First().AssistantUser.Name);
+                }
                 #endregion
                 #region Для руководителей
                 model.IsTempMoving = entity.IsTempMoving;
@@ -620,6 +641,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
         #endregion
         #region Private methods
+        
         /// <summary>
         /// Получает руководителя для подразделени\
         /// </summary>
@@ -627,7 +649,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns>руководитель</returns>
         private User GetManagerForDepartment(Department dep)
         {
-            var managers = DepartmentDao.GetDepartmentManagers(dep.Id, true);
+            var managers = DepartmentDao.GetDepartmentManagersByDepAndManualRole(dep.Id,4);
             if (managers != null && managers.Any())
             {
                 var level = managers.Max(x => x.Level.Value);
@@ -756,8 +778,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             var docs = entity.Docs;
             #region файлики
             var tmp = "";
-            var MovementNote = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementNote).First();
-            SaveAttachment(MovementNote.Id, MovementNote.Attachment != null ? MovementNote.Attachment.Id : 0, model.MovementNoteDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
+            var MovementNote = docs.Where(x => x.DocType == (int)StaffMovementsDocsTypes.MovementNote).First();           
+            var id = SaveAttachment(MovementNote.Id, MovementNote.Attachment != null ? MovementNote.Attachment.Id : 0, model.MovementNoteDto, RequestAttachmentTypeEnum.StaffMovements, out tmp);
+            if (id.HasValue)
+            {
+                var at = RequestAttachmentDao.Load(id.Value);
+                MovementNote.Attachment = at;
+                StaffMovementsDocsDao.SaveAndFlush(MovementNote);
+            }
             #endregion
         }
         /// <summary>
@@ -840,13 +868,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsTargetManagerAcceptAvailable = true;
                     break;
                 case 4://Отправлена на согласование кадровику банка
+                    model.IsCancelAvailable = true;
+                    model.ISRejectAvailable = true;
+                    model.IsManagerEditable = false;
+                    model.IsStopButtonAvailable = true;
+                    model.IsPersonnelManagerBankAcceptAvailable = true;
+                    model.IsTargetManagerAcceptAvailable = false;
+                    break;
                 case 5://Заблокирована кадровиком банка. Доступно согласование кадровиком банка
                     model.IsCancelAvailable = true;
                     model.ISRejectAvailable = true;
                     model.IsManagerEditable = true;
                     model.IsStopButtonAvailable = true;
                     model.IsPersonnelManagerBankAcceptAvailable = true;
-                    model.IsTargetManagerAcceptAvailable = false;
+                    model.IsTargetManagerAcceptAvailable = true;
                     break;
                 case 6://Отправлена на согласование вышестоящему руководителю
                     model.IsCancelAvailable = true;
@@ -936,19 +971,34 @@ namespace Reports.Presenters.UI.Bl.Impl
                     SetAdditionFlags(model.AdditionsToEdit, CurrentUser.UserRole, false);
                     break;
                 case UserRole.Manager:
+                    bool IsUpperSource = false;
+                    bool IsUpperTarget = false;
+                    if (model.SourceManager != null)
+                    {
+                        var sourcemanager = UserDao.Load(model.SourceManager.Id);
+                        if(sourcemanager!=null && sourcemanager.Department!=null)
+                            IsUpperSource = CheckIsChief(sourcemanager.Department.Id, CurrentUser);
+                    }
+                    if (model.TargetManager != null)
+                    {
+                        var targetmanager = UserDao.Load(model.TargetManager.Id);
+                        if (targetmanager != null && targetmanager.Department != null)
+                            IsUpperTarget = CheckIsChief(targetmanager.Department.Id, CurrentUser);
+
+                    }
                     model.IsDocsVisible = true;
                     model.IsPersonnelVisible = false;
                     model.IsManagerVisible = true;
                     model.IsPersonnelManagerEditable = false; //Редактирование кадровиком
-                    model.IsManagerEditable = model.IsManagerEditable && (model.Id == 0 || (model.TargetManager != null ? model.TargetManager.Id == CurrentUser.Id : false));//Редактирование руководителем, должно быть доступно только принимающему руководителю
+                    model.IsManagerEditable = model.IsManagerEditable && (model.Id == 0 || (model.TargetManager != null ? (model.TargetManager.Id == CurrentUser.Id || IsUpperTarget) : false));//Редактирование руководителем, должно быть доступно только принимающему руководителю
                     model.IsDocsEditable = false;//Редактирование документов
                     model.IsDocsAddAvailable = model.IsDocsAddAvailable && true;//Добавление документов
 
                     model.IsUserAcceptAvailable = false; //Утверждение сотрудником
                     model.SendDate = model.SendDate.HasValue ? model.SendDate : DateTime.Now;
                     model.ISRejectAvailable = model.ISRejectAvailable && true; //Отмена
-                    model.IsSourceManagerAcceptAvailable = model.IsSourceManagerAcceptAvailable && model.SourceManager != null ? model.SourceManager.Id == CurrentUser.Id : false;//Утверждение отпускающим руководителем. Должно быть доступно только отпускающему
-                    model.IsTargetManagerAcceptAvailable = model.IsTargetManagerAcceptAvailable && model.TargetManager != null ? model.TargetManager.Id == CurrentUser.Id : false;//Утверждение принимающим руководителем
+                    model.IsSourceManagerAcceptAvailable = model.IsSourceManagerAcceptAvailable && model.SourceManager != null ? (model.SourceManager.Id == CurrentUser.Id || IsUpperSource) : false;//Утверждение отпускающим руководителем. Должно быть доступно только отпускающему
+                    model.IsTargetManagerAcceptAvailable = model.IsTargetManagerAcceptAvailable && model.TargetManager != null ? (model.TargetManager.Id == CurrentUser.Id || IsUpperTarget): false;//Утверждение принимающим руководителем
                     model.IsPersonnelManagerAcceptAvailable = false;//Утверждение кадровиком
                     model.IsPersonnelManagerBankAcceptAvailable = false;//Утверждение кадровиком банка
                     if (model.TargetManager != null)
@@ -984,6 +1034,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     SetAdditionFlags(model.AdditionsToEdit, CurrentUser.UserRole, false);
                     break;
                 case UserRole.PersonnelManager:
+                    
                     model.IsDocsVisible = true;
                     model.IsPersonnelVisible = true;
                     model.IsManagerVisible = true;
@@ -1004,6 +1055,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsConfirmButtonAvailable = model.IsConfirmButtonAvailable && true;//Кнопка утверждения документов                   
                     model.IsStopButtonAvailable = false;//Конпка приостановки 
                     SetAdditionFlags(model.AdditionsToEdit, CurrentUser.UserRole, model.IsPersonnelManagerEditable);
+                    /*model.IsTargetManagerAcceptAvailable = true && !model.TargetManagerAccept.HasValue;
+                    model.IsSourceManagerAcceptAvailable = true && !model.SourceManagerAccept.HasValue;*/
                     break;
             }
             model.IsSaveAvailable = (model.StatusId == 1 && (model.Creator.Id == CurrentUser.Id || model.User.Id == CurrentUser.Id))
@@ -1048,27 +1101,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                     case "a5ceb324-a745-11de-b733-003048359abd":
                         element.IsValueEditable = false;
                         element.IsEditable = (role & UserRole.PersonnelManager) > 0 && isEditable;
-                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        element.IsVisible = false;//(role & ShowAllToRoles) > 0;
                         break;
                     //Отпуск по уходу за ребенком без оплаты
                     case "9e6ec242-49f2-4320-a5aa-024c5d607aa3":
                         element.IsEditable = false;
-                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        element.IsVisible = false;//(role & ShowAllToRoles) > 0;
                         break;
                     //Пособие по уходу за ребёнком до 1.5 лет#1502
                     case "1671e1b6-0281-489c-b191-50e6fb241e75":
                         element.IsEditable = false;
-                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        element.IsVisible = false;//(role & ShowAllToRoles) > 0;
                         break;
                     //Пособие по уходу за ребёнком до 3 лет#1503
                     case "db5cc88b-4080-4061-8bba-42f22b500bb4":
                         element.IsEditable = false;
-                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        element.IsVisible = false;//(role & ShowAllToRoles) > 0;
                         break;
                     //Доплата за совмещение
                     case "91a004fc-d13e-11dd-b086-00308d000000":
                         element.IsEditable = false;
-                        element.IsVisible = (role & ShowAllToRoles) > 0;
+                        element.IsVisible = false;//(role & ShowAllToRoles) > 0;
                         break;
                     default:
                         element.IsVisible = true;
@@ -1076,6 +1129,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         break;
                 }
             }
+        }
+        private bool CheckIsChief(int depId, Reports.Presenters.Services.IUser chief)
+        {            
+            var chiefs = DepartmentDao.GetDepartmentManagersByDepAndManualRole(depId, 4);
+            if (chief == null || !chiefs.Any()) return false;
+            return chiefs.Any(x => x.Id == chief.Id);
         }
         /// <summary>
         /// Меняем поля сущности. Все сохранения зависят от флагов(нельзя - значит нельзя.)
@@ -1191,6 +1250,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Data.Salary = model.TargetSalaryCount;
                 entity.Data.Grade = model.Grade;//Грейд
                 entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
+                entity.Data.TargetCasingType = model.TargetCasingType;
                 SaveAdditions(entity, model);
             }
             #endregion
@@ -1199,6 +1259,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.Data.Grade = model.Grade;//Грейд
                 entity.Data.HoursType = ScheduleDao.Load(model.HoursType);//График работы
+                entity.Data.TargetCasingType = model.TargetCasingType;
                 entity.Data.Salary = model.TargetSalaryCount;
                 //entity.Data.AccessGroup = AccessGroupDao.Load(model.AccessGroup);//Группа доступа
                 //Ставим галочки в документах
@@ -1224,6 +1285,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.RejectedBy = UserDao.Load(CurrentUser.Id);
                         entity.RejectReason = StaffMovementsRejectReasonDao.Load((int)StaffMovementsRejectReasonEnum.UserReject);
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Canceled);
+                        if (entity.TargetStaffEstablishedPostRequest.ReserveType != null && entity.TargetStaffEstablishedPostRequest.DocId == entity.Id)
+                        {
+                            entity.TargetStaffEstablishedPostRequest.ReserveType = null;
+                            entity.TargetStaffEstablishedPostRequest.DocId = null;
+                        }
                     }
                     if (model.IsAcceptButtonPressed && model.IsUserAcceptAvailable)
                     {
@@ -1244,6 +1310,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.SendDate = DateTime.Now;
                         entity.SourceManagerAccept = DateTime.Now;
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.TargetManager);
+                        if (entity.SourceManager != null && entity.SourceManager.Id != CurrentUser.Id)
+                        {
+                            //DocumentApprovalDao
+                            DocumentApproval newapprove = new DocumentApproval();
+                            newapprove.ApprovalType = (int)ApprovalTypeEnum.StaffMovements;
+                            newapprove.ApproveUser = entity.SourceManager;
+                            newapprove.AssistantUser = UserDao.Load(CurrentUser.Id);
+                            newapprove.CreateDate = DateTime.Now;
+                            newapprove.DocId = entity.Id;
+                            newapprove.Number = 1;
+                            DocumentApprovalDao.SaveAndFlush(newapprove);
+                        }
                     }
                     if (model.IsAcceptButtonPressed && model.IsTargetManagerAcceptAvailable)
                     {
@@ -1251,7 +1329,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.SendDate = DateTime.Now;
                         entity.SourceManagerAccept = DateTime.Now;
                         entity.TargetManagerAccept = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
+                        //entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
+                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Chief);//После принимающего идёт вышестоящий
+                        if (entity.TargetManager != null && entity.TargetManager.Id != CurrentUser.Id)
+                        {
+                            //DocumentApprovalDao
+                            DocumentApproval newapprove = new DocumentApproval();
+                            newapprove.ApprovalType = (int)ApprovalTypeEnum.StaffMovements;
+                            newapprove.ApproveUser = entity.TargetManager;
+                            newapprove.AssistantUser = UserDao.Load(CurrentUser.Id);
+                            newapprove.CreateDate = DateTime.Now;
+                            newapprove.DocId = entity.Id;
+                            newapprove.Number = 2;
+                            DocumentApprovalDao.SaveAndFlush(newapprove);
+                        }
                     }
                     break;
                 case 2:
@@ -1263,10 +1354,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.RejectedBy = UserDao.Load(CurrentUser.Id);
                         entity.RejectReason = StaffMovementsRejectReasonDao.Load((int)StaffMovementsRejectReasonEnum.SourceManagerReject);
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Canceled);
+                        if (entity.TargetStaffEstablishedPostRequest.ReserveType != null && entity.TargetStaffEstablishedPostRequest.DocId == entity.Id)
+                        {
+                            entity.TargetStaffEstablishedPostRequest.ReserveType = null;
+                            entity.TargetStaffEstablishedPostRequest.DocId = null;
+                        }
                     }
                     if (model.IsAcceptButtonPressed && model.IsSourceManagerAcceptAvailable)
                     {
                         //Если согласовано отпускающим руководителем
+                        if (entity.SourceManager != null && entity.SourceManager.Id != CurrentUser.Id)
+                        {
+                            //DocumentApprovalDao
+                            DocumentApproval newapprove = new DocumentApproval();
+                            newapprove.ApprovalType =(int) ApprovalTypeEnum.StaffMovements;
+                            newapprove.ApproveUser = entity.SourceManager;
+                            newapprove.AssistantUser = UserDao.Load(CurrentUser.Id);
+                            newapprove.CreateDate = DateTime.Now;
+                            newapprove.DocId = entity.Id;
+                            newapprove.Number = 1;
+                            DocumentApprovalDao.SaveAndFlush(newapprove);
+                        }
                         entity.SourceManagerAccept = DateTime.Now;
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.TargetManager);
                     }
@@ -1280,12 +1388,30 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.RejectedBy = UserDao.Load(CurrentUser.Id);
                         entity.RejectReason = StaffMovementsRejectReasonDao.Load((int)StaffMovementsRejectReasonEnum.TargetManagerReject);
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Canceled);
+                        if (entity.TargetStaffEstablishedPostRequest.ReserveType != null && entity.TargetStaffEstablishedPostRequest.DocId == entity.Id)
+                        {
+                            entity.TargetStaffEstablishedPostRequest.ReserveType = null;
+                            entity.TargetStaffEstablishedPostRequest.DocId = null;
+                        }
                     }
                     if (model.IsAcceptButtonPressed && model.IsTargetManagerAcceptAvailable)
                     {
                         //Если согласовано принимающим руководителем, в таком случае нужну забронировать вакансию
+                        if (entity.TargetManager != null && entity.TargetManager.Id != CurrentUser.Id)
+                        {
+                            //DocumentApprovalDao
+                            DocumentApproval newapprove = new DocumentApproval();
+                            newapprove.ApprovalType = (int)ApprovalTypeEnum.StaffMovements;
+                            newapprove.ApproveUser = entity.TargetManager;
+                            newapprove.AssistantUser = UserDao.Load(CurrentUser.Id);
+                            newapprove.CreateDate = DateTime.Now;
+                            newapprove.DocId = entity.Id;
+                            newapprove.Number = 2;
+                            DocumentApprovalDao.SaveAndFlush(newapprove);
+                        }
                         entity.TargetManagerAccept = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
+                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Chief);//После принимающего идёт вышестоящий
+                        //entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
                         entity.TargetStaffEstablishedPostRequest.DocId = entity.Id;
                         entity.TargetStaffEstablishedPostRequest.ReserveType = (int)StaffReserveTypeEnum.StaffMovements;
                     }
@@ -1306,13 +1432,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.RejectedBy = UserDao.Load(CurrentUser.Id);
                         entity.RejectReason = StaffMovementsRejectReasonDao.Load((int)StaffMovementsRejectReasonEnum.PersonnelManagerBankReject);
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Canceled);
+                        if (entity.TargetStaffEstablishedPostRequest.ReserveType != null && entity.TargetStaffEstablishedPostRequest.DocId == entity.Id)
+                        {
+                            entity.TargetStaffEstablishedPostRequest.ReserveType = null;
+                            entity.TargetStaffEstablishedPostRequest.DocId = null;
+                        }
                     }
                     if (model.IsPersonnelManagerBankAcceptAvailable && model.IsAcceptButtonPressed)
                     {
                         //Если согласовано кадровиком банка
                         entity.PersonnelManagerBank = UserDao.Load(CurrentUser.Id);
                         entity.PersonnelManagerBankAccept = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Chief);
+                        //entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Chief);
+                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved);//перевод оформлен
                     }
                     break;
                 case 6:
@@ -1324,6 +1456,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.RejectedBy = UserDao.Load(CurrentUser.Id);
                         entity.RejectReason = StaffMovementsRejectReasonDao.Load((int)StaffMovementsRejectReasonEnum.ChiefManagerReject);
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Canceled);
+                        if (entity.TargetStaffEstablishedPostRequest.ReserveType != null && entity.TargetStaffEstablishedPostRequest.DocId == entity.Id)
+                        {
+                            entity.TargetStaffEstablishedPostRequest.ReserveType = null;
+                            entity.TargetStaffEstablishedPostRequest.DocId = null;
+                        }
                     }
                     if (model.IsChiefAcceptAvailable && model.IsAcceptButtonPressed)
                     {
@@ -1342,13 +1479,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.RejectedBy = UserDao.Load(CurrentUser.Id);
                         entity.RejectReason = StaffMovementsRejectReasonDao.Load((int)StaffMovementsRejectReasonEnum.PersonnelManagerReject);
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Canceled);
+                        if (entity.TargetStaffEstablishedPostRequest.ReserveType != null && entity.TargetStaffEstablishedPostRequest.DocId == entity.Id)
+                        {
+                            entity.TargetStaffEstablishedPostRequest.ReserveType = null;
+                            entity.TargetStaffEstablishedPostRequest.DocId = null;
+                        }
                     }
                     if (model.IsPersonnelManagerAcceptAvailable && model.IsAcceptButtonPressed)
                     {
                         //Если согласовано кадровиком
                         entity.PersonnelManager = UserDao.Load(CurrentUser.Id);
                         entity.PersonnelManagerAccept = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved);
+                        //entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved);
+                        var check = StaffMovementsDao.CheckIfPersonnalChargeChanges(entity.Id);
+
+                        entity.Status = check ? StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank) //После кадровика идёт кадровик банк
+                            : StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved); //Если нет изменений надбавок, то перевод оформлен
                     }
                     break;
                 case 8:
@@ -1360,6 +1506,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.RejectedBy = UserDao.Load(CurrentUser.Id);
                         entity.RejectReason = StaffMovementsRejectReasonDao.Load((int)StaffMovementsRejectReasonEnum.TargetManagerReject);
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Canceled);
+                        if (entity.TargetStaffEstablishedPostRequest.ReserveType != null && entity.TargetStaffEstablishedPostRequest.DocId == entity.Id)
+                        {
+                            entity.TargetStaffEstablishedPostRequest.ReserveType = null;
+                            entity.TargetStaffEstablishedPostRequest.DocId = null;
+                        }
                     }
                     //Проверяем все документы, если у обязательного документа нет вложения - не выходим из этого статуса
                     bool accept = true;
@@ -1385,6 +1536,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.RejectedBy = UserDao.Load(CurrentUser.Id);
                         entity.RejectReason = StaffMovementsRejectReasonDao.Load((int)StaffMovementsRejectReasonEnum.PersonnelManagerReject);
                         entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Canceled);
+                        if (entity.TargetStaffEstablishedPostRequest.ReserveType != null && entity.TargetStaffEstablishedPostRequest.DocId == entity.Id)
+                        {
+                            entity.TargetStaffEstablishedPostRequest.ReserveType = null;
+                            entity.TargetStaffEstablishedPostRequest.DocId = null;
+                        }
                     }
                     if (model.IsConfirmButtonAvailable && model.IsConfirmButtonPressed)
                     {
@@ -1452,6 +1608,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.TargetStaffEstablishedPostRequest.ReserveType = null;
                 entity.TargetStaffEstablishedPostRequest.DocId = null;
             }
+            try
+            {
+                DocumentApprovalDao.Update(x => x.DocId == entity.Id && x.ApprovalType == (int)ApprovalTypeEnum.StaffMovements, y => y.IsArchive = true);
+            }
+            catch (Exception) { }
             entity.PersonnelManagerAccept = null;
         }
         /// <summary>
@@ -1528,18 +1689,19 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public StaffMovementsPrintModel GetPrintModel(int id, int SignerId=0)
         {
-            var entity = StaffMovementsDao.Load(id);
+            var factentity = StaffMovementsFactDao.Load(id);
+            //var entity = factentity.StaffMovements;
             StaffMovementsPrintModel model = new StaffMovementsPrintModel();
             
             #region Персонажи
-            model.UserName = entity.User.Name;
-            model.TargetPosition = entity.TargetPosition.Name;
-            model.SourcePosition = entity.SourcePosition.Name;
-            model.Chief = entity.TargetChief!=null?entity.TargetChief.Name:"";
-            model.ChiefDepartment = entity.TargetChief != null && entity.TargetChief.Department!=null? entity.TargetChief.Department.Name:"";
-            model.ChiefPosition = entity.TargetChief != null && entity.TargetChief.Position!=null? entity.TargetChief.Position.Name:"";
-            model.TargetManager = entity.TargetManager.Name;
-            model.SourceManager = entity.SourceManager.Name;
+            model.UserName = factentity.User.Name;
+            //model.TargetPosition = entity.TargetPosition.Name;
+            //model.SourcePosition = entity.SourcePosition.Name;            
+            //model.Chief = entity.TargetChief!=null?entity.TargetChief.Name:"";
+           // model.ChiefDepartment = entity.TargetChief != null && entity.TargetChief.Department!=null? entity.TargetChief.Department.Name:"";
+           // model.ChiefPosition = entity.TargetChief != null && entity.TargetChief.Position!=null? entity.TargetChief.Position.Name:"";
+           // model.TargetManager = entity.TargetManager.Name;
+           // model.SourceManager = entity.SourceManager.Name;
             if(SignerId>0)
             {
                 var signer = EmploymentSignersDao.Load(SignerId);
@@ -1547,10 +1709,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SignerPosition = signer != null ? signer.Position : "";
                 model.SignerAdditionData = signer != null ? signer.PreamblePartyTemplate : "";
             }
-            model.PersonnelManagerBank = entity.PersonnelManagerBank!=null?entity.PersonnelManagerBank.Name:"";
-            model.PersonnelManagerBankDateAccept = entity.PersonnelManagerBankAccept.HasValue? entity.PersonnelManagerBankAccept.Value.ToString("dd.MM.yyyy"):"";
+           // model.PersonnelManagerBank = entity.PersonnelManagerBank!=null?entity.PersonnelManagerBank.Name:"";
+           // model.PersonnelManagerBankDateAccept = entity.PersonnelManagerBankAccept.HasValue? entity.PersonnelManagerBankAccept.Value.ToString("dd.MM.yyyy"):"";
             #endregion
-            
+            /*
             #region Dates
             model.MovementDate = entity.MovementDate.HasValue?entity.MovementDate.Value.ToString("dd.MM.yyyy") :"";
             model.PersonnelManagerBankDateAccept = entity.PersonnelManagerAccept.HasValue ? entity.PersonnelManagerAccept.Value.ToString("dd.MM.yyyy") : "";            
@@ -1583,8 +1745,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.TargetDep3 = Targetdep3 != null ? Targetdep3.Name : "";
             var Targetdep2 = DepartmentDao.GetParentDepartmentWithLevel(Targetdep7, 2);
             model.TargetDep2 = Targetdep2 != null ? Targetdep2.Name : "";
-            #endregion            
-            model.HoursType = entity.Data.HoursType!=null? entity.Data.HoursType.Name:"";
+            #endregion            */
+            //model.HoursType = entity.Data.HoursType!=null? entity.Data.HoursType.Name:"";
             return model;
         }
         

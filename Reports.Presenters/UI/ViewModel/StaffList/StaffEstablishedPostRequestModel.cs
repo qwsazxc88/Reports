@@ -41,6 +41,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public int DepartmentId { get; set; }
         public string DepartmentName { get; set; }
         public int BFGId { get; set; }
+        public int? ItemLevel { get; set; }
 
         [Display(Name = "Принадлежность подразделения")]
         public string AccessoryName { get; set; }
@@ -90,9 +91,40 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         
 
         [Display(Name = "Сотрудники")]
-        //public IList<StaffEstablishedPostDto> Personnels { get; set; }
         public IList<StaffUserLinkDto> Personnels { get; set; }
-        
+
+        [Display(Name = "Руководители")]
+        public string Managers { get; set; }
+
+        #region Отображение структуры
+        [Display(Name = "Дирекция")]
+        public string ManagementName { get; set; }
+        public string ManagementNameSKD { get; set; }
+
+        [Display(Name = "ID Дирекции")]
+        public string ManagementCode { get; set; }
+
+        [Display(Name = "Управление")]
+        public string AdminName { get; set; }
+        public string AdminNameSKD { get; set; }
+
+        [Display(Name = "ID Управления")]
+        public string AdminCode { get; set; }
+
+        [Display(Name = "Бизнес-группа")]
+        public string BGName { get; set; }
+        public string BGNameSKD { get; set; }
+
+        [Display(Name = "ID Бизнес-группы")]
+        public string BGCode { get; set; }
+
+        [Display(Name = "РП-привязка")]
+        public string RPLInkName { get; set; }
+        public string RPLInkNameSKD { get; set; }
+
+        [Display(Name = "ID РП-привязки")]
+        public string RPLInkCode { get; set; }
+        #endregion
 
         #region Согласование
         [Display(Name = "Инициатор")]
@@ -130,7 +162,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
 
 
-        [Display(Name = "Вышестоящий руководитель 3 ур.")]
+        [Display(Name = "Вышестоящий руководитель")]
         public bool IsTopManagerApprove { get; set; }   //4
         public bool IsTopManagerApproveAvailable { get; set; }
 
@@ -186,6 +218,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public string MessageStr { get; set; }  //для сообщений
         public bool IsDraftButtonAvailable { get; set; }    //доступна кнопка сохранения черновика
         public bool IsAgreeButtonAvailable { get; set; }    //доступна кнопка отправки на согласование
+        public bool IsDelete { get; set; }   //отклонить
         #endregion
     }
 }

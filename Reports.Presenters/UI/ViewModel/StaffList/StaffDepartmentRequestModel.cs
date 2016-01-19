@@ -19,6 +19,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         #endregion
 
         #region Общие реквизиты
+        [Display(Name = "Руководители")]
+        public string Managers { get; set; }
+
         [Display(Name = "Дата заявки")]
         public DateTime? DateRequest { get; set; }
 
@@ -102,24 +105,28 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Дирекция")]
         public string ManagementName { get; set; }
+        public string ManagementNameSKD { get; set; }
 
         [Display(Name = "ID Дирекции")]
         public string ManagementCode { get; set; }
 
         [Display(Name = "Управление")]
         public string AdminName { get; set; }
+        public string AdminNameSKD { get; set; }
 
         [Display(Name = "ID Управления")]
         public string AdminCode { get; set; }
 
         [Display(Name = "Бизнес-группа")]
         public string BGName { get; set; }
+        public string BGNameSKD { get; set; }
 
         [Display(Name = "ID Бизнес-группы")]
         public string BGCode { get; set; }
 
         [Display(Name = "РП-привязка")]
         public string RPLInkName { get; set; }
+        public string RPLInkNameSKD { get; set; }
 
         [Display(Name = "ID РП-привязки")]
         public string RPLInkCode { get; set; }
@@ -360,7 +367,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         
 
-        [Display(Name = "Вышестоящий руководитель 3 ур.")]
+        [Display(Name = "Вышестоящий руководитель")]
         public bool IsTopManagerApprove { get; set; }   //5
         public bool IsTopManagerApproveAvailable { get; set; }
         [Display(Name = "ФИО вышестоящего руководителя")]
@@ -407,7 +414,7 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public bool IsDraftButtonAvailable { get; set; }    //доступна кнопка сохранения черновика
         public bool IsAgreeButtonAvailable { get; set; }    //доступна кнопка отправки на согласование
         public bool IsImportance { get; set; }  //признак важности согласования
-
+        public bool IsDelete { get; set; }   //отклонить
         
         #endregion
     }

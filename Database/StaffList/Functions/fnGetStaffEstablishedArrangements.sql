@@ -49,6 +49,7 @@ RETURNS
 	,IsTemporary bit
 	,DateTempBegin datetime
 	,DateTempEnd datetime
+	,BasicUser nvarchar(250)
 )
 AS
 BEGIN
@@ -80,7 +81,7 @@ DECLARE
 							else E.Name end as Surname, 
 												 
 				 case when isnull(E.IsPregnant, 0) = 1 then E.Id else G.ReplacedId end as ReplacedId
-				 ,case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, E.Id), E.Name)  else isnull(dbo.fnGetReplacedName(F.Id, null), H.Name) end as ReplacedName
+				 ,case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, E.Id), N'(' + E.Name + N')')  else isnull(dbo.fnGetReplacedName(F.Id, null), N'(' + H.Name + N')') end as ReplacedName
 				 ,F.ReserveType
 				 ,case when F.ReserveType = 1 then N'ѕеремещение' 
 							 when F.ReserveType = 2 then N'ѕрием'
@@ -89,7 +90,6 @@ DECLARE
 				 ,cast(case when isnull(F.DocId, 0) = 0 then 0 else 1 end as bit) as IsReserve
 				 ,isnull(E.IsPregnant, 0) as IsPregnant
 				 ,case when (isnull(E.IsPregnant, 0) = 1 or F.UserId is null) and isnull(F.ReserveType, 0) = 0 then 1 else 0 end as IsVacation
-				 --,case when (case when E.IsPregnant = 1 then null else E.Id end) is null and H.Id is not null then 1 else 0 end as IsSTD
 				 ,case when F.UserId is null then 0 else (case when isnull(E.IsPregnant, 0) = 1 or H.Id is not null then 1 else 0 end) end as IsSTD
 				 ,case when J.UserId is null then 0 else 1 end as IsDismiss	--увольнение
 				 ,F.IsDismissal		--сокращение
@@ -100,7 +100,6 @@ DECLARE
 				 ,case when @IsSalaryEnable = 1 then I.Territory else 0 end as Territory
 				 ,case when @IsSalaryEnable = 1 then I.Front else 0 end as Front
 				 ,case when @IsSalaryEnable = 1 then I.Drive else 0 end as Drive
-				 --,case when I.NorthAuto = 0 then I.North else I.NorthAuto end as North
 				 ,case when @IsSalaryEnable = 1 then I.North else 0 end as North
 				 ,case when @IsSalaryEnable = 1 then I.Qualification else 0 end as Qualification
 				 ,case when @IsSalaryEnable = 1 then isnull(I.TotalSalary, A.Salary) else 0 end as TotalSalary	--если ваканси€, то надо показать оклад штатной единицы
@@ -109,6 +108,7 @@ DECLARE
 				 ,F.IsTemporary
 				 ,F.DateTempBegin
 				 ,F.DateTempEnd
+				 ,K.Name as BasicUser
 	FROM StaffEstablishedPost as A
 	INNER JOIN Position as B ON B.Id = A.PositionId
 	INNER JOIN Department as C ON C.Id = A.DepartmentId
@@ -117,10 +117,11 @@ DECLARE
 	LEFT JOIN Users as E ON E.Id = F.UserId and E.IsActive = 1 and (E.RoleId & 2 > 0 or E.RoleId & 16384 > 0) --and E.IsPregnant = 0
 	LEFT JOIN StaffPostReplacement as G ON G.UserLinkId = F.Id and F.IsUsed = 1
 	LEFT JOIN Users as H ON H.Id = G.ReplacedId
-	LEFT JOIN vwStaffPostSalary as I ON I.UserId = E.Id
+	LEFT JOIN vwStaffPostSalary as I ON I.UserLinkId = F.Id
 	LEFT JOIN (SELECT UserId FROM Dismissal 
 						 WHERE UserDateAccept is not null and DeleteDate is null
 						 GROUP BY UserId) as J ON J.UserId = E.Id
+	LEFT JOIN Users as K ON K.RegularUserLinkId = F.Id
 	WHERE A.DepartmentId = @DepartmentId /*and A.PositionId = 356*/ and A.IsUsed = 1 
 				--замещенных убираем из списка этим условием
 				--and not exists (SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and ReplacedId = E.Id)

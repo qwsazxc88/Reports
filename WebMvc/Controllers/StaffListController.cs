@@ -41,13 +41,14 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <param name="DepId">Id родительского подразделения</param>
         /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
+        /// <param name="IsBegin">Флажок показывающий, что это первоначальная загрузка.</param>
         /// <returns></returns>
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.Inspector | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.TaxCollector | UserRole.SoftAdmin | UserRole.StaffListOrder)]
-        public ActionResult StaffList(string DepId, bool? IsParentDepOnly)
+        public ActionResult StaffList(string DepId, bool? IsParentDepOnly, bool? IsBegin)
         {
             StaffListModel model = new StaffListModel();
-            model.Departments = StaffListBl.GetDepartmentListByParent(DepId, IsParentDepOnly.HasValue ? IsParentDepOnly.Value : false);
+            model.Departments = StaffListBl.GetDepartmentListByParent(DepId, IsParentDepOnly.HasValue ? IsParentDepOnly.Value : false, !IsBegin.HasValue ? true : IsBegin.Value);
             return View(model);
         }
         
@@ -61,7 +62,7 @@ namespace WebMvc.Controllers
         public ActionResult StaffListGetNodes(string DepId)
         {
             var jsonSerializer = new JavaScriptSerializer();
-            StaffListModel model = StaffListBl.GetDepartmentStructureWithStaffPost(DepId);
+            StaffListModel model = StaffListBl.GetDepartmentStructureWithStaffPost(DepId, false);
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
@@ -137,21 +138,11 @@ namespace WebMvc.Controllers
             {
                 if (model.IsDraft)  //сохранение черновика
                 {
-                    IsComplete = model.Id == 0 ? StaffListBl.SaveNewDepartmentRequest(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
-                    if (!IsComplete)
-                    {
-                        StaffListBl.LoadDictionaries(model);
-                        ModelState.AddModelError("MessageStr", error);
-                    }
+                    if (!model.IsDelete)
+                        IsComplete = model.Id == 0 ? StaffListBl.SaveNewDepartmentRequest(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
                     else
-                    {
-                        model = StaffListBl.GetDepartmentRequest(model);
-                        ModelState.AddModelError("MessageStr", "Данные сохранены!");
-                    }
-                }
-                else
-                {
-                    IsComplete = model.IsSoftAdminApprove ? StaffListBl.SaveProgramCodes(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
+                        IsComplete = model.Id == 0 ? false : StaffListBl.DeleteDepartmentRequest(model, out error);
+                    
 
                     if (!IsComplete)
                     {
@@ -161,7 +152,22 @@ namespace WebMvc.Controllers
                     else
                     {
                         model = StaffListBl.GetDepartmentRequest(model);
-                        ModelState.AddModelError("MessageStr", "Данные сохранены! " + error);
+                        ModelState.AddModelError("MessageStr", error);
+                    }
+                }
+                else
+                {
+                    IsComplete = model.IsSoftAdminApprove && model.IsSoftAdmin ? StaffListBl.SaveProgramCodes(model, out error) : StaffListBl.SaveEditDepartmentRequest(model, out error);
+
+                    if (!IsComplete)
+                    {
+                        StaffListBl.LoadDictionaries(model);
+                        ModelState.AddModelError("MessageStr", error);
+                    }
+                    else
+                    {
+                        model = StaffListBl.GetDepartmentRequest(model);
+                        ModelState.AddModelError("MessageStr", error);
                     }
                 }
             }
@@ -311,7 +317,11 @@ namespace WebMvc.Controllers
             {
                 if (model.IsDraft)  //сохранение черновика
                 {
-                    IsComplete = model.Id == 0 ? StaffListBl.SaveNewEstablishedPostRequest(model, out error) : StaffListBl.SaveEditEstablishedPostRequest(model, out error);
+                    if (!model.IsDelete)
+                        IsComplete = model.Id == 0 ? StaffListBl.SaveNewEstablishedPostRequest(model, out error) : StaffListBl.SaveEditEstablishedPostRequest(model, out error);
+                    else
+                        IsComplete = model.Id == 0 ? false : StaffListBl.DeleteEstablishedPostRequest(model, out error);
+
                     if (!IsComplete)
                     {
                         StaffListBl.LoadDictionaries(model);
@@ -320,7 +330,7 @@ namespace WebMvc.Controllers
                     else
                     {
                         model = StaffListBl.GetEstablishedPostRequest(model);
-                        ModelState.AddModelError("MessageStr", "Данные сохранены!");
+                        ModelState.AddModelError("MessageStr", error);
                     }
                 }
                 else
@@ -333,7 +343,7 @@ namespace WebMvc.Controllers
                     else
                     {
                         model = StaffListBl.GetEstablishedPostRequest(model);
-                        ModelState.AddModelError("MessageStr", "Данные сохранены! " + error);
+                        ModelState.AddModelError("MessageStr", error);
                     }
                 }
             }
@@ -366,13 +376,15 @@ namespace WebMvc.Controllers
         /// </summary>
         /// <param name="DepId">Id родительского подразделения</param>
         /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
+        /// <param name="IsBegin">Флажок показывающий, что это первоначальная загрузка.</param>
         /// <returns></returns>
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager)]
-        public ActionResult StaffListArrangement(string DepId, bool? IsParentDepOnly)
+        public ActionResult StaffListArrangement(string DepId, bool? IsParentDepOnly, bool? IsBegin)
         {
             StaffListArrangementModel model = new StaffListArrangementModel();
-            model.Departments = StaffListBl.GetDepartmentListByParent(DepId, IsParentDepOnly.HasValue ? IsParentDepOnly.Value : false);
+            model = StaffListBl.GetStaffListArrangementModel(model);
+            model.Departments = StaffListBl.GetDepartmentListByParent(DepId, IsParentDepOnly.HasValue ? IsParentDepOnly.Value : false, !IsBegin.HasValue ? true : IsBegin.Value);
             return View(model);
         }
         /// <summary>
@@ -384,7 +396,20 @@ namespace WebMvc.Controllers
         public ActionResult StaffListArrangement(string DepId)
         {
             var jsonSerializer = new JavaScriptSerializer();
-            StaffListArrangementModel model = StaffListBl.GetDepartmentStructureWithStaffArrangement(DepId);
+            StaffListArrangementModel model = StaffListBl.GetDepartmentStructureWithStaffArrangement(DepId, false);
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
+        /// <summary>
+        /// Штатное расписание, подгружаем уровень подразделений с должностями и сотрудниками.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager)]
+        public ActionResult CreateTemporaryReleaseVacancyRequest(string DepId)
+        {
+            var jsonSerializer = new JavaScriptSerializer();
+            StaffListArrangementModel model = StaffListBl.GetDepartmentStructureWithStaffArrangement(DepId, false);
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
@@ -1144,11 +1169,17 @@ namespace WebMvc.Controllers
         }
         protected bool ValidateModel(StaffEstablishedPostRequestModel model)
         {
-            if (model.Quantity == 0)
-                ModelState.AddModelError("Quantity", "Укажите количество штатных единиц не равное 0!");
+            
 
             if (model.IsDraft)
             {
+                if ((model.RequestTypeId == 1 || model.RequestTypeId == 2) && model.Quantity == 0)
+                {
+                    ModelState.AddModelError("Quantity", "Укажите количество штатных единиц не равное 0!");
+                    model.Quantity = model.QuantityPrev;
+                    model.Salary = model.SalaryPrev;
+                }                
+
                 if (model.RequestTypeId == 2 && model.QuantityPrev > model.Quantity)
                     ModelState.AddModelError("Quantity", "Изменение количества штатной единицы в меньшую сторону является сокращением! Создайте заявку на сокращение штатной единицы!");
             }

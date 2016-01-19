@@ -10,6 +10,7 @@ namespace Reports.Core.Dao
         decimal GetUserSalary(int UserId);
         decimal GetUserRegionCoeff(int UserId);
         decimal GetUserTotalSalary(int UserId);
-        IList<StaffMovements> GetDocuments(int UserId, UserRole role ,int DepartmentId, string UserName, int Number, int Status);
+        IList<StaffMovements> GetDocuments(int UserId, UserRole role ,int DepartmentId, string UserName, int Number, int Status, int TypeId);
+        bool CheckIfPersonnalChargeChanges(int smId);
     }
 }

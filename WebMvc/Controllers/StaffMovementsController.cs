@@ -12,7 +12,7 @@ using WebMvc.Attributes;
 namespace WebMvc.Controllers
 {
     [PreventSpam]
-    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.PersonnelManager)]
+    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.PersonnelManager | UserRole.ConsultantPersonnel)]
     public class StaffMovementsController : BaseController
     {
         #region BL
@@ -64,7 +64,7 @@ namespace WebMvc.Controllers
             model.OrderDocDto = GetFileContext(Request, ModelState, "OrderDoc");
             model.RequirementsOrderDocDto = GetFileContext(Request, ModelState, "RequirementsOrderDoc");
             model.ServiceOrderDocDto = GetFileContext(Request, ModelState, "ServiceOrderDoc");
-            StaffMovementsBl.SaveFact(model);
+            model = StaffMovementsBl.SaveFact(model);
             return View(model);
         }
         #endregion
@@ -78,7 +78,7 @@ namespace WebMvc.Controllers
         }
         public ContentResult Index(StaffMovementsListModel model)
         {
-            var docs=StaffMovementsBl.GetDocuments(model.DepartmentId, model.UserName, model.Number.HasValue?model.Number.Value:0, model.Status);
+            var docs=StaffMovementsBl.GetDocuments(model.DepartmentId, model.UserName, model.Number.HasValue?model.Number.Value:0, model.Status, model.TypeId);
             return Content(Newtonsoft.Json.JsonConvert.SerializeObject(docs));
         }
         #endregion
@@ -150,7 +150,7 @@ namespace WebMvc.Controllers
         /// <returns></returns>
         public ContentResult CheckMovementDate(DateTime date, int UserId, int id)
         {
-            if (date<(DateTime.Now.AddDays(1))) return Content("Error");
+           // if (date<(DateTime.Now)) return Content("Error");
             if (StaffMovementsBl.CheckMovementsExist(date, UserId, id)) return Content("Error");
             else return Content("Ok");
         }        

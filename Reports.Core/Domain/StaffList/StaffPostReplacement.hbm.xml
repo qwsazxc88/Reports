@@ -9,6 +9,7 @@
     <many-to-one name="User" class="User" column="UserId" foreign-key="FK_StaffPostReplacement_User" index="StaffPostReplacement_User" not-null="false"/>
     <many-to-one name="ReplacedUser" class="User" column="ReplacedId" foreign-key="FK_StaffPostReplacement_Replaced" index="StaffPostReplacement_Replaced" not-null="false"/>
     <property name="IsUsed" not-null="false"/>
+    <many-to-one name="ReplacementReason" class="StaffReplacementReasons" column="ReasonId" foreign-key="FK_StaffPostReplacement_StaffReplacementReasons" index="StaffPostReplacement_StaffReplacementReasons" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_StaffPostReplacement_CreatorUser" index="StaffPostReplacement_CreatorUser" not-null="false"/>
     <property name="CreateDate" not-null="false"/>
     <many-to-one name="Editor" class="User" column="EditorId" foreign-key="FK_StaffPostReplacement_EditorUser" index="StaffPostReplacement_EditorUser" not-null="false"/>

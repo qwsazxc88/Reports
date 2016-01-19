@@ -315,7 +315,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(refstaffmovementsTypesDao); }
             set { refstaffmovementsTypesDao = value; }
         }
-        
+
+        protected IStaffLongAbsencesTypesDao stafflongAbsencesTypesDao;
+        public IStaffLongAbsencesTypesDao StaffLongAbsencesTypesDao
+        {
+            get { return Validate.Dependency(stafflongAbsencesTypesDao); }
+            set { stafflongAbsencesTypesDao = value; }
+        }
+
+        protected IStaffTemporaryReleaseVacancyRequestDao stafftemporaryReleaseVacancyRequestDao;
+        public IStaffTemporaryReleaseVacancyRequestDao StaffTemporaryReleaseVacancyRequestDao
+        {
+            get { return Validate.Dependency(stafftemporaryReleaseVacancyRequestDao); }
+            set { stafftemporaryReleaseVacancyRequestDao = value; }
+        }
         #endregion
 
         #region Штатное расписание.
@@ -323,8 +336,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// Загружаем структуру по заданному коду подразделения и штатные единицы
         /// </summary>
         /// <param name="DepId">Код родительского подразделения</param>
+        /// <param name="IsBegin">Флажок показывающий, что это первоначальная загрузка.</param>
         /// <returns></returns>
-        public StaffListModel GetDepartmentStructureWithStaffPost(string DepId)
+        public StaffListModel GetDepartmentStructureWithStaffPost(string DepId, bool IsBegin)
         {
             StaffListModel model = new StaffListModel();
 
@@ -342,7 +356,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, IsSalaryEnable);
                 //уровень подразделений
-                model.Departments = GetDepartmentListByParent(DepId, false)
+                model.Departments = GetDepartmentListByParent(DepId, false, IsBegin)
                     .OrderBy(x => x.Priority)
                     .ToList();
                     
@@ -361,8 +375,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// </summary>
         /// <param name="DepId">Id родительского подразделения</param>
         /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
+        /// <param name="IsBegin">Флажок показывающий, что это первоначальная загрузка.</param>
         /// <returns></returns>
-        public IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId, bool IsParentDepOnly)
+        public IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId, bool IsParentDepOnly, bool IsBegin)
         {
             //определяем подразделение по правам текущего пользователя для начальной загрузки страницы
             if (string.IsNullOrEmpty(DepId))
@@ -370,10 +385,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing
                     || AuthenticationService.CurrentUser.UserRole == UserRole.Inspector || AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager
                     || AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel || AuthenticationService.CurrentUser.UserRole == UserRole.Director
-                    || AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector
-                    || AuthenticationService.CurrentUser.Id == 6638 //|| AuthenticationService.CurrentUser.Id == 22821
-                    || AuthenticationService.CurrentUser.Id == 664
-                    || AuthenticationService.CurrentUser.Id == 24926 || AuthenticationService.CurrentUser.Id == 513)//временно открыт доступ 4 сотрудникам к всей структуре
+                    || AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector)
                 {
                     //DepId = "9900424";
                     //return DepartmentDao.LoadAll().Where(x => x.Code1C.ToString() == DepId).ToList();
@@ -388,10 +400,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     
                 }
 
-                return GetDepListWithSEPCount(DepId, IsParentDepOnly);
+                return GetDepListWithSEPCount(DepId, IsParentDepOnly, IsBegin);
             }
 
-            return GetDepListWithSEPCount(DepId, IsParentDepOnly);
+            return GetDepListWithSEPCount(DepId, IsParentDepOnly, IsBegin);
         }
         /// <summary>
         /// Достаем уровень подчиненных подразделений и дополнительно к подразделениям делаем подсчет количества штатных единиц.
@@ -399,9 +411,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="DepId">Id родительского подразделения.</param>
         /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
         /// <returns></returns>
-        protected IList<StaffListDepartmentDto> GetDepListWithSEPCount(string DepId, bool IsParentDepOnly)
+        protected IList<StaffListDepartmentDto> GetDepListWithSEPCount(string DepId, bool IsParentDepOnly, bool IsBegin)
         {
-            IList<StaffListDepartmentDto> Sdeps = DepartmentDao.DepFingradName(DepId, IsParentDepOnly, AuthenticationService.CurrentUser.UserRole);
+            IList<StaffListDepartmentDto> Sdeps = DepartmentDao.DepFingradName(DepId, IsParentDepOnly, AuthenticationService.CurrentUser.UserRole, AuthenticationService.CurrentUser.Id, IsBegin);
             return Sdeps;
         }
         #endregion
@@ -482,20 +494,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsEmployeAvailable = false;
                 model.DepNextId = 0;
                 model.IsPlan = false;
-
-                StaffDepartmentFingradStructureDto FinStructure = StaffDepartmentRPLinkDao.GetFingradStructureForDeparment(model.ParentId);
-                if (FinStructure != null)
-                {
-                    model.ManagementCode = FinStructure.ManagementCode;
-                    model.ManagementName = FinStructure.ManagementName;
-                    model.AdminCode = FinStructure.AdminCode;
-                    model.AdminName = FinStructure.AdminName;
-                    model.BGCode = FinStructure.BGCode;
-                    model.BGName = FinStructure.BGName;
-                    model.RPLInkCode = FinStructure.RPLinkCode;
-                    model.RPLInkName = FinStructure.RPLinkName;
-                }
-
 
                 //налоговые реквизиты
                 model.KPP = string.Empty;
@@ -610,18 +608,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsUsed = entity.IsUsed;
                 model.IsTaxRequest = entity.IsTaxRequest;
 
-                StaffDepartmentFingradStructureDto FinStructure = StaffDepartmentRPLinkDao.GetFingradStructureForDeparment(model.ParentId);
-                if (FinStructure != null)
-                {
-                    model.ManagementCode = FinStructure.ManagementCode;
-                    model.ManagementName = FinStructure.ManagementName;
-                    model.AdminCode = FinStructure.AdminCode;
-                    model.AdminName = FinStructure.AdminName;
-                    model.BGCode = FinStructure.BGCode;
-                    model.BGName = FinStructure.BGName;
-                    model.RPLInkCode = FinStructure.RPLinkCode;
-                    model.RPLInkName = FinStructure.RPLinkName;
-                }
 
                 //налоговые реквизиты
                 if (entity.Department != null)
@@ -1037,6 +1023,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             //поля общих реквизитов
             entity.Name = model.Name;
             entity.DepartmentAccessory = model.BFGId == 0 ? null : StaffDepartmentAccessoryDao.Load(model.BFGId);
+            if (entity.Department != null)
+            {
+                entity.Department.DepartmentAccessory = StaffDepartmentAccessoryDao.Load(model.BFGId);
+            }
             entity.OrderNumber = model.OrderNumber;
             entity.OrderDate = model.OrderDate;
             entity.BeginAccountDate = model.BeginAccountDate;
@@ -1700,11 +1690,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 
                 if (entity.RequestType.Id != 3)
                 {
-                    if (!CreateCodeForDepartment(entity, dep, curUser, out error))
+                    if (entity.DepartmentAccessory.Id == 2 || entity.DepartmentAccessory.Id == 6)
                     {
-                        error = "Произошла ошибка при формировании кода подразделения!";
-                        DepartmentDao.RollbackTran();
-                        DepartmentArchiveDao.RollbackTran();
+                        if (!CreateCodeForDepartment(entity, dep, curUser, out error))
+                        {
+                            error = string.IsNullOrEmpty(error) || string.IsNullOrWhiteSpace(error) ? "Произошла ошибка при формировании кода подразделения!" : error;
+                            DepartmentDao.RollbackTran();
+                            return false;
+                        }
                     }
                 }
 
@@ -1765,7 +1758,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 .ToList<User>();
 
             bool IsInitiator = Initiators.Where(x => x.Id == AuthenticationService.CurrentUser.Id).Count() != 0 ? true : false;
-            bool IsTopManager = Initiators.Where(x => x.Id == AuthenticationService.CurrentUser.Id && x.Level == 3).Count() != 0 ? true : false;
+            bool IsTopManager = Initiators.Where(x => x.Id == AuthenticationService.CurrentUser.Id && x.Level <= 3).Count() != 0 ? true : false;
             bool IsBoardMember = AuthenticationService.CurrentUser.UserRole == UserRole.Director;
             bool IsCurator = (AuthenticationService.CurrentUser.UserRole == UserRole.Inspector);
             bool IsPersonnelBank = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantPersonnel);
@@ -1776,7 +1769,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             
 
             //вышестоящее руководство
-            model.TopManagers = Initiators.Where(x => x.Level == 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+            model.TopManagers = Initiators.Where(x => x.Level <= 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
             
             //выбираем из согласования не архивные записи.
             IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffDepartmentRequest);
@@ -1971,6 +1964,54 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             }
             return true;
+        }
+        /// <summary>
+        /// Процедура отклонения существующей заявки для подразделения.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        public bool DeleteDepartmentRequest(StaffDepartmentRequestModel model, out string error)
+        {
+            error = string.Empty;
+            StaffDepartmentRequest entity = StaffDepartmentRequestDao.Get(model.Id);
+            if (entity == null)
+            {
+                error = "Заявка не найдена! Обратитесь к разработчикам!";
+                return false;
+            }
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            
+            //отклонение заявки
+            if (model.IsDelete)
+            {
+                entity.IsUsed = false;
+                entity.DeleteDate = DateTime.Now;
+                error = "Заявка отклонена!";
+
+                if (model.Id != 0)
+                {
+                    try
+                    {
+                        StaffDepartmentRequestDao.SaveAndFlush(entity);
+                        model.Id = entity.Id;
+                    }
+                    catch (Exception ex)
+                    {
+                        StaffDepartmentRequestDao.RollbackTran();
+                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                        return false;
+                    }
+
+                    return true;
+
+                }
+            }
+
+
+            //если не по той ветке пошли
+            error = "Произошла ошибка при сохранении данных! Обратитесь к разработчикам!";
+            return false;
         }
         /// <summary>
         /// Загрузка реквизитов инициатора к заявкам для подразделений
@@ -2448,9 +2489,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.IsSoftAdminApprove = true;
                 model.IsSoftAdminApproveAvailable = true;
-                model.IsDraftButtonAvailable = false;
-                model.IsAgreeButtonAvailable = false;
-                model.IsImportance = false;
+                if (model.IsSoftAdmin)
+                {
+                    model.IsDraftButtonAvailable = false;
+                    model.IsAgreeButtonAvailable = false;
+                    model.IsImportance = false;
+                }
             }
 
 
@@ -2458,6 +2502,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     && UserRole.ConsultantOutsourcing != AuthenticationService.CurrentUser.UserRole && UserRole.ConsultantPersonnel != AuthenticationService.CurrentUser.UserRole
                     && UserRole.Director != AuthenticationService.CurrentUser.UserRole && UserRole.TaxCollector != AuthenticationService.CurrentUser.UserRole)
             {
+                model.IsAgreeButtonAvailable = false;
+            }
+
+
+            if (entity.DeleteDate.HasValue)
+            {
+                model.IsDraftButtonAvailable = false;
                 model.IsAgreeButtonAvailable = false;
             }
         }
@@ -2478,27 +2529,28 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //относительно родительского ищем руководителей
             //помним, что начальника может не быть в родительском подразделении, по этому ищем вверх по ветке всех руководителей
-            IList<User> Initiators = DepartmentDao.GetDepartmentManagers(Parentdep.Id, true)
+            IList<User> Initiators = DepartmentDao.GetDepartmentManagersWithManualLinks(model.DepartmentId != 0 ? model.DepartmentId : model.ParentId)//DepartmentDao.GetDepartmentManagers(Parentdep.Id, true)
                 .OrderByDescending<User, int?>(manager => manager.Level)
                 .ToList<User>();
 
-
-            ////если инициатором является куратор или кадровик банка, то по ветке подразделения находим руководителей на уровень выше создаваемого подразделения
-            if (entity.Creator.Id == AuthenticationService.CurrentUser.Id && AuthenticationService.CurrentUser.UserRole == UserRole.Manager)
+            if (entity.Creator != null) //у заявок созданных при переходе нет создателя
             {
-                model.Initiators = Initiators.Where(x => x.Id == AuthenticationService.CurrentUser.Id).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+                ////если инициатором является куратор или кадровик банка, то по ветке подразделения находим руководителей на уровень выше создаваемого подразделения
+                if (entity.Creator.Id == AuthenticationService.CurrentUser.Id && AuthenticationService.CurrentUser.UserRole == UserRole.Manager)
+                {
+                    model.Initiators = Initiators.Where(x => x.Id == AuthenticationService.CurrentUser.Id).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+                }
+                else
+                {
+                    model.Initiators = Initiators.Where(x => x.Level >= 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+                    //если создатель заявки руководитель, то позиционируемся на нем
+                    if (entity.Creator.UserRole == UserRole.Manager)
+                        model.InitiatorId = entity.Creator.Id;
+                }
             }
-            else
-            {
-                model.Initiators = Initiators.Where(x => x.Level >= 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
-                //если создатель заявки руководитель, то позиционируемся на нем
-                if (entity.Creator.UserRole == UserRole.Manager)
-                    model.InitiatorId = entity.Creator.Id;
-            }
-
             
             //вышестоящее руководство
-            model.TopManagers = Initiators.Where(x => x.Level == 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+            model.TopManagers = Initiators.Where(x => x.Level <= 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
 
 
             //члены правления
@@ -2610,6 +2662,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
                 model.DateRequest = entity.DateRequest;
                 model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
+                model.ItemLevel = entity.Department != null ? entity.Department.ItemLevel.Value : 0;
                 model.BFGId = entity.Department != null && entity.Department.DepartmentAccessory != null ? entity.Department.DepartmentAccessory.Id : 0;
                 model.PositionId = entity.Position != null ? entity.Position.Id : 0;
                 model.PositionName = entity.Position != null ? entity.Position.Name : string.Empty;
@@ -2626,17 +2679,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.EPInfo = "Занято - " + (UsersCount).ToString() + "; Вакантно - " + (entity.Quantity - UsersCount).ToString();
 
                 //кнопки
-                model.IsDraftButtonAvailable = true;
-                model.IsAgreeButtonAvailable = !entity.DateAccept.HasValue;
+                model.IsDraftButtonAvailable = entity.DeleteDate.HasValue ? false : true;
+                model.IsAgreeButtonAvailable = entity.DeleteDate.HasValue ? false : !entity.DateAccept.HasValue;
 
 
             }
-
+            
+            
             LoadDictionaries(model);
             //для новых заявок надо подгружать надбавки от текущего состояния штатной единицы, берем действующую заявку, иначе по заполняем по текущей заявке
             model.PostChargeLinks = StaffEstablishedPostChargeLinksDao.GetChargesForRequests(model.RequestTypeId != 1 && model.Id == 0 ? StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId) : model.Id).OrderBy(x => x.ChargeName).ToList();
             
-
             return model;
         }
         /// <summary>
@@ -2693,7 +2746,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //расстановка
                 //при сокращении или вводе ременной вакансии ставим метки в расстановке
-                if (entity.RequestType.Id == 2 || entity.RequestType.Id == 3 || (entity.RequestType.Id == 4 && model.Personnels.Count != 0))
+                if (entity.RequestType.Id == 2 || entity.RequestType.Id == 3 || (entity.RequestType.Id == 4 && (model.Personnels != null && model.Personnels.Count != 0)))
                 {
                     ////на случай добавления вакансии
                     //if (entity.RequestType.Id == 2 || (entity.RequestType.Id == 4 && model.Personnels.Count != 0))
@@ -2805,11 +2858,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
 
-                    //if (entity.RequestType.Id == 3 && StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0) != 0)
-                    //{
-                    //    error = "Нельзя сократить штатную единицу, так как она еще содержит работающих сотрудников!";
-                    //    return false;
-                    //}
+                    if (entity.RequestType.Id == 3 && StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0) != 0)
+                    {
+                        error = "Нельзя сократить штатную единицу, так как она еще содержит работающих сотрудников!";
+                        return false;
+                    }
 
                     //if (entity.Quantity < StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0))
                     //{
@@ -2828,12 +2881,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Department = model.DepartmentId != 0 ? DepartmentDao.Get(model.DepartmentId) : null;
             entity.Schedule = model.ScheduleId != 0 ? ScheduleDao.Get(model.ScheduleId) : null;
             entity.WorkingCondition = model.WCId != 0 ? StaffWorkingConditionsDao.Get(model.WCId) : null;
-            if (model.RequestTypeId != 3)
+            //(model.RequestTypeId == 3 || model.RequestTypeId == 4) && model.Personnels.Where(x => x.UserId != 0 && x.IsDismissal).Count() == 0
+            if (model.RequestTypeId == 1 || model.RequestTypeId == 2)
             {
                 entity.Quantity = model.Quantity;
                 entity.Salary = model.Salary;
             }
-            entity.BeginAccountDate = model.BeginAccountDate;
+            //entity.BeginAccountDate = model.BeginAccountDate;
             entity.Reason = model.ReasonId.HasValue ? AppointmentReasonDao.Get(model.ReasonId.Value) : null;
             entity.IsDraft = entity.IsUsed ? false : model.IsDraft; 
             entity.Editor = curUser;
@@ -2933,7 +2987,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.RequestType.Id == 4)
                     {
                         entity.DateSendToApprove = DateTime.Now;
-                        entity.BeginAccountDate = DateTime.Now;
+                        //entity.BeginAccountDate = DateTime.Now;
                         entity.DateAccept = DateTime.Now;
                     }
 
@@ -3294,6 +3348,53 @@ namespace Reports.Presenters.UI.Bl.Impl
             return 0;
         }
         /// <summary>
+        /// Процедура отклонения существующей заявки для штатной единицы.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        public bool DeleteEstablishedPostRequest(StaffEstablishedPostRequestModel model, out string error)
+        {
+            error = string.Empty;
+            StaffEstablishedPostRequest entity = StaffEstablishedPostRequestDao.Get(model.Id);
+            if (entity == null)
+            {
+                error = "Заявка не найдена! Обратитесь к разработчикам!";
+                return false;
+            }
+
+            User curUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            //отклонение заявки
+            if (model.IsDelete)
+            {
+                entity.IsUsed = false;
+                entity.DeleteDate = DateTime.Now;
+                error = "Заявка отклонена!";
+
+                if (model.Id != 0)
+                {
+                    try
+                    {
+                        StaffEstablishedPostRequestDao.SaveAndFlush(entity);
+                        model.Id = entity.Id;
+                    }
+                    catch (Exception ex)
+                    {
+                        StaffEstablishedPostRequestDao.RollbackTran();
+                        error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+
+            //если не по той ветке пошли
+            error = "Произошла ошибка при сохранении данных! Обратитесь к разработчикам!";
+            return false;
+        }
+        /// <summary>
         /// Загрузка реквизитов инициатора и подразделения к заявкам для штатных единиц
         /// </summary>
         /// <param name="model">Заполняемая модель заявки.</param>
@@ -3447,6 +3548,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.IsAgreeButtonAvailable = false;
             }
+
+            if (entity.DeleteDate.HasValue)
+            {
+                model.IsDraftButtonAvailable = false;
+                model.IsAgreeButtonAvailable = false;
+            }
         }
         /// <summary>
         /// Процедура заполняет списки согласовантов, на случай, если за них согласовывают кураторы или кадровики банка.
@@ -3460,7 +3567,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //относительно родительского ищем руководителей
             //помним, что начальника может не быть в родительском подразделении, по этому ищем вверх по ветке всех руководителей
-            IList<User> Initiators = DepartmentDao.GetDepartmentManagers(Parentdep.Id, true)
+            IList<User> Initiators = DepartmentDao.GetDepartmentManagersWithManualLinks(model.DepartmentId)//DepartmentDao.GetDepartmentManagers(Parentdep.Id, true)
                 .OrderByDescending<User, int?>(manager => manager.Level)
                 .ToList<User>();
 
@@ -3480,7 +3587,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             //вышестоящее руководство
-            model.TopManagers = Initiators.Where(x => x.Level == 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+            model.TopManagers = Initiators.Where(x => x.Level <= 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
 
 
             //члены правления
@@ -5018,11 +5125,22 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region Штатная расстановка.
         /// <summary>
+        /// Загрузка модели страницы (часть с заявкой для временной вакансии)
+        /// </summary>
+        /// <param name="model">Заполняемая модель.</param>
+        /// <returns></returns>
+        public StaffListArrangementModel GetStaffListArrangementModel(StaffListArrangementModel model)
+        {
+            model.AbsencesTypes = StaffLongAbsencesTypesDao.LoadAll().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            return model;
+        }
+        /// <summary>
         /// Загружаем структуру по заданному коду подразделения и штатную расстановку.
         /// </summary>
         /// <param name="DepId">Код родительского подразделения</param>
+        /// <param name="IsBegin">Флажок показывающий, что это первоначальная загрузка.</param>
         /// <returns></returns>
-        public StaffListArrangementModel GetDepartmentStructureWithStaffArrangement(string DepId)
+        public StaffListArrangementModel GetDepartmentStructureWithStaffArrangement(string DepId, bool IsBegin)
         {
             StaffListArrangementModel model = new StaffListArrangementModel();
 
@@ -5041,7 +5159,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId, PersonnelId);
                 //уровень подразделений
-                model.Departments = GetDepartmentListByParent(DepId, false).OrderBy(x => x.Priority).ToList();
+                model.Departments = GetDepartmentListByParent(DepId, false, IsBegin).OrderBy(x => x.Priority).ToList();
             }
             else
             {
@@ -5095,6 +5213,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Accessoryes = StaffDepartmentAccessoryDao.GetAccessoryes();
             model.Accessoryes.Insert(0, new IdNameDto { Id = 0, Name = "" });
 
+            //список руководителей
+            IList<User> managers = DepartmentDao.GetDepartmentManagersWithManualLinks(model.DepartmentId != 0 ? model.DepartmentId : model.ParentId);
+            StringBuilder managersBuilder = new StringBuilder();
+            foreach (var manager in managers)
+            {
+                managersBuilder.AppendFormat("{0} ({1}), ", manager.Name, manager.Position == null ? "<не указана>" : manager.Position.Name);
+            }
+            model.Managers = managersBuilder.ToString();
+
+
             //согласование - расстановка флажков и т.д.
             StaffDepartmentRequest entity = StaffDepartmentRequestDao.Get(model.Id);
             if (entity != null)
@@ -5106,6 +5234,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsConsultant = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing);
             }
 
+            //отображение куска структуры для этого подразделения
+            StaffDepartmentFingradStructureDto FinStructure = StaffDepartmentRPLinkDao.GetFingradStructureForDeparment(model.ParentId);
+            if (FinStructure != null)
+            {
+                model.ManagementCode = FinStructure.ManagementCode;
+                model.ManagementName = FinStructure.ManagementName;
+                model.ManagementNameSKD = FinStructure.ManagementNameSKD;
+                model.AdminCode = FinStructure.AdminCode;
+                model.AdminName = FinStructure.AdminName;
+                model.AdminNameSKD = FinStructure.AdminNameSKD;
+                model.BGCode = FinStructure.BGCode;
+                model.BGName = FinStructure.BGName;
+                model.BGNameSKD = FinStructure.BGNameSKD;
+                model.RPLInkCode = FinStructure.RPLinkCode;
+                model.RPLInkName = FinStructure.RPLinkName;
+                model.RPLInkNameSKD = FinStructure.RPLinkNameSKD;
+            }
         }
         /// <summary>
         /// Загрузка справочников модели для заявок к штатным единицам.
@@ -5127,7 +5272,15 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             GetDepRequestInfo(model);
 
-
+            //список руководителей
+            IList<User> managers = DepartmentDao.GetDepartmentManagersWithManualLinks(model.DepartmentId);
+            //model.InitiatorId
+            StringBuilder managersBuilder = new StringBuilder();
+            foreach (var manager in managers)
+            {
+                managersBuilder.AppendFormat("{0} ({1}), ", manager.Name, manager.Position == null ? "<не указана>" : manager.Position.Name);
+            }
+            model.Managers = managersBuilder.ToString();
             
 
             //пытаемся показать правильную расстановку для штатной единицы
@@ -5191,6 +5344,26 @@ namespace Reports.Presenters.UI.Bl.Impl
                             ,DateTempEnd = x.DateTempEnd
                         }).OrderBy(x => x.Surname).ToList();
             }
+
+
+            //отображение куска структуры для этого подразделения
+            Department CurDep = DepartmentDao.Get(model.DepartmentId);
+            StaffDepartmentFingradStructureDto FinStructure = StaffDepartmentRPLinkDao.GetFingradStructureForDeparment(CurDep.ParentId.HasValue ? CurDep.ParentId.Value : 0);
+            if (FinStructure != null)
+            {
+                model.ManagementCode = FinStructure.ManagementCode;
+                model.ManagementName = FinStructure.ManagementName;
+                model.ManagementNameSKD = FinStructure.ManagementNameSKD;
+                model.AdminCode = FinStructure.AdminCode;
+                model.AdminName = FinStructure.AdminName;
+                model.AdminNameSKD = FinStructure.AdminNameSKD;
+                model.BGCode = FinStructure.BGCode;
+                model.BGName = FinStructure.BGName;
+                model.BGNameSKD = FinStructure.BGNameSKD;
+                model.RPLInkCode = FinStructure.RPLinkCode;
+                model.RPLInkName = FinStructure.RPLinkName;
+                model.RPLInkNameSKD = FinStructure.RPLinkNameSKD;
+            }
         }
         /// <summary>
         /// Заполняем список видов заявок для подразделений.
@@ -5203,6 +5376,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             dto.Add(new IdNameDto { Id = 1, Name = "Черновик" });
             dto.Add(new IdNameDto { Id = 2, Name = "На согласовании" });
             dto.Add(new IdNameDto { Id = 3, Name = "Утверждено" });
+            dto.Add(new IdNameDto { Id = 4, Name = "Отклонено" });
 
             return dto;
         }

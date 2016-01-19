@@ -121,7 +121,7 @@
     <table class="grid">
                           <thead>
                               <tr>
-                                <th>Название документа</th><th>Образец</th><th>Скан</th>
+                                <th>Название документа</th><th>От кадров</th><th>Скан</th>
                               </tr>
                           </thead>
                           <tr>
@@ -137,7 +137,7 @@
                                 }
                              @if (Model.AgreementDocDto != null && !string.IsNullOrEmpty(Model.AgreementDocDto.FileName))
                                 {
-                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AgreementDocId })' style="cursor:hand" target="_blank" >@Model.AgreementDocDto.FileName</a>
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", "Help", new { Id = Model.AgreementDocId })' style="cursor:hand" target="_blank" >@Model.AgreementDocDto.FileName</a>
                                 }</td>
                           </tr>
                           <tr>
@@ -152,7 +152,7 @@
                                 }
                                 @if (Model.AgreementAdditionalDocDto != null && !string.IsNullOrEmpty(Model.AgreementAdditionalDocDto.FileName))
                                 {
-                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AgreementAdditionalDocId })' style="cursor:hand" target="_blank" >@Model.AgreementAdditionalDocDto.FileName</a>
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment","Help", new { Id = Model.AgreementAdditionalDocId })' style="cursor:hand" target="_blank" >@Model.AgreementAdditionalDocDto.FileName</a>
                                 }
                                 </td>
                           </tr>
@@ -168,7 +168,7 @@
                                 }
                                 @if (Model.OrderDocDto != null && !string.IsNullOrEmpty(Model.OrderDocDto.FileName))
                                 {
-                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.OrderDocId })' style="cursor:hand" target="_blank" >@Model.OrderDocDto.FileName</a>
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", "Help", new { Id = Model.OrderDocId })' style="cursor:hand" target="_blank" >@Model.OrderDocDto.FileName</a>
                                 }
                                 </td>
                           </tr>
@@ -176,11 +176,14 @@
                               <td>
                               Договор мат.ответственность
                               </td>
-                              <td><a href="#" onclick='$("#MaterialDocDialog").dialog("open");' >Печать</a></td>
+                              <td>@if (Model.IsDMOAvailable)        
+                                {
+                                    <a href='@Url.Action("GetPrintForm", "Help", new { id = Model.Id, typeId = 11 })'>Печать</a><br />
+                                }</td>
                               <td>
                                 @if (Model.MaterialLiabilityDocDto != null && !string.IsNullOrEmpty(Model.MaterialLiabilityDocDto.FileName))
                                 {
-                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MaterialLiabilityDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.MaterialLiabilityDocDto.FileName</a>
+                                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", "Help", new { Id = Model.MaterialLiabilityDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.MaterialLiabilityDocDto.FileName</a>
                                 }
                                 @if (Model.IsDocsAddAvailable)
                                 {
@@ -197,7 +200,7 @@
                               <td>
                                   @if (Model.RequirementsOrderDocDto != null && !string.IsNullOrEmpty(Model.RequirementsOrderDocDto.FileName))
                                   {
-                                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.RequirementsOrderDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.RequirementsOrderDocDto.FileName</a>
+                                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", "Help", new { Id = Model.RequirementsOrderDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.RequirementsOrderDocDto.FileName</a>
                                   }
                                   @if (Model.IsDocsAddAvailable)
                                   {
@@ -213,7 +216,7 @@
                               <td>
                                     @if (Model.ServiceOrderDocDto != null && !string.IsNullOrEmpty(Model.ServiceOrderDocDto.FileName))
                                     {
-                                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.ServiceOrderDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.ServiceOrderDocDto.FileName</a>
+                                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", "Help", new { Id = Model.ServiceOrderDocAttachmentId })' style="cursor:hand" target="_blank" >@Model.ServiceOrderDocDto.FileName</a>
                                     }
                                     @if (Model.IsDocsAddAvailable)
                                     {
@@ -233,7 +236,7 @@
 }
 <script>
 $(document).ready(function () {
-        setActiveMenuItem("StaffMovements");
+    setActiveMenuItem("StaffMovementsFacts");
         $("#tabs").tabs();
         $('#MaterialDocDialog').dialog({
             autoOpen: false

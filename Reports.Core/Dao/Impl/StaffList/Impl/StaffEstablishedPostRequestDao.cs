@@ -69,12 +69,14 @@ namespace Reports.Core.Dao.Impl
                                        D.Id as PersonId, 
                                        D.Name as Surname, 
                                        E.Name as PositionName,
-                                       case when A.DateSendToApprove is null then 'Черновик'
-						                    when A.DateSendToApprove is not null and A.DateAccept is null then 'На согласовании'
-						                    when A.DateAccept is not null then 'Утверждено' end as Status,
-			                           case when A.DateSendToApprove is null then 1
-						                    when A.DateSendToApprove is not null and A.DateAccept is null then 2
-						                    when A.DateAccept is not null then 3 end as StatusId
+                                       case when A.DeleteDate is not null then 'Отклонено'
+                                            when A.DateSendToApprove is null then 'Черновик'
+						                    when A.DateSendToApprove is not null and A.DateAccept is null and A.DeleteDate is null then 'На согласовании'
+						                    when A.DateAccept is not null and A.DeleteDate is null then 'Утверждено' end as Status,
+			                           case when A.DeleteDate is not null then 4
+                                            when A.DateSendToApprove is null then 1
+						                    when A.DateSendToApprove is not null and A.DateAccept is null and A.DeleteDate is null then 2
+						                    when A.DateAccept is not null and A.DeleteDate is null then 3 end as StatusId
                                 FROM StaffEstablishedPostRequest as A
                                 INNER JOIN StaffEstablishedPostRequestTypes as B ON B.Id = A.RequestTypeId
                                 INNER JOIN Department as C ON C.Id = A.DepartmentId
@@ -133,13 +135,20 @@ namespace Reports.Core.Dao.Impl
             string sqlWhere = string.Empty;
             switch (role)
             {
-                case UserRole.Manager:
+                case UserRole.Manager://автоматические права + ручные привязки
                     sqlWhere = @"
-                                 INNER JOIN (SELECT C.*
-                                             FROM Users as A
-                                             INNER JOIN Department as B ON B.Id = A.DepartmentId
-                                             INNER JOIN Department as C ON C.Path like B.Path + N'%' and C.ItemLevel <> B.ItemLevel
-						                     WHERE A.Id = :userId) as F ON F.Id = isnull(A.DepartmentId, A.ParentId)";
+                                 INNER JOIN (SELECT distinct * 
+                                 FROM (SELECT C.*
+                                        FROM Users as A
+                                        INNER JOIN Department as B ON B.Id = A.DepartmentId
+                                        INNER JOIN Department as C ON C.Path like B.Path + N'%' --and C.ItemLevel <> B.ItemLevel
+						                WHERE A.Id = :userId
+                                        UNION ALL
+										SELECT C.*
+										FROM ManualRoleRecord as A
+                                        INNER JOIN Department as B ON B.Id = A.TargetDepartmentId
+                                        INNER JOIN Department as C ON C.Path like B.Path + N'%' --and C.ItemLevel <> B.ItemLevel
+						                WHERE A.UserId = :userId) as A ) as F ON F.Id = isnull(A.DepartmentId, A.ParentId) and isnull(F.BFGId, 0) = isnull(B.BFGId, 0) ";
                     break;
                 case UserRole.PersonnelManager:
                     sqlWhere = @" INNER JOIN vwDepartmentToPersonnels as F ON F.DepartmentId = isnull(A.DepartmentId, A.ParentId) and F.PersonnelId = :userId";

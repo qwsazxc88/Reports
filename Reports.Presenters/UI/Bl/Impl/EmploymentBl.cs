@@ -1429,8 +1429,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserLinkId = PostUserLink.Id;
                 model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
                 model.SalaryMultiplier = entity.SalaryMultiplier;
-                model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Count() == 0 ? 0 :
-                    PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Single().Amount;
+                model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.IsUsed).Count() == 0 ? 0 :
+                    PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.IsUsed).Single().Amount;
             }
             else
             {
@@ -3259,7 +3259,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             User onBehalfOfManager = model.OnBehalfOfManagerId.HasValue ? UserDao.Load(model.OnBehalfOfManagerId.Value) : null;
             User PersonnelUser = UserDao.Load(model.PersonnelId);
             Department department = DepartmentDao.Load(model.DepartmentId);
-            StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId.Value);
+            StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId.HasValue ? model.UserLinkId.Value : 0);
+
+            if (PostUserLink == null)
+            {
+                error = "Выберте штатную единицу!";
+                return null;
+            }
 
             if(department.ItemLevel != 7)
             {
@@ -6529,9 +6535,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             decimal FrontOfficeExperienceAddition = (entity.Candidate.PersonnelManagers.FrontOfficeExperienceAddition.HasValue ? entity.Candidate.PersonnelManagers.FrontOfficeExperienceAddition.Value : 0);//Надбавка за стаж работы специалистом фронт-офиса (руб)
             decimal NorthernAreaAddition = (entity.Candidate.PersonnelManagers.NorthernAreaAddition.HasValue ? entity.Candidate.PersonnelManagers.NorthernAreaAddition.Value : 0);//северная %
 
-            return (SalaryBasis * SalaryMultiplier + PersonalAddition + AreaAddition + FrontOfficeExperienceAddition + TravelRelatedAddition + CompetenceAddition)
-                     + ((SalaryBasis * SalaryMultiplier + PersonalAddition + AreaAddition + FrontOfficeExperienceAddition + TravelRelatedAddition + CompetenceAddition) * (AreaMultiplier / 100))
-                     + ((SalaryBasis * SalaryMultiplier + PersonalAddition + AreaAddition + FrontOfficeExperienceAddition + TravelRelatedAddition + CompetenceAddition) * (NorthernAreaAddition / 100)); 
+            return ((SalaryBasis + PersonalAddition + AreaAddition + FrontOfficeExperienceAddition + TravelRelatedAddition + CompetenceAddition) * SalaryMultiplier)
+                     + ((SalaryBasis + PersonalAddition + AreaAddition + FrontOfficeExperienceAddition + TravelRelatedAddition + CompetenceAddition) * SalaryMultiplier * (AreaMultiplier / 100))
+                     + ((SalaryBasis + PersonalAddition + AreaAddition + FrontOfficeExperienceAddition + TravelRelatedAddition + CompetenceAddition) * SalaryMultiplier * (NorthernAreaAddition / 100)); 
         }
 
         public bool IsFixedTermContract(int userId)
