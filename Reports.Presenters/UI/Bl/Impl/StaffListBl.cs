@@ -2622,6 +2622,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //заполняем заявку на все случаи жизни
             if (model.Id == 0)
             {
+                Department CurDep = DepartmentDao.Get(model.DepartmentId);
                 model.DateRequest = null;
                 model.UserId = AuthenticationService.CurrentUser.Id;
                 model.PositionId = 0;
@@ -2633,6 +2634,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.WCId = 0;
                 model.BeginAccountDate = DateTime.Now;
                 model.EPInfo = string.Empty;
+                model.ItemLevel = CurDep == null || !CurDep.ItemLevel.HasValue ? 0 : CurDep.ItemLevel.Value;
 
                 //кнопки
                 model.IsDraftButtonAvailable = true;
@@ -2780,12 +2782,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 ul.DateDistribNote = item.DateDistribNote;
                                 ul.DateReceivNote = item.DateReceivNote;
                             }
-                            if (entity.RequestType.Id == 2 || entity.RequestType.Id == 4)
-                            {
-                                ul.IsTemporary = item.IsTemporary;
-                                ul.DateTempBegin = item.DateTempBegin;
-                                ul.DateTempEnd = item.DateTempEnd;
-                            }
+
                             ul.Editor = curUser;
                             ul.EditDate = DateTime.Now;
                         }
@@ -2894,7 +2891,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.EditDate = DateTime.Now;
             entity.BeginAccountDate = model.BeginAccountDate;
 
-            //при сокращении или вводе временной вакансии ставим метки в расстановке (до начала согласования)
+            //при сокращении ставим метки в расстановке (до начала согласования)
             if ((entity.RequestType.Id == 2 || entity.RequestType.Id == 3 || entity.RequestType.Id == 4) && !entity.DateSendToApprove.HasValue && entity.StaffEstablishedPost != null)
             {
                 foreach (StaffEstablishedPostUserLinks ul in entity.StaffEstablishedPost.EstablishedPostUserLinks)
@@ -2908,16 +2905,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ul.DateReceivNote = item.DateReceivNote;
                         ul.ReserveType = (int)StaffReserveTypeEnum.Dismissal;
                         ul.DocId = entity.Id;
-                        ul.Editor = curUser;
-                        ul.EditDate = DateTime.Now;
-                    }
-
-                    if (model.Personnels.Where(x => x.Id == ul.Id && x.IsTemporary != ul.IsTemporary).Count() != 0)
-                    {
-                        StaffUserLinkDto item = model.Personnels.Where(x => x.Id == ul.Id && x.IsTemporary != ul.IsTemporary).FirstOrDefault();
-                        ul.IsTemporary = item.IsTemporary;
-                        ul.DateTempBegin = item.DateTempBegin;
-                        ul.DateTempEnd = item.DateTempEnd;
                         ul.Editor = curUser;
                         ul.EditDate = DateTime.Now;
                     }
@@ -5287,7 +5274,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             StaffEstablishedPostRequest entity = StaffEstablishedPostRequestDao.Get(model.Id);
             if (entity != null)
             {
-                //model.Personnels = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId).Where(x => x.SEPId == model.SEPId).ToList();
                 if (entity.StaffEstablishedPost != null)
                 {
                     //поля UserId, Surname, IsPregnant определяем так же, как в функции показывающей штатную расстановку
@@ -5297,7 +5283,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             Id = x.Id
                             ,SEPId = x.StaffEstablishedPost.Id
-                            //,UserId = x.User != null && (!x.User.IsPregnant.HasValue || !x.User.IsPregnant.Value) && x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() == 0 ? x.User.Id : 0
                             ,UserId = x.User != null ? x.User.Id : 0
                             ,Surname = x.User != null && (!x.User.IsPregnant.HasValue || !x.User.IsPregnant.Value) && x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() == 0 ? x.User.Name : ""
                             ,IsPregnant = x.User != null ? ((x.User.IsPregnant.HasValue && x.User.IsPregnant.Value) || x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() != 0 ? true : false) : false
@@ -5307,9 +5292,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                             ,IsDismissal = x.IsDismissal
                             ,DateDistribNote = x.DateDistribNote
                             ,DateReceivNote = x.DateReceivNote
-                            ,IsTemporary = x.IsTemporary
-                            ,DateTempBegin = x.DateTempBegin
-                            ,DateTempEnd = x.DateTempEnd
                         }).OrderBy(x => x.Surname).ToList();
                 }
 
@@ -5339,9 +5321,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                             ,IsDismissal = x.IsDismissal
                             ,DateDistribNote = x.DateDistribNote
                             ,DateReceivNote = x.DateReceivNote
-                            ,IsTemporary = x.IsTemporary
-                            ,DateTempBegin = x.DateTempBegin
-                            ,DateTempEnd = x.DateTempEnd
                         }).OrderBy(x => x.Surname).ToList();
             }
 
