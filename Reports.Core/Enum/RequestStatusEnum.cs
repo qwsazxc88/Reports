@@ -217,6 +217,7 @@
         StaffMovementsAgreement =8,
         StaffMovementsAgreementAddition = 9,
         StaffMovementsOrder = 10,
+        StaffMovementsDMO = 11
     }
     public enum DeductionTypeEnum
     {
