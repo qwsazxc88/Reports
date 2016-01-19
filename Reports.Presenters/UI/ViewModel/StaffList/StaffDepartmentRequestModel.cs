@@ -105,24 +105,28 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
 
         [Display(Name = "Дирекция")]
         public string ManagementName { get; set; }
+        public string ManagementNameSKD { get; set; }
 
         [Display(Name = "ID Дирекции")]
         public string ManagementCode { get; set; }
 
         [Display(Name = "Управление")]
         public string AdminName { get; set; }
+        public string AdminNameSKD { get; set; }
 
         [Display(Name = "ID Управления")]
         public string AdminCode { get; set; }
 
         [Display(Name = "Бизнес-группа")]
         public string BGName { get; set; }
+        public string BGNameSKD { get; set; }
 
         [Display(Name = "ID Бизнес-группы")]
         public string BGCode { get; set; }
 
         [Display(Name = "РП-привязка")]
         public string RPLInkName { get; set; }
+        public string RPLInkNameSKD { get; set; }
 
         [Display(Name = "ID РП-привязки")]
         public string RPLInkCode { get; set; }
