@@ -121,7 +121,7 @@
     <table class="grid">
                           <thead>
                               <tr>
-                                <th>Название документа</th><th>Образец</th><th>Скан</th>
+                                <th>Название документа</th><th>От кадров</th><th>Скан</th>
                               </tr>
                           </thead>
                           <tr>
@@ -176,7 +176,10 @@
                               <td>
                               Договор мат.ответственность
                               </td>
-                              <td><a href="#" onclick='$("#MaterialDocDialog").dialog("open");' >Печать</a></td>
+                              <td>@if (Model.IsDMOAvailable)        
+                                {
+                                    <a href='@Url.Action("GetPrintForm", "Help", new { id = Model.Id, typeId = 11 })'>Печать</a><br />
+                                }</td>
                               <td>
                                 @if (Model.MaterialLiabilityDocDto != null && !string.IsNullOrEmpty(Model.MaterialLiabilityDocDto.FileName))
                                 {
