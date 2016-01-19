@@ -200,6 +200,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             var usr = UserDao.Load(model.User.Id);
             model.ActiveAdditions = GetUserActualAddition(model.User.Id);
             model.IsOrderAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsOrder).Count>0;
+            model.IsDMOAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsDMO).Count > 0;
             model.IsAgreementAdditionAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsAgreementAddition).Count > 0;
             model.IsAgreementAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsAgreement).Count > 0;
             if (entity.AgreementAdditionalDoc.HasValue)
