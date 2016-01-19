@@ -2622,6 +2622,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //заполняем заявку на все случаи жизни
             if (model.Id == 0)
             {
+                Department CurDep = DepartmentDao.Get(model.DepartmentId);
                 model.DateRequest = null;
                 model.UserId = AuthenticationService.CurrentUser.Id;
                 model.PositionId = 0;
@@ -2633,6 +2634,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.WCId = 0;
                 model.BeginAccountDate = DateTime.Now;
                 model.EPInfo = string.Empty;
+                model.ItemLevel = CurDep == null || !CurDep.ItemLevel.HasValue ? 0 : CurDep.ItemLevel.Value;
 
                 //кнопки
                 model.IsDraftButtonAvailable = true;
