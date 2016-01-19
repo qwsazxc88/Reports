@@ -495,24 +495,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepNextId = 0;
                 model.IsPlan = false;
 
-                StaffDepartmentFingradStructureDto FinStructure = StaffDepartmentRPLinkDao.GetFingradStructureForDeparment(model.ParentId);
-                if (FinStructure != null)
-                {
-                    model.ManagementCode = FinStructure.ManagementCode;
-                    model.ManagementName = FinStructure.ManagementName;
-                    model.ManagementNameSKD = FinStructure.ManagementNameSKD;
-                    model.AdminCode = FinStructure.AdminCode;
-                    model.AdminName = FinStructure.AdminName;
-                    model.AdminNameSKD = FinStructure.AdminNameSKD;
-                    model.BGCode = FinStructure.BGCode;
-                    model.BGName = FinStructure.BGName;
-                    model.BGNameSKD = FinStructure.BGNameSKD;
-                    model.RPLInkCode = FinStructure.RPLinkCode;
-                    model.RPLInkName = FinStructure.RPLinkName;
-                    model.RPLInkNameSKD = FinStructure.RPLinkNameSKD;
-                }
-
-
                 //налоговые реквизиты
                 model.KPP = string.Empty;
                 model.OKTMO = string.Empty;
@@ -626,22 +608,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsUsed = entity.IsUsed;
                 model.IsTaxRequest = entity.IsTaxRequest;
 
-                StaffDepartmentFingradStructureDto FinStructure = StaffDepartmentRPLinkDao.GetFingradStructureForDeparment(model.ParentId);
-                if (FinStructure != null)
-                {
-                    model.ManagementCode = FinStructure.ManagementCode;
-                    model.ManagementName = FinStructure.ManagementName;
-                    model.ManagementNameSKD = FinStructure.ManagementNameSKD;
-                    model.AdminCode = FinStructure.AdminCode;
-                    model.AdminName = FinStructure.AdminName;
-                    model.AdminNameSKD = FinStructure.AdminNameSKD;
-                    model.BGCode = FinStructure.BGCode;
-                    model.BGName = FinStructure.BGName;
-                    model.BGNameSKD = FinStructure.BGNameSKD;
-                    model.RPLInkCode = FinStructure.RPLinkCode;
-                    model.RPLInkName = FinStructure.RPLinkName;
-                    model.RPLInkNameSKD = FinStructure.RPLinkNameSKD;
-                }
 
                 //налоговые реквизиты
                 if (entity.Department != null)
@@ -2696,6 +2662,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserId = entity.Creator != null ? entity.Creator.Id : 0;
                 model.DateRequest = entity.DateRequest;
                 model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
+                model.ItemLevel = entity.Department != null ? entity.Department.ItemLevel.Value : 0;
                 model.BFGId = entity.Department != null && entity.Department.DepartmentAccessory != null ? entity.Department.DepartmentAccessory.Id : 0;
                 model.PositionId = entity.Position != null ? entity.Position.Id : 0;
                 model.PositionName = entity.Position != null ? entity.Position.Name : string.Empty;
@@ -5267,6 +5234,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsConsultant = (AuthenticationService.CurrentUser.UserRole == UserRole.ConsultantOutsourcing);
             }
 
+            //отображение куска структуры для этого подразделения
+            StaffDepartmentFingradStructureDto FinStructure = StaffDepartmentRPLinkDao.GetFingradStructureForDeparment(model.ParentId);
+            if (FinStructure != null)
+            {
+                model.ManagementCode = FinStructure.ManagementCode;
+                model.ManagementName = FinStructure.ManagementName;
+                model.ManagementNameSKD = FinStructure.ManagementNameSKD;
+                model.AdminCode = FinStructure.AdminCode;
+                model.AdminName = FinStructure.AdminName;
+                model.AdminNameSKD = FinStructure.AdminNameSKD;
+                model.BGCode = FinStructure.BGCode;
+                model.BGName = FinStructure.BGName;
+                model.BGNameSKD = FinStructure.BGNameSKD;
+                model.RPLInkCode = FinStructure.RPLinkCode;
+                model.RPLInkName = FinStructure.RPLinkName;
+                model.RPLInkNameSKD = FinStructure.RPLinkNameSKD;
+            }
         }
         /// <summary>
         /// Загрузка справочников модели для заявок к штатным единицам.
@@ -5359,6 +5343,26 @@ namespace Reports.Presenters.UI.Bl.Impl
                             ,DateTempBegin = x.DateTempBegin
                             ,DateTempEnd = x.DateTempEnd
                         }).OrderBy(x => x.Surname).ToList();
+            }
+
+
+            //отображение куска структуры для этого подразделения
+            Department CurDep = DepartmentDao.Get(model.DepartmentId);
+            StaffDepartmentFingradStructureDto FinStructure = StaffDepartmentRPLinkDao.GetFingradStructureForDeparment(CurDep.ParentId.HasValue ? CurDep.ParentId.Value : 0);
+            if (FinStructure != null)
+            {
+                model.ManagementCode = FinStructure.ManagementCode;
+                model.ManagementName = FinStructure.ManagementName;
+                model.ManagementNameSKD = FinStructure.ManagementNameSKD;
+                model.AdminCode = FinStructure.AdminCode;
+                model.AdminName = FinStructure.AdminName;
+                model.AdminNameSKD = FinStructure.AdminNameSKD;
+                model.BGCode = FinStructure.BGCode;
+                model.BGName = FinStructure.BGName;
+                model.BGNameSKD = FinStructure.BGNameSKD;
+                model.RPLInkCode = FinStructure.RPLinkCode;
+                model.RPLInkName = FinStructure.RPLinkName;
+                model.RPLInkNameSKD = FinStructure.RPLinkNameSKD;
             }
         }
         /// <summary>
