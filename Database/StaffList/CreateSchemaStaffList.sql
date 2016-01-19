@@ -1515,9 +1515,6 @@ CREATE TABLE [dbo].[StaffEstablishedPostUserLinks](
 	[IsDismissal] [bit] NULL,
 	[DateDistribNote] [datetime] NULL,
 	[DateReceivNote] [datetime] NULL,
-	[IsTemporary] [bit] NULL CONSTRAINT [DF_StaffEstablishedPostUserLinks_IsTemporary]  DEFAULT ((0)),
-	[DateTempBegin] [datetime] NULL,
-	[DateTempEnd] [datetime] NULL,
 	[CreatorId] [int] NULL,
 	[CreateDate] [datetime] NULL,
 	[EditorId] [int] NULL,
@@ -2848,15 +2845,6 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата выдачи ув
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата получения уведомления о сокращении' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'DateReceivNote'
-GO
-
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак временной вакансии' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'IsTemporary'
-GO
-
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата начала периода действия временной вакансии' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'DateTempBegin'
-GO
-
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата конца периода действия временной вакансии' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'DateTempEnd'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'StaffEstablishedPostUserLinks', @level2type=N'COLUMN',@level2name=N'CreatorId'
