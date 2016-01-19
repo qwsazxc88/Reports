@@ -192,7 +192,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             StaffMovementsFactEditModel model = new StaffMovementsFactEditModel();
             model.Signers = EmploymentSignersDao.LoadAll().Select(x=>new IdNameDto{ Id=x.Id, Name=x.Name}).ToList();
             model.SignerId = model.Signers.First().Id;
-
+            model.IsDocsReceived = entity.IsDocumentsReceived;
             model.Id = entity.Id;
             model.User.Id = entity.User.Id;
             model.IsDocsAddAvailable = (CurrentUser.Id == model.User.Id || (CurrentUser.UserRole & UserRole.PersonnelManager)>0|| CheckIsChief(entity.User.Department.Id, CurrentUser)) && !model.IsDocsReceived;
@@ -332,6 +332,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDocsAddAvailable = (CurrentUser.Id == model.User.Id) && !model.IsDocsReceived;
             model.IsSaveAvailable = model.IsDocsAddAvailable || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && !model.IsDocsReceived);
             model = GetFactEditModel(model.Id);
+            StaffMovementsFactDao.SaveAndFlush(entity);
             return model;
         }
         #endregion
@@ -1327,7 +1328,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.SendDate = DateTime.Now;
                         entity.SourceManagerAccept = DateTime.Now;
                         entity.TargetManagerAccept = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
+                        //entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
+                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Chief);//После принимающего идёт вышестоящий
                         if (entity.TargetManager != null && entity.TargetManager.Id != CurrentUser.Id)
                         {
                             //DocumentApprovalDao
@@ -1407,7 +1409,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             DocumentApprovalDao.SaveAndFlush(newapprove);
                         }
                         entity.TargetManagerAccept = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
+                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Chief);//После принимающего идёт вышестоящий
+                        //entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
                         entity.TargetStaffEstablishedPostRequest.DocId = entity.Id;
                         entity.TargetStaffEstablishedPostRequest.ReserveType = (int)StaffReserveTypeEnum.StaffMovements;
                     }
@@ -1439,7 +1442,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //Если согласовано кадровиком банка
                         entity.PersonnelManagerBank = UserDao.Load(CurrentUser.Id);
                         entity.PersonnelManagerBankAccept = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Chief);
+                        //entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Chief);
+                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved);//перевод оформлен
                     }
                     break;
                 case 6:
@@ -1485,7 +1489,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //Если согласовано кадровиком
                         entity.PersonnelManager = UserDao.Load(CurrentUser.Id);
                         entity.PersonnelManagerAccept = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved);
+                        //entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved);
+                        var check = StaffMovementsDao.CheckIfPersonnalChargeChanges(entity.Id);
+
+                        entity.Status = check ? StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank) //После кадровика идёт кадровик банк
+                            : StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved); //Если нет изменений надбавок, то перевод оформлен
                     }
                     break;
                 case 8:
