@@ -192,7 +192,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             StaffMovementsFactEditModel model = new StaffMovementsFactEditModel();
             model.Signers = EmploymentSignersDao.LoadAll().Select(x=>new IdNameDto{ Id=x.Id, Name=x.Name}).ToList();
             model.SignerId = model.Signers.First().Id;
-
+            model.IsDocsReceived = entity.IsDocumentsReceived;
             model.Id = entity.Id;
             model.User.Id = entity.User.Id;
             model.IsDocsAddAvailable = (CurrentUser.Id == model.User.Id || (CurrentUser.UserRole & UserRole.PersonnelManager)>0|| CheckIsChief(entity.User.Department.Id, CurrentUser)) && !model.IsDocsReceived;
@@ -200,6 +200,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             var usr = UserDao.Load(model.User.Id);
             model.ActiveAdditions = GetUserActualAddition(model.User.Id);
             model.IsOrderAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsOrder).Count>0;
+            model.IsDMOAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsDMO).Count > 0;
             model.IsAgreementAdditionAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsAgreementAddition).Count > 0;
             model.IsAgreementAvailable = RequestPrintFormDao.QueryExpression(x => x.RequestId == Id && x.RequestTypeId == (int)RequestPrintFormTypeEnum.StaffMovementsAgreement).Count > 0;
             if (entity.AgreementAdditionalDoc.HasValue)
@@ -332,6 +333,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDocsAddAvailable = (CurrentUser.Id == model.User.Id) && !model.IsDocsReceived;
             model.IsSaveAvailable = model.IsDocsAddAvailable || ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0 && !model.IsDocsReceived);
             model = GetFactEditModel(model.Id);
+            StaffMovementsFactDao.SaveAndFlush(entity);
             return model;
         }
         #endregion
@@ -1327,7 +1329,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.SendDate = DateTime.Now;
                         entity.SourceManagerAccept = DateTime.Now;
                         entity.TargetManagerAccept = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
+                        //entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
+                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Chief);//После принимающего идёт вышестоящий
                         if (entity.TargetManager != null && entity.TargetManager.Id != CurrentUser.Id)
                         {
                             //DocumentApprovalDao
@@ -1407,7 +1410,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             DocumentApprovalDao.SaveAndFlush(newapprove);
                         }
                         entity.TargetManagerAccept = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
+                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Chief);//После принимающего идёт вышестоящий
+                        //entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank);
                         entity.TargetStaffEstablishedPostRequest.DocId = entity.Id;
                         entity.TargetStaffEstablishedPostRequest.ReserveType = (int)StaffReserveTypeEnum.StaffMovements;
                     }
@@ -1439,7 +1443,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //Если согласовано кадровиком банка
                         entity.PersonnelManagerBank = UserDao.Load(CurrentUser.Id);
                         entity.PersonnelManagerBankAccept = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Chief);
+                        //entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Chief);
+                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved);//перевод оформлен
                     }
                     break;
                 case 6:
@@ -1485,7 +1490,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //Если согласовано кадровиком
                         entity.PersonnelManager = UserDao.Load(CurrentUser.Id);
                         entity.PersonnelManagerAccept = DateTime.Now;
-                        entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved);
+                        //entity.Status = StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved);
+                        var check = StaffMovementsDao.CheckIfPersonnalChargeChanges(entity.Id);
+
+                        entity.Status = check ? StaffMovementsStatusDao.Load((int)StaffMovementsStatus.PersonelManagerBank) //После кадровика идёт кадровик банк
+                            : StaffMovementsStatusDao.Load((int)StaffMovementsStatus.Approved); //Если нет изменений надбавок, то перевод оформлен
                     }
                     break;
                 case 8:
@@ -1680,18 +1689,19 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public StaffMovementsPrintModel GetPrintModel(int id, int SignerId=0)
         {
-            var entity = StaffMovementsDao.Load(id);
+            var factentity = StaffMovementsFactDao.Load(id);
+            //var entity = factentity.StaffMovements;
             StaffMovementsPrintModel model = new StaffMovementsPrintModel();
             
             #region Персонажи
-            model.UserName = entity.User.Name;
-            model.TargetPosition = entity.TargetPosition.Name;
-            model.SourcePosition = entity.SourcePosition.Name;
-            model.Chief = entity.TargetChief!=null?entity.TargetChief.Name:"";
-            model.ChiefDepartment = entity.TargetChief != null && entity.TargetChief.Department!=null? entity.TargetChief.Department.Name:"";
-            model.ChiefPosition = entity.TargetChief != null && entity.TargetChief.Position!=null? entity.TargetChief.Position.Name:"";
-            model.TargetManager = entity.TargetManager.Name;
-            model.SourceManager = entity.SourceManager.Name;
+            model.UserName = factentity.User.Name;
+            //model.TargetPosition = entity.TargetPosition.Name;
+            //model.SourcePosition = entity.SourcePosition.Name;            
+            //model.Chief = entity.TargetChief!=null?entity.TargetChief.Name:"";
+           // model.ChiefDepartment = entity.TargetChief != null && entity.TargetChief.Department!=null? entity.TargetChief.Department.Name:"";
+           // model.ChiefPosition = entity.TargetChief != null && entity.TargetChief.Position!=null? entity.TargetChief.Position.Name:"";
+           // model.TargetManager = entity.TargetManager.Name;
+           // model.SourceManager = entity.SourceManager.Name;
             if(SignerId>0)
             {
                 var signer = EmploymentSignersDao.Load(SignerId);
@@ -1699,10 +1709,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SignerPosition = signer != null ? signer.Position : "";
                 model.SignerAdditionData = signer != null ? signer.PreamblePartyTemplate : "";
             }
-            model.PersonnelManagerBank = entity.PersonnelManagerBank!=null?entity.PersonnelManagerBank.Name:"";
-            model.PersonnelManagerBankDateAccept = entity.PersonnelManagerBankAccept.HasValue? entity.PersonnelManagerBankAccept.Value.ToString("dd.MM.yyyy"):"";
+           // model.PersonnelManagerBank = entity.PersonnelManagerBank!=null?entity.PersonnelManagerBank.Name:"";
+           // model.PersonnelManagerBankDateAccept = entity.PersonnelManagerBankAccept.HasValue? entity.PersonnelManagerBankAccept.Value.ToString("dd.MM.yyyy"):"";
             #endregion
-            
+            /*
             #region Dates
             model.MovementDate = entity.MovementDate.HasValue?entity.MovementDate.Value.ToString("dd.MM.yyyy") :"";
             model.PersonnelManagerBankDateAccept = entity.PersonnelManagerAccept.HasValue ? entity.PersonnelManagerAccept.Value.ToString("dd.MM.yyyy") : "";            
@@ -1735,8 +1745,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.TargetDep3 = Targetdep3 != null ? Targetdep3.Name : "";
             var Targetdep2 = DepartmentDao.GetParentDepartmentWithLevel(Targetdep7, 2);
             model.TargetDep2 = Targetdep2 != null ? Targetdep2.Name : "";
-            #endregion            
-            model.HoursType = entity.Data.HoursType!=null? entity.Data.HoursType.Name:"";
+            #endregion            */
+            //model.HoursType = entity.Data.HoursType!=null? entity.Data.HoursType.Name:"";
             return model;
         }
         

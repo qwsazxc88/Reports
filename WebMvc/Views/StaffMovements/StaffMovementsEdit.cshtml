@@ -1,4 +1,6 @@
 ﻿@model Reports.Presenters.UI.ViewModel.StaffMovementsEditModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @using WebMvc.Helpers
 @{
     ViewBag.Title = "Редактирование заявки на перемещение";
@@ -6,6 +8,7 @@
     ViewBag.PlaceId = Model.Id;
     ViewBag.PlaceTypeId = (int)Reports.Core.Enum.CommentsPlaceTypes.StaffMovements;
     DateTime NextDay = DateTime.Now.AddDays(1);
+    var dto =  UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
 }
 @using (Html.BeginForm("Edit", "StaffMovements", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {   
@@ -51,6 +54,18 @@
         <td colspan="2">
           <div class="filter-wrap">
           <h2>@Model.RequestTypes.Where(x => x.Id == Model.RequestType).First().Name</h2>
+          @switch (Model.RequestType)
+          {
+              case 1:
+                    <b>Заявкой на изменение надбавок можно изменить: Срок занятости, Вид занятости, Ставку, График работы, Личную надбавку</b>
+                  break;
+              case 2:
+                    <b>Заявкой на перевод в другое подразделение можно изменить: Подразделение, Должность, Срок занятости, Вид занятости, Ставку, График работы, Личную надбавку</b>
+                  break;
+              case 3:
+                    <b>Заявкой на перевод внутри подразделения можно изменить: Должность, Срок занятости, Вид занятости, Ставку, График работы, Личную надбавку</b>
+                  break;
+          }
           @if (Model.IsRequestBad)
           {
           <h3 style="color:Red">Редактирование заявки в прошлом периоде невозможно</h3>}
@@ -102,7 +117,7 @@
                 <td>
                 @if (!Model.IsPositionEditable)
                 {
-                  @Html.HiddenFor(m=>m.TargetPositionId)   
+                  @Html.HiddenFor(m => m.TargetPositionId)   
                   @Html.HiddenFor(m => m.UserLinkId)  
                 }
                 <select width="300px" name="UserLinkId" id="UserLinkId"  @(Model.IsPositionEditable ? "" : "disabled=\"disabled\"")}>
@@ -110,7 +125,7 @@
                 {
                     foreach (var el in Model.UserLinks)
                     { 
-                    <option value="@el.Id" @(Model.UserLinkId==el.Id?"selected":"")>@el.Name</option>
+                    <option value="@el.Id" @(Model.UserLinkId == el.Id ? "selected" : "")>@el.Name</option>
                     }
                 }
                 </select> <span id="vacationCount"></span>
@@ -133,7 +148,7 @@
                             {
                             <li><a href="#tabs-2">Данные заявки</a></li>
                             }                            
-                            @if (Model.IsDocsVisible && Model.RequestType!=1)
+                            @if (Model.IsDocsVisible && Model.RequestType != 1)
                             {
                             <li><a href="#tabs-4">Документы</a></li>
                             }
@@ -331,7 +346,7 @@
                                         </tr>
                                       </thead>
                                       <tbody>
-                                      @for(int i=0;i<Model.ActiveAdditions.Count;i++)
+                                      @for (int i = 0; i < Model.ActiveAdditions.Count; i++)
                                       {
                                           <tr>
                                             <td>@Model.ActiveAdditions[i].Type.Name)
@@ -356,11 +371,11 @@
                           <fieldset class="bordered doc-wrap-blue panel">
                           <table>            
                            <tr>
-                            <td>@Html.LabelFor(m=>m.TargetCasing)</td>
-                            <td>@Html.TextBoxFor(m => m.TargetCasing, new { disabled="disabled" })</td>
+                            <td>@Html.LabelFor(m => m.TargetCasing)</td>
+                            <td>@Html.TextBoxFor(m => m.TargetCasing, new { disabled = "disabled" })</td>
                            </tr> 
                            <tr>
-                            <td>@Html.LabelFor(m=>m.TargetRegion)</td>
+                            <td>@Html.LabelFor(m => m.TargetRegion)</td>
                             <td>@Html.TextBoxFor(m => m.TargetRegion, new { disabled = "disabled" })</td>
                            </tr>               
                             <tr>
@@ -405,7 +420,7 @@
                                 <td>@Html.LabelFor(m => m.MovementCondition)</td>
                                 <td>@Html.TextBoxFor(m => m.MovementCondition, Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                             </tr>
-                            @if ((Model.IsPersonnelVisible || Model.IsPersonnelManagerEditable))
+                            @if ((dto.UserRole & (UserRole.PersonnelManager)) > 0)
                             {
                             <tr>
                                     <td>Условия оплаты:</td>
@@ -426,13 +441,13 @@
                             }
                             else
                             {
-                                @Html.HiddenFor(m=>m.TargetCasingType)
+                                @Html.HiddenFor(m => m.TargetCasingType)
                             }
                                 <tr>
-                                <td>@Html.LabelFor(m=>m.TargetSalaryCount)</td>
-                                <td>@Html.TextBoxFor(m=>m.TargetSalaryCount, Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
+                                <td>@Html.LabelFor(m => m.TargetSalaryCount)</td>
+                                <td>@Html.TextBoxFor(m => m.TargetSalaryCount, Model.IsManagerEditable || Model.IsPersonnelManagerEditable ? null : (object)new { disabled = "disabled" })</td>
                                 </tr>
-                                @if ((Model.IsPersonnelVisible || Model.IsPersonnelManagerEditable))
+                                @if ((dto.UserRole & (UserRole.PersonnelManager)) > 0)
                                 {
                                 <tr>
                                     <td>@Html.LabelFor(m => m.Grade)</td>
@@ -447,7 +462,7 @@
                                 }
                                 else
                                 {
-                                    @Html.HiddenFor(m=>m.Grade)
+                                    @Html.HiddenFor(m => m.Grade)
                                 }
                                 <tr>
                                     <td>@Html.LabelFor(m => m.HoursType)</td>
@@ -459,10 +474,10 @@
                                 </tr>
                                 <tr>
                                 <td>
-                                @Html.LabelFor(m=>m.PyrusLink) 
+                                @Html.LabelFor(m => m.PyrusLink) 
                                 </td>
                                 <td>
-                                @Html.TextBoxFor(m => m.PyrusLink, Model.IsManagerEditable ? null : (object)new { disabled="disabled"})
+                                @Html.TextBoxFor(m => m.PyrusLink, Model.IsManagerEditable ? null : (object)new { disabled = "disabled" })
                                 <a href="https://pyrus.com/" target="_blank">Для создания задачи перейдите по ссылке</a>
                                 </td>
                                 </tr>
@@ -475,14 +490,15 @@
                                         </tr>
                                       </thead>
                                       <tbody>
-                                      @for(int i=0;i<Model.AdditionsToEdit.Count;i++)
+                                      @for (int i = 0; i < Model.AdditionsToEdit.Count; i++)
                                       {
-                                          <tr @if(!Model.AdditionsToEdit[i].IsVisible){ <text>style="display:none;"</text>}>
+                                          <tr @if (!Model.AdditionsToEdit[i].IsVisible)
+                                              { <text>style="display:none;"</text>}>
                                             <td>@Model.AdditionsToEdit[i].Type.Name)
-                                                @Html.HiddenFor(m=>m.AdditionsToEdit[i].Type.Id)
-                                                @Html.HiddenFor(m=>m.AdditionsToEdit[i].Type.Name)
+                                                @Html.HiddenFor(m => m.AdditionsToEdit[i].Type.Id)
+                                                @Html.HiddenFor(m => m.AdditionsToEdit[i].Type.Name)
                                             </td>
-                                            <td>@Html.TextBoxFor(x => x.AdditionsToEdit[i].Value, Model.AdditionsToEdit[i].IsEditable && Model.AdditionsToEdit[i].IsValueEditable? null : (object)new { disabled = "disabled" })</td>
+                                            <td>@Html.TextBoxFor(x => x.AdditionsToEdit[i].Value, Model.AdditionsToEdit[i].IsEditable && Model.AdditionsToEdit[i].IsValueEditable ? null : (object)new { disabled = "disabled" })</td>
                                             <td>
                                                 @Html.DropDownListFor(x => x.AdditionsToEdit[i].Action, new SelectList(Model.AdditionActions, "Id", "Name", Model.AdditionsToEdit[i].Action), Model.AdditionsToEdit[i].IsEditable ? null : (object)new { disabled = "disabled" })
                                                 @if (!Model.AdditionsToEdit[i].IsEditable)
@@ -502,7 +518,7 @@
                           </div>
                           }
                           
-                          @if (Model.IsDocsVisible && Model.RequestType!=1)
+                          @if (Model.IsDocsVisible && Model.RequestType != 1)
                           {
                           <div id="tabs-4">
                           <fieldset class="bordered doc-wrap-blue panel">
@@ -641,19 +657,7 @@
                         @Html.DisplayFor(m => m.TargetManagerAccept)
                         @(Model.TargetManager != null ? Model.TargetManager.Name : "")
                     </td>
-                </tr>
-                <tr>
-                    <td>@Html.LabelFor(m => m.PersonnelManagerBankAccept)</td>
-                    <td>
-                        <input type="checkbox" disabled="disabled" @(Model.PersonnelManagerBankAccept.HasValue ? "checked" : "") />
-                        @if (Model.IsPersonnelManagerBankAcceptAvailable && !Model.IsRequestBad)
-                        {
-                            <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
-                        }
-                        @Html.DisplayFor(m => m.PersonnelManagerBankAccept)
-                        @(Model.PersonnelManagerBank)
-                    </td>
-                </tr>
+                </tr>                
                 <tr>
                     <td>@Html.LabelFor(m => m.ChiefAccept)</td>
                     <td>
@@ -676,6 +680,18 @@
                         }
                         @Html.DisplayFor(m => m.PersonnelManagerAccept)
                         @(Model.PersonnelManager)
+                    </td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(m => m.PersonnelManagerBankAccept)</td>
+                    <td>
+                        <input type="checkbox" disabled="disabled" @(Model.PersonnelManagerBankAccept.HasValue ? "checked" : "") />
+                        @if (Model.IsPersonnelManagerBankAcceptAvailable && !Model.IsRequestBad)
+                        {
+                            <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
+                        }
+                        @Html.DisplayFor(m => m.PersonnelManagerBankAccept)
+                        @(Model.PersonnelManagerBank)
                     </td>
                 </tr>
             </table>
@@ -770,7 +786,7 @@ label { font-size:1.1em; }
                 },
               async:false
             });  
-        @if((Model.MovementNoteDto == null || string.IsNullOrEmpty(Model.MovementNoteDto.FileName)) && Model.RequestType!=1)
+        @if ((Model.MovementNoteDto == null || string.IsNullOrEmpty(Model.MovementNoteDto.FileName)) && Model.RequestType != 1)
         {<text>
         clearControlErrors($("input[name=MovementNote]"));
         var imgVal = $('input[name=MovementNote]').val();
@@ -797,6 +813,16 @@ label { font-size:1.1em; }
         @if (Model.IsManagerEditable)
         {<text>
             clearControlErrors($("#PyrusLink"));
+            clearControlErrors($("#MovementTempTo"));
+            if($('[name="IsTempMoving"]:checked').val()=="True")
+            {             
+                if($("#MovementTempTo").val() == '')
+                {
+                    addControlError($("#MovementTempTo"),'Необходимо выбрать дату временного перевода');
+                    addControlError($("#JSError"),'Необходимо выбрать дату временного перевода');
+                    result = false;
+                }   
+            }
             if($("#PyrusLink").val() == '')
             {
                 addControlError($("#PyrusLink"),'Необходимо создать задачу в Pyrus');
@@ -823,6 +849,16 @@ label { font-size:1.1em; }
         @if (Model.IsPersonnelManagerEditable)
         {<text>  
         
+        clearControlErrors($("#MovementTempTo"));
+            if($('[name="IsTempMoving"]:checked').val()=="True")
+            {             
+                if($("#MovementTempTo").val() == '')
+                {
+                    addControlError($("#MovementTempTo"),'Необходимо выбрать дату временного перевода');
+                    addControlError($("#JSError"),'Необходимо выбрать дату временного перевода');
+                    result = false;
+                }   
+            }
             clearControlErrors($("#TargetSalaryCount"));
             if($("#TargetSalaryCount").val() >0 && $("#TargetSalaryCount").val()<100)
             {
@@ -904,7 +940,7 @@ label { font-size:1.1em; }
             showButtonPanel: true,
             changeMonth: true,
             changeYear: true,
-            yearRange: '@NextDay.Year:@(NextDay.Year+30)',
+            yearRange: '@NextDay.Year:@(NextDay.Year + 30)',
             minDate: new Date(@NextDay.Year, @NextDay.Month - 1, @NextDay.Day)
         });
         $("#MovementDate").change(function(){$('.M_MovementDate').text($(this).val());});
