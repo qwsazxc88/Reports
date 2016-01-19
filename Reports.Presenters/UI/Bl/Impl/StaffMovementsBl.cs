@@ -1689,13 +1689,14 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public StaffMovementsPrintModel GetPrintModel(int id, int SignerId=0)
         {
-            var entity = StaffMovementsDao.Load(id);
+            var factentity = StaffMovementsFactDao.Load(id);
+            var entity = factentity.StaffMovements;
             StaffMovementsPrintModel model = new StaffMovementsPrintModel();
             
             #region Персонажи
-            model.UserName = entity.User.Name;
+            model.UserName = factentity.User.Name;
             model.TargetPosition = entity.TargetPosition.Name;
-            model.SourcePosition = entity.SourcePosition.Name;
+            model.SourcePosition = entity.SourcePosition.Name;            
             model.Chief = entity.TargetChief!=null?entity.TargetChief.Name:"";
             model.ChiefDepartment = entity.TargetChief != null && entity.TargetChief.Department!=null? entity.TargetChief.Department.Name:"";
             model.ChiefPosition = entity.TargetChief != null && entity.TargetChief.Position!=null? entity.TargetChief.Position.Name:"";
