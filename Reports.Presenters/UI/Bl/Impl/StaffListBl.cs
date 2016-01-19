@@ -1718,7 +1718,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     if (!CreateCodeForDepartment(entity, dep, curUser, out error))
                     {
-                        error = "Произошла ошибка при формировании кода подразделения!";
+                        error = string.IsNullOrEmpty(error) || string.IsNullOrWhiteSpace(error) ? "Произошла ошибка при формировании кода подразделения!" : error;
                         DepartmentDao.RollbackTran();
                         return false;
                     }
