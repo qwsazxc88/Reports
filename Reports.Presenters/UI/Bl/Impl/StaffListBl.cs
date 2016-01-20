@@ -989,6 +989,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     StaffDepartmentRequestDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
+                    error = "Данные сохранены!";
                     return true;
                 }
                 catch (Exception ex)
@@ -1587,6 +1588,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     StaffDepartmentRequestDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
+                    if (model.IsDraft)
+                        error = "Данные сохранены!";
                 }
                 catch (Exception ex)
                 {
@@ -2794,6 +2797,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     StaffEstablishedPostRequestDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
+                    error = "Данные сохранены!";
                     return true;
                 }
                 catch (Exception ex)
@@ -3020,6 +3024,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     StaffEstablishedPostRequestDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
+                    if (model.IsDraft)
+                        error = "Данные сохранены!";
                 }
                 catch (Exception ex)
                 {
