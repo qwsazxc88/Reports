@@ -2973,17 +2973,26 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 if (Result == 0)
                 {
-                    //для первоначальных данных
-                    if (entity.RequestType.Id == 4)
-                    {
-                        entity.DateSendToApprove = DateTime.Now;
-                        //entity.BeginAccountDate = DateTime.Now;
-                        entity.DateAccept = DateTime.Now;
-                    }
 
                     if (!SaveStaffEstablishedPostReference(entity, curUser, out error))
                     {
                         return false;
+                    }
+
+                    //для первоначальных данных
+                    if (entity.RequestType.Id == 4)
+                    {
+                        entity.DateSendToApprove = DateTime.Now;
+                        entity.BeginAccountDate = entity.BeginAccountDate.HasValue ? entity.BeginAccountDate : DateTime.Now;
+                        entity.DateAccept = DateTime.Now;
+
+                        //если создается новая штатная единица и в ней нет сотрудников, то надо указать признак выгрузки в 1С, чтобы пустые заявки не попали в выгрузку кадровых перемещений.
+                        //или сокращаются пустые места в расстановке
+                        if (entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.User != null).Count() == 0
+                            && entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.User != null && x.IsDismissal && x.IsUsed).Count() == 0)
+                        {
+                            entity.SendTo1C = DateTime.Now;
+                        }
                     }
 
                     //если уже была заявка, то у нее убираем признак использования, это для изменения/удаления
