@@ -187,7 +187,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public int GetEstablishedPostUsed(int SEPId)
         {
-            return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.User.IsActive == true && !x.User.IsPregnant.HasValue && !x.IsDismissal && x.IsUsed).ToList().Count;
+            return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.User.IsActive == true && !x.User.IsPregnant.HasValue && x.IsDismissal && x.IsUsed).ToList().Count;
         }
         /// <summary>
         /// Достаем связи штатной единицы и сотрудников.
