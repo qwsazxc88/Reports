@@ -3362,6 +3362,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.IsUsed = false;
                 entity.DeleteDate = DateTime.Now;
+
+                //если отклоняется заявка на сокращение, то в расстановке убираем все резервы и отметки
+                if (entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.IsUsed && x.IsDismissal).Count() != 0)
+                {
+                    foreach(StaffEstablishedPostUserLinks ul in entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.IsUsed && x.IsDismissal))
+                    {
+                        ul.IsDismissal = false;
+                        ul.ReserveType = 0;
+                        ul.DocId = 0;
+                        ul.Editor = UserDao.Get(AuthenticationService.CurrentUser.Id);
+                        ul.EditDate = DateTime.Now;
+                    }
+                }
+                                
+
                 error = "Заявка отклонена!";
 
                 if (model.Id != 0)
