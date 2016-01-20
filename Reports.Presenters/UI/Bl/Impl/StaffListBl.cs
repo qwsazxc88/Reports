@@ -3607,9 +3607,68 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region Заявки на создание вакансий при длительном отсутствии сотрудников.
+        /// <summary>
+        /// Создание заявки на вакансию при длительном отсутствии сотрудника. 
+        /// </summary>
+        /// <param name="model">обрабатываемая модель.</param>
+        /// <param name="error">Сообщение</param>
+        /// <returns></returns>
         public bool CreateTemporaryReleaseVacancyRequest(StaffListArrangementModel model, out string error)
         {
             error = string.Empty;
+
+            if(!ValidateModel(model, out error))
+                return false;
+
+            return true;
+        }
+        /// <summary>
+        /// Проверка на заполнение полей формы.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="error">Сообщение</param>
+        /// <returns></returns>
+        protected bool ValidateModel(StaffListArrangementModel model, out string error)
+        {
+            error = string.Empty;
+            DateTime? MaxEndDate = null;
+            //нужно определить дату конца периода максимально возможную
+            //определяем основного сотрудника для данного места в штатной расстановке
+            StaffEstablishedPostUserLinks ul = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId);
+            if (ul == null)
+            {
+                error = "ОШИБКА! Неопределено место в штатной расстановке! Обратитесь к разработчикам!";
+                return false;
+            }
+
+            if (!ul.IsUsed)
+            {
+                error = "Данное место в штатной расстановке не является действующим.";
+                return false;
+            }
+
+
+            //смотрим по основному сотруднику в отпуска по уходу за ребенком, если есть, то находим максимальный конец периода, так как может быть несколько заявок
+            if (ul.User.ChildVacation.Where(x => x.SendTo1C.HasValue).Count() != 0)
+            {
+                MaxEndDate = ul.User.ChildVacation.Where(x => x.SendTo1C.HasValue).Max(x => x.EndDate);
+            }
+            //смотрим в временные перемещения, если есть берем конец периода
+            //Найденную дату проверяем актуальность относително текущего момента времени и введенного конца периода
+            
+            //если длительное отсутствие, конец периода не обязателен
+            
+            if (!model.DateBegin.HasValue || !model.DateEnd.HasValue)
+            {
+                error = "Укажите начало и конец периода";
+                return false;
+            }
+
+            if (ul.User == null)
+            {
+                error = "НАПОМИНАНИЕ! Данное место в штатной расстановке вакантно! Вы создаете временную вакансию!";
+            }
+
             return true;
         }
         #endregion
