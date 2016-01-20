@@ -2903,12 +2903,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (model.Personnels.Where(x => x.Id == ul.Id && x.IsDismissal != ul.IsDismissal).Count() != 0)
                     {
                         StaffUserLinkDto item = model.Personnels.Where(x => x.Id == ul.Id && x.IsDismissal != ul.IsDismissal).FirstOrDefault();
-                        //ul.IsDismissal = model.Personnels.Where(x => x.Id == ul.Id).Single().IsDismissal;
                         ul.IsDismissal = item.IsDismissal;
                         ul.DateDistribNote = item.DateDistribNote;
                         ul.DateReceivNote = item.DateReceivNote;
-                        ul.ReserveType = (int)StaffReserveTypeEnum.Dismissal;
-                        ul.DocId = entity.Id;
+                        ul.ReserveType = item.IsDismissal ? (int)StaffReserveTypeEnum.Dismissal : 0;
+                        ul.DocId = item.IsDismissal ? entity.Id : 0;
                         ul.Editor = curUser;
                         ul.EditDate = DateTime.Now;
                     }
@@ -3083,9 +3082,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //sep.Quantity = entity.Quantity;
                     sep.Salary = entity.Salary;
                 }
-                else if (entity.RequestType.Id == 3)
+                else if (entity.RequestType.Id == 3 && entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => !x.IsDismissal).Count() == 0)
                 {
-                    sep.IsUsed = false; //делаем неактивной текущую запись в справочнике
+                    sep.IsUsed = false; //делаем неактивной текущую запись в справочнике, если больше нет в расстановке несокращенных записей
                 }
                 sep.BeginAccountDate = entity.BeginAccountDate;
                 sep.Editor = curUser;
