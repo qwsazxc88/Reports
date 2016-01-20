@@ -379,10 +379,13 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager)]
         public ActionResult CreateTemporaryReleaseVacancyRequest(StaffListArrangementModel model)
         {
+            string error = string.Empty;
+            bool result = true;
             var jsonSerializer = new JavaScriptSerializer();
             model = StaffListBl.GetDepartmentStructureWithStaffArrangement(model.DepId, false);
             string jsonString = jsonSerializer.Serialize(model);
-            return Content(jsonString);
+            //return Content(jsonString);
+            return Json(new { ok = result, msg = error, model.EstablishedPosts });
         }
         #endregion
 
