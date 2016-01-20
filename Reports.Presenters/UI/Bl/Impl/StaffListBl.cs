@@ -3606,6 +3606,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
 
+        #region Заявки на создание вакансий при длительном отсутствии сотрудников.
+        public bool CreateTemporaryReleaseVacancyRequest(StaffListArrangementModel model, out string error)
+        {
+            error = string.Empty;
+            return true;
+        }
+        #endregion
+
         #region Справочник ПО.
         /// <summary>
         /// Загрузка модели справочника ПО.
