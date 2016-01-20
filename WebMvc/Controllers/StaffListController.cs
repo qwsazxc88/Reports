@@ -370,6 +370,22 @@ namespace WebMvc.Controllers
         }
         #endregion
 
+        #region Заявки на создание вакансий при длительном отсутствии сотрудников.
+        /// <summary>
+        /// Штатное расписание, подгружаем уровень подразделений с должностями и сотрудниками.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager)]
+        public ActionResult CreateTemporaryReleaseVacancyRequest(StaffListArrangementModel model)
+        {
+            var jsonSerializer = new JavaScriptSerializer();
+            model = StaffListBl.GetDepartmentStructureWithStaffArrangement(model.DepId, false);
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
+        #endregion
+
         #region Штатная расстановка.
         /// <summary>
         /// Штатное расстановка, первичная загрузка страницы.
@@ -394,19 +410,6 @@ namespace WebMvc.Controllers
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager)]
         public ActionResult StaffListArrangement(string DepId)
-        {
-            var jsonSerializer = new JavaScriptSerializer();
-            StaffListArrangementModel model = StaffListBl.GetDepartmentStructureWithStaffArrangement(DepId, false);
-            string jsonString = jsonSerializer.Serialize(model);
-            return Content(jsonString);
-        }
-        /// <summary>
-        /// Штатное расписание, подгружаем уровень подразделений с должностями и сотрудниками.
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager)]
-        public ActionResult CreateTemporaryReleaseVacancyRequest(string DepId)
         {
             var jsonSerializer = new JavaScriptSerializer();
             StaffListArrangementModel model = StaffListBl.GetDepartmentStructureWithStaffArrangement(DepId, false);
