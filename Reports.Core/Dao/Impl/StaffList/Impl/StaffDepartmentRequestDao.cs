@@ -20,6 +20,17 @@ namespace Reports.Core.Dao.Impl
             : base(sessionManager)
         {
         }
+
+        #region Dependencies
+        protected IDepartmentDao departmentDao;
+        public IDepartmentDao DepartmentDao
+        {
+            get { return Validate.Dependency(departmentDao); }
+            set { departmentDao = value; }
+        }
+
+        #endregion
+
         /// <summary>
         /// Список заявок для подразделений.
         /// </summary>
@@ -33,8 +44,9 @@ namespace Reports.Core.Dao.Impl
         /// <param name="StatusId">Id статуса заявки.</param>
         /// <param name="SortBy">Номер колонки для сортировки</param>
         /// <param name="SortDescending">Признак направления сортировки.</param>
+        /// <param name="RequestTypeId">Id вида заявки</param>
         /// <returns></returns>
-        public IList<DepartmentRequestListDto> GetDepartmentRequestList(User curUser, UserRole role, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending)
+        public IList<DepartmentRequestListDto> GetDepartmentRequestList(User curUser, UserRole role, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending, int RequestTypeId)
         {
             string SqlQuery = @"SELECT A.Id, 
                                        A.DateRequest, 
@@ -60,12 +72,14 @@ namespace Reports.Core.Dao.Impl
                                        D.Id as PersonId, 
                                        D.Name as Surname, 
                                        E.Name as PositionName,
-                                       case when A.DateSendToApprove is null and A.BeginAccountDate is null then 'Черновик'
-						                    when A.DateSendToApprove is not null and A.BeginAccountDate is null then 'На согласовании'
-						                    when A.BeginAccountDate is not null then 'Утверждено' end as Status,
-			                           case when A.DateSendToApprove is null and A.BeginAccountDate is null then 1
-						                    when A.DateSendToApprove is not null and A.BeginAccountDate is null then 2
-						                    when A.BeginAccountDate is not null then 3 end as StatusId
+                                       case when A.DeleteDate is not null then 'Отклонено'
+                                            when A.DateSendToApprove is null then 'Черновик'
+						                    when A.DateSendToApprove is not null and A.DateState is null and A.DeleteDate is null then 'На согласовании'
+						                    when A.DateState is not null and A.DeleteDate is null then 'Утверждено' end as Status,
+			                           case when A.DeleteDate is not null then 4
+                                            when A.DateSendToApprove is null then 1
+						                    when A.DateSendToApprove is not null and A.DateState is null and A.DeleteDate is null then 2
+						                    when A.DateState is not null and A.DeleteDate is null then 3 end as StatusId
                                 FROM StaffDepartmentRequest as A
                                 INNER JOIN StaffDepartmentRequestTypes as B ON B.Id = A.RequestTypeId
                                 LEFT JOIN Department as C ON C.Id = A.ParentId
@@ -81,19 +95,13 @@ namespace Reports.Core.Dao.Impl
             
 
             SqlQuery = string.Format(@"SELECT * FROM ({0}) as A", SqlQuery);
+            SqlQuery += @" INNER JOIN Department as B ON B.Id = isnull(A.DepartmentId, A.ParentId)";
 
-            if (role == UserRole.Manager)
-            {
-                SqlQuery += @"
-                                 INNER JOIN (SELECT C.*
-                                             FROM Users as A
-                                             INNER JOIN Department as B ON B.Id = A.DepartmentId
-                                             INNER JOIN Department as C ON C.Path like B.Path + N'%' --and C.ItemLevel <> B.ItemLevel
-						                     WHERE A.Id = :userId) as F ON F.Id = isnull(A.DepartmentId, A.ParentId)";
-            }
 
-            string sqlWhere = GetWhereForUserRole(curUser, role);
-            sqlWhere = GetWhereForParameters(DepartmentId, Id, Surname, DateBegin, DateEnd, StatusId, ref sqlWhere);
+            SqlQuery += GetWhereForUserRole(curUser, role);
+
+            string sqlWhere = string.Empty;
+            sqlWhere = GetWhereForParameters(DepartmentId, Id, Surname, DateBegin, DateEnd, StatusId, ref sqlWhere, RequestTypeId);
             sqlWhere = (string.IsNullOrEmpty(sqlWhere) ? "" : " WHERE " + sqlWhere);
             SqlQuery += sqlWhere + GetOrderByForSqlQuery(SortBy, SortDescending);
 
@@ -125,6 +133,7 @@ namespace Reports.Core.Dao.Impl
             if (SqlQuery.Contains(":DateBegin")) query.SetDateTime("DateBegin", DateBegin.Value);
             if (SqlQuery.Contains(":DateEnd")) query.SetDateTime("DateEnd", DateEnd.Value.AddDays(1));
             if (SqlQuery.Contains(":StatusId")) query.SetInt32("StatusId", StatusId);
+            if (SqlQuery.Contains(":RequestTypeId")) query.SetInt32("RequestTypeId", RequestTypeId);
 
             return query.SetResultTransformer(Transformers.AliasToBean<DepartmentRequestListDto>()).List<DepartmentRequestListDto>();
         }
@@ -139,16 +148,24 @@ namespace Reports.Core.Dao.Impl
             string sqlWhere = string.Empty;
             switch (role)
             {
-//                case UserRole.Manager:
-//                    sqlWhere = @"
-//                                 INNER JOIN (SELECT C.*
-//                                             FROM Users as A
-//                                             INNER JOIN Department as B ON B.Id = A.DepartmentId
-//                                             INNER JOIN Department as C ON C.Path like B.Path + N'%' --and C.ItemLevel <> B.ItemLevel
-//						                     WHERE A.Id = :userId) as F ON F.Id = isnull(A.DepartmentId, A.ParentId)";
-//                    break;
+                case UserRole.Manager://автоматические права + ручные привязки
+                    sqlWhere = @"
+                                 INNER JOIN (SELECT distinct * 
+                                 FROM (SELECT C.*
+                                        FROM Users as A
+                                        INNER JOIN Department as B ON B.Id = A.DepartmentId
+                                        INNER JOIN Department as C ON C.Path like B.Path + N'%' --and C.ItemLevel <> B.ItemLevel
+						                WHERE A.Id = :userId
+                                        UNION ALL
+										SELECT C.*
+										FROM ManualRoleRecord as A
+                                        INNER JOIN Department as B ON B.Id = A.TargetDepartmentId
+                                        INNER JOIN Department as C ON C.Path like B.Path + N'%' --and C.ItemLevel <> B.ItemLevel
+						                WHERE A.UserId = :userId) as A ) as F ON F.Id = isnull(A.DepartmentId, A.ParentId) and isnull(F.BFGId, 0) = isnull(B.BFGId, 0) ";
+                    break;
                 case UserRole.Inspector:
-                    sqlWhere = "(A.BFGId in (2, 6) or A.BFGId is null)";
+                    //кураторам показываем фронты и бэкфронты
+                    sqlWhere = @" INNER JOIN Department as F ON F.Id = isnull(A.DepartmentId, A.ParentId) and isnull(F.BFGId, 2) in (2, 6)";
                     break;
             }
             return sqlWhere;
@@ -162,11 +179,16 @@ namespace Reports.Core.Dao.Impl
         /// <param name="DateBegin">Начало периода</param>
         /// <param name="DateEnd">Конец периода</param>
         /// <returns></returns>
-        protected string GetWhereForParameters(int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, ref string sqlWhere)
+        protected string GetWhereForParameters(int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, ref string sqlWhere, int RequestTypeId)
         {
             //string SqlWhere = string.Empty;
             if (DepartmentId != 0)
-                sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "A.ParentId = :DepartmentId";
+            {
+                
+                Department department = DepartmentDao.Load(DepartmentId);
+                sqlWhere += string.Format(@" B.Path  like '{0}' and B.ItemLevel = {1}", department.Path + "%", 7);
+                //sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "A.ParentId = :DepartmentId";
+            }
             
             if (Id != 0)
                 sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "A.Id = :Id";
@@ -189,6 +211,9 @@ namespace Reports.Core.Dao.Impl
             if (StatusId != 0)
                 sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "StatusId = :StatusId";
 
+            if (RequestTypeId != 0)
+                sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "A.RequestTypeId = :RequestTypeId";
+            
             return sqlWhere;
         }
         /// <summary>

@@ -13,6 +13,7 @@
                 <tr>
                     <th colspan="4">Финград</th>
                     <th rowspan="2">Название управления в СКД</th>
+                    <th rowspan="2">Руководитель</th>
                     <th rowspan="2" colspan="2"><button type="button" title="Создать новую запись" onclick="AddEditAdministrationRow(-1);">Создать</button></th>
                     @*<th rowspan="2" class="tdBtn"></th>*@
                 </tr>    
@@ -23,7 +24,7 @@
                     <th>Филиал</th>
                 </tr>
                 <tr>
-                    <td colspan="7">
+                    <td colspan="8">
                         <div id="AFilterDiv">
                             <h3>Фильтры:</h3>
                             <div>
@@ -65,6 +66,9 @@
                         <td>
                             @Html.DisplayFor(m => m.Administrations[i - 1].DepName)
                             @Html.HiddenFor(m => m.Administrations[i - 1].aDepartmentId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => m.Administrations[i - 1].DepManager)
                         </td>
                         <td class="tdBtn">
                             <a class="CallModal" onclick="AddEditAdministrationRow(@i-1);" href="#" >Изменить</a>

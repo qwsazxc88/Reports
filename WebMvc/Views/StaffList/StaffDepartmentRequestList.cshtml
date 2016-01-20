@@ -39,6 +39,14 @@
                 </td>
             </tr>
             <tr>
+                <td style="width:220px">
+                    @Html.LabelFor(m => m.RequestTypeId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.RequestTypeId, new SelectList(Model.RequestTypes, "Id", "Name")) 
+                </td>
+            </tr>
+            <tr>
                 <td>@Html.LabelFor(m => m.Id)</td>
                 <td>
                     @Html.TextBoxFor(m => m.Id, new { style = "width:75px;" })
@@ -138,6 +146,8 @@
         setActiveMenuItem("moDepRequest");
         $(document).tooltip({ track: true });
         $(":button").button();
+
+        $(":text").bind("keydown", function(e){if (e.keyCode == 13) $("#StaffDepartmentRequestListForm").submit();});
 
         ShowFlash(true);
         ShowFlash(false);

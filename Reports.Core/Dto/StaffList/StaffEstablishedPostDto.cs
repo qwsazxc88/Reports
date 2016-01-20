@@ -40,5 +40,26 @@ namespace Reports.Core.Dto
         public decimal? North { get; set; }
         public decimal? Qualification { get; set; }
         public decimal? TotalSalary { get; set; }
+        public DateTime? DateDistribNote { get; set; }
+        public DateTime? DateReceivNote { get; set; }
+        public bool IsTemporary { get; set; }
+        public DateTime? DateTempBegin { get; set; }
+        public DateTime? DateTempEnd { get; set; }
+        public string BasicUser { get; set; }   //ФИО постоянного сотрудника
+    }
+
+    public class StaffUserLinkDto
+    {
+        public int Id { get; set; }
+        public int SEPId { get; set; }
+        public int UserId { get; set; }
+        public string Surname { get; set; }
+        public bool? IsPregnant { get; set; }
+        public bool IsUsed { get; set; }
+        public int ReserveType { get; set; }
+        public int DocId { get; set; }
+        public bool IsDismissal { get; set; }
+        public DateTime? DateDistribNote { get; set; }
+        public DateTime? DateReceivNote { get; set; }
     }
 }

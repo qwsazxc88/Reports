@@ -4,7 +4,7 @@
     ViewBag.Title = "Штатные расписание";
 }
 
-
+<a href='@Url.Content("~\\Templates\\StaffListInstruction.docx")'><b style="color:Red">ИНСТРУКЦИЯ</b></a><br />
 @using (Html.BeginForm("StaffListGetNodes", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffListForm" }))
 {
     @Html.HiddenFor(m => m.DepId)
@@ -414,7 +414,7 @@
     function GetDepartments(DepCode)
     {
         var actionUrl="@Url.Action("StaffList", "StaffList")";
-        actionUrl += "?DepId=" + DepCode + "&IsParentDepOnly=true";
+        actionUrl += "?DepId=" + DepCode + "&IsParentDepOnly=true&IsBegin=false";
         location.href = actionUrl;
     }
 

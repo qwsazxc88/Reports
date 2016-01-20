@@ -51,13 +51,29 @@ namespace Reports.Core.Dao.Impl
         /// Список сотрудников с должностями к подразделению.
         /// </summary>
         /// <param name="DepartmentId">Id подразделения</param>
+        /// <param name="SalaryEnabel">Признак по которому показываем оклад и надбавки</param>
         /// <returns></returns>
         public IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId)
         {
-            string sqlQuery = (@"SELECT Id, SEPId, PositionId, PositionName, DepartmentId, Quantity, Salary, Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, ReserveType, Reserve, DocId
+            string sqlQuery = (@"SELECT Id, SEPId, PositionId, PositionName, DepartmentId, Quantity, Salary
+                                        ,Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, ReserveType, Reserve, DocId
                                               ,IsReserve, IsPregnant, IsVacation, IsSTD, IsDismiss, IsDismissal
-                                              ,SalaryPersonnel, Regional, Personnel, Territory, Front, Drive, North, Qualification, TotalSalary
-                                       FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId)");
+                                              ,SalaryPersonnel
+                                              ,Regional
+                                              ,Personnel
+                                              ,Territory
+                                              ,Front
+                                              ,Drive
+                                              ,North
+                                              ,Qualification
+                                              ,TotalSalary
+                                              ,DateDistribNote
+                                              ,DateReceivNote
+                                              ,BasicUser
+                                       FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId, 0)");
+
+            
+
             return Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("SEPId", NHibernateUtil.Int32)
@@ -91,7 +107,76 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("North", NHibernateUtil.Decimal)
                 .AddScalar("Qualification", NHibernateUtil.Decimal)
                 .AddScalar("TotalSalary", NHibernateUtil.Decimal)
+                .AddScalar("DateDistribNote", NHibernateUtil.DateTime)
+                .AddScalar("DateReceivNote", NHibernateUtil.DateTime)
+                .AddScalar("BasicUser", NHibernateUtil.String)
                 .SetInt32("DepartmentId", DepartmentId)
+                .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
+                List<StaffEstablishedPostDto>();
+        }
+        /// <summary>
+        /// Список сотрудников с должностями к подразделению с возможностью отключения показа окладов и надбавок.
+        /// </summary>
+        /// <param name="DepartmentId">Id подразделения</param>
+        /// <param name="SalaryEnabel">Признак по которому показываем оклад и надбавки</param>
+        /// <returns></returns>
+        public IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId, int PersonnelId)
+        {
+            string sqlQuery = (@"SELECT Id, SEPId, PositionId, PositionName, DepartmentId, Quantity, Salary
+                                        ,Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, ReserveType, Reserve, DocId
+                                              ,IsReserve, IsPregnant, IsVacation, IsSTD, IsDismiss, IsDismissal
+                                              ,SalaryPersonnel
+                                              ,Regional
+                                              ,Personnel
+                                              ,Territory
+                                              ,Front
+                                              ,Drive
+                                              ,North
+                                              ,Qualification
+                                              ,TotalSalary
+                                              ,DateDistribNote
+                                              ,DateReceivNote
+                                              ,BasicUser
+                                       FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId, :PersonnelId)");
+
+            return Session.CreateSQLQuery(sqlQuery)
+                .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("SEPId", NHibernateUtil.Int32)
+                .AddScalar("PositionId", NHibernateUtil.Int32)
+                .AddScalar("PositionName", NHibernateUtil.String)
+                .AddScalar("DepartmentId", NHibernateUtil.Int32)
+                .AddScalar("Quantity", NHibernateUtil.Int32)
+                .AddScalar("Salary", NHibernateUtil.Decimal)
+                .AddScalar("Path", NHibernateUtil.String)
+                .AddScalar("RequestId", NHibernateUtil.Int32)
+                .AddScalar("UserId", NHibernateUtil.Int32)
+                .AddScalar("Surname", NHibernateUtil.String)
+                .AddScalar("Rate", NHibernateUtil.Decimal)
+                .AddScalar("ReplacedId", NHibernateUtil.Int32)
+                .AddScalar("ReplacedName", NHibernateUtil.String)
+                .AddScalar("ReserveType", NHibernateUtil.Int32)
+                .AddScalar("Reserve", NHibernateUtil.String)
+                .AddScalar("DocId", NHibernateUtil.Int32)
+                .AddScalar("IsReserve", NHibernateUtil.Boolean)
+                .AddScalar("IsPregnant", NHibernateUtil.Boolean)
+                .AddScalar("IsVacation", NHibernateUtil.Boolean)
+                .AddScalar("IsSTD", NHibernateUtil.Boolean)
+                .AddScalar("IsDismiss", NHibernateUtil.Boolean)
+                .AddScalar("IsDismissal", NHibernateUtil.Boolean)
+                .AddScalar("SalaryPersonnel", NHibernateUtil.Decimal)
+                .AddScalar("Regional", NHibernateUtil.Decimal)
+                .AddScalar("Personnel", NHibernateUtil.Decimal)
+                .AddScalar("Territory", NHibernateUtil.Decimal)
+                .AddScalar("Front", NHibernateUtil.Decimal)
+                .AddScalar("Drive", NHibernateUtil.Decimal)
+                .AddScalar("North", NHibernateUtil.Decimal)
+                .AddScalar("Qualification", NHibernateUtil.Decimal)
+                .AddScalar("TotalSalary", NHibernateUtil.Decimal)
+                .AddScalar("DateDistribNote", NHibernateUtil.DateTime)
+                .AddScalar("DateReceivNote", NHibernateUtil.DateTime)
+                .AddScalar("BasicUser", NHibernateUtil.String)
+                .SetInt32("DepartmentId", DepartmentId)
+                .SetInt32("PersonnelId", PersonnelId)
                 .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
                 List<StaffEstablishedPostDto>();
         }
@@ -102,7 +187,7 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public int GetEstablishedPostUsed(int SEPId)
         {
-            return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.User.IsActive == true && !x.User.IsPregnant.HasValue).ToList().Count;
+            return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.User.IsActive == true && !x.User.IsPregnant.HasValue && x.IsDismissal && x.IsUsed).ToList().Count;
         }
         /// <summary>
         /// Достаем связи штатной единицы и сотрудников.

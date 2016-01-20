@@ -15,8 +15,9 @@ namespace Reports.Presenters.UI.Bl
         /// Загружаем структуру по заданному коду подразделения и штатные единицы
         /// </summary>
         /// <param name="DepId">Код родительского подразделения</param>
+        /// <param name="IsBegin">Флажок показывающий, что это первоначальная загрузка.</param>
         /// <returns></returns>
-        StaffListModel GetDepartmentStructureWithStaffPost(string DepId);
+        StaffListModel GetDepartmentStructureWithStaffPost(string DepId, bool IsBegin);
 
         #region Заявки для подразделений
         /// <summary>
@@ -57,6 +58,13 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="error">Сообщение</param>
         /// <returns></returns>
         bool SaveProgramCodes(StaffDepartmentRequestModel model, out string error);
+        /// <summary>
+        /// Процедура отклонения существующей заявки для подразделения.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        bool DeleteDepartmentRequest(StaffDepartmentRequestModel model, out string error);
         #endregion
 
         #region Заявки для штатных единиц
@@ -91,6 +99,13 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="error">Сообщенио об ошибке.</param>
         /// <returns></returns>
         bool SaveEditEstablishedPostRequest(StaffEstablishedPostRequestModel model, out string error);
+        /// <summary>
+        /// Процедура отклонения существующей заявки для штатной единицы.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        /// <param name="error">Сообщенио об ошибке.</param>
+        /// <returns></returns>
+        bool DeleteEstablishedPostRequest(StaffEstablishedPostRequestModel model, out string error);
         #endregion
 
         #region Справочник ПО.
@@ -399,11 +414,18 @@ namespace Reports.Presenters.UI.Bl
 
         #region Штатная расстановка.
         /// <summary>
+        /// Загрузка модели страницы (часть с заявкой для временной вакансии)
+        /// </summary>
+        /// <param name="model">Заполняемая модель.</param>
+        /// <returns></returns>
+        StaffListArrangementModel GetStaffListArrangementModel(StaffListArrangementModel model);
+        /// <summary>
         /// Загружаем структуру по заданному коду подразделения и штатную расстановку.
         /// </summary>
         /// <param name="DepId">Код родительского подразделения</param>
+        /// <param name="IsBegin">Флажок показывающий, что это первоначальная загрузка.</param>
         /// <returns></returns>
-        StaffListArrangementModel GetDepartmentStructureWithStaffArrangement(string DepId);
+        StaffListArrangementModel GetDepartmentStructureWithStaffArrangement(string DepId, bool IsBegin);
         /// <summary>
         /// Вызов формы для выбора типа заявки в штатном перемещении.
         /// </summary>
@@ -419,7 +441,7 @@ namespace Reports.Presenters.UI.Bl
         /// <param name="DepId">Id родительского подразделения</param>
         /// <param name="IsParentDepOnly">Признак достать только родительское подазделение.</param>
         /// <returns></returns>
-        IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId, bool IsParentDepOnly);
+        IList<StaffListDepartmentDto> GetDepartmentListByParent(string DepId, bool IsParentDepOnly, bool IsBegin);
         /// <summary>
         /// Загрузка справочников модели для заявок к подразделениям.
         /// </summary>

@@ -33,6 +33,14 @@ namespace Reports.Core.Domain
         /// </summary>
         public virtual bool IsDismissal { get; set; }
         /// <summary>
+        /// Дата выдачи уведомления о сокращении
+        /// </summary>
+        public virtual DateTime? DateDistribNote { get; set; }
+        /// <summary>
+        /// Дата получения уведомления о сокращении
+        /// </summary>
+        public virtual DateTime? DateReceivNote { get; set; }
+        /// <summary>
         /// Автор записи
         /// </summary>
         public virtual User Creator { get; set; }

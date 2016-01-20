@@ -7,6 +7,12 @@
 @using (Html.BeginForm("StaffListArrangement", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffListArrangementForm" }))
 {
     @Html.HiddenFor(m => m.DepId)
+    @Html.HiddenFor(m => m.UserLinkId)
+    @Html.HiddenFor(m => m.AbsencesTypeId)
+    @Html.HiddenFor(m => m.DateBegin)
+    @Html.HiddenFor(m => m.DateEnd)
+    @Html.HiddenFor(m => m.Note)
+   
     <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
         
         <table id="tbl" class="grid">
@@ -22,12 +28,10 @@
                     <th rowspan="3">Итого</th>
                     <th rowspan="3">ФИО<br />сотрудника</th>
                     <th rowspan="3">ОЖ</th>
+                    <th rowspan="3">Временный<br />перевод</th>
+                    <th rowspan="3">Длительное<br />отсутствие</th>
                     <th rowspan="3">Резерв<br />вакансии</th>
-                    @*
-                    <th rowspan="3">Название в<br />Финграде</th>
-                    <th rowspan="3">Комментарий</th>
-                    <th rowspan="3">Код в<br />Финграде</th>
-                    *@
+                    <th rowspan="3">Основной<br />сотрудник</th>
                 </tr>   
                 <tr>
                     <th>Должностная</th>
@@ -53,8 +57,10 @@
                         <span>
                             <a class="Acollapsible" accessKey="@item.Path" href="#" id="getnodes-@item.Code1C" onclick="GetNodes(@item.Code1C);"><span class="collapse collapsible">&nbsp;</span> @item.Name</a>
                         </span>
-                        <button type="button" class="btnDepExpand" title="Раскрыть ветку" onclick="GetNodes(@item.Code1C, true);" style="@if(item.ItemLevel == 7 || item.ItemLevel == 1){<text>display:none;</text>}"></button>
-                        <button type="button" class="btnDepNewWindow" title="Открыть ветку в новом окне" onclick="GetDepartments(@item.Code);" style="@if(item.ItemLevel == 7 || item.ItemLevel == 1){<text>display:none;</text>}"></button>
+                        <button type="button" class="btnDepExpand" title="Раскрыть ветку" onclick="GetNodes(@item.Code1C, true);" style="@if (item.ItemLevel == 7 || item.ItemLevel == 1)
+                                                                                                                                         {<text>display:none;</text>}"></button>
+                        <button type="button" class="btnDepNewWindow" title="Открыть ветку в новом окне" onclick="GetDepartments(@item.Code);" style="@if (item.ItemLevel == 7 || item.ItemLevel == 1)
+                                                                                                                                                      {<text>display:none;</text>}"></button>
                     </td>
                     <td></td>
                     <td>@item.SEPCount</td>
@@ -71,15 +77,16 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    @*<td>@item.DepFingradName</td>
-                    <td>@item.DepFingradNameComment</td>
-                    <td>@item.FinDepPointCode</td>*@
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
             }
             @{ i++; }
         </table>             
 
     </div>
+    
     <div id="DivIndicator" style="display:none;">
         <table>
             <tr>
@@ -88,7 +95,29 @@
             </tr>
         </table>
     </div>
+    
+    <div id="DivTemporaryVacation" style="display:none;">
+        <table>
+            <tr>
+                <td>@Html.LabelFor(m => m.TempAbsencesTypeId)</td>
+                <td>@Html.DropDownListFor(m => m.TempAbsencesTypeId, new SelectList(Model.AbsencesTypes, "Id", "Name"))</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.TempDateBegin)</td>
+                <td>@Html.TextBoxFor(m => m.TempDateBegin)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.TempDateEnd)</td>
+                <td>@Html.TextBoxFor(m => m.TempDateEnd)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.TempNote)</td>
+                <td>@Html.TextAreaFor(m => m.TempNote, new { style = "width:400px;" })</td>
+            </tr>
+        </table>
+    </div>
 }
+
 
 <script type="text/javascript">
     var DepTable = [];
@@ -100,6 +129,10 @@
             show: { /*effect: "blind",*/ duration: 1000 }});
 
         $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
+
+        $("#TempDateBegin").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
+        $("#TempDateEnd").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
+        $(".hasDatepicker").width("85px");
 
         ShowFlash(true);
         ShowFlash(false);
@@ -222,9 +255,9 @@
                                         "<td></td>" +
                                         "<td></td>" +
                                         "<td></td>" +
-//                                        "<td>" + (result.Departments[i].DepFingradName == null ? "" : result.Departments[i].DepFingradName) + "</td>" +
-//                                        "<td>" + (result.Departments[i].DepFingradNameComment == null ? "" : result.Departments[i].DepFingradNameComment) + "</td>" +
-//                                        "<td>" + (result.Departments[i].FinDepPointCode == null ? "" : result.Departments[i].FinDepPointCode) + "</td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
                                     "</tr>";
 
                         var ParentRowName = "#tr-" + (i == 0 ? Id : result.Departments[i - 1].Code1C);//определяем Id строки после которой нужно добавить новую строку
@@ -264,8 +297,8 @@
                                     "<td></td>" +
                                     "<td>" +
                                     "<span>" +
-                                        "<a class='Acollapsible' accessKey='' href='#' id='' onclick='' style='color:green;'>" +
-                                        "<span Id='span-tr'" + result.EstablishedPosts[i].Id + "' >&nbsp;</span> " + result.EstablishedPosts[i].PositionName + "</a>" +
+                                        "<a class='Acollapsible CallModal' accessKey='' href='#' id='' onclick='' style='color:green;'>" +  //onclick='CreateTemporaryVacation(" + Id + ", " + result.EstablishedPosts[i].Id + ", " + result.EstablishedPosts[i].SEPId + ");'
+                                        result.EstablishedPosts[i].PositionName + "</a>" +
                                     "</span>" +
                                     "</td>" + 
                                     "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
@@ -297,7 +330,10 @@
                                             tblStr += "<td style='color:Red;'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>"
                                         }
                                         tblStr += "<td>" + (result.EstablishedPosts[i].ReplacedName == null ? "" : result.EstablishedPosts[i].ReplacedName) + "</td>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
                                         "<td>" + (result.EstablishedPosts[i].Reserve == null ? "" : result.EstablishedPosts[i].Reserve) + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].BasicUser == null ? "" : result.EstablishedPosts[i].BasicUser) + "</td>" +
                                     "</tr>";
 
                         var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
@@ -370,7 +406,7 @@
     function GetDepartments(DepCode)
     {
         var actionUrl="@Url.Action("StaffListArrangement", "StaffList")";
-        actionUrl += "?DepId=" + DepCode + "&IsParentDepOnly=true";
+        actionUrl += "?DepId=" + DepCode + "&IsParentDepOnly=true&IsBegin=false";
         location.href = actionUrl;
     }
 
@@ -385,7 +421,7 @@
         var actionDetailDialogUrl = "@Url.Action("SelectMovementType", "StaffList")";
         actionDetailDialogUrl += "?UserId=" + UserId;
 
-        var title = "Выбор типа заявки";
+        var title = "Выбор типа заявки для штатного перемещения";
         
 
         $(newDiv).text('Подождите, идет загрузка данных ...');
@@ -422,13 +458,169 @@
 
         $(newDiv).dialog("open");
     }
-    /*
-    для выхода на создание заявки по кадровому перемещению
-    User.Id,
-RequestType
 
-action = Edit
-    */
+    //создание временной вакансии
+    function CreateTemporaryVacation(DepId, UserLinkId, SEPId){
+        //$("#DivTemporaryVacation").show();
+        $("#DivTemporaryVacation").dialog(
+        {
+            autoOpen: true,
+            modal: true,
+            title: "Создание временной вакансии",
+            draggable: false,
+            resizable: false,
+            width: "auto",
+            closeOnEscape: true,
+            close: function (event, ui) {
+                //$(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "Ок": function () {
+                    CreateTemporaryReleaseVacancyRequest(DepId, UserLinkId, SEPId);
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $("#DivTemporaryVacation").hide();
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+
+
+    //создаем временную вакансию и делаем замену строки расстановки на измененную
+    function CreateTemporaryReleaseVacancyRequest(DepId, UserLinkId, SEPId){
+        var actionUrl="@Url.Action("CreateTemporaryReleaseVacancyRequest", "StaffList")";
+        $("#DepId").val(DepId);
+        $("#UserLinkId").val(UserLinkId);
+        $("#DateBegin").val($("#TempDateBegin").val());
+        $("#DateEnd").val($("#TempDateEnd").val());
+        $("#AbsencesTypeId").val($("#TempAbsencesTypeId").val());
+        $("#Note").val($("#TempNote").val());
+        
+        var dataToSend = $("#StaffListArrangementForm").serialize();
+
+        ShowFlash(true);
+
+        jQuery.ajax({
+            url: actionUrl,
+            type: 'POST',
+            dataType: 'json',
+            data: dataToSend,
+            async: true,
+            success: function(result){
+                ReplacePostUserLinkRow(DepId, UserLinkId, SEPId);
+
+                ShowFlash(false);
+            },
+            error: function(e, str1){
+                if(str1 == "parsererror")
+                    alert("Доступ запрещен!.");
+                else
+                    alert("При загрузке данных произошла ошибка.");
+
+                ShowFlash(false);
+            }
+        });
+    }
+
+
+    function ReplacePostUserLinkRow(DepId, UserLinkId, SEPId){
+        var actionUrl="@Url.Action("StaffListArrangement", "StaffList")";
+        $("#DepId").val(DepId);
+        var dataToSend = $("#StaffListArrangementForm").serialize();
+        ShowFlash(true);
+
+        jQuery.ajax({
+            url: actionUrl,
+            type: 'POST',
+            dataType: 'json',
+            data: dataToSend,
+            async: true,
+            success: function(result){
+                // $liParent = $("#li-" + Id.toString());
+                var tblStr = "";
+                var OldRowId = "#tru-" + UserLinkId + "-" + SEPId;
+                  
+                if(result.EstablishedPosts != null)
+                {
+                    for (var i = 0; i < result.EstablishedPosts.length; i++)//штатные единицы
+                    {   
+                        if(result.EstablishedPosts[i].Id == UserLinkId){
+                            tblStr = "<tr id='tru-" + result.EstablishedPosts[i].Id + "-" + result.EstablishedPosts[i].SEPId + "' accessKey='" + result.EstablishedPosts[i].Path + "' class='IsVisible' ;'>" +
+                                        "<td></td>" +
+                                        "<td></td>" +
+                                        "<td>" +
+                                        "<span>" +
+                                            "<a class='Acollapsible CallModal' accessKey='' href='#' id='' onclick='CreateTemporaryVacation(" + DepId + ", " + result.EstablishedPosts[i].Id + ", " + result.EstablishedPosts[i].SEPId + ");' style='color:green;'>" +  //onclick='CreateTemporaryVacation();'
+                                            result.EstablishedPosts[i].PositionName + "</a>" +
+                                        "</span>" +
+                                        "</td>" + 
+                                        "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
+                                        "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].Rate != null ? result.EstablishedPosts[i].Rate : "") + "</td>" +
+                                        
+                                            "<td>" + (result.EstablishedPosts[i].Regional != null ? result.EstablishedPosts[i].Regional : "") + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].Personnel != null ? result.EstablishedPosts[i].Personnel : "") + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].Territory != null ? result.EstablishedPosts[i].Territory : "") + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].Front != null ? result.EstablishedPosts[i].Front : "") + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].Drive != null ? result.EstablishedPosts[i].Drive : "") + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].North != null ? result.EstablishedPosts[i].North : "") + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].Qualification != null ? result.EstablishedPosts[i].Qualification : "") + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].TotalSalary != null ? result.EstablishedPosts[i].TotalSalary : "") + "</td>" 
+                                            //красим увольняющихся
+                                            if(!result.EstablishedPosts[i].IsDismiss && !result.EstablishedPosts[i].IsDismissal)
+                                            {
+                                                if(result.EstablishedPosts[i].IsVacation || result.EstablishedPosts[i].IsReserve)
+                                                {
+                                                    tblStr += "<td>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>"
+                                                }
+                                                else
+                                                {
+                                                    tblStr += "<td><a class='CallModal' href='#' onclick='GetStaffMovementRequest(" + result.EstablishedPosts[i].UserId + ");'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</a></td>"
+                                                }
+                                            }
+                                            else
+                                            {
+                                                tblStr += "<td style='color:Red;'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>"
+                                            }
+                                            tblStr += "<td>" + (result.EstablishedPosts[i].ReplacedName == null ? "" : result.EstablishedPosts[i].ReplacedName) + "</td>" +
+                                            "<td></td>" +
+                                            "<td></td>" +
+                                            "<td>" + (result.EstablishedPosts[i].Reserve == null ? "" : result.EstablishedPosts[i].Reserve) + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].BasicUser == null ? "" : result.EstablishedPosts[i].BasicUser) + "</td>" +
+                                        "</tr>";
+                            
+                            //var ParentRowName = "#tr-" + Id;//определяем Id строки после которой нужно добавить новую строку
+                            //$(ParentRowName).after(tblStr);//вставляем новую строку
+                            $(OldRowId).replaceWith(tblStr);
+                            $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
+                        }
+                    }
+                }
+                    
+
+                $(":button").button();
+
+                $("#DivTemporaryVacation").hide();
+                $("#AbsencesTypeId").val(1);
+                $("#DateBegin").val("");
+                $("#DateEnd").val("");
+                $("#Note").val("");
+                $("#DivTemporaryVacation").dialog("close");
+                ShowFlash(false);
+            },
+            error: function(e, str1){
+                if(str1 == "parsererror")
+                    alert("Доступ запрещен!.");
+                else
+                    alert("При загрузке данных произошла ошибка.");
+
+                ShowFlash(false);
+            }
+        });
+    }
     
 </script>
 

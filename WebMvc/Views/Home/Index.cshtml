@@ -68,7 +68,14 @@
                 
                 @if(UserDto.IsStaffDepartmentAvailable(dto))
                 {
-                    <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
+                    if ((dto.UserRole & UserRole.PersonnelManager) > 0)
+                    {
+                        <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffListArrangement", "StaffList")</div>
+                    }
+                    else
+                    {
+                        <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
+                    }
                 }
 
                 @if ((dto.UserRole & UserRole.Accountant) > 0

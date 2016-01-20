@@ -2092,9 +2092,9 @@ namespace WebMvc.Controllers
                 if (model.Surname.Trim().Length == 0)
                     ModelState.AddModelError("Surname", "Заполните ФИО кандидата!");
             }
-            
-            
-            if(model.UserLinkId == 0)
+
+
+            if (!model.UserLinkId.HasValue || model.UserLinkId.Value == 0)
                 ModelState.AddModelError("UserLinkId", "Выберте штатную единицу!");
 
             if (model.DepartmentId == 0)
@@ -2121,8 +2121,19 @@ namespace WebMvc.Controllers
             if (!model.PlanRegistrationDate.HasValue)
                 ModelState.AddModelError("PlanRegistrationDate", "Укажите планируемую дату приема!");
 
-            if (string.IsNullOrEmpty(model.PyrusNumber) || string.IsNullOrWhiteSpace(model.PyrusNumber))
-                ModelState.AddModelError("PyrusNumber", "Укажите номер задачи в системе Pyrus!");
+            //if (string.IsNullOrEmpty(model.PyrusNumber) || string.IsNullOrWhiteSpace(model.PyrusNumber))
+            //    ModelState.AddModelError("PyrusNumber", "Укажите номер задачи в системе Pyrus!");
+            //else
+            //{
+            //    try
+            //    {
+            //        Convert.ToInt32(model.PyrusNumber);
+            //    }
+            //    catch
+            //    {
+            //        ModelState.AddModelError("PyrusNumber", "Номер задачи в системе Пайрус должен содержать только цифры!");
+            //    }
+            //}
 
             return ModelState.IsValid;
         }
@@ -2480,15 +2491,26 @@ namespace WebMvc.Controllers
             }
 
             //проверка на задачу в пайрусе
-            if (((model.PersonalAddition.HasValue && model.PersonalAddition.Value != 0)
-                || (model.PositionAddition.HasValue && model.PositionAddition.Value != 0)
+            if ((model.PersonalAddition.HasValue && model.PersonalAddition.Value != 0)
+                //|| (model.PositionAddition.HasValue && model.PositionAddition.Value != 0)
                 || (model.AreaAddition.HasValue && model.AreaAddition.Value != 0)
                 || (model.TravelRelatedAddition.HasValue && model.TravelRelatedAddition.Value != 0)
                 || (model.CompetenceAddition.HasValue && model.CompetenceAddition.Value != 0)
-                || (model.FrontOfficeExperienceAddition.HasValue && model.FrontOfficeExperienceAddition.Value != 0)) 
-                && (string.IsNullOrEmpty(model.PyrusNumber) || string.IsNullOrWhiteSpace(model.PyrusNumber)))
+                || (model.FrontOfficeExperienceAddition.HasValue && model.FrontOfficeExperienceAddition.Value != 0))
             {
-                ModelState.AddModelError("PyrusNumber", "Введите номер задачи в системе Pyrus!");
+                if(string.IsNullOrEmpty(model.PyrusNumber) || string.IsNullOrWhiteSpace(model.PyrusNumber))
+                    ModelState.AddModelError("PyrusNumber", "Введите номер задачи в системе Pyrus!");
+                else
+                {
+                    try
+                    {
+                        Convert.ToInt32(model.PyrusNumber);
+                    }
+                    catch
+                    {
+                        ModelState.AddModelError("PyrusNumber", "Номер задачи в системе Пайрус должен содержать только цифры!");
+                    }
+                }
             }
             //model.PyrusNumber;
             
