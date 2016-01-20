@@ -3657,14 +3657,37 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
 
+            if (!model.DateBegin.HasValue)
+            {
+                error = "Укажите начало периода!";
+                return false;
+            }
+
             //смотрим по основному сотруднику в отпуска по уходу за ребенком, если есть, то находим максимальный конец периода, так как может быть несколько заявок
             if (ul.User.ChildVacation.Where(x => x.SendTo1C.HasValue).Count() != 0)
             {
                 MaxEndDate = ul.User.ChildVacation.Where(x => x.SendTo1C.HasValue).Max(x => x.EndDate);
+                //Найденную дату проверяем актуальность относително текущего момента времени и введенного конца периода
+                if (MaxEndDate >= DateTime.Today && model.DateEnd > MaxEndDate)
+                {
+                    error = "Указанный конец периода не может быть больше конца периода отпуска по уходу за ребенком (" + MaxEndDate.Value.ToShortDateString() + ")!";
+                    return false;
+                }
             }
             //смотрим в временные перемещения, если есть берем конец периода
-            //Найденную дату проверяем актуальность относително текущего момента времени и введенного конца периода
-            
+            ////Найденную дату проверяем актуальность относително текущего момента времени и введенного конца периода
+            //if (MaxEndDate >= DateTime.Today && model.DateEnd > MaxEndDate)
+            //{
+            //    error = "";
+            //    return false;
+            //}
+
+            if (MaxEndDate.HasValue && !model.DateEnd.HasValue)
+            {
+                error = "Укажите конец периода!";
+                return false;
+            }
+
             //если длительное отсутствие, конец периода не обязателен
             
             if (!model.DateBegin.HasValue || !model.DateEnd.HasValue)
