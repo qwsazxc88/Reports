@@ -627,8 +627,8 @@
                     $("#tabs2").ajaxStop(function(){
                         UIHelpers.attachDatepickerToInputs($('#InternalPassportDateOfIssue, #RegistrationDate, #InternationalPassportDateOfIssue'), "-60:+0", true);
                         jQuery(function ($) {
-                            //$.mask.definitions['~'] = '[+-]';
-                            //$('#InternalPassportSeries').mask('** **');
+                            $.mask.definitions['~'] = '[+-]';
+                            $('#InternalPassportSeries').mask('** **');
                         });
 
                         $("#btnPassportDraft").click(function(){
