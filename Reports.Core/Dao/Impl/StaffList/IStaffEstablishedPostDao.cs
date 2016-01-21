@@ -36,6 +36,12 @@ namespace Reports.Core.Dao
         /// <returns></returns>
         int GetEstablishedPostUsed(int SEPId);
         /// <summary>
+        /// Проверяем наличие записей с сотрудниками и помеченными к сокращению.
+        /// </summary>
+        /// <param name="SEPId">Id штатной единицы.</param>
+        /// <returns></returns>
+        int GetEstablishedPostUsedForCheckToDismiss(int SEPId);
+        /// <summary>
         /// Достаем связи штатной единицы и сотрудников.
         /// </summary>
         /// <param name="SEPId">Id штатной единицы.</param>

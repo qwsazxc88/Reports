@@ -2859,7 +2859,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
 
-                    if (entity.RequestType.Id == 3 && StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0) != 0)
+                    if (entity.RequestType.Id == 3 && StaffEstablishedPostDao.GetEstablishedPostUsedForCheckToDismiss(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0) != 0)
                     {
                         error = "Нельзя сократить штатную единицу, так как она еще содержит работающих сотрудников!";
                         return false;
@@ -2973,17 +2973,26 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 if (Result == 0)
                 {
-                    //для первоначальных данных
-                    if (entity.RequestType.Id == 4)
-                    {
-                        entity.DateSendToApprove = DateTime.Now;
-                        //entity.BeginAccountDate = DateTime.Now;
-                        entity.DateAccept = DateTime.Now;
-                    }
 
                     if (!SaveStaffEstablishedPostReference(entity, curUser, out error))
                     {
                         return false;
+                    }
+
+                    //для первоначальных данных
+                    if (entity.RequestType.Id == 4)
+                    {
+                        entity.DateSendToApprove = DateTime.Now;
+                        entity.BeginAccountDate = entity.BeginAccountDate.HasValue ? entity.BeginAccountDate : DateTime.Now;
+                        entity.DateAccept = DateTime.Now;
+
+                        //если создается новая штатная единица и в ней нет сотрудников, то надо указать признак выгрузки в 1С, чтобы пустые заявки не попали в выгрузку кадровых перемещений.
+                        //или сокращаются пустые места в расстановке
+                        if (entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.User != null).Count() == 0
+                            && entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.User != null && x.IsDismissal && x.IsUsed).Count() == 0)
+                        {
+                            entity.SendTo1C = DateTime.Now;
+                        }
                     }
 
                     //если уже была заявка, то у нее убираем признак использования, это для изменения/удаления
@@ -3362,6 +3371,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.IsUsed = false;
                 entity.DeleteDate = DateTime.Now;
+
+                //если отклоняется заявка на сокращение, то в расстановке убираем все резервы и отметки
+                if (entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.IsUsed && x.IsDismissal).Count() != 0)
+                {
+                    foreach(StaffEstablishedPostUserLinks ul in entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.IsUsed && x.IsDismissal))
+                    {
+                        ul.IsDismissal = false;
+                        ul.ReserveType = 0;
+                        ul.DocId = 0;
+                        ul.Editor = UserDao.Get(AuthenticationService.CurrentUser.Id);
+                        ul.EditDate = DateTime.Now;
+                    }
+                }
+                                
+
                 error = "Заявка отклонена!";
 
                 if (model.Id != 0)
@@ -3588,6 +3612,96 @@ namespace Reports.Presenters.UI.Bl.Impl
                 .ToList()
                 .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - Член правления банка" });
 
+        }
+        #endregion
+
+        #region Заявки на создание вакансий при длительном отсутствии сотрудников.
+        /// <summary>
+        /// Создание заявки на вакансию при длительном отсутствии сотрудника. 
+        /// </summary>
+        /// <param name="model">обрабатываемая модель.</param>
+        /// <param name="error">Сообщение</param>
+        /// <returns></returns>
+        public bool CreateTemporaryReleaseVacancyRequest(StaffListArrangementModel model, out string error)
+        {
+            error = string.Empty;
+
+            if(!ValidateModel(model, out error))
+                return false;
+
+            return true;
+        }
+        /// <summary>
+        /// Проверка на заполнение полей формы.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="error">Сообщение</param>
+        /// <returns></returns>
+        protected bool ValidateModel(StaffListArrangementModel model, out string error)
+        {
+            error = string.Empty;
+            DateTime? MaxEndDate = null;
+            //нужно определить дату конца периода максимально возможную
+            //определяем основного сотрудника для данного места в штатной расстановке
+            StaffEstablishedPostUserLinks ul = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId);
+            if (ul == null)
+            {
+                error = "ОШИБКА! Неопределено место в штатной расстановке! Обратитесь к разработчикам!";
+                return false;
+            }
+
+            if (!ul.IsUsed)
+            {
+                error = "Данное место в штатной расстановке не является действующим.";
+                return false;
+            }
+
+
+            if (!model.DateBegin.HasValue)
+            {
+                error = "Укажите начало периода!";
+                return false;
+            }
+
+            //смотрим по основному сотруднику в отпуска по уходу за ребенком, если есть, то находим максимальный конец периода, так как может быть несколько заявок
+            if (ul.User.ChildVacation.Where(x => x.SendTo1C.HasValue).Count() != 0)
+            {
+                MaxEndDate = ul.User.ChildVacation.Where(x => x.SendTo1C.HasValue).Max(x => x.EndDate);
+                //Найденную дату проверяем актуальность относително текущего момента времени и введенного конца периода
+                if (MaxEndDate >= DateTime.Today && model.DateEnd > MaxEndDate)
+                {
+                    error = "Указанный конец периода не может быть больше конца периода отпуска по уходу за ребенком (" + MaxEndDate.Value.ToShortDateString() + ")!";
+                    return false;
+                }
+            }
+            //смотрим в временные перемещения, если есть берем конец периода
+            ////Найденную дату проверяем актуальность относително текущего момента времени и введенного конца периода
+            //if (MaxEndDate >= DateTime.Today && model.DateEnd > MaxEndDate)
+            //{
+            //    error = "";
+            //    return false;
+            //}
+
+            if (MaxEndDate.HasValue && !model.DateEnd.HasValue)
+            {
+                error = "Укажите конец периода!";
+                return false;
+            }
+
+            //если длительное отсутствие, конец периода не обязателен
+            
+            if (!model.DateBegin.HasValue || !model.DateEnd.HasValue)
+            {
+                error = "Укажите начало и конец периода";
+                return false;
+            }
+
+            if (ul.User == null)
+            {
+                error = "НАПОМИНАНИЕ! Данное место в штатной расстановке вакантно! Вы создаете временную вакансию!";
+            }
+
+            return true;
         }
         #endregion
 

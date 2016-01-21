@@ -7,6 +7,12 @@
 @using (Html.BeginForm("StaffListArrangement", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffListArrangementForm" }))
 {
     @Html.HiddenFor(m => m.DepId)
+    @Html.HiddenFor(m => m.UserLinkId)
+    @Html.HiddenFor(m => m.AbsencesTypeId)
+    @Html.HiddenFor(m => m.DateBegin)
+    @Html.HiddenFor(m => m.DateEnd)
+    @Html.HiddenFor(m => m.Note)
+   
     <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
         
         <table id="tbl" class="grid">
@@ -51,8 +57,10 @@
                         <span>
                             <a class="Acollapsible" accessKey="@item.Path" href="#" id="getnodes-@item.Code1C" onclick="GetNodes(@item.Code1C);"><span class="collapse collapsible">&nbsp;</span> @item.Name</a>
                         </span>
-                        <button type="button" class="btnDepExpand" title="Раскрыть ветку" onclick="GetNodes(@item.Code1C, true);" style="@if(item.ItemLevel == 7 || item.ItemLevel == 1){<text>display:none;</text>}"></button>
-                        <button type="button" class="btnDepNewWindow" title="Открыть ветку в новом окне" onclick="GetDepartments(@item.Code);" style="@if(item.ItemLevel == 7 || item.ItemLevel == 1){<text>display:none;</text>}"></button>
+                        <button type="button" class="btnDepExpand" title="Раскрыть ветку" onclick="GetNodes(@item.Code1C, true);" style="@if (item.ItemLevel == 7 || item.ItemLevel == 1)
+                                                                                                                                         {<text>display:none;</text>}"></button>
+                        <button type="button" class="btnDepNewWindow" title="Открыть ветку в новом окне" onclick="GetDepartments(@item.Code);" style="@if (item.ItemLevel == 7 || item.ItemLevel == 1)
+                                                                                                                                                      {<text>display:none;</text>}"></button>
                     </td>
                     <td></td>
                     <td>@item.SEPCount</td>
@@ -89,26 +97,28 @@
     </div>
     
     <div id="DivTemporaryVacation" style="display:none;">
+        <label id="lblMsg" style="color:Red;"></label>
         <table>
             <tr>
-                <td>@Html.LabelFor(m => m.AbsencesTypeId)</td>
-                <td>@Html.DropDownListFor(m => m.AbsencesTypeId, new SelectList(Model.AbsencesTypes, "Id", "Name"))</td>
+                <td>@Html.LabelFor(m => m.TempAbsencesTypeId)</td>
+                <td>@Html.DropDownListFor(m => m.TempAbsencesTypeId, new SelectList(Model.AbsencesTypes, "Id", "Name"))</td>
             </tr>
             <tr>
-                <td>@Html.LabelFor(m => m.DateBegin)</td>
-                <td>@Html.TextBoxFor(m => m.DateBegin)</td>
+                <td>@Html.LabelFor(m => m.TempDateBegin)</td>
+                <td>@Html.TextBoxFor(m => m.TempDateBegin)</td>
             </tr>
             <tr>
-                <td>@Html.LabelFor(m => m.DateEnd)</td>
-                <td>@Html.TextBoxFor(m => m.DateEnd)</td>
+                <td>@Html.LabelFor(m => m.TempDateEnd)</td>
+                <td>@Html.TextBoxFor(m => m.TempDateEnd)</td>
             </tr>
             <tr>
-                <td>@Html.LabelFor(m => m.Note)</td>
-                <td>@Html.TextAreaFor(m => m.Note, new { style = "width:400px;" })</td>
+                <td>@Html.LabelFor(m => m.TempNote)</td>
+                <td>@Html.TextAreaFor(m => m.TempNote, new { style = "width:400px;" })</td>
             </tr>
         </table>
     </div>
 }
+
 
 <script type="text/javascript">
     var DepTable = [];
@@ -121,8 +131,8 @@
 
         $(".CallModal").click(function(e){e.preventDefault(); return false;});//чтобы при вызове модального окна не скроллилась страница вверх
 
-        $("#DateBegin").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
-        $("#DateEnd").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
+        $("#TempDateBegin").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
+        $("#TempDateEnd").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
         $(".hasDatepicker").width("85px");
 
         ShowFlash(true);
@@ -453,6 +463,9 @@
     //создание временной вакансии
     function CreateTemporaryVacation(DepId, UserLinkId, SEPId){
         //$("#DivTemporaryVacation").show();
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
+        $("#lblMsg").text("");
         $("#DivTemporaryVacation").dialog(
         {
             autoOpen: true,
@@ -468,14 +481,8 @@
             buttons:
             {
                 "Ок": function () {
-                    $("#DivTemporaryVacation").hide();
-                    //window.location.reload();
-                    $("#AbsencesTypeId").val(1);
-                    $("#DateBegin").val("");
-                    $("#DateEnd").val("");
-                    $("#Note").val("");
-                    ReplacePostUserLinkRow(DepId, UserLinkId, SEPId);
-                    $(this).dialog("close");
+                    CreateTemporaryReleaseVacancyRequest(DepId, UserLinkId, SEPId);
+                    //$(this).dialog("close");
                 },
                 "Отмена": function () {
                     $("#DivTemporaryVacation").hide();
@@ -487,6 +494,52 @@
 
 
     //создаем временную вакансию и делаем замену строки расстановки на измененную
+    function CreateTemporaryReleaseVacancyRequest(DepId, UserLinkId, SEPId){
+        var actionUrl="@Url.Action("CreateTemporaryReleaseVacancyRequest", "StaffList")";
+        $("#DepId").val(DepId);
+        $("#UserLinkId").val(UserLinkId);
+        $("#DateBegin").val($("#TempDateBegin").val());
+        $("#DateEnd").val($("#TempDateEnd").val());
+        $("#AbsencesTypeId").val($("#TempAbsencesTypeId").val());
+        $("#Note").val($("#TempNote").val());
+        
+        var dataToSend = $("#StaffListArrangementForm").serialize();
+
+        ShowFlash(true);
+
+        jQuery.ajax({
+            url: actionUrl,
+            type: 'POST',
+            dataType: 'json',
+            data: dataToSend,
+            async: true,
+            success: function(result){
+                if(!result.ok)
+                {
+                    $("#lblMsg").text(result.msg);
+                }
+                else
+                {
+                    $("#lblMsg").text("");
+                    ReplacePostUserLinkRow(DepId, UserLinkId, SEPId);
+                }
+
+                ShowFlash(false);
+                $(".ui-dialog-titlebar").show();
+                $(".ui-dialog-titlebar-close").show();
+            },
+            error: function(e, str1){
+                if(str1 == "parsererror")
+                    alert("Доступ запрещен!.");
+                else
+                    alert("При загрузке данных произошла ошибка.");
+
+                ShowFlash(false);
+            }
+        });
+    }
+
+
     function ReplacePostUserLinkRow(DepId, UserLinkId, SEPId){
         var actionUrl="@Url.Action("StaffListArrangement", "StaffList")";
         $("#DepId").val(DepId);
@@ -514,7 +567,7 @@
                                         "<td></td>" +
                                         "<td>" +
                                         "<span>" +
-                                            "<a class='Acollapsible CallModal' accessKey='' href='#' id='' onclick='CreateTemporaryVacation(" + Id + ", " + result.EstablishedPosts[i].Id + ", " + result.EstablishedPosts[i].SEPId + ");' style='color:green;'>" +  //onclick='CreateTemporaryVacation();'
+                                            "<a class='Acollapsible CallModal' accessKey='' href='#' id='' onclick='CreateTemporaryVacation(" + DepId + ", " + result.EstablishedPosts[i].Id + ", " + result.EstablishedPosts[i].SEPId + ");' style='color:green;'>" +  //onclick='CreateTemporaryVacation();'
                                             result.EstablishedPosts[i].PositionName + "</a>" +
                                         "</span>" +
                                         "</td>" + 
@@ -564,6 +617,12 @@
 
                 $(":button").button();
 
+                $("#DivTemporaryVacation").hide();
+                $("#TempAbsencesTypeId").val(1);
+                $("#TempDateBegin").val("");
+                $("#TempDateEnd").val("");
+                $("#TempNote").val("");
+                $("#DivTemporaryVacation").dialog("close");
                 ShowFlash(false);
             },
             error: function(e, str1){
@@ -576,7 +635,6 @@
             }
         });
     }
-
     
 </script>
 

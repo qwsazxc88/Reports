@@ -44,7 +44,7 @@
                     </tr>
                     <tr>
                         <td>@Html.LabelFor(m => m.RequestTypeId)</td>
-                        <td>
+                        <td>@*
                             @if (Model.IsCurator || Model.IsPersonnelBank || Model.IsConsultant)
                             {
                                 @Html.DropDownListFor(model => model.RequestTypeId, new SelectList(Model.RequestTypes, "ID", "Name")) 
@@ -53,7 +53,9 @@
                             {
                                 @Html.HiddenFor(m => m.RequestTypeId)
                                 @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
-                            }
+                            }*@
+                            @Html.HiddenFor(m => m.RequestTypeId)
+                            @Model.RequestTypes.Where(x => x.Id == Model.RequestTypeId).Single().Name
                         </td>
                     </tr>
                     <tr>

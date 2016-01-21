@@ -16,13 +16,12 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public IEnumerable<SelectListItem> DocumentTypeItems { get; set; }
 
         [Display(Name = "Серия", Prompt = "## ##"),
-            //RegularExpression(@"^\S{2}\s\S{2}$", ErrorMessage = "Требуется 4 знака в формате ## ##"),
+            RegularExpression(@"^\S{2}\s\S{2}$", ErrorMessage = "Требуется 4 знака в формате ## ##"),
             Required(ErrorMessage = "Обязательное поле")]
         public string InternalPassportSeries { get; set; }
 
-        //закомментарил в связи с вводом паспортных данных другого государства, проверки в контроллере
-        [Display(Name = "Номер"/*, Prompt = "6 цифр"*/),
-            //RegularExpression(@"^\d{6}$", ErrorMessage = "Требуется 6 цифр"),
+        [Display(Name = "Номер", Prompt = "6 цифр"),
+            RegularExpression(@"^\d{6}$", ErrorMessage = "Требуется 6 цифр"),
             Required(ErrorMessage = "Обязательное поле")]
         public string InternalPassportNumber { get; set; }
 
