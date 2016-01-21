@@ -21,5 +21,6 @@ namespace Reports.Presenters.UI.Bl
         bool CheckMovementsExist(DateTime date, int UserId,int id);
         void SaveDocsModel(StaffMovementsEditModel model);
         StaffMovementsPrintModel GetPrintModel(int id, int SignerId=0);
+        EmailDto SendEmailToUser(int userid, string subj, string text);
     }
 }

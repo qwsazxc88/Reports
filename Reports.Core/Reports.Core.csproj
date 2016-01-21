@@ -901,6 +901,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Roles.cs" />
+    <Compile Include="Dto\IdEqualityComparer.cs" />
     <Compile Include="Utils\SearchFieldAttribute.cs" />
     <Compile Include="Services\IConfigurationService.cs" />
     <Compile Include="Services\IHttpContextService.cs" />
