@@ -3629,6 +3629,33 @@ namespace Reports.Presenters.UI.Bl.Impl
             if(!ValidateModel(model, out error))
                 return false;
 
+            //создаем заявку
+            StaffEstablishedPostUserLinks ul = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId);//место в расстановке
+            StaffTemporaryReleaseVacancyRequest entity = new StaffTemporaryReleaseVacancyRequest()
+            {
+               EstablishedPostUserLinks = ul,
+               ReplacedUser = ul.User,
+               DateBegin = model.DateBegin,
+               DateEnd = model.DateEnd,
+               AbsencesType = StaffLongAbsencesTypesDao.Get(model.AbsencesTypeId),
+               IsUsed = true,
+               Note = model.Note,
+               Creator = UserDao.Get(AuthenticationService.CurrentUser.Id),
+               CreateDate = DateTime.Now
+            };
+
+            try
+            {
+                StaffTemporaryReleaseVacancyRequestDao.SaveAndFlush(entity);
+                error = "Данные сохранены!";
+            }
+            catch (Exception ex)
+            {
+                StaffTemporaryReleaseVacancyRequestDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+
             return true;
         }
         /// <summary>
@@ -3663,6 +3690,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return false;
             }
 
+            if (ul.User == null) return true;
+
             //смотрим по основному сотруднику в отпуска по уходу за ребенком, если есть, то находим максимальный конец периода, так как может быть несколько заявок
             if (ul.User.ChildVacation.Where(x => x.SendTo1C.HasValue).Count() != 0)
             {
@@ -3670,36 +3699,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //Найденную дату проверяем актуальность относително текущего момента времени и введенного конца периода
                 if (MaxEndDate >= DateTime.Today && model.DateEnd > MaxEndDate)
                 {
-                    error = "Указанный конец периода не может быть больше конца периода отпуска по уходу за ребенком (" + MaxEndDate.Value.ToShortDateString() + ")!";
+                    error = @"Указанный конец периода не может быть больше конца периода отпуска по уходу за ребенком (" + MaxEndDate.Value.ToShortDateString() + ")!";
                     return false;
                 }
             }
-            //смотрим в временные перемещения, если есть берем конец периода
-            ////Найденную дату проверяем актуальность относително текущего момента времени и введенного конца периода
-            //if (MaxEndDate >= DateTime.Today && model.DateEnd > MaxEndDate)
-            //{
-            //    error = "";
-            //    return false;
-            //}
 
+            //смотрим выгруженные временные перемещения, если есть берем конец периода
+            if (ul.User.StaffMovements.Where(x => x.IsTempMoving && (x.Type.Id == 2 || x.Type.Id == 3) && x.Status.Id == 12).Count() != 0)
+            {
+                MaxEndDate = ul.User.StaffMovements.Where(x => x.IsTempMoving && (x.Type.Id == 2 || x.Type.Id == 3) && x.Status.Id == 12).Max(x => x.MovementTempTo);
+                if (MaxEndDate >= DateTime.Today && model.DateEnd > MaxEndDate)
+                {
+                    error = @"Указанный конец периода не может быть больше конца периода отсутствия временно перемещенного сотрудника с данной должности (" + MaxEndDate.Value.ToShortDateString() + ")!";
+                    return false;
+                }
+            }
+
+            //если есть длительное отсутствие, конец периода не обязателен, по этому конец проверяем только для ОЖ и перемещениям
             if (MaxEndDate.HasValue && !model.DateEnd.HasValue)
             {
                 error = "Укажите конец периода!";
                 return false;
             }
 
-            //если длительное отсутствие, конец периода не обязателен
-            
-            if (!model.DateBegin.HasValue || !model.DateEnd.HasValue)
-            {
-                error = "Укажите начало и конец периода";
-                return false;
-            }
-
-            if (ul.User == null)
-            {
-                error = "НАПОМИНАНИЕ! Данное место в штатной расстановке вакантно! Вы создаете временную вакансию!";
-            }
 
             return true;
         }

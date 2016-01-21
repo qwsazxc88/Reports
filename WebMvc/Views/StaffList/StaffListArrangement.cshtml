@@ -462,10 +462,14 @@
 
     //создание временной вакансии
     function CreateTemporaryVacation(DepId, UserLinkId, SEPId){
-        //$("#DivTemporaryVacation").show();
         $(".ui-dialog-titlebar").show();
         $(".ui-dialog-titlebar-close").show();
         $("#lblMsg").text("");
+        $("#TempAbsencesTypeId").val(1);
+        $("#TempDateBegin").val("");
+        $("#TempDateEnd").val("");
+        $("#TempNote").val("");
+
         $("#DivTemporaryVacation").dialog(
         {
             autoOpen: true,
@@ -525,8 +529,6 @@
                 }
 
                 ShowFlash(false);
-                $(".ui-dialog-titlebar").show();
-                $(".ui-dialog-titlebar-close").show();
             },
             error: function(e, str1){
                 if(str1 == "parsererror")
@@ -537,6 +539,9 @@
                 ShowFlash(false);
             }
         });
+
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
     }
 
 
