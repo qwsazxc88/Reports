@@ -380,10 +380,16 @@ namespace WebMvc.Controllers
         public ActionResult CreateTemporaryReleaseVacancyRequest(StaffListArrangementModel model)
         {
             string error = string.Empty;
-            bool result = true;
-            var jsonSerializer = new JavaScriptSerializer();
-            model = StaffListBl.GetDepartmentStructureWithStaffArrangement(model.DepId, false);
-            string jsonString = jsonSerializer.Serialize(model);
+            bool result = StaffListBl.CreateTemporaryReleaseVacancyRequest(model, out error);
+
+            
+
+            
+
+            //var jsonSerializer = new JavaScriptSerializer();
+            if (result)
+                model = StaffListBl.GetDepartmentStructureWithStaffArrangement(model.DepId, false);
+            //string jsonString = jsonSerializer.Serialize(model);
             //return Content(jsonString);
             return Json(new { ok = result, msg = error, model.EstablishedPosts });
         }

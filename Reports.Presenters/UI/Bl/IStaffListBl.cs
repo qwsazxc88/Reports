@@ -108,6 +108,16 @@ namespace Reports.Presenters.UI.Bl
         bool DeleteEstablishedPostRequest(StaffEstablishedPostRequestModel model, out string error);
         #endregion
 
+        #region Заявки на создание вакансий при длительном отсутствии сотрудников.
+        /// <summary>
+        /// Создание заявки на вакансию при длительном отсутствии сотрудника. 
+        /// </summary>
+        /// <param name="model">обрабатываемая модель.</param>
+        /// <param name="error">Сообщение</param>
+        /// <returns></returns>
+        bool CreateTemporaryReleaseVacancyRequest(StaffListArrangementModel model, out string error);
+        #endregion
+
         #region Справочник ПО.
         #region Справочник групп ПО
         /// <summary>
