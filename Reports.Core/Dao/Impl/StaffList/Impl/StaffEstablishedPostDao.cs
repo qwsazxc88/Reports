@@ -187,6 +187,15 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public int GetEstablishedPostUsed(int SEPId)
         {
+            return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.User.IsActive == true && !x.User.IsPregnant.HasValue && !x.IsDismissal && x.IsUsed).ToList().Count;
+        }
+        /// <summary>
+        /// Проверяем наличие записей с сотрудниками и помеченными к сокращению.
+        /// </summary>
+        /// <param name="SEPId">Id штатной единицы.</param>
+        /// <returns></returns>
+        public int GetEstablishedPostUsedForCheckToDismiss(int SEPId)
+        {
             return Session.Query<StaffEstablishedPostUserLinks>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.User.IsActive == true && !x.User.IsPregnant.HasValue && x.IsDismissal && x.IsUsed).ToList().Count;
         }
         /// <summary>
