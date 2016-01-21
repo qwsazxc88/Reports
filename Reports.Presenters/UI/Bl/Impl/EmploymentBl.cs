@@ -7011,13 +7011,24 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void GetStaffEstablishmentPostDetails(ManagersModel model)
         {
+            
             //достаем список штатных доступных единиц
             if (model.IsSP)
             {
+                Managers entity = GetCandidate(model.UserId).Managers;
+                StaffEstablishedPostUserLinks PostUserLink = null;
+                if (!entity.Candidate.SendTo1C.HasValue)
+                    PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByDocId(entity.Candidate.Id, (int)StaffReserveTypeEnum.Employment);
+                else
+                    PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByUserId(entity.Candidate.User.Id);
+
+                model.UserLinkId = PostUserLink != null ? PostUserLink.Id : 0;
+
                 model.PostUserLinks = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId)
                 .Where(x => x.IsVacation || (x.IsReserve && x.Id == model.UserLinkId))
                 .ToList()
                 .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") + (x.ReplacedId != 0 ? " - " + x.ReplacedName : "")  });
+
                 model.PostUserLinks.Insert(0, new IdNameDto { Id = 0, Name = "" });
             }
             else //по Id строки штатной расстановки достаем данные по вакансии
