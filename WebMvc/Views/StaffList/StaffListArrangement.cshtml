@@ -97,6 +97,7 @@
     </div>
     
     <div id="DivTemporaryVacation" style="display:none;">
+        <label id="lblMsg" style="color:Red;"></label>
         <table>
             <tr>
                 <td>@Html.LabelFor(m => m.TempAbsencesTypeId)</td>
@@ -462,6 +463,9 @@
     //создание временной вакансии
     function CreateTemporaryVacation(DepId, UserLinkId, SEPId){
         //$("#DivTemporaryVacation").show();
+        $(".ui-dialog-titlebar").show();
+        $(".ui-dialog-titlebar-close").show();
+        $("#lblMsg").text("");
         $("#DivTemporaryVacation").dialog(
         {
             autoOpen: true,
@@ -510,9 +514,19 @@
             data: dataToSend,
             async: true,
             success: function(result){
-                ReplacePostUserLinkRow(DepId, UserLinkId, SEPId);
+                if(!result.ok)
+                {
+                    $("#lblMsg").text(result.msg);
+                }
+                else
+                {
+                    $("#lblMsg").text("");
+                    ReplacePostUserLinkRow(DepId, UserLinkId, SEPId);
+                }
 
                 ShowFlash(false);
+                $(".ui-dialog-titlebar").show();
+                $(".ui-dialog-titlebar-close").show();
             },
             error: function(e, str1){
                 if(str1 == "parsererror")
@@ -604,10 +618,10 @@
                 $(":button").button();
 
                 $("#DivTemporaryVacation").hide();
-                $("#AbsencesTypeId").val(1);
-                $("#DateBegin").val("");
-                $("#DateEnd").val("");
-                $("#Note").val("");
+                $("#TempAbsencesTypeId").val(1);
+                $("#TempDateBegin").val("");
+                $("#TempDateEnd").val("");
+                $("#TempNote").val("");
                 $("#DivTemporaryVacation").dialog("close");
                 ShowFlash(false);
             },
