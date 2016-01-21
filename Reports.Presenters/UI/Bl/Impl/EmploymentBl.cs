@@ -7033,14 +7033,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else //по Id строки штатной расстановки достаем данные по вакансии
             {
-                StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId);
-                //оклад штатной единицы
-                model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
-                //районный коэффициент
-                if (PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Count() != 0)
-                    model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Single().Amount;
+                if (model.UserLinkId != 0)
+                {
+                    StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId);
+                    //оклад штатной единицы
+                    model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
+                    //районный коэффициент
+                    if (PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Count() != 0)
+                        model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Single().Amount;
+                    else
+                        model.AreaMultiplier = 0;
+                }
                 else
+                {
+                    model.SalaryBasis = 0;
                     model.AreaMultiplier = 0;
+                }
             }
         }
     }
