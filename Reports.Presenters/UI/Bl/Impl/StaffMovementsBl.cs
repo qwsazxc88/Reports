@@ -548,6 +548,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.TargetPositions = GetPositionsForDepartment(model.TargetDepartmentId);
                     model.UserLinkId = userlinks.First().Id;
                     model.UserLinks = GetPositionsForDepartment(model.TargetDepartmentId);
+                    if (!model.UserLinks.Any(x => x.Id == model.UserLinkId))
+                    {
+                        model.UserLinks.Add(new IdNameDto { Id = userlink.Id, Name = userlink.StaffEstablishedPost.Position.Name });
+                    }
                     GetMoneyForStaffEstablishedPostUserLinks(userlink, model);
                 }
                 model.Creator = new StandartUserDto();
