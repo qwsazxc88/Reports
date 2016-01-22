@@ -1417,20 +1417,22 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsPyrusDialogVisible = AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || AuthenticationService.CurrentUser.UserRole == UserRole.Manager ? true : false;
 
-
-            StaffEstablishedPostUserLinks PostUserLink = null;
-            if(!entity.Candidate.SendTo1C.HasValue)
-                PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByDocId(entity.Candidate.Id, (int)StaffReserveTypeEnum.Employment);
-            else
-                PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByUserId(entity.Candidate.User.Id);
-
-            if (PostUserLink != null)
+            if (!entity.Candidate.SendTo1C.HasValue)
             {
-                model.UserLinkId = PostUserLink.Id;
-                model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
-                model.SalaryMultiplier = entity.SalaryMultiplier;
-                model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Count() == 0 ? 0 :
-                    PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Single().Amount;
+                StaffEstablishedPostUserLinks PostUserLink = null;
+                if (!entity.Candidate.SendTo1C.HasValue)
+                    PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByDocId(entity.Candidate.Id, (int)StaffReserveTypeEnum.Employment);
+                else
+                    PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByUserId(entity.Candidate.User.Id);
+
+                if (PostUserLink != null)
+                {
+                    model.UserLinkId = PostUserLink.Id;
+                    model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
+                    model.SalaryMultiplier = entity.SalaryMultiplier;
+                    model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Count() == 0 ? 0 :
+                        PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Single().Amount;
+                }
             }
             else
             {
