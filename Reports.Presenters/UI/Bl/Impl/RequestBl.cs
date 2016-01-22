@@ -12960,7 +12960,30 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         #endregion
-
+        #region UsersPersonnelData
+        public UsersPersonnelDataViewModel GetUsersPersonnelDataListModel()
+        {
+            var model = new UsersPersonnelDataViewModel();
+            return model;
+        }
+        public UsersPersonnelDataViewModel SetDocuments(UsersPersonnelDataViewModel model)
+        {
+            model.Documents = UserDao.GetUserPersonnelData(CurrentUser.Id, CurrentUser.UserRole, model.FIO, model.DepartmentId);
+            return model;
+        }
+        public string SetUserInn(int persid, string inn)
+        {
+            try
+            {
+                UserDao.UpdateUserInn(persid, inn);
+                return("Ok");
+            }
+            catch (Exception ex)
+            {
+                return ("Fail: " + ex.Message);
+            }
+        }
+        #endregion 
         #region SurchageNote
         public void GetDictionaries(SurchargeNoteEditModel model)
         {
