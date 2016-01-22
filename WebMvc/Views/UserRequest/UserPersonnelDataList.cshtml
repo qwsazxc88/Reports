@@ -1,0 +1,203 @@
+﻿@using Reports.Presenters.UI.ViewModel
+@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@model UsersPersonnelDataViewModel
+@{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    ViewBag.Title = "Список ИНН";
+    Layout = "~/Views/Shared/_LayoutUserPersonnelData.cshtml";
+}
+
+<div>
+@using (Html.BeginForm())
+{
+     <table style="width:100%">     
+     <tr>
+     </tr>
+     <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.ValidationSummary(false)
+                                <div id="Error" style="color:Red;display:none;"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.DepartmentName):
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="button" value="Выбрать" onclick="changeDepartment();"/>                                           
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.FIO):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.FIO)
+                            </td>
+                        </tr>                    
+                        <tr>
+                          <td colspan="2">
+                            <input type="submit" value="Выбрать"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                          </td>
+                        </tr>
+            </table>
+        </div>
+    </td>
+    </tr>
+     <tr>
+        <td colspan="2">            
+           
+        </td>
+     </tr>
+    </table> 
+
+    }
+     <table id="DataGrid" class="grid" style="width:100%;border-bottom:0px;border-right:0px"><thead>
+                <tr style='cursor: pointer; ' class="noselect">
+                     <th width="30px">
+                       <a>№<br /></a>
+                    </th>
+                    <th >
+                        <a>Дата<br />приёма</a>
+                    </th>
+                    <th >
+                        <a>Дата<br />Увольнения</a>
+                    </th>
+                    <th >
+                        <a>ФИО</a>
+                    </th>
+                    <th >
+                        <a>ИНН</a>
+                    </th>
+                    <th >
+                        <a>Должность</a>
+                    </th>
+                    <th >
+                        <a>Департамент 3 ур.</a>
+                    </th>
+                    <th >
+                        <a>Подразделение 7 ур.</a>
+                    </th>
+                    <th>
+                        <a>ГПД</a>
+                    </th>
+                    <th>
+                        <a>Сотрудник</a>
+                    </th>
+                </tr>                
+                </thead>
+                <tbody>
+                @for (int i = 0; i < Model.Documents.Count; i++)
+                {
+                <tr>
+			        <td width="30px">
+                       @Html.DisplayFor(x=>x.Documents[i].PeopleId)
+                    </td>
+                    <td >
+                        @Html.DisplayFor(x=>x.Documents[i].DateAccept)
+                    </td>
+                    <td >
+                        @Html.DisplayFor(x=>x.Documents[i].DateRelease)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(x=>x.Documents[i].FIO)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(x=>x.Documents[i].INN)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(x=>x.Documents[i].Position)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(x=>x.Documents[i].Dep3Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(x=>x.Documents[i].Dep7Name)
+                    </td>
+                    <td>
+                        @Html.CheckBoxFor(x => x.Documents[i].GPDFlag, new { disabled="disabled"})
+                    </td>
+                    <td>
+                        @Html.CheckBoxFor(x => x.Documents[i].UserFlag, new { disabled="disabled"})
+                    </td>
+		        </tr>
+                }
+                </tbody>
+            </table>
+</div>
+
+<div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+<script>
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        var ind = $("#LoadingIndicator2");
+        if (ind == undefined) return;
+        if (!IsShow) {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 100,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
+    }
+    
+</script>
+<script type="text/javascript">    
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    $(document).ready(function () {
+        $(':button, :input[type=button], :input[type=submit]').button();
+        setActiveMenuItem("UserPersonnelDataInn");
+    });
+    function resetFilter() {        
+        $("#DepartmentId").val('0');
+        $("#DepartmentNameLabel").text('');
+        $("#DepartmentName").val('');       
+        $("#FIO").val('');
+    }
+   
+ </script> 

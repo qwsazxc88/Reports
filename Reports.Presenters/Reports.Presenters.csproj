@@ -334,6 +334,7 @@
     <Compile Include="UI\ViewModel\UserModel.cs" />
     <Compile Include="UI\ViewModel\UserRequest\VacationReturnCreateViewModel.cs" />
     <Compile Include="UI\ViewModel\UserRequest\VacationReturnViewModel.cs" />
+    <Compile Include="UI\ViewModel\UsersPersonnelDataViewModel.cs" />
     <Compile Include="UI\ViewModel\VacationEditModel.cs" />
     <Compile Include="UI\ViewModel\VacationListModel.cs" />
     <Compile Include="UI\ViewModel\VacationPrintModel.cs" />
