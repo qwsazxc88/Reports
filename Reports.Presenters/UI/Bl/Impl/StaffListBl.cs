@@ -989,6 +989,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     StaffDepartmentRequestDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
+                    error = "Данные сохранены!";
                     return true;
                 }
                 catch (Exception ex)
@@ -1587,6 +1588,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     StaffDepartmentRequestDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
+                    if (model.IsDraft)
+                        error = "Данные сохранены!";
                 }
                 catch (Exception ex)
                 {
@@ -2590,6 +2593,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 AuthenticationService.CurrentUser.UserRole,
                 model.DepartmentId,
                 model.Id.HasValue ? model.Id.Value : 0,
+                model.SEPId.HasValue ? model.SEPId.Value : 0,
                 model.Creator,
                 model.DateBegin,
                 model.DateEnd,
@@ -2622,6 +2626,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //заполняем заявку на все случаи жизни
             if (model.Id == 0)
             {
+                Department CurDep = DepartmentDao.Get(model.DepartmentId);
                 model.DateRequest = null;
                 model.UserId = AuthenticationService.CurrentUser.Id;
                 model.PositionId = 0;
@@ -2633,6 +2638,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.WCId = 0;
                 model.BeginAccountDate = DateTime.Now;
                 model.EPInfo = string.Empty;
+                model.ItemLevel = CurDep == null || !CurDep.ItemLevel.HasValue ? 0 : CurDep.ItemLevel.Value;
 
                 //кнопки
                 model.IsDraftButtonAvailable = true;
@@ -2780,12 +2786,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 ul.DateDistribNote = item.DateDistribNote;
                                 ul.DateReceivNote = item.DateReceivNote;
                             }
-                            if (entity.RequestType.Id == 2 || entity.RequestType.Id == 4)
-                            {
-                                ul.IsTemporary = item.IsTemporary;
-                                ul.DateTempBegin = item.DateTempBegin;
-                                ul.DateTempEnd = item.DateTempEnd;
-                            }
+
                             ul.Editor = curUser;
                             ul.EditDate = DateTime.Now;
                         }
@@ -2797,6 +2798,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     StaffEstablishedPostRequestDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
+                    error = "Данные сохранены!";
                     return true;
                 }
                 catch (Exception ex)
@@ -2858,7 +2860,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
 
-                    if (entity.RequestType.Id == 3 && StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0) != 0)
+                    if (entity.RequestType.Id == 3 && StaffEstablishedPostDao.GetEstablishedPostUsedForCheckToDismiss(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0) != 0)
                     {
                         error = "Нельзя сократить штатную единицу, так как она еще содержит работающих сотрудников!";
                         return false;
@@ -2894,7 +2896,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.EditDate = DateTime.Now;
             entity.BeginAccountDate = model.BeginAccountDate;
 
-            //при сокращении или вводе временной вакансии ставим метки в расстановке (до начала согласования)
+            //при сокращении ставим метки в расстановке (до начала согласования)
             if ((entity.RequestType.Id == 2 || entity.RequestType.Id == 3 || entity.RequestType.Id == 4) && !entity.DateSendToApprove.HasValue && entity.StaffEstablishedPost != null)
             {
                 foreach (StaffEstablishedPostUserLinks ul in entity.StaffEstablishedPost.EstablishedPostUserLinks)
@@ -2902,22 +2904,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (model.Personnels.Where(x => x.Id == ul.Id && x.IsDismissal != ul.IsDismissal).Count() != 0)
                     {
                         StaffUserLinkDto item = model.Personnels.Where(x => x.Id == ul.Id && x.IsDismissal != ul.IsDismissal).FirstOrDefault();
-                        //ul.IsDismissal = model.Personnels.Where(x => x.Id == ul.Id).Single().IsDismissal;
                         ul.IsDismissal = item.IsDismissal;
                         ul.DateDistribNote = item.DateDistribNote;
                         ul.DateReceivNote = item.DateReceivNote;
-                        ul.ReserveType = (int)StaffReserveTypeEnum.Dismissal;
-                        ul.DocId = entity.Id;
-                        ul.Editor = curUser;
-                        ul.EditDate = DateTime.Now;
-                    }
-
-                    if (model.Personnels.Where(x => x.Id == ul.Id && x.IsTemporary != ul.IsTemporary).Count() != 0)
-                    {
-                        StaffUserLinkDto item = model.Personnels.Where(x => x.Id == ul.Id && x.IsTemporary != ul.IsTemporary).FirstOrDefault();
-                        ul.IsTemporary = item.IsTemporary;
-                        ul.DateTempBegin = item.DateTempBegin;
-                        ul.DateTempEnd = item.DateTempEnd;
+                        ul.ReserveType = item.IsDismissal ? (int)StaffReserveTypeEnum.Dismissal : 0;
+                        ul.DocId = item.IsDismissal ? entity.Id : 0;
                         ul.Editor = curUser;
                         ul.EditDate = DateTime.Now;
                     }
@@ -2983,17 +2974,26 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 if (Result == 0)
                 {
-                    //для первоначальных данных
-                    if (entity.RequestType.Id == 4)
-                    {
-                        entity.DateSendToApprove = DateTime.Now;
-                        //entity.BeginAccountDate = DateTime.Now;
-                        entity.DateAccept = DateTime.Now;
-                    }
 
                     if (!SaveStaffEstablishedPostReference(entity, curUser, out error))
                     {
                         return false;
+                    }
+
+                    //для первоначальных данных
+                    if (entity.RequestType.Id == 4)
+                    {
+                        entity.DateSendToApprove = DateTime.Now;
+                        entity.BeginAccountDate = entity.BeginAccountDate.HasValue ? entity.BeginAccountDate : DateTime.Now;
+                        entity.DateAccept = DateTime.Now;
+
+                        //если создается новая штатная единица и в ней нет сотрудников, то надо указать признак выгрузки в 1С, чтобы пустые заявки не попали в выгрузку кадровых перемещений.
+                        //или сокращаются пустые места в расстановке
+                        if (entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.User != null).Count() == 0
+                            && entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.User != null && x.IsDismissal && x.IsUsed).Count() == 0)
+                        {
+                            entity.SendTo1C = DateTime.Now;
+                        }
                     }
 
                     //если уже была заявка, то у нее убираем признак использования, это для изменения/удаления
@@ -3033,6 +3033,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     StaffEstablishedPostRequestDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
+                    if (model.IsDraft)
+                        error = "Данные сохранены!";
                 }
                 catch (Exception ex)
                 {
@@ -3090,9 +3092,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //sep.Quantity = entity.Quantity;
                     sep.Salary = entity.Salary;
                 }
-                else if (entity.RequestType.Id == 3)
+                else if (entity.RequestType.Id == 3 && entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => !x.IsDismissal).Count() == 0)
                 {
-                    sep.IsUsed = false; //делаем неактивной текущую запись в справочнике
+                    sep.IsUsed = false; //делаем неактивной текущую запись в справочнике, если больше нет в расстановке несокращенных записей
                 }
                 sep.BeginAccountDate = entity.BeginAccountDate;
                 sep.Editor = curUser;
@@ -3370,6 +3372,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.IsUsed = false;
                 entity.DeleteDate = DateTime.Now;
+
+                //если отклоняется заявка на сокращение, то в расстановке убираем все резервы и отметки
+                if (entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.IsUsed && x.IsDismissal).Count() != 0)
+                {
+                    foreach(StaffEstablishedPostUserLinks ul in entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.IsUsed && x.IsDismissal))
+                    {
+                        ul.IsDismissal = false;
+                        ul.ReserveType = 0;
+                        ul.DocId = 0;
+                        ul.Editor = UserDao.Get(AuthenticationService.CurrentUser.Id);
+                        ul.EditDate = DateTime.Now;
+                    }
+                }
+                                
+
                 error = "Заявка отклонена!";
 
                 if (model.Id != 0)
@@ -3596,6 +3613,118 @@ namespace Reports.Presenters.UI.Bl.Impl
                 .ToList()
                 .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - Член правления банка" });
 
+        }
+        #endregion
+
+        #region Заявки на создание вакансий при длительном отсутствии сотрудников.
+        /// <summary>
+        /// Создание заявки на вакансию при длительном отсутствии сотрудника. 
+        /// </summary>
+        /// <param name="model">обрабатываемая модель.</param>
+        /// <param name="error">Сообщение</param>
+        /// <returns></returns>
+        public bool CreateTemporaryReleaseVacancyRequest(StaffListArrangementModel model, out string error)
+        {
+            error = string.Empty;
+
+            if(!ValidateModel(model, out error))
+                return false;
+
+            //создаем заявку
+            StaffEstablishedPostUserLinks ul = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId);//место в расстановке
+            StaffTemporaryReleaseVacancyRequest entity = new StaffTemporaryReleaseVacancyRequest()
+            {
+               EstablishedPostUserLinks = ul,
+               ReplacedUser = ul.User,
+               DateBegin = model.DateBegin,
+               DateEnd = model.DateEnd,
+               AbsencesType = StaffLongAbsencesTypesDao.Get(model.AbsencesTypeId),
+               IsUsed = true,
+               Note = model.Note,
+               Creator = UserDao.Get(AuthenticationService.CurrentUser.Id),
+               CreateDate = DateTime.Now
+            };
+
+            try
+            {
+                StaffTemporaryReleaseVacancyRequestDao.SaveAndFlush(entity);
+                error = "Данные сохранены!";
+            }
+            catch (Exception ex)
+            {
+                StaffTemporaryReleaseVacancyRequestDao.RollbackTran();
+                error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+
+            return true;
+        }
+        /// <summary>
+        /// Проверка на заполнение полей формы.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель</param>
+        /// <param name="error">Сообщение</param>
+        /// <returns></returns>
+        protected bool ValidateModel(StaffListArrangementModel model, out string error)
+        {
+            error = string.Empty;
+            DateTime? MaxEndDate = null;
+            //нужно определить дату конца периода максимально возможную
+            //определяем основного сотрудника для данного места в штатной расстановке
+            StaffEstablishedPostUserLinks ul = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId);
+            if (ul == null)
+            {
+                error = "ОШИБКА! Неопределено место в штатной расстановке! Обратитесь к разработчикам!";
+                return false;
+            }
+
+            if (!ul.IsUsed)
+            {
+                error = "Данное место в штатной расстановке не является действующим.";
+                return false;
+            }
+
+
+            if (!model.DateBegin.HasValue)
+            {
+                error = "Укажите начало периода!";
+                return false;
+            }
+
+            if (ul.User == null) return true;
+
+            //смотрим по основному сотруднику в отпуска по уходу за ребенком, если есть, то находим максимальный конец периода, так как может быть несколько заявок
+            if (ul.User.ChildVacation.Where(x => x.SendTo1C.HasValue).Count() != 0)
+            {
+                MaxEndDate = ul.User.ChildVacation.Where(x => x.SendTo1C.HasValue).Max(x => x.EndDate);
+                //Найденную дату проверяем актуальность относително текущего момента времени и введенного конца периода
+                if (MaxEndDate >= DateTime.Today && model.DateEnd > MaxEndDate)
+                {
+                    error = @"Указанный конец периода не может быть больше конца периода отпуска по уходу за ребенком (" + MaxEndDate.Value.ToShortDateString() + ")!";
+                    return false;
+                }
+            }
+
+            //смотрим выгруженные временные перемещения, если есть берем конец периода
+            if (ul.User.StaffMovements.Where(x => x.IsTempMoving && (x.Type.Id == 2 || x.Type.Id == 3) && x.Status.Id == 12).Count() != 0)
+            {
+                MaxEndDate = ul.User.StaffMovements.Where(x => x.IsTempMoving && (x.Type.Id == 2 || x.Type.Id == 3) && x.Status.Id == 12).Max(x => x.MovementTempTo);
+                if (MaxEndDate >= DateTime.Today && model.DateEnd > MaxEndDate)
+                {
+                    error = @"Указанный конец периода не может быть больше конца периода отсутствия временно перемещенного сотрудника с данной должности (" + MaxEndDate.Value.ToShortDateString() + ")!";
+                    return false;
+                }
+            }
+
+            //если есть длительное отсутствие, конец периода не обязателен, по этому конец проверяем только для ОЖ и перемещениям
+            if (MaxEndDate.HasValue && !model.DateEnd.HasValue)
+            {
+                error = "Укажите конец периода!";
+                return false;
+            }
+
+
+            return true;
         }
         #endregion
 
@@ -5287,7 +5416,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             StaffEstablishedPostRequest entity = StaffEstablishedPostRequestDao.Get(model.Id);
             if (entity != null)
             {
-                //model.Personnels = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId).Where(x => x.SEPId == model.SEPId).ToList();
                 if (entity.StaffEstablishedPost != null)
                 {
                     //поля UserId, Surname, IsPregnant определяем так же, как в функции показывающей штатную расстановку
@@ -5297,7 +5425,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             Id = x.Id
                             ,SEPId = x.StaffEstablishedPost.Id
-                            //,UserId = x.User != null && (!x.User.IsPregnant.HasValue || !x.User.IsPregnant.Value) && x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() == 0 ? x.User.Id : 0
                             ,UserId = x.User != null ? x.User.Id : 0
                             ,Surname = x.User != null && (!x.User.IsPregnant.HasValue || !x.User.IsPregnant.Value) && x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() == 0 ? x.User.Name : ""
                             ,IsPregnant = x.User != null ? ((x.User.IsPregnant.HasValue && x.User.IsPregnant.Value) || x.User.ChildVacation.Where(z => z.SendTo1C.HasValue && !z.DeleteDate.HasValue && z.BeginDate <= DateTime.Now && z.EndDate >= DateTime.Now).Count() != 0 ? true : false) : false
@@ -5307,9 +5434,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                             ,IsDismissal = x.IsDismissal
                             ,DateDistribNote = x.DateDistribNote
                             ,DateReceivNote = x.DateReceivNote
-                            ,IsTemporary = x.IsTemporary
-                            ,DateTempBegin = x.DateTempBegin
-                            ,DateTempEnd = x.DateTempEnd
                         }).OrderBy(x => x.Surname).ToList();
                 }
 
@@ -5339,9 +5463,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                             ,IsDismissal = x.IsDismissal
                             ,DateDistribNote = x.DateDistribNote
                             ,DateReceivNote = x.DateReceivNote
-                            ,IsTemporary = x.IsTemporary
-                            ,DateTempBegin = x.DateTempBegin
-                            ,DateTempEnd = x.DateTempEnd
                         }).OrderBy(x => x.Surname).ToList();
             }
 

@@ -21,6 +21,7 @@ namespace Reports.Core.Dao
         /// <param name="role">Роль пользователя (из-за байт-кода дополнительный параметр).</param>
         /// <param name="DepartmentId">Id подразделения.</param>
         /// <param name="Id">Номер заявки</param>
+        /// <param name="SEPId">Id штатной единицы</param>
         /// <param name="Surname">ФИО инициатора</param>
         /// <param name="DateBegin">Дата начала периода создания заявки</param>
         /// <param name="DateEnd">Дата конца периода создания заявки</param>
@@ -29,7 +30,7 @@ namespace Reports.Core.Dao
         /// <param name="SortDescending">Признак направления сортировки.</param>
         /// <param name="RequestTypeId">Вид заявки</param>
         /// <returns></returns>
-        IList<EstablishedPostRequestDto> GetEstablishedPostRequestList(User curUser, UserRole role, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending, int RequestTypeId);
+        IList<EstablishedPostRequestDto> GetEstablishedPostRequestList(User curUser, UserRole role, int DepartmentId, int Id, int SEPId, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending, int RequestTypeId);
         /// <summary>
         /// Достаем Id действующей заявки для данной штатной единицы.
         /// </summary>

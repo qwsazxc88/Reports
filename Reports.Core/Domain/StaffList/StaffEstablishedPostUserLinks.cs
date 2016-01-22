@@ -41,18 +41,6 @@ namespace Reports.Core.Domain
         /// </summary>
         public virtual DateTime? DateReceivNote { get; set; }
         /// <summary>
-        /// Признак временной вакансии.
-        /// </summary>
-        public virtual bool IsTemporary { get; set; }
-        /// <summary>
-        /// Дата начала периода действия временной вакансии.
-        /// </summary>
-        public virtual DateTime? DateTempBegin { get; set; }
-        /// <summary>
-        /// Дата конца периода действия временной вакансии.
-        /// </summary>
-        public virtual DateTime? DateTempEnd { get; set; }
-        /// <summary>
         /// Автор записи
         /// </summary>
         public virtual User Creator { get; set; }

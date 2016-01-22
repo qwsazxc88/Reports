@@ -381,6 +381,7 @@
             if (data.ok == true){
                 if(IsSP){
                     RefreshDropDownListData("UserLinkId", data);
+                    //$("#UserLinkId").val(data.UserLinkId);
                 }
                 else{
                     $("#SalaryBasis").val(data.SalaryBasis);
@@ -627,8 +628,8 @@
                     $("#tabs2").ajaxStop(function(){
                         UIHelpers.attachDatepickerToInputs($('#InternalPassportDateOfIssue, #RegistrationDate, #InternationalPassportDateOfIssue'), "-60:+0", true);
                         jQuery(function ($) {
-                            //$.mask.definitions['~'] = '[+-]';
-                            //$('#InternalPassportSeries').mask('** **');
+                            $.mask.definitions['~'] = '[+-]';
+                            $('#InternalPassportSeries').mask('** **');
                         });
 
                         $("#btnPassportDraft").click(function(){

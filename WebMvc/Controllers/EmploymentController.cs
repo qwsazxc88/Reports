@@ -1549,7 +1549,7 @@ namespace WebMvc.Controllers
         /// <returns></returns>
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.ConsultantPersonnel | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing | UserRole.Employee | UserRole.OutsourcingManager)]
-        public ActionResult GetStaffEstablishmentPostDetails(bool IsSP, int DepartmentId, int UserLinkId)
+        public ActionResult GetStaffEstablishmentPostDetails(bool IsSP, int DepartmentId, int UserLinkId, int UserId)
         {
             string error = String.Empty;
             bool result = false;
@@ -1557,12 +1557,13 @@ namespace WebMvc.Controllers
             model.IsSP = IsSP;
             model.DepartmentId = DepartmentId;
             model.UserLinkId = UserLinkId;
+            model.UserId = UserId;
 
             EmploymentBl.GetStaffEstablishmentPostDetails(model);
             result = true;
 
             if (model.IsSP)
-                return Json(new { ok = result, msg = error, model.PostUserLinks });
+                return Json(new { ok = result, msg = error, UserLinkId = model.UserLinkId, model.PostUserLinks });
             else
                 return Json(new { ok = result, msg = error, model.SalaryBasis, model.AreaMultiplier });
         }

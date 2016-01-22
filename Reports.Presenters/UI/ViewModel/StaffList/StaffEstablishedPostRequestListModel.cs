@@ -22,6 +22,9 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Номер заявки")]
         public int? Id { get; set; }
 
+        [Display(Name = "Код штатной единицы")]
+        public int? SEPId { get; set; }
+
         [Display(Name = "ФИО инициатора")]
         public string Creator { get; set; }
 

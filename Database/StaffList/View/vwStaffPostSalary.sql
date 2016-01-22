@@ -40,7 +40,7 @@ FROM (/*--персональные надбваки (старый вариант)
 			INNER JOIN StaffEstablishedPostUserLinks as C ON C.SEPId = A.Id and C.IsUsed = 1
 			LEFT JOIN Users as D ON D.Id = C.UserId and D.IsActive = 1
 			INNER JOIN StaffEstablishedPostRequest as E ON E.SEPId = A.Id and E.IsUsed = 1
-			LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.SEPId = A.Id and B.SEPRequestId = E.Id
+			LEFT JOIN StaffEstablishedPostChargeLinks as B ON B.SEPId = A.Id and B.SEPRequestId = E.Id and isnull(B.ActionId, 4) <> 4
 			--персональные надбавки
 			LEFT JOIN (SELECT UserId
 												,sum(case when StaffExtraChargeId = 4 then Salary else 0 end) as Personnel	--персональная надбавка
