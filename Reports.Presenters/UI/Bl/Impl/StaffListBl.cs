@@ -1023,6 +1023,10 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //поля общих реквизитов
             entity.Name = model.Name;
+            //в действующих заявках редактируем название в справочнике
+            if (entity.Department != null && entity.IsUsed)
+                entity.Department.Name = entity.Name;
+
             entity.DepartmentAccessory = model.BFGId == 0 ? null : StaffDepartmentAccessoryDao.Load(model.BFGId);
             if (entity.Department != null)
             {
