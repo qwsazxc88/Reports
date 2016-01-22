@@ -1429,8 +1429,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserLinkId = PostUserLink.Id;
                 model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
                 model.SalaryMultiplier = entity.SalaryMultiplier;
-                model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.IsUsed).Count() == 0 ? 0 :
-                    PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.IsUsed).Single().Amount;
+                model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Count() == 0 ? 0 :
+                    PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Single().Amount;
             }
             else
             {
@@ -7039,8 +7039,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //оклад штатной единицы
                     model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
                     //районный коэффициент
-                    if (PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Count() != 0)
-                        model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Single().Amount;
+                    if (PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Count() != 0)
+                        model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Single().Amount;
                     else
                         model.AreaMultiplier = 0;
                 }
