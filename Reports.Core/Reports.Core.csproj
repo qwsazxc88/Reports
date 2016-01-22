@@ -870,6 +870,7 @@
     <Compile Include="Dto\UploadFileDto.cs" />
     <Compile Include="Dto\UserDto.cs" />
     <Compile Include="Dto\UserLoginItemDto.cs" />
+    <Compile Include="Dto\UserPersonnelDataDto.cs" />
     <Compile Include="Dto\UserRequest\VacationReturnDto.cs" />
     <Compile Include="Dto\UserRolesDto.cs" />
     <Compile Include="Dto\UsersListItemDto.cs" />

@@ -805,6 +805,25 @@ namespace WebMvc.Controllers
          }
          #endregion
 
+         #region UserPersonnelData
+         [HttpGet]
+         public ActionResult UserPersonnelDataList()
+         {
+             var model= RequestBl.GetUsersPersonnelDataListModel();
+             return View(model);
+         }
+        [HttpPost]
+         public ActionResult UserPersonnelDataList(UsersPersonnelDataViewModel model)
+         {
+             model = RequestBl.SetDocuments(model);
+             return View(model);
+         }
+        
+         public ContentResult SetUserINN(int personId, string inn)
+         {
+             return Content(RequestBl.SetUserInn(personId, inn));
+         }
+         #endregion
          #region Sicklist
          [HttpGet]
          public ActionResult SicklistList()

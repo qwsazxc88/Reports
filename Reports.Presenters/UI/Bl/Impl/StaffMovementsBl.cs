@@ -1375,7 +1375,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsAcceptButtonPressed && model.IsTargetManagerAcceptAvailable)
                     {
-                        //Если согласовано отпускающим руководителем
+                        //Если согласовано принимающим руководителем
                         entity.SendDate = DateTime.Now;
                         entity.SourceManagerAccept = DateTime.Now;
                         entity.TargetManagerAccept = DateTime.Now;
@@ -1393,6 +1393,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             newapprove.Number = 2;
                             DocumentApprovalDao.SaveAndFlush(newapprove);
                         }
+                        entity.TargetStaffEstablishedPostRequest.DocId = entity.Id;
+                        entity.TargetStaffEstablishedPostRequest.ReserveType = (int)StaffReserveTypeEnum.StaffMovements;
                     }
                     break;
                 case 2:
