@@ -186,7 +186,8 @@ namespace Reports.Core.Dao.Impl
             {
                 
                 Department department = DepartmentDao.Load(DepartmentId);
-                sqlWhere += string.Format(@" B.Path  like '{0}' and B.ItemLevel = {1}", department.Path + "%", 7);
+                //sqlWhere += string.Format(@" B.Path  like '{0}' and B.ItemLevel = {1}", department.Path + "%", 7);
+                sqlWhere += string.Format(@" B.Path  like '{0}' ", department.Path + "%");
                 //sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "A.ParentId = :DepartmentId";
             }
             
