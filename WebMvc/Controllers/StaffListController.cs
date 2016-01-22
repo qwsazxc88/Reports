@@ -382,10 +382,6 @@ namespace WebMvc.Controllers
             string error = string.Empty;
             bool result = StaffListBl.CreateTemporaryReleaseVacancyRequest(model, out error);
 
-            
-
-            
-
             //var jsonSerializer = new JavaScriptSerializer();
             if (result)
                 model = StaffListBl.GetDepartmentStructureWithStaffArrangement(model.DepId, false);
