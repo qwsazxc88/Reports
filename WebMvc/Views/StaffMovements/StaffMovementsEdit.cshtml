@@ -4,7 +4,7 @@
 @using WebMvc.Helpers
 @{
     ViewBag.Title = "Редактирование заявки на перемещение";
-    Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
     ViewBag.PlaceId = Model.Id;
     ViewBag.PlaceTypeId = (int)Reports.Core.Enum.CommentsPlaceTypes.StaffMovements;
     DateTime NextDay = DateTime.Now.AddDays(1);

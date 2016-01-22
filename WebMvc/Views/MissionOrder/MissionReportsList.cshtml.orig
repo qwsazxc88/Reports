@@ -3,7 +3,7 @@
 @using Reports.Presenters.UI.Bl.Impl;
 @model Reports.Presenters.UI.ViewModel.MissionReportsListModel
 @{
-    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
     ViewBag.Title = "Авансовый отчет - реестр";
 }
 

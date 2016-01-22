@@ -6,7 +6,7 @@
 @{
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     ViewBag.Title = "Кадровые перемещения - реестр перемещений";
-    Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
 }
 @Html.AddStyles("../../Content/artem.css",
                 "../../Content/uigrid/ui-grid.min.css")          
