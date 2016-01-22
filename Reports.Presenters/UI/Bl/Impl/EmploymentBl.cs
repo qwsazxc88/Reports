@@ -1417,20 +1417,22 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsPyrusDialogVisible = AuthenticationService.CurrentUser.UserRole == UserRole.OutsourcingManager || AuthenticationService.CurrentUser.UserRole == UserRole.Manager ? true : false;
 
-
-            StaffEstablishedPostUserLinks PostUserLink = null;
-            if(!entity.Candidate.SendTo1C.HasValue)
-                PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByDocId(entity.Candidate.Id, (int)StaffReserveTypeEnum.Employment);
-            else
-                PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByUserId(entity.Candidate.User.Id);
-
-            if (PostUserLink != null)
+            if (!entity.Candidate.SendTo1C.HasValue)
             {
-                model.UserLinkId = PostUserLink.Id;
-                model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
-                model.SalaryMultiplier = entity.SalaryMultiplier;
-                model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.IsUsed).Count() == 0 ? 0 :
-                    PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.IsUsed).Single().Amount;
+                StaffEstablishedPostUserLinks PostUserLink = null;
+                if (!entity.Candidate.SendTo1C.HasValue)
+                    PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByDocId(entity.Candidate.Id, (int)StaffReserveTypeEnum.Employment);
+                else
+                    PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByUserId(entity.Candidate.User.Id);
+
+                if (PostUserLink != null)
+                {
+                    model.UserLinkId = PostUserLink.Id;
+                    model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
+                    model.SalaryMultiplier = entity.SalaryMultiplier;
+                    model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Count() == 0 ? 0 :
+                        PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Single().Amount;
+                }
             }
             else
             {
@@ -7011,25 +7013,44 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void GetStaffEstablishmentPostDetails(ManagersModel model)
         {
+            
             //достаем список штатных доступных единиц
             if (model.IsSP)
             {
+                Managers entity = GetCandidate(model.UserId).Managers;
+                StaffEstablishedPostUserLinks PostUserLink = null;
+                if (!entity.Candidate.SendTo1C.HasValue)
+                    PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByDocId(entity.Candidate.Id, (int)StaffReserveTypeEnum.Employment);
+                else
+                    PostUserLink = StaffEstablishedPostUserLinksDao.GetPostUserLinkByUserId(entity.Candidate.User.Id);
+
+                model.UserLinkId = PostUserLink != null ? PostUserLink.Id : 0;
+
                 model.PostUserLinks = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId)
                 .Where(x => x.IsVacation || (x.IsReserve && x.Id == model.UserLinkId))
                 .ToList()
                 .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") + (x.ReplacedId != 0 ? " - " + x.ReplacedName : "")  });
+
                 model.PostUserLinks.Insert(0, new IdNameDto { Id = 0, Name = "" });
             }
             else //по Id строки штатной расстановки достаем данные по вакансии
             {
-                StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId);
-                //оклад штатной единицы
-                model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
-                //районный коэффициент
-                if (PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Count() != 0)
-                    model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba").Single().Amount;
+                if (model.UserLinkId != 0)
+                {
+                    StaffEstablishedPostUserLinks PostUserLink = StaffEstablishedPostUserLinksDao.Get(model.UserLinkId);
+                    //оклад штатной единицы
+                    model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
+                    //районный коэффициент
+                    if (PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Count() != 0)
+                        model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Single().Amount;
+                    else
+                        model.AreaMultiplier = 0;
+                }
                 else
+                {
+                    model.SalaryBasis = 0;
                     model.AreaMultiplier = 0;
+                }
             }
         }
     }

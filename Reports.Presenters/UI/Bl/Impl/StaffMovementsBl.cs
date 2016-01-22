@@ -548,6 +548,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.TargetPositions = GetPositionsForDepartment(model.TargetDepartmentId);
                     model.UserLinkId = userlinks.First().Id;
                     model.UserLinks = GetPositionsForDepartment(model.TargetDepartmentId);
+                    if (!model.UserLinks.Any(x => x.Id == model.UserLinkId))
+                    {
+                        model.UserLinks.Add(new IdNameDto { Id = userlink.Id, Name = userlink.StaffEstablishedPost.Position.Name });
+                    }
                     GetMoneyForStaffEstablishedPostUserLinks(userlink, model);
                 }
                 model.Creator = new StandartUserDto();
@@ -718,12 +722,58 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
         }
+        public EmailDto SendEmailToUser(int userid, string subj, string text)
+        {
+            var user = UserDao.Load(userid);
+            var dto = SendEmail(user.Email, subj, text);
+            return dto;
+        }
         /// <summary>
         /// Справочники
         /// </summary>
         /// <param name="model"></param>
         private void LoadDictionaries(StaffMovementsEditModel model)
         {
+            model.UsersTo = new List<IdNameDto>();
+            model.Subject = String.Format("Заявка на кадровое перемещение №{0}", model.Number);
+            try
+            {
+                var currentuser = UserDao.Load(CurrentUser.Id);
+                var currentrole = RoleDao.Load((int)CurrentUser.UserRole);
+                model.EmailMessage = String.Format("{0} {1} {2} {3}", Environment.NewLine, CurrentUser.Name, Environment.NewLine, currentuser.Position != null ? currentuser.Position.Name : currentrole.Name);
+            }
+            catch (Exception e) { Log.Error(e.Message); }
+            if (model.StatusId > 1 && model.StatusId < 10 && model.Id>0)
+            {                
+                var entity = StaffMovementsDao.Get(model.Id);
+                if(entity.User!=null && !String.IsNullOrEmpty(entity.User.Email))
+                    model.UsersTo.Add(new IdNameDto { Id=entity.User.Id, Name=entity.User.Name });
+                if (entity.SourceManager != null && !String.IsNullOrEmpty(entity.SourceManager.Email))
+                    model.UsersTo.Add(new IdNameDto { Id = entity.SourceManager.Id, Name = entity.SourceManager.Name });
+                if (entity.TargetManager != null && !String.IsNullOrEmpty(entity.TargetManager.Email))
+                    model.UsersTo.Add(new IdNameDto { Id = entity.TargetManager.Id, Name = entity.TargetManager.Name });
+                if (entity.TargetChief != null && !String.IsNullOrEmpty(entity.TargetChief.Email))
+                    model.UsersTo.Add(new IdNameDto { Id = entity.TargetChief.Id, Name = entity.TargetChief.Name });
+                if (entity.PersonnelManager != null && !String.IsNullOrEmpty(entity.PersonnelManager.Email))
+                    model.UsersTo.Add(new IdNameDto { Id = entity.PersonnelManager.Id, Name = entity.PersonnelManager.Name });
+                if (entity.PersonnelManagerBank != null && !String.IsNullOrEmpty(entity.PersonnelManagerBank.Email))
+                    model.UsersTo.Add(new IdNameDto { Id = entity.PersonnelManagerBank.Id, Name = entity.PersonnelManagerBank.Name });
+                var TargetUppers = DocumentApprovalDao.Find(x => x.DocId == entity.Id && x.Number == 2 && !x.IsArchive);
+                if (TargetUppers != null && TargetUppers.Any())
+                {
+                    var upper2= TargetUppers.First().AssistantUser;
+                    if (!String.IsNullOrEmpty(upper2.Email)) model.UsersTo.Add(new IdNameDto { Id = upper2.Id, Name = upper2.Name });
+                }
+                var SourceUppers = DocumentApprovalDao.Find(x => x.DocId == entity.Id && x.Number == 1 && !x.IsArchive);
+                if (SourceUppers != null && SourceUppers.Any())
+                {
+                    var upper1 = SourceUppers.First().AssistantUser;
+                    if (!String.IsNullOrEmpty(upper1.Email)) model.UsersTo.Add(new IdNameDto { Id = upper1.Id, Name = upper1.Name });
+                }
+                model.UsersTo = model.UsersTo.Distinct(new IdEqualityComparer()).ToList();
+                model.IsSendEmailAvailable = (CurrentUser.UserRole & (UserRole.PersonnelManager | UserRole.ConsultantPersonnel)) > 0 
+                    || model.UsersTo.Any(x=>x.Id==CurrentUser.Id);   
+            }
             var extracharges = ExtraChargesDao.LoadAll();
             if (extracharges != null && extracharges.Any())
             {
