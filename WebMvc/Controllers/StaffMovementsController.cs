@@ -156,7 +156,15 @@ namespace WebMvc.Controllers
         }        
         #endregion        
         #endregion
-
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Security | UserRole.PersonnelManager | UserRole.ConsultantOutsourcing)]
+        public ActionResult SendEmailToUser(int ToUserId, string Subject, string EmailMessage)
+        {
+            
+            var dto = StaffMovementsBl.SendEmailToUser(ToUserId, Subject, EmailMessage);
+            bool result = String.IsNullOrEmpty(dto.Error);
+            return Json(new { ok = result, msg = dto.Error, EmailMessageStr = EmailMessage });
+        }
         #region Deprecated
         /// <summary>
         /// Сохранение галочек для документов. DEPRECATED

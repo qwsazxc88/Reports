@@ -10,6 +10,22 @@
     DateTime NextDay = DateTime.Now.AddDays(1);
     var dto =  UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
 }
+<div id="DivEmal" style="display:none;">
+        <table>
+            <tr>
+                <td>Кому:</td>
+                <td>@Html.DropDownListFor(m => m.ToUserId, new SelectList(Model.UsersTo, "Id", "Name"))</td>
+            </tr>
+            <tr>
+                <td>Тема</td>
+                <td>@Html.TextBoxFor(m => m.Subject, new { style = "width:600px" })</td>
+            </tr>
+            <tr>
+                <td>Сообщение:</td>
+                <td>@Html.TextAreaFor(m => m.EmailMessage, new { style = "width:600px", cols = "60", wrap = "soft" })</td>
+            </tr>
+        </table>
+    </div>
 @using (Html.BeginForm("Edit", "StaffMovements", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {   
     <div style="display:none">
@@ -724,6 +740,10 @@
                         {
                             <input type="submit"  onclick="return ButtonPressed('Reject');" value="Отклонить( заявка будет заблокирована )" />
                         }
+                        @if (Model.IsSendEmailAvailable)
+                        {
+                            <input type="button" onclick="ShowEmailDiv();" value="Отправить сообщение участнику процесса" />
+                        }
                         </div>
                         </td>
                     </tr>
@@ -931,6 +951,64 @@ label { font-size:1.1em; }
             $(".ui-dialog-titlebar").hide();
             $(".ui-dialog-titlebar-close").hide();
         }
+    }
+    function ShowEmailDiv()  
+    {
+        $("#DivEmal").dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            close: function (event, ui) {
+                //$(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "OK": function () {
+                    SendEmail();
+                    $(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+    function SendEmail(){
+        var actionUrl="@Url.Action("SendEmailToUser", "StaffMovements")";
+        var dataToSend = {ToUserId:$("#ToUserId").val(),Subject:$("#Subject").val(),EmailMessage:$("#EmailMessage").val() };
+        ShowFlash(true);
+
+        jQuery.ajax({
+            url: actionUrl,
+            type: 'POST',
+            dataType: 'json',
+            data: dataToSend,
+            async: true,
+            success: function(data){
+                if (data.ok == true)
+                {
+                    $("#Subject").val("");
+                    $("#EmailMessage").val(data.EmailMessageStr);
+                    alert("Сообщение отправлено!");
+                }
+                else{
+                    alert(data.msg);
+                }
+                    
+                ShowFlash(false);
+            },
+            error: function(e, str1){
+                if(str1 == "parsererror")
+                    alert("Доступ запрещен!");
+                else
+                    alert("При загрузке данных произошла ошибка.");
+
+                ShowFlash(false);
+            }
+        });
     }
     function ConfigureFields()
     {

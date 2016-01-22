@@ -16,6 +16,11 @@ namespace Reports.Presenters.UI.ViewModel
             this.StatusId = 1;
         }
         #region Служебное
+        public int ToUserId { get; set; }
+        public List<IdNameDto> UsersTo { get; set; }
+        public string Subject { get; set; }
+        public string EmailMessage { get; set; }
+        public bool IsSendEmailAvailable { get; set; }
         public bool IsDepartmentEditable { get; set; }
         public bool IsPositionEditable { get; set; }
         public int UserLinkId { get; set; }
