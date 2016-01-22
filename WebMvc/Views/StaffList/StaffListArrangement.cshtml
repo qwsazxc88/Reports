@@ -22,20 +22,22 @@
                     <th rowspan="3">Структура подразделений</th>
                     <th rowspan="3">Должность</th>
                     <th rowspan="3">Кол-во<br />шт. ед.</th>
+                    <th rowspan="3">Код ш.е.</th>
                     <th rowspan="3">Оклад</th>
                     <th rowspan="3">Ставка</th>
                     <th colspan="7">Надбавки</th>
                     <th rowspan="3">Итого</th>
                     <th rowspan="3">ФИО<br />сотрудника<br />(Перемещение/<br />Прием)</th>
-                    <th rowspan="3">ОЖ</th>
-                    <th rowspan="3">Временный<br />перевод</th>
-                    <th rowspan="3">Длительное<br />отсутствие</th>
-                    <th rowspan="3">Резерв<br />вакансии</th>
-                    <th rowspan="3">Основной<br />сотрудник</th>
+                    <th colspan="5">Дополнительная информация</th>
                 </tr>   
                 <tr>
                     <th>Должностная</th>
                     <th colspan="6">Персональные</th>
+                    <th rowspan="2">ОЖ</th>
+                    <th rowspan="2">Временный<br />перевод</th>
+                    <th rowspan="2">Длительное<br />отсутствие</th>
+                    <th rowspan="2">Резерв<br />вакансии</th>
+                    <th rowspan="2">Основной<br />сотрудник</th>
                 </tr>
                 <tr>
                     <th>Районный<br />коэфф.</th>
@@ -64,6 +66,7 @@
                     </td>
                     <td></td>
                     <td>@item.SEPCount</td>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -247,6 +250,7 @@
                                     "<td></td>" +
                                     "<td></td>" +
                                     "<td></td>" +
+                                    "<td></td>" +
                                         "<td></td>" +
                                         "<td></td>" +
                                         "<td></td>" +
@@ -294,7 +298,7 @@
                     for (var i = 0; i < result.EstablishedPosts.length; i++)//штатные единицы
                     {   
                         tblStr = "<tr id='tru-" + result.EstablishedPosts[i].Id + "-" + result.EstablishedPosts[i].SEPId + "' accessKey='" + result.EstablishedPosts[i].Path + "' class='IsVisible' ;'>" +
-                                    "<td>aa</td>" +
+                                    "<td></td>" +
                                     "<td></td>" +
                                     "<td>" +
                                     "<span>" +
@@ -303,6 +307,7 @@
                                     "</span>" +
                                     "</td>" + 
                                     "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
+                                    "<td>" + result.EstablishedPosts[i].SEPId + "</td>" +
                                     "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
                                     "<td>" + (result.EstablishedPosts[i].Rate != null ? result.EstablishedPosts[i].Rate : "") + "</td>" +
                                         
@@ -331,8 +336,8 @@
                                             tblStr += "<td style='color:Red;'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>"
                                         }
                                         tblStr += "<td>" + (result.EstablishedPosts[i].ReplacedName == null ? "" : result.EstablishedPosts[i].ReplacedName) + "</td>" +
-                                        "<td></td>" +
-                                        "<td></td>" +
+                                        "<td>" + (result.EstablishedPosts[i].TemporaryMovementUsers == null ? "" : result.EstablishedPosts[i].TemporaryMovementUsers) + "</td>" +
+                                        "<td>" + (result.EstablishedPosts[i].LongAbsencesUsers == null ? "" : result.EstablishedPosts[i].LongAbsencesUsers) + "</td>" +
                                         "<td>" + (result.EstablishedPosts[i].Reserve == null ? "" : result.EstablishedPosts[i].Reserve) + "</td>" +
                                         "<td>" + (result.EstablishedPosts[i].BasicUser == null ? "" : result.EstablishedPosts[i].BasicUser) + "</td>" +
                                     "</tr>";
@@ -577,6 +582,7 @@
                                         "</span>" +
                                         "</td>" + 
                                         "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
+                                        "<td>" + result.EstablishedPosts[i].SEPId + "</td>" +
                                         "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
                                         "<td>" + (result.EstablishedPosts[i].Rate != null ? result.EstablishedPosts[i].Rate : "") + "</td>" +
                                         
@@ -605,8 +611,8 @@
                                                 tblStr += "<td style='color:Red;'>" + (result.EstablishedPosts[i].Surname == null ? "" : result.EstablishedPosts[i].Surname) + "</td>"
                                             }
                                             tblStr += "<td>" + (result.EstablishedPosts[i].ReplacedName == null ? "" : result.EstablishedPosts[i].ReplacedName) + "</td>" +
-                                            "<td></td>" +
-                                            "<td></td>" +
+                                            "<td>" + (result.EstablishedPosts[i].TemporaryMovementUsers == null ? "" : result.EstablishedPosts[i].TemporaryMovementUsers) + "</td>" +
+                                            "<td>" + (result.EstablishedPosts[i].LongAbsencesUsers == null ? "" : result.EstablishedPosts[i].LongAbsencesUsers) + "</td>" +
                                             "<td>" + (result.EstablishedPosts[i].Reserve == null ? "" : result.EstablishedPosts[i].Reserve) + "</td>" +
                                             "<td>" + (result.EstablishedPosts[i].BasicUser == null ? "" : result.EstablishedPosts[i].BasicUser) + "</td>" +
                                         "</tr>";

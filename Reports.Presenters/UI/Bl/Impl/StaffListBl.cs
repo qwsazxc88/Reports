@@ -2593,6 +2593,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 AuthenticationService.CurrentUser.UserRole,
                 model.DepartmentId,
                 model.Id.HasValue ? model.Id.Value : 0,
+                model.SEPId.HasValue ? model.SEPId.Value : 0,
                 model.Creator,
                 model.DateBegin,
                 model.DateEnd,

@@ -46,6 +46,8 @@ namespace Reports.Core.Dto
         public DateTime? DateTempBegin { get; set; }
         public DateTime? DateTempEnd { get; set; }
         public string BasicUser { get; set; }   //ФИО постоянного сотрудника
+        public string TemporaryMovementUsers { get; set; }   //ФИО временно перемещенных
+        public string LongAbsencesUsers { get; set; }   //ФИО длительно отсутствующих
     }
 
     public class StaffUserLinkDto

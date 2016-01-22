@@ -38,6 +38,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="role">Роль пользователя (из-за байт-кода дополнительный параметр).</param>
         /// <param name="DepartmentId">Id подразделения.</param>
         /// <param name="Id">Номер заявки</param>
+        /// <param name="SEPId">Id штатной единицы</param>
         /// <param name="Surname">ФИО инициатора</param>
         /// <param name="DateBegin">Дата начала периода создания заявки</param>
         /// <param name="DateEnd">Дата конца периода создания заявки</param>
@@ -46,7 +47,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="SortDescending">Признак направления сортировки.</param>
         /// <param name="RequestTypeId">Вид заявки</param>
         /// <returns></returns>
-        public IList<EstablishedPostRequestDto> GetEstablishedPostRequestList(User curUser, UserRole role, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending, int RequestTypeId)
+        public IList<EstablishedPostRequestDto> GetEstablishedPostRequestList(User curUser, UserRole role, int DepartmentId, int Id, int SEPId, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending, int RequestTypeId)
         {
             string SqlQuery = @"SELECT A.Id, 
                                        A.SEPId,
@@ -93,7 +94,7 @@ namespace Reports.Core.Dao.Impl
 
 
             SqlQuery += GetWhereForUserRole(curUser, role);
-            SqlQuery += GetWhereForParameters(DepartmentId, Id, Surname, DateBegin, DateEnd, StatusId, RequestTypeId);
+            SqlQuery += GetWhereForParameters(DepartmentId, Id, SEPId, Surname, DateBegin, DateEnd, StatusId, RequestTypeId);
             SqlQuery += GetOrderByForSqlQuery(SortBy, SortDescending);
 
             IQuery query = Session.CreateSQLQuery(SqlQuery)
@@ -118,6 +119,7 @@ namespace Reports.Core.Dao.Impl
             if (SqlQuery.Contains(":userId")) query.SetInt32("userId", curUser.Id);
             if (SqlQuery.Contains(":DepartmentId")) query.SetInt32("DepartmentId", DepartmentId);
             if (SqlQuery.Contains(":Id")) query.SetInt32("Id", Id);
+            if (SqlQuery.Contains(":SEPId")) query.SetInt32("SEPId", SEPId);
             if (SqlQuery.Contains(":DateBegin")) query.SetDateTime("DateBegin", DateBegin.Value);
             if (SqlQuery.Contains(":DateEnd")) query.SetDateTime("DateEnd", DateEnd.Value.AddDays(1));
             if (SqlQuery.Contains(":StatusId")) query.SetInt32("StatusId", StatusId);
@@ -169,7 +171,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="DateBegin">Начало периода</param>
         /// <param name="DateEnd">Конец периода</param>
         /// <returns></returns>
-        protected string GetWhereForParameters(int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int RequestTypeId)
+        protected string GetWhereForParameters(int DepartmentId, int Id, int SEPId, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int RequestTypeId)
         {
             string SqlWhere = string.Empty;
             if (DepartmentId != 0)
@@ -181,6 +183,9 @@ namespace Reports.Core.Dao.Impl
 
             if (Id != 0)
                 SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "A.Id = :Id";
+
+            if (SEPId != 0)
+                SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "A.SEPId = :SEPId";
 
             if (!string.IsNullOrEmpty(Surname))
                 SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "Surname like '" + Surname + "%'";
@@ -251,6 +256,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 12:
                     SqlOrderBy += "Status";
+                    break;
+                case 13:
+                    SqlOrderBy += "A.SEPId";
                     break;
                 default:
                     SqlOrderBy += "A.Id";
