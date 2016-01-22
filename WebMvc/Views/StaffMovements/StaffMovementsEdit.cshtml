@@ -829,7 +829,13 @@ label { font-size:1.1em; }
             addControlError($("#UserLinkId"),'Необходимо выбрать должность');
             result = false;
         }
-        
+        clearControlErrors($("#MovementDate"));
+        if($("#MovementDate").val() == '')
+        {
+            addControlError($("#MovementDate"),'Необходимо выбрать дату перевода');
+            addControlError($("#JSError"),'Необходимо выбрать дату перевода');
+            result = false;
+        }
         @if (Model.IsManagerEditable)
         {<text>
             clearControlErrors($("#PyrusLink"));
@@ -849,13 +855,7 @@ label { font-size:1.1em; }
                 addControlError($("#JSError"),'Необходимо создать задачу в Pyrus');
                 result = false;
             }
-            clearControlErrors($("#MovementDate"));
-            if($("#MovementDate").val() == '')
-            {
-                addControlError($("#MovementDate"),'Необходимо выбрать дату перевода');
-                addControlError($("#JSError"),'Необходимо выбрать дату перевода');
-                result = false;
-            }
+            
             clearControlErrors($("#MovementCondition"));
             if($("#MovementCondition").val() == '' && $("IsTempMoving").val()==false)
             {
