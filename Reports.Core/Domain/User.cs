@@ -201,6 +201,10 @@ namespace Reports.Core.Domain
         /// Отпуска по уходу за ребенком.
         /// </summary>
         public virtual IList<ChildVacation> ChildVacation { get; set; }
+        /// <summary>
+        /// Кадровые перемещения сотрудника.
+        /// </summary>
+        public virtual IList<StaffMovements> StaffMovements { get; set; }
         #endregion
 
         #region Constructors

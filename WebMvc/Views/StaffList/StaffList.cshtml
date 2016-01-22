@@ -31,6 +31,7 @@
                     <th rowspan="2">Структура подразделений</th>
                     <th rowspan="2">Должность</th>
                     <th rowspan="2">Количество<br />штатных<br />единиц</th>
+                    <th rowspan="2">Код ш.е.</th>
                     <th rowspan="2">Оклад</th>
                     <th colspan="3">Подразделения</th>
                     <th colspan="3">Штатные единицы</th>
@@ -90,6 +91,7 @@
                     </td>
                     <td></td>
                     <td>@item.SEPCount</td>
+                    <td></td>
                     <td></td>
                     <td class="tdBtn"><button type="button" class="btnDepAdd" title="Создать заявку на создание нового подразделения" onclick="GetDepartmentRequest(1, @item.Id);" style="@if (item.ItemLevel == 7)
                                                                                                                                                                                           {<text>display:none;</text>}"></button></td>
@@ -260,6 +262,7 @@
                                         "<td></td>" +
                                         "<td>" + result.Departments[i].SEPCount + "</td>" +
                                         "<td></td>" +
+                                        "<td></td>" +
                                         "<td class='tdBtn'><button type='button' class='btnDepAdd' title='Создать заявку на создание нового подразделения' onclick='GetDepartmentRequest(1, " + result.Departments[i].Id + ");' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></td>" +
                                         "<td class='tdBtn'><button type='button' class='btnDepEdit' title='Создать заявку на изменение данного подразделения' onclick='GetDepartmentRequest(2, " + result.Departments[i].Id + ");'></button></td>" +
                                         "<td class='tdBtn'><button type='button' class='btnDepDelete' title='Создать заявку на закрытие данного подразделения' onclick='GetDepartmentRequest(3, " + result.Departments[i].Id + ");'></button></td>" +
@@ -314,6 +317,7 @@
                                         "</span>" +
                                         "</td>" + 
                                         "<td>" + result.EstablishedPosts[i].Quantity + "</td>" +
+                                        "<td>" + result.EstablishedPosts[i].Id + "</td>" +
                                         "<td>" + result.EstablishedPosts[i].Salary + "</td>" +
                                         "<td></td>" +
                                         "<td></td>" +

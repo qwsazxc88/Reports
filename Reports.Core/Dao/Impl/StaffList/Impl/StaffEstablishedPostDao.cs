@@ -70,6 +70,8 @@ namespace Reports.Core.Dao.Impl
                                               ,DateDistribNote
                                               ,DateReceivNote
                                               ,BasicUser
+                                              ,TemporaryMovementUsers
+                                              ,LongAbsencesUsers
                                        FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId, 0)");
 
             
@@ -110,6 +112,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("DateDistribNote", NHibernateUtil.DateTime)
                 .AddScalar("DateReceivNote", NHibernateUtil.DateTime)
                 .AddScalar("BasicUser", NHibernateUtil.String)
+                .AddScalar("TemporaryMovementUsers", NHibernateUtil.String)
+                .AddScalar("LongAbsencesUsers", NHibernateUtil.String)
                 .SetInt32("DepartmentId", DepartmentId)
                 .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
                 List<StaffEstablishedPostDto>();
@@ -137,6 +141,8 @@ namespace Reports.Core.Dao.Impl
                                               ,DateDistribNote
                                               ,DateReceivNote
                                               ,BasicUser
+                                              ,TemporaryMovementUsers
+                                              ,LongAbsencesUsers
                                        FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId, :PersonnelId)");
 
             return Session.CreateSQLQuery(sqlQuery)
@@ -175,6 +181,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("DateDistribNote", NHibernateUtil.DateTime)
                 .AddScalar("DateReceivNote", NHibernateUtil.DateTime)
                 .AddScalar("BasicUser", NHibernateUtil.String)
+                .AddScalar("TemporaryMovementUsers", NHibernateUtil.String)
+                .AddScalar("LongAbsencesUsers", NHibernateUtil.String)
                 .SetInt32("DepartmentId", DepartmentId)
                 .SetInt32("PersonnelId", PersonnelId)
                 .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
