@@ -823,6 +823,10 @@ namespace WebMvc.Controllers
          {
              return Content(RequestBl.SetUserInn(personId, inn));
          }
+         public ContentResult GetUserINN(int personId)
+         {
+             return Content(RequestBl.GetUserInn(personId));
+         }
          #endregion
          #region Sicklist
          [HttpGet]
