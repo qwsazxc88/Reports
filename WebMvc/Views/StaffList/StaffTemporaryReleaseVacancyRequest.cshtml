@@ -9,8 +9,13 @@
 @using (Html.BeginForm("StaffTemporaryReleaseVacancyRequest", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffTemporaryReleaseVacancyRequestForm" }))
 {
     @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.DepartmentId)
+    @Html.HiddenFor(m => m.DepartmentName)
     @Html.HiddenFor(m => m.IsUsed)
-  
+    @Html.HiddenFor(m => m.CreateDate)
+    @Html.HiddenFor(m => m.RequestInitiator)
+    @Html.HiddenFor(m => m.SEPId)
+    @Html.HiddenFor(m => m.AccessoryName)
     
     <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
     <legend style="text-align:left;font-size:medium;">Заявка</legend>
@@ -113,8 +118,10 @@
 
         
         <br />
-        <button id="btnSave" type="button" title="Редактировать заявку" @if (!Model.IsUsed){<text>disabled=disabled</text>}>Сохранить</button>
-        <button id="btnDelete" type="button" title="Отклонить заявку" @if (!Model.IsUsed){<text>disabled=disabled</text>}>Отклонить</button>
+        <button id="btnSave" type="button" title="Редактировать заявку" @if (!Model.IsUsed)
+                                                                        {<text>disabled=disabled</text>}>Сохранить</button>
+        <button id="btnDelete" type="button" title="Отклонить заявку" @if (!Model.IsUsed)
+                                                                      {<text>disabled=disabled</text>}>Отклонить</button>
     </div>
    @* 
                                                                                                         if (Model.Id != 0)
