@@ -1352,6 +1352,13 @@ namespace Reports.Core.Dao.Impl
             string sqlQuery = @"exec spSetPersonInn " + persid + ", '" + inn + "'";
             Session.CreateSQLQuery(sqlQuery).List();
         }
+        public string GetUserInn(int persId)
+        {
+            String sqlq = @"SELECT top 1 INN fROM RefPeople where id="+persId;
+            var query = Session.CreateSQLQuery(sqlq);
+            return query.UniqueResult<string>(); 
+
+        }
         public IList<UserPersonnelDataDto> GetUserPersonnelData(int CurrentUserId, UserRole role, string fio, int DepId)
         {
             string sqlQuery = @"SELECT * FROM vwInnForAll inn"+ Environment.NewLine;
@@ -1382,6 +1389,7 @@ namespace Reports.Core.Dao.Impl
             sqlQuery += wherestr;
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("PeopleId", NHibernateUtil.Int32).
+                AddScalar("chilvacationend",NHibernateUtil.DateTime).
                 AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("DepId", NHibernateUtil.Int32).
                 AddScalar("DateAccept", NHibernateUtil.DateTime).
