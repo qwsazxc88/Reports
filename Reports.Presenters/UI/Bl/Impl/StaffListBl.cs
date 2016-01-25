@@ -3713,7 +3713,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.SEPId = entity.EstablishedPostUserLinks.StaffEstablishedPost.Id;
             model.DepartmentId = entity.EstablishedPostUserLinks.StaffEstablishedPost.Department.Id;
             model.DepartmentName = entity.EstablishedPostUserLinks.StaffEstablishedPost.Department.Name;
-            model.AccessoryName = entity.EstablishedPostUserLinks.StaffEstablishedPost.Department.DepartmentAccessory.Name;
+            model.AccessoryName = entity.EstablishedPostUserLinks.StaffEstablishedPost.Department.DepartmentAccessory != null ? entity.EstablishedPostUserLinks.StaffEstablishedPost.Department.DepartmentAccessory.Name : "";
             model.PositionId = entity.EstablishedPostUserLinks.StaffEstablishedPost.Position.Id;
             model.PositionName = entity.EstablishedPostUserLinks.StaffEstablishedPost.Position.Name;
             model.Surname = entity.ReplacedUser.Name;
