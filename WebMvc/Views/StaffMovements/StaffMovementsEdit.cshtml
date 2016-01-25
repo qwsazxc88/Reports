@@ -1032,7 +1032,7 @@ label { font-size:1.1em; }
             $.ajax({
               type: "POST",
               url: '/Employment/GetStaffEstablishmentPostDetails',
-              data: { IsSP:false, DepartmentId:$('#TargetDepartmentId').val(),UserLinkId:$('#UserLinkId').val()},
+              data: { IsSP:false, DepartmentId:$('#TargetDepartmentId').val(),UserLinkId:$('#UserLinkId').val(),UserId:0},
               success: function(data){ShowFlash(false); $('#TargetCasing').val(data.SalaryBasis);$('#TargetRegion').val(data.AreaMultiplier);},
               error: function(){ ShowFlash(false); alert('Ошибка при получении данных');}
             });

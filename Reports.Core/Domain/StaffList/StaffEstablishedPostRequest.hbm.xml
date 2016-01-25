@@ -32,5 +32,10 @@
       <key column="SEPRequestId" foreign-key="FK_StaffEstablishedPostChargeLinks_StaffEstablishedPostRequest"/>
       <one-to-many class="StaffEstablishedPostChargeLinks"/>
     </bag>
+
+    <bag name="StaffRequestPyrusTasks" lazy="true" cascade="all-delete-orphan">
+      <key column="SEPRequestId" foreign-key="FK_StaffRequestPyrusTasks_StaffEstablishedPostRequest"/>
+      <one-to-many class="StaffRequestPyrusTasks"/>
+    </bag>
   </class>
 </hibernate-mapping>
