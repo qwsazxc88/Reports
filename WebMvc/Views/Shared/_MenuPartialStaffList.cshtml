@@ -48,11 +48,11 @@
                 {
                     if ((dto.UserRole & UserRole.PersonnelManager) > 0)
                     {
-                        <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffListArrangement", "StaffList")</div>
+                        <div id="liStaffList" class="mainOn">@Html.ActionLink("Штатное расписание", "StaffListArrangement", "StaffList")</div>
                     }
                     else
                     {
-                        <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
+                        <div id="liStaffList" class="mainOn">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
                     }
                 }
 
@@ -145,6 +145,7 @@
             {
                 <div class="menuitem" id="moStaffArrangement">@Html.ActionLink("Штатная расстановка", "StaffListArrangement", "StaffList")</div>
                 <div class="menuitem" id="moSEPRequest">@Html.ActionLink("Заявки для штатных единиц", "StaffEstablishedPostRequestList", "StaffList")</div>
+                <div class="menuitem" id="moTempVacancy">@Html.ActionLink("Длительные отсутствия", "StaffTemporaryReleaseVacancyRequestList", "StaffList")</div>
             }
             else
             {
@@ -155,6 +156,7 @@
                 <div class="menuitem" id="moSoftReference">@Html.ActionLink("Справочник ПО", "StaffDepartmentSoftReference", "StaffList")</div>
                 <div class="menuitem" id="moDepEncoding">@Html.ActionLink("Справочник кодировок", "StaffDepartmentEncoding", "StaffList")</div>
                 <div class="menuitem" id="moDepOperRef">@Html.ActionLink("Справочник операций", "StaffDepartmentOperationReference", "StaffList")</div>
+                <div class="menuitem" id="moTempVacancy">@Html.ActionLink("Длительные отсутствия", "StaffTemporaryReleaseVacancyRequestList", "StaffList")</div>
             }
             <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
         </div>

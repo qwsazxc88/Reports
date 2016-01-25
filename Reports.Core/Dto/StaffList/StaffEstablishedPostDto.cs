@@ -42,9 +42,9 @@ namespace Reports.Core.Dto
         public decimal? TotalSalary { get; set; }
         public DateTime? DateDistribNote { get; set; }
         public DateTime? DateReceivNote { get; set; }
-        public bool IsTemporary { get; set; }
-        public DateTime? DateTempBegin { get; set; }
-        public DateTime? DateTempEnd { get; set; }
+        //public bool IsTemporary { get; set; }
+        //public DateTime? DateTempBegin { get; set; }
+        //public DateTime? DateTempEnd { get; set; }
         public string BasicUser { get; set; }   //ФИО постоянного сотрудника
         public string TemporaryMovementUsers { get; set; }   //ФИО временно перемещенных
         public string LongAbsencesUsers { get; set; }   //ФИО длительно отсутствующих
