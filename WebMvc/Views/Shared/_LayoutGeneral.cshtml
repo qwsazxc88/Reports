@@ -1,4 +1,4 @@
-@using MVCControlsToolkit.Controls
+п»ї@using MVCControlsToolkit.Controls
 @using MVCControlsToolkit.Controls.Validation
 <!DOCTYPE html>
 <html>
@@ -42,7 +42,7 @@
 //            if (errorThrown != null) {
 //                error += errorThrown;
 //            }
-//            alert("Ошибка при асинхронном запросе:" + error);
+//            alert("РћС€РёР±РєР° РїСЂРё Р°СЃРёРЅС…СЂРѕРЅРЅРѕРј Р·Р°РїСЂРѕСЃРµ:" + error);
 //        }
 //    });
 </script>
@@ -64,6 +64,11 @@
             <table style="width:100%">
                 <tr>
                     <td style="vertical-align:top">
+					
+					@*@Html.Partial("_MenuGeneral")*@
+										
+					
+					
 @{ 
     var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
 	switch (controllerName) 
@@ -89,7 +94,7 @@
 	case "StaffMovements": @Html.Partial("_MenuPartialStaffMovements");
 	break;
 	case "Surcharge": @Html.Partial("_MenuPartialMissionOrder");
-	//TODO merge Surcharge to MissionOrder
+	//TODO move Surcharge to MissionOrder
 	break;
 	case "SurchargeNote": @Html.Partial("_MenuPartialSurchargeNote");
 	break;
