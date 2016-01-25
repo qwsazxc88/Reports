@@ -12968,6 +12968,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Documents = UserDao.GetUserPersonnelData(CurrentUser.Id, CurrentUser.UserRole, model.FIO, model.DepartmentId);
             return model;
         }
+        public string GetUserInn(int persid)
+        {
+            try
+            {
+                 string res = UserDao.GetUserInn(persid);
+                return (res);
+            }
+            catch (Exception ex)
+            {
+                return ("");
+            }
+        }
         public string SetUserInn(int persid, string inn)
         {
             try

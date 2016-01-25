@@ -5,9 +5,12 @@
 @{
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     ViewBag.Title = "Список ИНН";
-    Layout = "~/Views/Shared/_LayoutUserPersonnelData.cshtml";
 }
-
+<div id="ChangeInnDialog" style="display:none;">
+        <label>ФИО:</label> <input id="TargetUserName" type="text" disabled="disabled"/><br />
+        <input id="TargetUser" type="hidden" />
+        <label>ИНН:</label> <input id="UserInn" type="text" />
+    </div>
 <div>
 @using (Html.BeginForm())
 {
@@ -120,8 +123,9 @@
                     <td>
                         @Html.DisplayFor(x=>x.Documents[i].FIO)
                     </td>
-                    <td>
-                        @Html.DisplayFor(x=>x.Documents[i].INN)
+                    <td>                       
+                        <input id='@("UserInn"+Model.Documents[i].PeopleId)' value='@Model.Documents[i].INN' type="text" disabled="disabled" />
+                        <input type="button" onclick="ChangeInn('@(Model.Documents[i].FIO)',@(Model.Documents[i].PeopleId),$('@("#UserInn"+Model.Documents[i].PeopleId)').val())" value="Изменить"/>
                     </td>
                     <td>
                         @Html.DisplayFor(x=>x.Documents[i].Position)
@@ -190,9 +194,78 @@
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     $(document).ready(function () {
+        $("#ChangeInnDialog").dialog(
+            { // initialize dialog box
+                autoOpen: false,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: true,
+                resizable: true,
+                width: 300,
+                height: 300,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                },
+                buttons: [
+                    {
+                      text: "Сохранить",
+                      icons: {
+                        primary: "ui-icon-disk"
+                      },
+                      click: function() {
+                        SubmitChange();
+                      }
+                    }
+                  ]
+            });
         $(':button, :input[type=button], :input[type=submit]').button();
         setActiveMenuItem("UserPersonnelDataInn");
     });
+    function ChangeInn(username,targetuser,inntochange)
+    {
+        $('#TargetUserName').val(username);
+        $('#UserInn').val(inntochange);
+        $('#TargetUser').val(targetuser);
+        $("#ChangeInnDialog").dialog("open");
+    }
+    function SubmitChange()
+    {
+        clearControlErrors($("#UserInn"));
+        var innvalue = $('#UserInn').val();
+        var targetuser= $('#TargetUser').val();
+        if(!checkINN(innvalue))
+        {
+           addControlError($("#UserInn"),'Необходимо ввести правильный ИНН.');
+           return false;
+        }
+
+        $.post('/UserRequest/SetUserINN', {personId:targetuser, inn:innvalue}, function(){UpdateInn(targetuser);} )
+        $("#ChangeInnDialog").dialog("close");
+
+    }
+    function UpdateInn(userid)
+    {
+        $.post('/UserRequest/GetUserINN', {personId:userid}, function(data){$("#UserInn"+userid).val(data);} );
+    }
+    function checkINN(inputNumber){
+    if((inputNumber.length == 10) || (inputNumber.length == 12)) return true;
+    else return false;
+    //преобразуем в строку
+    inputNumber = "" + inputNumber;
+    //преобразуем в массив
+    inputNumber = inputNumber.split('');
+    //для ИНН в 10 знаков
+    if((inputNumber.length == 10) && (inputNumber[9] == ((2 * inputNumber[  0] + 4 * inputNumber[1] + 10 * inputNumber[2] + 3 * inputNumber[3] + 5 * inputNumber[4] + 9 * inputNumber[5] + 4 * inputNumber[6] + 6 * inputNumber[7] + 8 * inputNumber[8]) % 11) % 10)){
+        return true;
+    //для ИНН в 12 знаков
+    }else if((inputNumber.length == 12) && ((inputNumber[10] == ((7 * inputNumber[ 0] + 2 * inputNumber[1] + 4 * inputNumber[2] + 10 * inputNumber[3] + 3 * inputNumber[4] + 5 * inputNumber[5] + 9 * inputNumber[6] + 4 * inputNumber[7] + 6 * inputNumber[8] + 8 * inputNumber[9]) % 11) % 10) && (inputNumber[11] == ((3 * inputNumber[ 0] + 7 * inputNumber[1] + 2 * inputNumber[2] + 4 * inputNumber[3] + 10 * inputNumber[4] + 3 * inputNumber[5] + 5 * inputNumber[6] + 9 * inputNumber[7] + 4 * inputNumber[8] + 6 * inputNumber[9] + 8 * inputNumber[10]) % 11) % 10))){
+        return true;
+    }else{
+        return false;
+    }
+} 
     function resetFilter() {        
         $("#DepartmentId").val('0');
         $("#DepartmentNameLabel").text('');
