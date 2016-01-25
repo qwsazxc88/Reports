@@ -110,6 +110,29 @@ namespace Reports.Presenters.UI.Bl
 
         #region Заявки на создание вакансий при длительном отсутствии сотрудников.
         /// <summary>
+        /// Загрузка формы реестра для заявок на создание временных вакансий.
+        /// </summary>
+        /// <returns></returns>
+        StaffTemporaryReleaseVacancyRequestListModel GetStaffTemporaryReleaseVacancyRequestList();
+        /// <summary>
+        /// Загрузка реестра для заявок на создание временных вакансий.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        StaffTemporaryReleaseVacancyRequestListModel SetStaffTemporaryReleaseVacancyRequestListModel(StaffTemporaryReleaseVacancyRequestListModel model);
+        /// <summary>
+        /// Заполняем модель заявки.
+        /// </summary>
+        /// <param name="Id">Id заявки.</param>
+        /// <returns></returns>
+        StaffTemporaryReleaseVacancyRequestModel GetStaffTemporaryReleaseVacancyRequest(int Id);
+        /// <summary>
+        /// сохраняем изменения заявки заявки.
+        /// </summary>
+        /// <param name="Id">Id заявки.</param>
+        /// <returns></returns>
+        bool SaveStaffTemporaryReleaseVacancyRequest(StaffTemporaryReleaseVacancyRequestModel model, out string error);
+        /// <summary>
         /// Создание заявки на вакансию при длительном отсутствии сотрудника. 
         /// </summary>
         /// <param name="model">обрабатываемая модель.</param>
@@ -462,6 +485,11 @@ namespace Reports.Presenters.UI.Bl
         /// </summary>
         /// <param name="model">Модель заявки.</param>
         void LoadDictionaries(StaffEstablishedPostRequestModel model);
+        /// <summary>
+        /// Загрузка справочников модели для заявок на создание временных вакансий при длительном отсутствии сотрудников.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        void LoadDictionaries(StaffTemporaryReleaseVacancyRequestModel model);
         /// <summary>
         /// Заполняем список видов заявок для подразделений.
         /// </summary>

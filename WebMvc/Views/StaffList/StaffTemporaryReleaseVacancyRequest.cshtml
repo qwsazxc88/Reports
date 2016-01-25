@@ -1,0 +1,197 @@
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffTemporaryReleaseVacancyRequestModel
+@{
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+    ViewBag.Title = "Заявка на создание временной вакансии пи длительном отсутствии сорудника";
+}
+
+
+@*StaffTemporaryReleaseVacancyRequest*@
+@using (Html.BeginForm("StaffTemporaryReleaseVacancyRequest", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffTemporaryReleaseVacancyRequestForm" }))
+{
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.IsUsed)
+  
+    
+    <h3>@Html.ValidationMessageFor(m => m.MessageStr)</h3>
+    <legend style="text-align:left;font-size:medium;">Заявка</legend>
+    <div style="border:solid 1px black; padding:10px; background-color:#FAFAFA;">
+        <div id="MainDiv1">
+            <div>
+                <table>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.CreateDate)
+                        </td>
+                        <td>
+                            @(Model.CreateDate.HasValue ? Model.CreateDate.Value.ToShortDateString() : string.Empty)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Id)</td>
+                        <td>
+                            @(Model.Id != 0 ? Model.Id.ToString() : "")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.RequestInitiator)</td>
+                        <td>
+                            @Model.RequestInitiator
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.SEPId)</td>
+                        <td>
+                            @(Model.SEPId != 0 ? Model.SEPId.ToString() : "")
+                        </td>
+                    </tr>                    
+                    <tr>
+                        <td>@Html.LabelFor(m => m.DepartmentId)</td>
+                        <td>
+                            @Html.DisplayFor(m => m.DepartmentName)
+                        </td>
+                    </tr>                    
+                    <tr>
+                        <td>@Html.LabelFor(m => m.AccessoryName)</td>
+                        <td>
+                            @Html.DisplayFor(m => m.AccessoryName)
+                        </td>
+                    </tr>                    
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Managers)</td>
+                        <td>
+                            @Html.DisplayFor(m => m.Managers)
+                        </td>
+                    </tr>                    
+                    <tr>
+                        <td>@Html.LabelFor(m => m.PositionId)</td>
+                        <td>
+                            @Html.DisplayFor(m => m.PositionName)
+                        </td>
+                    </tr>                    
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Surname)</td>
+                        <td>
+                            @Html.DisplayFor(m => m.Surname)
+                        </td>
+                    </tr>                    
+                </table>
+            </div>
+        </div>
+
+
+        <div id="MainDiv2">
+            <div>
+                <table>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.AbsencesTypeId)</td>
+                        <td>
+                            @Html.DropDownListFor(model => model.AbsencesTypeId, new SelectList(Model.AbsencesTypes, "Id", "Name")) 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.DateBegin)</td>
+                        <td>
+                            @Html.EditorFor(m => m.DateBegin)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.DateEnd)</td>
+                        <td>
+                            @Html.EditorFor(m => m.DateEnd)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(m => m.Note)</td>
+                        <td>
+                            @Html.TextAreaFor(m => m.Note, new { style = "width:600px;" })
+                        </td>
+                    </tr>
+                    
+                </table>
+            </div>
+        </div>
+
+        
+        <br />
+        <button id="btnSave" type="button" title="Редактировать заявку" @if (!Model.IsUsed){<text>disabled=disabled</text>}>Сохранить</button>
+        <button id="btnDelete" type="button" title="Отклонить заявку" @if (!Model.IsUsed){<text>disabled=disabled</text>}>Отклонить</button>
+    </div>
+   @* 
+                                                                                                        if (Model.Id != 0)
+                                                                                                        {
+        @Html.Partial("~/Views/Info/Comments.cshtml")
+                                                                                                        }
+    *@
+    <div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moTempVacancy");
+
+        $.ajaxSetup({cache:false});
+
+
+        ShowFlash(true);
+        ShowFlash(false);
+
+        $(document).tooltip({ track: false, duration: 1000 });
+        $(":button").button();
+        $("#DateBegin").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
+        $("#DateEnd").datepicker({ changeYear: true, changeMonth: true, showButtonPanel: true });
+        $(".hasDatepicker").width("85px");
+        
+
+        $("#btnSave").click(function () { ShowFlash(true); $("#StaffTemporaryReleaseVacancyRequestForm").submit(); });
+        $("#btnDelete").click(function () {
+            if (!confirm("Подтвердите выполнение данной операции!?")) {
+                return;
+            }
+            $("#IsUsed").val(false);
+            ShowFlash(true);
+            $("#StaffTemporaryReleaseVacancyRequestForm").submit();
+        });
+
+
+    });
+
+
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 60,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
+    }
+</script>
+
+

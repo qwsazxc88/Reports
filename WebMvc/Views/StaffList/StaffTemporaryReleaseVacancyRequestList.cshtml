@@ -1,6 +1,229 @@
-﻿@{
-    ViewBag.Title = "StaffTemporaryReleaseVacancyRequestList";
+﻿@model Reports.Presenters.UI.ViewModel.StaffList.StaffTemporaryReleaseVacancyRequestListModel
+@{
+    Layout = "~/Views/Shared/_LayoutStaffList.cshtml";
+    ViewBag.Title = "Реестр заявок на создание временных вакансий при длительных отсутствиях сотрудников";
 }
 
-<h2>StaffTemporaryReleaseVacancyRequestList</h2>
+@using (Html.BeginForm("StaffTemporaryReleaseVacancyRequestList", "StaffList", FormMethod.Post, new { enctype = "multipart/form-data", id = "StaffTemporaryReleaseVacancyRequestListForm" }))
+{
+    @Html.HiddenFor(m => m.SortBy)
+    @Html.HiddenFor(m => m.SortDescending)
 
+    <div class="filter-wrap">
+        <table style="width:100%">
+            <tr>
+                <td colspan="2">
+                    <b>Реестр заявок на создание временных вакансий при длительных отсутствиях сотрудников</b>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:220px">
+                    @Html.LabelFor(m => m.DepartmentId):
+                </td>
+                <td>
+                    <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                    <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                    <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:220px">
+                    @Html.LabelFor(m => m.AbsencesTypeId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.AbsencesTypeId, new SelectList(Model.AbsencesTypes, "Id", "Name")) 
+                </td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.Surname)</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Surname, new { placeholder = "ФИО" })
+                    @Html.ValidationMessageFor(m => m.Surname)
+                </td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.SEPId)</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SEPId, new { style = "width:75px;" })
+                    @Html.ValidationMessageFor(m => m.SEPId)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    @Html.LabelFor(m => m.DateBegin):
+                    @Html.EditorFor(model => model.DateBegin) 
+                    @Html.LabelFor(m => m.DateEnd):
+                    @Html.EditorFor(model => model.DateEnd) 
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="button" id="btnFind" value="Выбрать" title="Выбрать записи по указанным параметрам"/>
+                    <input type="button" value="Очистить" title="Очистить поля запросной формы" onclick="resetFilter();"/>
+                </td>
+            </tr>
+        </table>
+    </div><br />
+    
+    <div class="filter-wrap">
+        <table class="grid" id="tblTemporaryReleaseVacancyList" style="width:100%">
+            <tr>
+                <th>№ п/п</th>
+                <th><div id="sort1" style="min-width:30px"><a href="#" onclick = "SortChanged(1);">Номер<br /> заявки</a></div></th>
+                <th><div id="sort2" style="min-width:30px"><a href="#" onclick = "SortChanged(2);">Дата создания<br /> заявки</a></div></th>
+                <th><div id="sort3" style="min-width:30px"><a href="#" onclick = "SortChanged(3);">Подразделение <br />3 уровня</a></div></th>
+                <th><div id="sort4" style="min-width:30px"><a href="#" onclick = "SortChanged(4);">Подразделение <br />4 уровня</a></div></th>
+                <th><div id="sort5" style="min-width:30px"><a href="#" onclick = "SortChanged(5);">Подразделение <br />5 уровня</a></div></th>
+                <th><div id="sort6" style="min-width:30px"><a href="#" onclick = "SortChanged(6);">Подразделение <br />6 уровня</a></div></th>
+                <th><div id="sort7" style="min-width:30px"><a href="#" onclick = "SortChanged(7);">Подразделение <br />7 уровня</a></div></th>
+                <th><div id="sort8" style="min-width:30px"><a href="#" onclick = "SortChanged(8);">Код ш.е.</a></div></th>
+                <th><div id="sort9" style="min-width:30px"><a href="#" onclick = "SortChanged(9);">Должность</a></div></th>
+                <th><div id="sort10" style="min-width:30px"><a href="#" onclick = "SortChanged(10);">ФИО</a></div></th>
+                <th><div id="sort11" style="min-width:30px"><a href="#" onclick = "SortChanged(11);">Причина<br />отсутствия</a></div></th>
+                <th><div id="sort12" style="min-width:30px"><a href="#" onclick = "SortChanged(12);">Дата начала<br />периода</a></div></th>
+                <th><div id="sort13" style="min-width:30px"><a href="#" onclick = "SortChanged(13);">Дата окончания<br />периода</a></div></th>
+                <th><div id="sort14" style="min-width:30px"><a href="#" onclick = "SortChanged(14);">Статус<br /> заявки</a></div></th>
+            </tr>
+            <tbody id="TemporaryReleaseVacancyListBody">
+                @{int i = 1;}
+                @if (Model.TemporaryReleaseVacancyList != null && Model.TemporaryReleaseVacancyList.Count != 0)
+                {
+                    foreach (var item in Model.TemporaryReleaseVacancyList)
+                    {
+                        <tr>
+                            <td style="text-align:center;">@i.ToString()</td>
+                            <td style="text-align:center;"><a class="ui-notify-close" href='@Url.Action("StaffTemporaryReleaseVacancyRequest", "StaffList", new { Id = @item.Id })' style="cursor:hand">@item.Id</a></td>
+                            <td>@(item.CreateDate.HasValue ? item.CreateDate.Value.ToShortDateString() : "")</td>
+                            <td>@item.Dep3Name</td>
+                            <td>@item.Dep4Name</td>
+                            <td>@item.Dep5Name</td>
+                            <td>@item.Dep6Name</td>
+                            <td>@item.Dep7Name</td>
+                            <td>@item.SEPId</td>
+                            <td>@item.PositionName</td>
+                            <td>@item.Surname</td>
+                            <td>@item.AbsencesTypeName</td>
+                            <td>@(item.DateBegin.HasValue ? item.DateBegin.Value.ToShortDateString() : "")</td>
+                            <td>@(item.DateEnd.HasValue ? item.DateEnd.Value.ToShortDateString() : "")</td>
+                            <td>@Html.CheckBoxFor(m => m.TemporaryReleaseVacancyList[i - 1].IsUsed, new { disabled = "disabled" })</td>
+                        </tr>
+                    
+                        i++;
+                    }
+                }
+                
+                
+            </tbody>
+        </table>
+    </div>
+    
+    <div id="DivIndicator" style="display:none;">
+        <table>
+            <tr>
+                <td><span id="LoadingIndicator2"></span></td>
+                <td><label>Идет загрузка данных...</label></td>
+            </tr>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";    
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+
+    $(document).ready(function () {
+        setActiveMenuItem("moTempVacancy");
+        $(document).tooltip({ track: true });
+        $(":button").button();
+
+        $(":text").bind("keydown", function(e){if (e.keyCode == 13) $("#StaffTemporaryReleaseVacancyRequestListForm").submit();});
+
+        ShowFlash(true);
+        ShowFlash(false);
+
+        $("#btnFind").click(function(){
+            GetFindRows();
+        });
+
+        $("#DateBegin").datepicker({changeYear: true, changeMonth: true});
+        $("#DateEnd").datepicker({changeYear: true, changeMonth: true});
+        $(".hasDatepicker").width("75px");
+
+        if(($("#SortBy").val() != 0) && ($("#SortDescending").val() != ''))
+        {
+            if($("#SortDescending").val() == 'True')
+                $("#sort"+$("#SortBy").val()).addClass("sort-desc");
+            else        
+                $("#sort"+$("#SortBy").val()).addClass("sort-asc");
+        }
+
+    });
+
+    function resetFilter() {
+        $("#DateBegin").val('');
+        $("#DateEnd").val('');
+        $("#DepartmentName").val('');
+        $("#DepartmentId").val('0');
+        $("#DepartmentNameLabel").text('');
+        $("#SurName").val('');
+        $("#AbsencesTypeId").val('0');
+        $("#SEPId").val('');
+    }
+
+    function GetFindRows()
+    {
+        ShowFlash(true);
+        $("#TemporaryReleaseVacancyListBody").remove();
+        $("#StaffTemporaryReleaseVacancyRequestListForm").submit();
+    }
+
+    function SortChanged(sortedBy)
+    {
+        if($("#SortBy").val() != sortedBy)
+            $("#SortDescending").val(''); 
+        $("#SortBy").val(sortedBy);
+        if($("#SortDescending").val() == '')
+            $("#SortDescending").val('True');
+        else if($("#SortDescending").val() == 'True')
+            $("#SortDescending").val('False');
+        else
+            $("#SortDescending").val('True');
+
+        GetFindRows();
+    }
+
+    function ShowFlash(IsShow)  //показываем индикатор загрузки
+    {
+        if (!IsShow) {
+            $("#LoadingIndicator2").removeClass("loading2");
+            $("#DivIndicator").dialog("close");
+            $("#DivIndicator").hide();
+        }
+        else {
+            $("#LoadingIndicator2").addClass("loading2");
+            $("#DivIndicator").show();
+            $("#DivIndicator").dialog(
+            { // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                // fix IE6  
+                bgiframe: true,
+                draggable: false,
+                resizable: false,
+                width: 300,
+                height: 60,
+                closeOnEscape: false,
+                close: function (event, ui) {
+                    //$(this).dialog("destroy").remove();
+                }
+            });
+            $(".ui-dialog-titlebar").hide();
+            $(".ui-dialog-titlebar-close").hide();
+        }
+    }
+</script>

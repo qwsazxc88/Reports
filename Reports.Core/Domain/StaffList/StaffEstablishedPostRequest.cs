@@ -33,5 +33,9 @@ namespace Reports.Core.Domain
         public virtual User Editor { get; set; }
         public virtual DateTime? EditDate { get; set; }
         public virtual IList<StaffEstablishedPostChargeLinks> PostChargeLinks { get; set; }
+        /// <summary>
+        /// Задачи в Пайрусе
+        /// </summary>
+        public virtual IList<StaffRequestPyrusTasks> StaffRequestPyrusTasks { get; set; }
     }
 }

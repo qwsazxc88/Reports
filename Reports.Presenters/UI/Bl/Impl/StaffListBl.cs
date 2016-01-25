@@ -2694,8 +2694,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             }
-            
-            
+
+            model.PyrusNumber = "";
             LoadDictionaries(model);
             //для новых заявок надо подгружать надбавки от текущего состояния штатной единицы, берем действующую заявку, иначе по заполняем по текущей заявке
             model.PostChargeLinks = StaffEstablishedPostChargeLinksDao.GetChargesForRequests(model.RequestTypeId != 1 && model.Id == 0 ? StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId) : model.Id).OrderBy(x => x.ChargeName).ToList();
@@ -3328,6 +3328,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             try
             {
                 DocumentApprovalDao.SaveAndFlush(da);
+
+                //сохраняем здачу пайруса
+                if (!string.IsNullOrEmpty(model.PyrusNumber))
+                {
+                    entity.StaffRequestPyrusTasks.Add(new StaffRequestPyrusTasks()
+                    {
+                        EPRequest = entity,
+                        DocumentApproval = da,
+                        NumberTask = model.PyrusNumber,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    });
+                }
                 
                 if (da.Number == 1)
                 {
@@ -3493,6 +3506,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //потом проводим слесарную обработку по состоянию согласования 
                 foreach (DocumentApproval item in DocApproval.OrderBy(x => x.Number))
                 {
+                    string PyrusNumber = entity.StaffRequestPyrusTasks.Where(x => x.DocumentApproval.Number == item.Number).Count() != 0 ? entity.StaffRequestPyrusTasks.Where(x => x.DocumentApproval.Number == item.Number).Single().NumberTask : string.Empty;
                     switch (item.Number)
                     {
                         case 1://инициатор
@@ -3501,6 +3515,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.InitiatorApproveName = "Заявка создана " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
                                 : "Автор заявки: " + item.AssistantUser.Name + "; Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
                             model.InitiatorId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+
+                            if (!string.IsNullOrEmpty(PyrusNumber))
+                            {
+                                model.InitiatorPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                model.InitiatorPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                            }
 
                             //открываем согласование для следующего участника процесса
                             model.IsCuratorApproveAvailable = model.IsCurator || model.IsConsultant ? true : false;
@@ -3525,6 +3545,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsCuratorApprove = true;
                             model.IsCuratorApproveAvailable = false;
                             model.CuratorApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Куратор: " + item.ApproveUser.Name;
+                            if (!string.IsNullOrEmpty(PyrusNumber))
+                            {
+                                model.CuratorPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                model.CuratorPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                            }
 
                             //открываем согласование для следующего участника процесса
                             model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
@@ -3534,6 +3559,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsPersonnelBankApprove = true;
                             model.IsPersonnelBankApproveAvailable = false;
                             model.PersonnelBankApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Кадровик банка: " + item.ApproveUser.Name;
+                            if (!string.IsNullOrEmpty(PyrusNumber))
+                            {
+                                model.PersonnelBankPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                model.PersonnelBankPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                            }
 
                             //открываем согласование для следующего участника процесса
                             model.IsTopManagerApproveAvailable = model.TopManagers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.TopManagers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
@@ -3545,6 +3575,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.TopManagerApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
                                 : "Согласовал: " + item.AssistantUser.Name + "; Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
                             model.TopManagerId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+                            if (!string.IsNullOrEmpty(PyrusNumber))
+                            {
+                                model.TopManagerPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                model.TopManagerPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                            }
 
                             //открываем согласование для следующего участника процесса
                             model.IsBoardMemberApproveAvailable = model.BoardMembers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.BoardMembers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
@@ -3557,6 +3592,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 : "Утвердил: " + item.AssistantUser.Name + "; Утверждающий: " + item.ApproveUser.Name + " - Член правления банка");
                             model.BoardMemberId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
                             model.IsAgreeButtonAvailable = false;
+
+                            if (!string.IsNullOrEmpty(PyrusNumber))
+                            {
+                                model.BoardMemberPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                model.BoardMemberPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                            }
                             break;
                     }
                 }
@@ -3621,6 +3662,132 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region Заявки на создание вакансий при длительном отсутствии сотрудников.
+        /// <summary>
+        /// Загрузка формы реестра для заявок на создание временных вакансий.
+        /// </summary>
+        /// <returns></returns>
+        public StaffTemporaryReleaseVacancyRequestListModel GetStaffTemporaryReleaseVacancyRequestList()
+        {
+            StaffTemporaryReleaseVacancyRequestListModel model = new StaffTemporaryReleaseVacancyRequestListModel();
+            DateTime today = DateTime.Today;
+            model.DateBegin = new DateTime(today.Year, today.Month, 1);
+            model.DateEnd = today;
+            LoadDictionaries(model);
+            return model;
+        }
+        /// <summary>
+        /// Загрузка реестра для заявок на создание временных вакансий.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public StaffTemporaryReleaseVacancyRequestListModel SetStaffTemporaryReleaseVacancyRequestListModel(StaffTemporaryReleaseVacancyRequestListModel model)
+        {
+            model.TemporaryReleaseVacancyList = StaffTemporaryReleaseVacancyRequestDao.GetTemporaryReleaseVacancyList(userDao.Load(AuthenticationService.CurrentUser.Id),
+                AuthenticationService.CurrentUser.UserRole,
+                model.DepartmentId,
+                model.Id.HasValue ? model.Id.Value : 0,
+                model.SEPId.HasValue ? model.SEPId.Value : 0,
+                model.Surname,
+                model.DateBegin,
+                model.DateEnd,
+                model.AbsencesTypeId,
+                model.SortBy,
+                model.SortDescending);
+
+            LoadDictionaries(model);
+            return model;
+        }
+        /// <summary>
+        /// Заполняем модель заявки.
+        /// </summary>
+        /// <param name="Id">Id заявки.</param>
+        /// <returns></returns>
+        public StaffTemporaryReleaseVacancyRequestModel GetStaffTemporaryReleaseVacancyRequest(int Id)
+        {
+            StaffTemporaryReleaseVacancyRequestModel model = new StaffTemporaryReleaseVacancyRequestModel();
+            StaffTemporaryReleaseVacancyRequest entity = StaffTemporaryReleaseVacancyRequestDao.Get(Id);
+
+            model.CreateDate = entity.CreateDate;
+            model.Id = entity.Id;
+            model.RequestInitiator = entity.Creator.Name + (entity.Creator.Position != null ? " - " + entity.Creator.Position.Name : "");
+            model.SEPId = entity.EstablishedPostUserLinks.StaffEstablishedPost.Id;
+            model.DepartmentId = entity.EstablishedPostUserLinks.StaffEstablishedPost.Department.Id;
+            model.DepartmentName = entity.EstablishedPostUserLinks.StaffEstablishedPost.Department.Name;
+            model.AccessoryName = entity.EstablishedPostUserLinks.StaffEstablishedPost.Department.DepartmentAccessory.Name;
+            model.PositionId = entity.EstablishedPostUserLinks.StaffEstablishedPost.Position.Id;
+            model.PositionName = entity.EstablishedPostUserLinks.StaffEstablishedPost.Position.Name;
+            model.Surname = entity.ReplacedUser.Name;
+            model.AbsencesTypeId = entity.AbsencesType.Id;
+            model.DateBegin = entity.DateBegin;
+            model.DateEnd = entity.DateEnd;
+            model.Note = entity.Note;
+            model.IsUsed = entity.IsUsed;
+            
+
+            //кнопки
+            //model.IsDraftButtonAvailable = entity.DeleteDate.HasValue ? false : true;
+            //model.IsAgreeButtonAvailable = entity.DeleteDate.HasValue ? false : !entity.DateAccept.HasValue;
+
+            LoadDictionaries(model);
+
+            return model;
+        }
+        /// <summary>
+        /// сохраняем изменения заявки заявки.
+        /// </summary>
+        /// <param name="Id">Id заявки.</param>
+        /// <returns></returns>
+        public bool SaveStaffTemporaryReleaseVacancyRequest(StaffTemporaryReleaseVacancyRequestModel model, out string error)
+        {
+            error = string.Empty;
+            StaffTemporaryReleaseVacancyRequest entity = StaffTemporaryReleaseVacancyRequestDao.Get(model.Id);
+
+            if (entity == null)
+            {
+                error = "Произошла ошибка при редактировании данных! Обратитесь к разработчикам!";
+                return false;
+            }
+
+
+
+            if (!ValidateModel(new StaffListArrangementModel() { DateBegin = model.DateBegin,
+                                                                 DateEnd = model.DateEnd,
+                                                                 UserLinkId = entity.EstablishedPostUserLinks.Id}, out error))
+                return false;
+
+            entity.DateBegin = model.DateBegin;
+            entity.DateEnd = model.DateEnd;
+            entity.AbsencesType = StaffLongAbsencesTypesDao.Get(model.AbsencesTypeId);
+            entity.Note = model.Note;
+            entity.IsUsed = model.IsUsed;
+            entity.Editor = UserDao.Get(AuthenticationService.CurrentUser.Id);
+            entity.EditDate = DateTime.Now;
+
+
+            if (model.Id != 0)
+            {
+                try
+                {
+                    StaffTemporaryReleaseVacancyRequestDao.SaveAndFlush(entity);
+                    model.Id = entity.Id;
+                    if (model.IsUsed)
+                        error = "Данные сохранены!";
+                    else
+                        error = "Заявка отклонена!";
+                }
+                catch (Exception ex)
+                {
+                    StaffTemporaryReleaseVacancyRequestDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }
+
+                return true;
+            }
+           
+
+            return true;
+        }
         /// <summary>
         /// Создание заявки на вакансию при длительном отсутствии сотрудника. 
         /// </summary>
@@ -3721,7 +3888,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             //если есть длительное отсутствие, конец периода не обязателен, по этому конец проверяем только для ОЖ и перемещениям
-            if (MaxEndDate.HasValue && !model.DateEnd.HasValue)
+            if (/*MaxEndDate.HasValue &&*/ !model.DateEnd.HasValue)
             {
                 error = "Укажите конец периода!";
                 return false;
@@ -5489,6 +5656,40 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.RPLInkName = FinStructure.RPLinkName;
                 model.RPLInkNameSKD = FinStructure.RPLinkNameSKD;
             }
+        }
+        /// <summary>
+        /// Загрузка справочников для реестра заявок на создание временных вакансий.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        public void LoadDictionaries(StaffTemporaryReleaseVacancyRequestListModel model)
+        {
+            //реквизиты инициатора
+            model.AbsencesTypes = StaffLongAbsencesTypesDao.LoadAll().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            model.AbsencesTypes.Insert(0, new IdNameDto { Id = 0, Name = "" });
+        }
+        /// <summary>
+        /// Загрузка справочников модели для заявок на создание временных вакансий при длительном отсутствии сотрудников.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        public void LoadDictionaries(StaffTemporaryReleaseVacancyRequestModel model)
+        {
+            //реквизиты инициатора
+            model.AbsencesTypes = StaffLongAbsencesTypesDao.LoadAll().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            
+            
+
+            //список руководителей
+            IList<User> managers = DepartmentDao.GetDepartmentManagersWithManualLinks(model.DepartmentId);
+            //model.InitiatorId
+            StringBuilder managersBuilder = new StringBuilder();
+            foreach (var manager in managers)
+            {
+                managersBuilder.AppendFormat("{0} ({1}), ", manager.Name, manager.Position == null ? "<не указана>" : manager.Position.Name);
+            }
+            model.Managers = managersBuilder.ToString();
+
+
+
         }
         /// <summary>
         /// Заполняем список видов заявок для подразделений.
