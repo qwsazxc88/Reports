@@ -807,22 +807,25 @@ namespace WebMvc.Controllers
 
          #region UserPersonnelData
          [HttpGet]
+         [ReportAuthorize((UserRole.ConsultantPersonnel | UserRole.ConsultantOutsourcing | UserRole.OutsourcingManager | UserRole.TaxCollector | UserRole.Accountant | UserRole.Manager | UserRole.PersonnelManager | UserRole.Employee))]
          public ActionResult UserPersonnelDataList()
          {
              var model= RequestBl.GetUsersPersonnelDataListModel();
              return View(model);
          }
         [HttpPost]
-         public ActionResult UserPersonnelDataList(UsersPersonnelDataViewModel model)
+        [ReportAuthorize((UserRole.ConsultantPersonnel | UserRole.ConsultantOutsourcing | UserRole.OutsourcingManager | UserRole.TaxCollector | UserRole.Accountant | UserRole.Manager | UserRole.PersonnelManager | UserRole.Employee))]
+        public ActionResult UserPersonnelDataList(UsersPersonnelDataViewModel model)
          {
              model = RequestBl.SetDocuments(model);
              return View(model);
          }
-        
+        [ReportAuthorize((UserRole.ConsultantPersonnel | UserRole.ConsultantOutsourcing | UserRole.OutsourcingManager | UserRole.TaxCollector | UserRole.Accountant | UserRole.Manager | UserRole.PersonnelManager | UserRole.Employee))]
          public ContentResult SetUserINN(int personId, string inn)
          {
              return Content(RequestBl.SetUserInn(personId, inn));
          }
+        [ReportAuthorize((UserRole.ConsultantPersonnel | UserRole.ConsultantOutsourcing | UserRole.OutsourcingManager | UserRole.TaxCollector | UserRole.Accountant | UserRole.Manager | UserRole.PersonnelManager | UserRole.Employee))]
          public ContentResult GetUserINN(int personId)
          {
              return Content(RequestBl.GetUserInn(personId));

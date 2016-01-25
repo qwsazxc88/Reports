@@ -250,6 +250,8 @@
         $.post('/UserRequest/GetUserINN', {personId:userid}, function(data){$("#UserInn"+userid).val(data);} );
     }
     function checkINN(inputNumber){
+    if((inputNumber.length == 10) || (inputNumber.length == 12)) return true;
+    else return false;
     //преобразуем в строку
     inputNumber = "" + inputNumber;
     //преобразуем в массив

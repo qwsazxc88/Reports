@@ -195,6 +195,10 @@
                             <div class="menuitem" id="userAcceptGroup">@Html.ActionLink("Организационная страница", "AccessGroupsList", "UserRequest")</div>
                     }
                     <div class="menuitem" id="documentMovements">@Html.ActionLink("Документооборот", "Index", "DocumentMovements")</div>
+                    if ((dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.ConsultantOutsourcing | UserRole.OutsourcingManager | UserRole.TaxCollector | UserRole.Accountant | UserRole.Manager | UserRole.PersonnelManager | UserRole.Employee)) > 0)
+                    {
+                    <div class="menuitem" id="UserPersonnelDataInn">@Html.ActionLink("ИНН физ.лица", "UserPersonnelDataList", "UserRequest")</div>
+                    }
 @*                        if (dto.UserRole == UserRole.PersonnelManager)
                         {
                             <div class="menuitem" id="constantList">@Html.ActionLink("Константы", "ConstantList", "UserRequest")</div>
