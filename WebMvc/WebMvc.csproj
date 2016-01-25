@@ -945,7 +945,6 @@
     <Content Include="Views\StaffMovements\StaffMovementsFactEdit.cshtml" />
     <Content Include="Views\UserRequest\UserPersonnelDataList.cshtml" />
     <Content Include="Views\StaffList\StaffTemporaryReleaseVacancyRequestList.cshtml" />
-    <Content Include="Views\Shared\_LayoutUserPersonnelData.cshtml" />
     <Content Include="Views\StaffList\StaffTemporaryReleaseVacancyRequest.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

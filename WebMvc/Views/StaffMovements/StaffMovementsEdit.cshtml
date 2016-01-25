@@ -638,7 +638,7 @@
                         <input type="checkbox" disabled="disabled" @(Model.SendDate.HasValue ? "checked" : "") />
                         @if (Model.IsUserAcceptAvailable && !Model.IsRequestBad)
                         {
-                            <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
+                            <input type="submit" style="border-color:Green;color:Green;"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
                         }
                         @Html.DisplayFor(m => m.SendDate)
                         @Html.DisplayFor(m => m.User.Name)
@@ -652,7 +652,7 @@
                         <input type="checkbox" disabled="disabled" @(Model.SourceManagerAccept.HasValue ? "checked" : "") />
                         @if (Model.IsSourceManagerAcceptAvailable && !Model.IsRequestBad)
                         {
-                            <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
+                            <input type="submit"  style="border-color:Green;color:Green;"   onclick="return ButtonPressed('Accept');" value="Согласовать" />
                         }
                         @Html.DisplayFor(m => m.SourceManagerAccept)
                         @(Model.SourceManager != null ? Model.SourceManager.Name : "")
@@ -668,7 +668,7 @@
                         <input type="checkbox" disabled="disabled" @(Model.TargetManagerAccept.HasValue ? "checked" : "") />
                         @if (Model.IsTargetManagerAcceptAvailable && !Model.IsRequestBad)
                         {
-                            <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
+                            <input type="submit"  style="border-color:Green;color:Green;"   onclick="return ButtonPressed('Accept');" value="Согласовать" />
                         }
                         @Html.DisplayFor(m => m.TargetManagerAccept)
                         @(Model.TargetManager != null ? Model.TargetManager.Name : "")
@@ -680,7 +680,7 @@
                         <input type="checkbox" disabled="disabled" @(Model.ChiefAccept.HasValue ? "checked" : "") />
                         @if (Model.IsChiefAcceptAvailable && !Model.IsRequestBad)
                         {
-                            <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
+                            <input type="submit"  style="border-color:Green;color:Green;"   onclick="return ButtonPressed('Accept');" value="Согласовать" />
                         }
                         @Html.DisplayFor(m => m.ChiefAccept)
                         @(Model.Chief)
@@ -692,7 +692,7 @@
                         <input type="checkbox" disabled="disabled" @(Model.PersonnelManagerAccept.HasValue ? "checked" : "") />
                         @if (Model.IsPersonnelManagerAcceptAvailable && !Model.IsRequestBad)
                         {
-                            <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
+                            <input type="submit"  style="border-color:Green;color:Green;"   onclick="return ButtonPressed('Accept');" value="Согласовать" />
                         }
                         @Html.DisplayFor(m => m.PersonnelManagerAccept)
                         @(Model.PersonnelManager)
@@ -704,7 +704,7 @@
                         <input type="checkbox" disabled="disabled" @(Model.PersonnelManagerBankAccept.HasValue ? "checked" : "") />
                         @if (Model.IsPersonnelManagerBankAcceptAvailable && !Model.IsRequestBad)
                         {
-                            <input type="submit"  onclick="return ButtonPressed('Accept');" value="Согласовать" />
+                            <input type="submit"  style="border-color:Green;color:Green;"   onclick="return ButtonPressed('Accept');" value="Согласовать" />
                         }
                         @Html.DisplayFor(m => m.PersonnelManagerBankAccept)
                         @(Model.PersonnelManagerBank)
