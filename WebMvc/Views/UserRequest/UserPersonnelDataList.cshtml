@@ -85,6 +85,9 @@
                         <a>Дата<br />Увольнения</a>
                     </th>
                     <th >
+                        <a>В декрете<br />(конец отпуска)</a>
+                    </th>
+                    <th >
                         <a>ФИО</a>
                     </th>
                     <th >
@@ -119,6 +122,9 @@
                     </td>
                     <td >
                         @Html.DisplayFor(x=>x.Documents[i].DateRelease)
+                    </td>
+                    <td >
+                        @Html.DisplayFor(x=>x.Documents[i].chilvacationend)
                     </td>
                     <td>
                         @Html.DisplayFor(x=>x.Documents[i].FIO)
