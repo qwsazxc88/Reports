@@ -1389,6 +1389,7 @@ namespace Reports.Core.Dao.Impl
             sqlQuery += wherestr;
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("PeopleId", NHibernateUtil.Int32).
+                AddScalar("chilvacationend",NHibernateUtil.DateTime).
                 AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("DepId", NHibernateUtil.Int32).
                 AddScalar("DateAccept", NHibernateUtil.DateTime).
