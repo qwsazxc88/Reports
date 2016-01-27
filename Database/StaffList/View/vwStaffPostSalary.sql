@@ -53,9 +53,9 @@ FROM (/*--персональные надбваки (старый вариант)
 									GROUP BY UserId) as F ON F.UserId = C.UserId
 			WHERE A.IsUsed = 1) as A
 LEFT JOIN Users as B ON B.Id = A.UserId
-LEFT JOIN StaffPostChargeLinks as SPCL ON SPCL.UserId = A.UserId and SPCL.IsActive=1 and SPCL.StaffExtraChargeId=7 and SPCL.Id is not null
-LEFT JOIN StaffUserNorthAdditional as C ON C.UserId = A.UserId and year(DateCalculate) = year(getdate()) and month(DateCalculate) = month(getdate())  
+LEFT JOIN StaffPostChargeLinks as SPCL ON SPCL.UserId = A.UserId and SPCL.IsActive=1 and SPCL.StaffExtraChargeId=7 
+LEFT JOIN StaffUserNorthAdditional as C ON C.UserId = A.UserId and year(DateCalculate) = year(getdate()) and month(DateCalculate) = month(getdate())  and SPCL.Id is not null
 
---select * from vwStaffPostSalary where userid = 6118
+--select * from vwStaffPostSalary where userid = 8599
 --select SUM(Salary), SUM(Regional), SUM(Personnel), SUM(Territory), SUM(Front), SUM(Drive), SUM(North), SUM(Qualification), SUM(TotalSalary) from vwStaffPostSalary
 GO

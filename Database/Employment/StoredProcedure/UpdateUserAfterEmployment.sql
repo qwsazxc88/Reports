@@ -10,7 +10,9 @@ BEGIN
 SET NOCOUNT ON
 DECLARE 
 	@UserId int	--Id сотрудника
+	,@ReplacedId int	--Id замещаемого сотрудника
 	,@UserLinkId int	--Id в расстановке
+	,@ReasonId int	--вид замещения
 	,@PersonalAddition numeric(18, 2)	--Персональная надбавка (руб)
 	,@AreaAddition numeric(18, 2)	--Территориальная надбавка (руб)
 	,@TravelRelatedAddition numeric(18, 2)	--Надбавка за разъездной характер работы (руб)
@@ -19,14 +21,27 @@ DECLARE
 	,@NorthernAreaAddition numeric(18, 2)	--северная %
 BEGIN TRANSACTION	
 	SELECT @UserId = UserId FROM EmploymentCandidate WHERE Id = @CandidateId
-	SELECT @UserLinkId = Id FROM StaffEstablishedPostUserLinks WHERE DocId = @CandidateId and ReserveType = 2
-
+	SELECT @UserLinkId = Id, @ReplacedId = UserId FROM StaffEstablishedPostUserLinks WHERE DocId = @CandidateId and ReserveType = 2
+	
 	--если прием по срочному тд, то в расстановке место занято другим сотрудником и стоит признак резерва из приема
 	--заносим запись в журнал замещения
 	IF EXISTS (SELECT * FROM StaffEstablishedPostUserLinks WHERE DocId = @CandidateId and ReserveType = 2 and UserId is not null)
 	BEGIN
-		INSERT INTO StaffPostReplacement(UserLinkId, UserId, ReplacedId, IsUsed)
-		SELECT Id, @UserId, UserId, 1 FROM StaffEstablishedPostUserLinks WHERE Id = @UserLinkId
+		--определяем по замещаемому сотруднику вид временной вакансии ОЖ/КП/ДО
+		--ОЖ
+		IF EXISTS (SELECT * FROM ChildVacation WHERE UserId = @ReplacedId and SendTo1C is not null and DeleteDate is null and GETDATE() between BeginDate and EndDate)
+			SET @ReasonId = 1
+
+		--КП
+		IF EXISTS (SELECT * FROM StaffMovements WHERE UserId = @ReplacedId and IsTempMoving = 1 and Type in (2, 3) and Status = 12 and GETDATE() between MovementDate and MovementTempTo)
+			SET @ReasonId = 2
+
+		--ОД
+		IF EXISTS (SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE ReplacedId = @ReplacedId and IsUsed = 1 and GETDATE() between DateBegin and DateEnd)
+			SET @ReasonId = 3
+
+		INSERT INTO StaffPostReplacement(UserLinkId, UserId, ReplacedId, IsUsed, ReasonId)
+		SELECT Id, @UserId, UserId, 1, @ReasonId FROM StaffEstablishedPostUserLinks WHERE Id = @UserLinkId
 
 		--проставляем временное место работы
 		UPDATE Users SET TempUserLinkId = @UserLinkId WHERE Id = @UserId
