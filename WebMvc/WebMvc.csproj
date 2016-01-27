@@ -114,6 +114,7 @@
     <Compile Include="Controllers\InfoController.cs" />
     <Compile Include="Controllers\MailListController.cs" />
     <Compile Include="Controllers\MissionOrderController.cs" />
+    <Compile Include="Controllers\ShortcodeController.cs" />
     <Compile Include="Controllers\StaffListController.cs" />
     <Compile Include="Controllers\StaffMovementsController.cs" />
     <Compile Include="Controllers\SurchargeController.cs" />
