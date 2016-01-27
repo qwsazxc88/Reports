@@ -99,13 +99,18 @@ namespace WebMvc
                 "AutoComplete/{action}", // URL with parameters
                 new { controller = "AutoComplete", action = "Countries" } // Parameter defaults
             );
+            routes.MapRoute(
+                "ShortCode", // Route name
+                "заявка/{id}", // URL with parameters
+                new { controller = "Shortcode", action = "Index", id = UrlParameter.Optional } // Parameter defaults
 
+            );
             routes.MapRoute(
                 "Default", // Route name
                 "{controller}/{action}/{id}", // URL with parameters
                 new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults
             );
-
+            
         }
 
         protected void Application_Start()
