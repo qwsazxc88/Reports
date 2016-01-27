@@ -99,13 +99,18 @@ namespace WebMvc
                 "AutoComplete/{action}", // URL with parameters
                 new { controller = "AutoComplete", action = "Countries" } // Parameter defaults
             );
+            routes.MapRoute(
+                "ShortCode", // Route name
+                "заявка/{id}", // URL with parameters
+                new { controller = "Shortcode", action = "Index", id = UrlParameter.Optional } // Parameter defaults
 
+            );
             routes.MapRoute(
                 "Default", // Route name
                 "{controller}/{action}/{id}", // URL with parameters
                 new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults
             );
-
+            
         }
 
         protected void Application_Start()
@@ -245,8 +250,8 @@ namespace WebMvc
             }
             log4net.LogManager.GetLogger(GetType()).Error(String.Format("Error occured: request.params: {0} {1} ", source, Environment.NewLine),ex);
             var requbl=Ioc.Resolve<Reports.Presenters.UI.Bl.IRequestBl>();
-            if (requbl==null) return;
-            requbl.sendEmail("baranov@ruscount.ru", "[WEBAPP] Ошибка :)", String.Format("Error occured: request.params: {0} {1} {2} {3}", source, Environment.NewLine, ex, usrname));
+            /*if (requbl==null) return;
+            requbl.sendEmail("baranov@ruscount.ru", "[WEBAPP] Ошибка :)", String.Format("Error occured: request.params: {0} {1} {2} {3}", source, Environment.NewLine, ex, usrname));*/
             /*HttpException lastErrorWrapper = ex as HttpException;
 
             Exception lastError = lastErrorWrapper;
