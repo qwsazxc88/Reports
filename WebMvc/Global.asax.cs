@@ -245,8 +245,8 @@ namespace WebMvc
             }
             log4net.LogManager.GetLogger(GetType()).Error(String.Format("Error occured: request.params: {0} {1} ", source, Environment.NewLine),ex);
             var requbl=Ioc.Resolve<Reports.Presenters.UI.Bl.IRequestBl>();
-            if (requbl==null) return;
-            requbl.sendEmail("baranov@ruscount.ru", "[WEBAPP] Ошибка :)", String.Format("Error occured: request.params: {0} {1} {2} {3}", source, Environment.NewLine, ex, usrname));
+            /*if (requbl==null) return;
+            requbl.sendEmail("baranov@ruscount.ru", "[WEBAPP] Ошибка :)", String.Format("Error occured: request.params: {0} {1} {2} {3}", source, Environment.NewLine, ex, usrname));*/
             /*HttpException lastErrorWrapper = ex as HttpException;
 
             Exception lastError = lastErrorWrapper;
