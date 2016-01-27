@@ -46,55 +46,80 @@ namespace Reports.Core.Dao.Impl
         /// <param name="SortBy">Номер колонки для сортировки</param>
         /// <param name="SortDescending">Признак направления сортировки.</param>
         /// <param name="RequestTypeId">Вид заявки</param>
+        /// <param name="BFGId">Id принадлежности подразделения.</param>
         /// <returns></returns>
-        public IList<EstablishedPostRequestDto> GetEstablishedPostRequestList(User curUser, UserRole role, int DepartmentId, int Id, int SEPId, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending, int RequestTypeId)
+        public IList<EstablishedPostRequestDto> GetEstablishedPostRequestList(User curUser, UserRole role, int DepartmentId, int Id, int SEPId, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending
+                                                                                , int RequestTypeId, int BFGId)
         {
-            string SqlQuery = @"SELECT A.Id, 
-                                       A.SEPId,
-                                       A.DateRequest, 
-                                       B.Name as RequestTypeName, 
-                                       A.RequestTypeId,
-                                       A.DepartmentId,
-                                       C.ParentId,
-                                       Dep2.Name as Dep2Name, 
-                                       Dep3.Name as Dep3Name, 
-                                       Dep4.Name as Dep4Name, 
-                                       Dep5.Name as Dep5Name, 
-                                       Dep6.Name as Dep6Name, 
-                                       C.Name as Dep7Name, 
-                                       Dep2.Path as Dep2Path, 
-                                       Dep3.Path as Dep3Path, 
-                                       Dep4.Path as Dep4Path, 
-                                       Dep5.Path as Dep5Path, 
-                                       Dep6.Path as Dep6Path, 
-                                       D.Id as PersonId, 
-                                       D.Name as Surname, 
-                                       E.Name as PositionName,
-                                       case when A.DeleteDate is not null then 'Отклонено'
-                                            when A.DateSendToApprove is null then 'Черновик'
-						                    when A.DateSendToApprove is not null and A.DateAccept is null and A.DeleteDate is null then 'На согласовании'
-						                    when A.DateAccept is not null and A.DeleteDate is null then 'Утверждено' end as Status,
-			                           case when A.DeleteDate is not null then 4
-                                            when A.DateSendToApprove is null then 1
-						                    when A.DateSendToApprove is not null and A.DateAccept is null and A.DeleteDate is null then 2
-						                    when A.DateAccept is not null and A.DeleteDate is null then 3 end as StatusId
-                                FROM StaffEstablishedPostRequest as A
-                                INNER JOIN StaffEstablishedPostRequestTypes as B ON B.Id = A.RequestTypeId
-                                INNER JOIN Department as C ON C.Id = A.DepartmentId
-                                LEFT JOIN Department as Dep2 ON C.Path like Dep2.Path + N'%' and Dep2.ItemLevel = 2
-                                LEFT JOIN Department as Dep3 ON C.Path like Dep3.Path + N'%' and Dep3.ItemLevel = 3
-                                LEFT JOIN Department as Dep4 ON C.Path like Dep4.Path + N'%' and Dep4.ItemLevel = 4
-                                LEFT JOIN Department as Dep5 ON C.Path like Dep5.Path + N'%' and Dep5.ItemLevel = 5
-                                LEFT JOIN Department as Dep6 ON C.Path like Dep6.Path + N'%' and Dep6.ItemLevel = 6
-                                LEFT JOIN Users as D ON D.Id = A.CreatorID
-                                LEFT JOIN Position as E ON E.Id = D.PositionId";
+            string SqlQuery = @"SELECT  A.Id 
+				                        ,A.SEPId
+				                        ,A.DateRequest
+				                        ,B.Name as RequestTypeName 
+				                        ,A.RequestTypeId
+				                        ,A.DepartmentId
+				                        ,Dep3.Name as Dep3Name 
+				                        ,C.Name as Dep7Name 
+                                        ,C.BFGId
+				                        ,A.BeginAccountDate
+				                        ,F.Name as DepartmentAccessoryName
+				                        ,case when len(isnull(J.TaxAdminCode, isnull(JJ.TaxAdminCode, ''))) = 0 then N'Нет' else N'Да' end as TaxAvailable
+				                        ,E.Name as PositionName
+				                        ,isnull(G.CountNotVacation, 0) as CountNotVacation
+				                        ,isnull(G.CountVacation, 0) as CountVacation
+				                        --по дате утверждения заявки смотрю в архив
+				                        ,(SELECT top 1 Salary FROM StaffEstablishedPostArchive
+					                        WHERE SEPId = A.SepId and Id < (SELECT Id FROM StaffEstablishedPostArchive 
+																					                        WHERE SEPId = A.SepId and CreateDate = A.DateAccept)
+																					                        ORDER BY Id desc) as SalaryPrev
+				                        ,A.Salary
+				                        --относительно текущей заявки по дате утверждения нахожу предыдущую, а потом уже смотрю районнй коэффициент
+				                        ,(SELECT top 1 case when ActionId = 4 then 0 else Amount end FROM StaffEstablishedPostChargeLinks
+					                        WHERE SEPId = A.SepId and StaffExtraChargeId = 6
+					                        and SEPRequestId = (SELECT top 1 Id FROM StaffEstablishedPostRequest 
+															                        WHERE SEPId = A.SepId and DateAccept is not null and DateAccept < isnull(A.DateAccept, GETDATE()) ORDER BY Id desc)
+															                        ORDER BY Id desc) as RegionalRatePrev
+				                        ,case when H.ActionId = 4 then 0 else H.Amount end as RegionalRate
+				                        ,D.Id as PersonId
+				                        ,D.Name as Surname
+				                        ,case when A.DeleteDate is not null then 'Отклонено'
+							                        when A.DateSendToApprove is null and K.DocId is null then 'Черновик'
+							                        when A.DateSendToApprove is not null and A.DateAccept is null and A.DeleteDate is null and isnull(K.Number, 0) = 1 then 'Заявка создана'
+																			when A.DateSendToApprove is not null and A.DateAccept is null and A.DeleteDate is null and isnull(K.Number, 0) = 2 then 'Заявка проверена куратором'
+																			when A.DateSendToApprove is not null and A.DateAccept is null and A.DeleteDate is null and isnull(K.Number, 0) = 3 then 'Заявка проверена кадровиком'
+																			when A.DateSendToApprove is not null and A.DateAccept is null and A.DeleteDate is null and isnull(K.Number, 0) = 4 then 'Заявка согласована высшим руководителем'
+							                        when A.DateAccept is not null and A.DeleteDate is null then 'Заявка утверждена' end as Status
+				                        ,case when A.DeleteDate is not null then 7
+							                        when A.DateSendToApprove is null and K.DocId is null then 1
+							                        when A.DateSendToApprove is not null and A.DateAccept is null and A.DeleteDate is null and isnull(K.Number, 0) = 1 then 2
+																			when A.DateSendToApprove is not null and A.DateAccept is null and A.DeleteDate is null and isnull(K.Number, 0) = 2 then 3
+																			when A.DateSendToApprove is not null and A.DateAccept is null and A.DeleteDate is null and isnull(K.Number, 0) = 3 then 4
+																			when A.DateSendToApprove is not null and A.DateAccept is null and A.DeleteDate is null and isnull(K.Number, 0) = 4 then 5
+							                        when A.DateAccept is not null and A.DeleteDate is null then 6 end as StatusId
+                        FROM StaffEstablishedPostRequest as A
+                        INNER JOIN StaffEstablishedPostRequestTypes as B ON B.Id = A.RequestTypeId
+                        INNER JOIN Department as C ON C.Id = A.DepartmentId
+                        LEFT JOIN Department as Dep3 ON C.Path like Dep3.Path + N'%' and Dep3.ItemLevel = 3
+                        LEFT JOIN Users as D ON D.Id = A.CreatorID
+                        LEFT JOIN Position as E ON E.Id = D.PositionId
+                        LEFT JOIN StaffDepartmentAccessory as F ON F.Id = C.BFGId
+                        LEFT JOIN (SELECT SEPId
+                        ,sum(case when UserId is null then 1 else 0 end) as CountVacation 
+                        ,sum(case when UserId is not null then 1 else 0 end) as CountNotVacation 
+                        FROM StaffEstablishedPostUserLinks WHERE IsUsed = 1
+                        GROUP BY SEPId) as G ON G.SEPId = A.SEPId
+                        LEFT JOIN StaffEstablishedPostChargeLinks as H ON H.SEPRequestId = A.Id and H.SEPId = A.SEPId and H.StaffExtraChargeId = 6
+                        LEFT JOIN StaffDepartmentRequest as I ON I.DepartmentId = A.DepartmentId and I.IsUsed = 1
+                        LEFT JOIN StaffDepartmentTaxDetails as J ON J.DepartmentId = I.DepartmentId
+                        LEFT JOIN StaffDepartmentTaxDetails as JJ ON JJ.DepartmentId = I.DepNextId
+                        LEFT JOIN (SELECT DocId, MAX(Number) as Number FROM DocumentApproval 
+						    	   WHERE ApprovalType = 2 and Number <= 4 GROUP BY DocId) as K ON K.DocId = A.Id";
 
             SqlQuery = string.Format(@"SELECT * FROM ({0}) as A", SqlQuery);
             SqlQuery += @" INNER JOIN Department as B ON B.Id = A.DepartmentId";
 
 
             SqlQuery += GetWhereForUserRole(curUser, role);
-            SqlQuery += GetWhereForParameters(DepartmentId, Id, SEPId, Surname, DateBegin, DateEnd, StatusId, RequestTypeId);
+            SqlQuery += GetWhereForParameters(DepartmentId, Id, SEPId, Surname, DateBegin, DateEnd, StatusId, RequestTypeId, BFGId);
             SqlQuery += GetOrderByForSqlQuery(SortBy, SortDescending);
 
             IQuery query = Session.CreateSQLQuery(SqlQuery)
@@ -104,15 +129,20 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("RequestTypeName", NHibernateUtil.String)
                 .AddScalar("RequestTypeId", NHibernateUtil.Int32)
                 .AddScalar("DepartmentId", NHibernateUtil.Int32)
-                .AddScalar("Dep2Name", NHibernateUtil.String)
                 .AddScalar("Dep3Name", NHibernateUtil.String)
-                .AddScalar("Dep4Name", NHibernateUtil.String)
-                .AddScalar("Dep5Name", NHibernateUtil.String)
-                .AddScalar("Dep6Name", NHibernateUtil.String)
                 .AddScalar("Dep7Name", NHibernateUtil.String)
+                .AddScalar("BeginAccountDate", NHibernateUtil.Date)
+                .AddScalar("DepartmentAccessoryName", NHibernateUtil.String)
+                .AddScalar("TaxAvailable", NHibernateUtil.String)
+                .AddScalar("PositionName", NHibernateUtil.String)
+                .AddScalar("CountNotVacation", NHibernateUtil.Int32)
+                .AddScalar("CountVacation", NHibernateUtil.Int32)
+                .AddScalar("SalaryPrev", NHibernateUtil.Decimal)
+                .AddScalar("Salary", NHibernateUtil.Decimal)
+                .AddScalar("RegionalRatePrev", NHibernateUtil.Decimal)
+                .AddScalar("RegionalRate", NHibernateUtil.Decimal)
                 .AddScalar("PersonId", NHibernateUtil.Int32)
                 .AddScalar("Surname", NHibernateUtil.String)
-                .AddScalar("PositionName", NHibernateUtil.String)
                 .AddScalar("Status", NHibernateUtil.String)
                 .AddScalar("StatusId", NHibernateUtil.Int32);
 
@@ -124,6 +154,7 @@ namespace Reports.Core.Dao.Impl
             if (SqlQuery.Contains(":DateEnd")) query.SetDateTime("DateEnd", DateEnd.Value.AddDays(1));
             if (SqlQuery.Contains(":StatusId")) query.SetInt32("StatusId", StatusId);
             if (SqlQuery.Contains(":RequestTypeId")) query.SetInt32("RequestTypeId", RequestTypeId);
+            if (SqlQuery.Contains(":BFGId")) query.SetInt32("BFGId", BFGId);
 
             return query.SetResultTransformer(Transformers.AliasToBean<EstablishedPostRequestDto>()).List<EstablishedPostRequestDto>();
         }
@@ -171,7 +202,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="DateBegin">Начало периода</param>
         /// <param name="DateEnd">Конец периода</param>
         /// <returns></returns>
-        protected string GetWhereForParameters(int DepartmentId, int Id, int SEPId, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int RequestTypeId)
+        protected string GetWhereForParameters(int DepartmentId, int Id, int SEPId, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int RequestTypeId, int BFGId)
         {
             string SqlWhere = string.Empty;
             if (DepartmentId != 0)
@@ -207,6 +238,9 @@ namespace Reports.Core.Dao.Impl
 
             if (RequestTypeId != 0)
                 SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "A.RequestTypeId = :RequestTypeId";
+
+            if (BFGId != 0)
+                SqlWhere += (!string.IsNullOrEmpty(SqlWhere) ? " and " : "") + "A.BFGId = :BFGId";
             
             return (string.IsNullOrEmpty(SqlWhere) ? "" : " WHERE " + SqlWhere);
         }
@@ -225,40 +259,55 @@ namespace Reports.Core.Dao.Impl
                     SqlOrderBy += "A.Id";
                     break;
                 case 2:
-                    SqlOrderBy += "DateRequest";
+                    SqlOrderBy += "A.SEPId";
                     break;
                 case 3:
-                    SqlOrderBy += "RequestTypeName";
+                    SqlOrderBy += "A.DateRequest";
                     break;
                 case 4:
-                    SqlOrderBy += "Dep2Name";
+                    SqlOrderBy += "A.RequestTypeName";
                     break;
                 case 5:
-                    SqlOrderBy += "Dep3Name";
+                    SqlOrderBy += "A.Dep3Name";
                     break;
                 case 6:
-                    SqlOrderBy += "Dep4Name";
+                    SqlOrderBy += "A.Dep7Name";
                     break;
                 case 7:
-                    SqlOrderBy += "Dep5Name";
+                    SqlOrderBy += "A.BeginAccountDate";
                     break;
                 case 8:
-                    SqlOrderBy += "Dep6Name";
+                    SqlOrderBy += "A.TaxAvailable";
                     break;
                 case 9:
-                    SqlOrderBy += "Dep7Name";
+                    SqlOrderBy += "A.CountNotVacation";
                     break;
                 case 10:
-                    SqlOrderBy += "Surname";
+                    SqlOrderBy += "A.CountVacation";
                     break;
                 case 11:
-                    SqlOrderBy += "PositionName";
+                    SqlOrderBy += "A.SalaryPrev";
                     break;
                 case 12:
-                    SqlOrderBy += "Status";
+                    SqlOrderBy += "A.Salary";
                     break;
                 case 13:
-                    SqlOrderBy += "A.SEPId";
+                    SqlOrderBy += "A.RegionalRatePrev";
+                    break;
+                case 14:
+                    SqlOrderBy += "A.RegionalRate";
+                    break;
+                case 15:
+                    SqlOrderBy += "A.PositionName";
+                    break;
+                case 16:
+                    SqlOrderBy += "A.Surname";
+                    break;
+                case 17:
+                    SqlOrderBy += "A.Status";
+                    break;
+                case 18:
+                    SqlOrderBy += "A.DepartmentAccessoryName";
                     break;
                 default:
                     SqlOrderBy += "A.Id";

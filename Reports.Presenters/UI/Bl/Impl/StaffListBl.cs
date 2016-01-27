@@ -2580,7 +2580,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             DateTime today = DateTime.Today;
             model.DateBegin = new DateTime(today.Year, today.Month, 1);
             model.DateEnd = today;
-            model.Statuses = GetDepRequestStatuses();
+            model.Statuses = GetSERequestStatuses();
+            model.DepartmentAccessoryes = GetDepartmentAccessoryes();
             model.RequestTypes = StaffEstablishedPostRequestTypesDao.LoadAll();
             model.RequestTypes.Insert(0, new StaffEstablishedPostRequestTypes() { Id = 0, Name = "Все" });
 
@@ -2604,9 +2605,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.StatusId,
                 model.SortBy,
                 model.SortDescending,
-                model.RequestTypeId);
+                model.RequestTypeId,
+                model.BFGId);
 
-            model.Statuses = GetDepRequestStatuses();
+            model.Statuses = GetSERequestStatuses();
+            model.DepartmentAccessoryes = GetDepartmentAccessoryes();
             model.RequestTypes = StaffEstablishedPostRequestTypesDao.LoadAll();
             model.RequestTypes.Insert(0, new StaffEstablishedPostRequestTypes() { Id = 0, Name = "Все" });
             return model;
@@ -3156,6 +3159,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     entity.SendTo1C = DateTime.Now;
                 }
+
+                //если заявка на сокращение или создание
+                if (entity.RequestType.Id == 3 || entity.RequestType.Id == 1)
+                    entity.SendTo1C = DateTime.Now;
             }
             catch (Exception ex)
             {
@@ -4494,7 +4501,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public StaffDepartmentManagementModel GetStaffDepartmentManagement(StaffDepartmentManagementModel model)
         {
-            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(0);
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(0).OrderBy(x => x.mName).ToList();
             model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
             model.ThreeLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 3 && !x.Name.Contains("не исп") && !x.Name.Contains("ГПД")).OrderBy(x => x.Name).ToList();
             return model;
@@ -4651,10 +4658,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public StaffDepartmentAdministrationModel GetStaffDepartmentAdministration(StaffDepartmentAdministrationModel model, int ManagementFilterId, int BranchFilterId)
         {
-            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations(ManagementFilterId, BranchFilterId);
+            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations(ManagementFilterId, BranchFilterId).OrderBy(x => x.aName).ToList();
             model.Administrations.Insert(0, new StaffDepartmentAdministrationDto() { aId = 0, aName = "" });
 
-            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(BranchFilterId);
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(BranchFilterId).OrderBy(x => x.mName).ToList();
             model.Managements.Insert(0, new StaffDepartmentManagementDto() { mId = 0, mName = "" });
 
             model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
@@ -4821,12 +4828,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public StaffDepartmentBusinessGroupModel GetStaffDepartmentBusinessGroup(StaffDepartmentBusinessGroupModel model, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
-            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups(AdminFilterId, ManagementFilterId, BranchFilterId);
+            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups(AdminFilterId, ManagementFilterId, BranchFilterId).OrderBy(x => x.bName).ToList();
 
-            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations(ManagementFilterId, BranchFilterId);
+            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations(ManagementFilterId, BranchFilterId).OrderBy(x => x.aName).ToList();
             model.Administrations.Insert(0, new StaffDepartmentAdministrationDto() { aId = 0, aName = "" });
 
-            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(BranchFilterId);
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(BranchFilterId).OrderBy(x => x.mName).ToList();
             model.Managements.Insert(0, new StaffDepartmentManagementDto() { mId = 0, mName = "" });
 
             model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
@@ -4995,15 +5002,15 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public StaffDepartmentRPLinkModel GetStaffDepartmentRPLink(StaffDepartmentRPLinkModel model, int BGFilterId, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
-            model.RPLinks = StaffDepartmentRPLinkDao.GetDepartmentRPLinks(BGFilterId, AdminFilterId, ManagementFilterId, BranchFilterId);
+            model.RPLinks = StaffDepartmentRPLinkDao.GetDepartmentRPLinks(BGFilterId, AdminFilterId, ManagementFilterId, BranchFilterId).OrderBy(x => x.rName).ToList();
 
-            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups(AdminFilterId, ManagementFilterId, BranchFilterId);
+            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups(AdminFilterId, ManagementFilterId, BranchFilterId).OrderBy(x => x.bName).ToList();
             model.BusinessGroups.Insert(0, new StaffDepartmentBusinessGroupDto() { bId = 0, bName = "" });
 
-            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations(ManagementFilterId, BranchFilterId);
+            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations(ManagementFilterId, BranchFilterId).OrderBy(x => x.aName).ToList();
             model.Administrations.Insert(0, new StaffDepartmentAdministrationDto() { aId = 0, aName = "" });
 
-            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(BranchFilterId);
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(BranchFilterId).OrderBy(x => x.mName).ToList();
             model.Managements.Insert(0, new StaffDepartmentManagementDto() { mId = 0, mName = "" });
 
             model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
@@ -5692,7 +5699,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         }
         /// <summary>
-        /// Заполняем список видов заявок для подразделений.
+        /// Заполняем список статусов заявок для штатных единиц.
         /// </summary>
         /// <returns></returns>
         public IList<IdNameDto> GetDepRequestStatuses()
@@ -5703,6 +5710,38 @@ namespace Reports.Presenters.UI.Bl.Impl
             dto.Add(new IdNameDto { Id = 2, Name = "На согласовании" });
             dto.Add(new IdNameDto { Id = 3, Name = "Утверждено" });
             dto.Add(new IdNameDto { Id = 4, Name = "Отклонено" });
+
+            return dto;
+        }
+        /// <summary>
+        /// Заполняем список статусов заявок для штатных единиц.
+        /// </summary>
+        /// <returns></returns>
+        public IList<IdNameDto> GetSERequestStatuses()
+        {
+            IList<IdNameDto> dto = new List<IdNameDto>();
+            dto.Add(new IdNameDto { Id = 0, Name = "Все" });
+            dto.Add(new IdNameDto { Id = 1, Name = "Черновик" });
+            dto.Add(new IdNameDto { Id = 2, Name = "Заявка создана" });
+            dto.Add(new IdNameDto { Id = 3, Name = "Заявка проверена куратором" });
+            dto.Add(new IdNameDto { Id = 4, Name = "Заявка проверена кадровиком" });
+            dto.Add(new IdNameDto { Id = 5, Name = "Заявка согласована высшим руководителем" });
+            dto.Add(new IdNameDto { Id = 6, Name = "Заявка утверждена" });
+            dto.Add(new IdNameDto { Id = 7, Name = "Отклонено" });
+
+            return dto;
+        }
+        /// <summary>
+        /// Заполняем список принадлежностей подразделения.
+        /// </summary>
+        /// <returns></returns>
+        public IList<IdNameDto> GetDepartmentAccessoryes()
+        {
+            IList<IdNameDto> dto = new List<IdNameDto>();
+            dto.Add(new IdNameDto { Id = 0, Name = "Все" });
+            dto.Add(new IdNameDto { Id = 1, Name = "Бэк" });
+            dto.Add(new IdNameDto { Id = 2, Name = "Фронт" });
+            dto.Add(new IdNameDto { Id = 3, Name = "БэкФронт" });
 
             return dto;
         }

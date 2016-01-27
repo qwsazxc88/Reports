@@ -19,6 +19,10 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         public int StatusId { get; set; }
         public IList<IdNameDto> Statuses { get; set; }
 
+        [Display(Name = "Принадлежность подразделения")]
+        public int BFGId { get; set; }
+        public IList<IdNameDto> DepartmentAccessoryes { get; set; }
+
         [Display(Name = "Номер заявки")]
         public int? Id { get; set; }
 
