@@ -42,6 +42,14 @@
             </tr>
             <tr>
                 <td style="width:220px">
+                    @Html.LabelFor(m => m.BFGId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.BFGId, new SelectList(Model.DepartmentAccessoryes, "Id", "Name")) 
+                </td>
+            </tr>
+            <tr>
+                <td style="width:220px">
                     @Html.LabelFor(m => m.RequestTypeId):
                 </td>
                 <td>
@@ -86,20 +94,31 @@
     <div class="filter-wrap">
         <table class="grid" id="tblEPRequestList" style="width:100%">
             <tr>
-                <th>№ п/п</th>
-                <th><div id="sort1" style="min-width:30px"><a href="#" onclick = "SortChanged(1);">Номер<br /> заявки</a></div></th>
-                <th><div id="sort13" style="min-width:30px"><a href="#" onclick = "SortChanged(13);">Код ш.е.</a></div></th>
-                <th><div id="sort2" style="min-width:30px"><a href="#" onclick = "SortChanged(2);">Дата создания<br /> заявки</a></div></th>
-                <th><div id="sort3" style="min-width:30px"><a href="#" onclick = "SortChanged(3);">Вид заявки</a></div></th>
-                <th><div id="sort4" style="min-width:30px"><a href="#" onclick = "SortChanged(4);">Подразделение <br />2 уровня</a></div></th>
-                <th><div id="sort5" style="min-width:30px"><a href="#" onclick = "SortChanged(5);">Подразделение <br />3 уровня</a></div></th>
-                <th><div id="sort6" style="min-width:30px"><a href="#" onclick = "SortChanged(6);">Подразделение <br />4 уровня</a></div></th>
-                <th><div id="sort7" style="min-width:30px"><a href="#" onclick = "SortChanged(7);">Подразделение <br />5 уровня</a></div></th>
-                <th><div id="sort8" style="min-width:30px"><a href="#" onclick = "SortChanged(8);">Подразделение <br />6 уровня</a></div></th>
-                <th><div id="sort9" style="min-width:30px"><a href="#" onclick = "SortChanged(9);">Подразделение <br />7 уровня</a></div></th>
-                <th><div id="sort12" style="min-width:30px"><a href="#" onclick = "SortChanged(10);">ФИО<br /> инициатора</a></div></th>
-                <th><div id="sort11" style="min-width:30px"><a href="#" onclick = "SortChanged(11);">Должность</a></div></th>
-                <th><div id="sort14" style="min-width:30px"><a href="#" onclick = "SortChanged(12);">Статус<br /> заявки</a></div></th>
+                <th rowspan="2">№ п/п</th>
+                <th rowspan="2"><div id="sort1" style="min-width:30px"><a href="#" onclick = "SortChanged(1);">Номер<br /> заявки</a></div></th>
+                <th rowspan="2"><div id="sort2" style="min-width:30px"><a href="#" onclick = "SortChanged(2);">Код ш.е.</a></div></th>
+                <th rowspan="2"><div id="sort3" style="min-width:30px"><a href="#" onclick = "SortChanged(3);">Дата создания<br /> заявки</a></div></th>
+                <th rowspan="2"><div id="sort4" style="min-width:30px"><a href="#" onclick = "SortChanged(4);">Вид заявки</a></div></th>
+                <th rowspan="2"><div id="sort5" style="min-width:30px"><a href="#" onclick = "SortChanged(5);">Подразделение<br />3 уровня</a></div></th>
+                <th rowspan="2"><div id="sort6" style="min-width:30px"><a href="#" onclick = "SortChanged(6);">Подразделение<br />7 уровня</a></div></th>
+                <th rowspan="2"><div id="sort18" style="min-width:30px"><a href="#" onclick = "SortChanged(18);">Принадлежность</a></div></th>
+
+                <th rowspan="2"><div id="sort7" style="min-width:30px"><a href="#" onclick = "SortChanged(7);">Дата<br />Вступления<br />в силу</a></div></th>
+                <th rowspan="2"><div id="sort8" style="min-width:30px"><a href="#" onclick = "SortChanged(8);">Стоит на<br />Налоговом<br />учете в<br />ИФНС</a></div></th>
+                <th colspan="2"><div style="min-width:30px">Количество</div></th>
+                <th colspan="2"><div style="min-width:30px">Оклад</div></th>
+                <th colspan="2"><div style="min-width:30px">Районный<br />коэфф.</div></th>
+                <th rowspan="2"><div id="sort15" style="min-width:30px"><a href="#" onclick = "SortChanged(15);">Должность<br />инициатора</a></div></th>
+                <th rowspan="2"><div id="sort16" style="min-width:30px"><a href="#" onclick = "SortChanged(16);">ФИО<br />инициатора</a></div></th>
+                <th rowspan="2"><div id="sort17" style="min-width:30px"><a href="#" onclick = "SortChanged(17);">Статус<br /> заявки</a></div></th>
+            </tr>
+            <tr>
+                <th><div id="sort9" style="min-width:30px"><a href="#" onclick = "SortChanged(9);">Занято</a></div></th>
+                <th><div id="sort10" style="min-width:30px"><a href="#" onclick = "SortChanged(10);">Свободно</a></div></th>
+                <th><div id="sort11" style="min-width:30px"><a href="#" onclick = "SortChanged(11);">До</a></div></th>
+                <th><div id="sort12" style="min-width:30px"><a href="#" onclick = "SortChanged(12);">После</a></div></th>
+                <th><div id="sort13" style="min-width:30px"><a href="#" onclick = "SortChanged(13);">До</a></div></th>
+                <th><div id="sort14" style="min-width:30px"><a href="#" onclick = "SortChanged(14);">После</a></div></th>
             </tr>
             <tbody id="SEPRequestListBody">
                 @{int i = 1;}
@@ -113,14 +132,19 @@
                             <td>@item.SEPId</td>
                             <td>@(item.DateRequest.HasValue ? item.DateRequest.Value.ToShortDateString() : "")</td>
                             <td>@item.RequestTypeName</td>
-                            <td>@item.Dep2Name</td>
                             <td>@item.Dep3Name</td>
-                            <td>@item.Dep4Name</td>
-                            <td>@item.Dep5Name</td>
-                            <td>@item.Dep6Name</td>
                             <td>@item.Dep7Name</td>
-                            <td>@item.Surname</td>
+                            <td>@item.DepartmentAccessoryName</td>
+                            <td>@(item.BeginAccountDate.HasValue ? item.BeginAccountDate.Value.ToShortDateString() : "")</td>
+                            <td>@item.TaxAvailable</td>
+                            <td>@item.CountNotVacation</td>
+                            <td>@item.CountVacation</td>
+                            <td>@item.SalaryPrev</td>
+                            <td>@item.Salary</td>
+                            <td>@item.RegionalRatePrev</td>
+                            <td>@item.RegionalRate</td>
                             <td>@item.PositionName</td>
+                            <td>@item.Surname</td>
                             <td>@item.Status</td>
                         </tr>
                     

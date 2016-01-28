@@ -74,8 +74,12 @@ DECLARE
 				 --если в отпуске о уходу за ребенокм и нет замены показываем в колонках для заменяемых
 				 case when E.IsPregnant = 1 then null else E.Id end as UserId, 
 				 --case when E.IsPregnant = 1 then null else E.Name end as Surname, 
-				 case when (case when (isnull(E.IsPregnant, 0) = 1 or F.UserId is null) and isnull(F.ReserveType, 0) = 0 then 1 else 0 end) = 1 or (case when isnull(F.DocId, 0) = 0 then 0 else 1 end) = 1
+				 case when (case when (isnull(E.IsPregnant, 0) = 1 or F.UserId is null) then 1 else 0 end) = 1 
+										or exists(SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and IsUsed = 1)
+										or exists(SELECT * FROM StaffMovements WHERE UserId = F.UserId and IsTempMoving = 1 and Type in (2, 3) and Status = 12 and GETDATE() between MovementDate and MovementTempTo) 
 							then (case when (case when F.UserId is null then 0 else (case when isnull(E.IsPregnant, 0) = 1 or H.Id is not null then 1 else 0 end) end) = 1 
+															or exists(SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and IsUsed = 1)
+															or exists(SELECT * FROM StaffMovements WHERE UserId = F.UserId and IsTempMoving = 1 and Type in (2, 3) and Status = 12 and GETDATE() between MovementDate and MovementTempTo) 
 												 then 'Временная вакансия' else 'Вакансия' end) 
 							else E.Name end as Surname, 
 												 
@@ -88,7 +92,7 @@ DECLARE
 				 ,F.DocId
 				 ,cast(case when isnull(F.DocId, 0) = 0 then 0 else 1 end as bit) as IsReserve
 				 ,isnull(E.IsPregnant, 0) as IsPregnant
-				 ,case when (isnull(E.IsPregnant, 0) = 1 or F.UserId is null) and isnull(F.ReserveType, 0) = 0 then 1 else 0 end as IsVacation
+				 ,case when (isnull(E.IsPregnant, 0) = 1 or F.UserId is null) and isnull(F.ReserveType, 0) = 0 or exists(SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and IsUsed = 1) then 1 else 0 end as IsVacation
 				 ,case when F.UserId is null then 0 else (case when isnull(E.IsPregnant, 0) = 1 or H.Id is not null then 1 else 0 end) end as IsSTD
 				 ,case when J.UserId is null then 0 else 1 end as IsDismiss	--увольнение
 				 ,F.IsDismissal		--сокращение
@@ -105,7 +109,7 @@ DECLARE
 				 ,F.DateDistribNote
 				 ,F.DateReceivNote
 				 ,K.Name as BasicUser
-				 ,null TemporaryMovementUsers
+				 ,dbo.fnGetReplacedName(F.Id, null, 2) TemporaryMovementUsers
 				 ,dbo.fnGetReplacedName(F.Id, null, 3) as LongAbsencesUsers
 	FROM StaffEstablishedPost as A
 	INNER JOIN Position as B ON B.Id = A.PositionId
@@ -132,7 +136,7 @@ DECLARE
 	ORDER BY A.Priority
 
 		
---select * from dbo.fnGetStaffEstablishedArrangements(1879, 0) 
+--select * from dbo.fnGetStaffEstablishedArrangements(12158, 0) 
 
 	RETURN 
 END

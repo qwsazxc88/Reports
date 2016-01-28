@@ -9,6 +9,8 @@ namespace Reports.Core.Dao
     public interface IUserDao : IDao<User>
     {
         User FindByLogin(string login);
+        void UpdateUserInn(int persid, string inn);
+        string GetUserInn(int persId);
         bool CheckUserDismissal(int userid);
         IList<User> FindByCnilc(string cnilc);
         IList<User> FindByEmail(string email);
@@ -40,7 +42,7 @@ namespace Reports.Core.Dao
         IList<User> LoadForIdsList(ArrayList ids);
         //IList<UsersListItemDto> FindByFilter(UserListFilter filter, out int count);
         //Iesi.Collections.Generic.ISet<IdNameDto> GetAllEntitiesForDictionary(string fieldName);
-
+        IList<UserPersonnelDataDto> GetUserPersonnelData(int CurrentUserId, UserRole role, string fio, int DepId);
         string ConstFKExistsViewName { get;}
         IList<UserDto> GetUsersForManager(string userName, int managerId,
             UserRole managerRole, int? role,ref int currentPage,

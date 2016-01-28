@@ -10,6 +10,10 @@ namespace Reports.Presenters.UI.Bl
 {
     public interface IRequestBl : IBaseBl
     {
+        UsersPersonnelDataViewModel GetUsersPersonnelDataListModel();
+        UsersPersonnelDataViewModel SetDocuments(UsersPersonnelDataViewModel model);
+        string GetUserInn(int persid);
+        string SetUserInn(int persid, string inn);
         CreateRequestModel GetCreateRequestModel(int? userId);
         DepartmentChildrenDto GetUsersForDepartment(int departmentId);
         IList<ManualDeductionDto> GetManualDeductionDocs(int DepartmentId, int Status,string UserName);

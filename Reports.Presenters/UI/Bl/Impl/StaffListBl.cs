@@ -1023,6 +1023,10 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //поля общих реквизитов
             entity.Name = model.Name;
+            //в действующих заявках редактируем название в справочнике
+            if (entity.Department != null && entity.IsUsed)
+                entity.Department.Name = entity.Name;
+
             entity.DepartmentAccessory = model.BFGId == 0 ? null : StaffDepartmentAccessoryDao.Load(model.BFGId);
             if (entity.Department != null)
             {
@@ -2576,7 +2580,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             DateTime today = DateTime.Today;
             model.DateBegin = new DateTime(today.Year, today.Month, 1);
             model.DateEnd = today;
-            model.Statuses = GetDepRequestStatuses();
+            model.Statuses = GetSERequestStatuses();
+            model.DepartmentAccessoryes = GetDepartmentAccessoryes();
             model.RequestTypes = StaffEstablishedPostRequestTypesDao.LoadAll();
             model.RequestTypes.Insert(0, new StaffEstablishedPostRequestTypes() { Id = 0, Name = "Все" });
 
@@ -2600,9 +2605,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.StatusId,
                 model.SortBy,
                 model.SortDescending,
-                model.RequestTypeId);
+                model.RequestTypeId,
+                model.BFGId);
 
-            model.Statuses = GetDepRequestStatuses();
+            model.Statuses = GetSERequestStatuses();
+            model.DepartmentAccessoryes = GetDepartmentAccessoryes();
             model.RequestTypes = StaffEstablishedPostRequestTypesDao.LoadAll();
             model.RequestTypes.Insert(0, new StaffEstablishedPostRequestTypes() { Id = 0, Name = "Все" });
             return model;
@@ -2690,8 +2697,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             }
-            
-            
+
+            model.PyrusNumber = "";
             LoadDictionaries(model);
             //для новых заявок надо подгружать надбавки от текущего состояния штатной единицы, берем действующую заявку, иначе по заполняем по текущей заявке
             model.PostChargeLinks = StaffEstablishedPostChargeLinksDao.GetChargesForRequests(model.RequestTypeId != 1 && model.Id == 0 ? StaffEstablishedPostRequestDao.GetCurrentRequestId(model.SEPId) : model.Id).OrderBy(x => x.ChargeName).ToList();
@@ -3152,6 +3159,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     entity.SendTo1C = DateTime.Now;
                 }
+
+                //если заявка на сокращение или создание
+                if (entity.RequestType.Id == 3 || entity.RequestType.Id == 1)
+                    entity.SendTo1C = DateTime.Now;
             }
             catch (Exception ex)
             {
@@ -3324,6 +3335,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             try
             {
                 DocumentApprovalDao.SaveAndFlush(da);
+
+                //сохраняем здачу пайруса
+                if (!string.IsNullOrEmpty(model.PyrusNumber))
+                {
+                    entity.StaffRequestPyrusTasks.Add(new StaffRequestPyrusTasks()
+                    {
+                        EPRequest = entity,
+                        DocumentApproval = da,
+                        NumberTask = model.PyrusNumber,
+                        Creator = curUser,
+                        CreateDate = DateTime.Now
+                    });
+                }
                 
                 if (da.Number == 1)
                 {
@@ -3489,6 +3513,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //потом проводим слесарную обработку по состоянию согласования 
                 foreach (DocumentApproval item in DocApproval.OrderBy(x => x.Number))
                 {
+                    string PyrusNumber = entity.StaffRequestPyrusTasks.Where(x => x.DocumentApproval.Number == item.Number).Count() != 0 ? entity.StaffRequestPyrusTasks.Where(x => x.DocumentApproval.Number == item.Number).Single().NumberTask : string.Empty;
                     switch (item.Number)
                     {
                         case 1://инициатор
@@ -3497,6 +3522,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.InitiatorApproveName = "Заявка создана " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
                                 : "Автор заявки: " + item.AssistantUser.Name + "; Инициатор: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
                             model.InitiatorId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+
+                            if (!string.IsNullOrEmpty(PyrusNumber))
+                            {
+                                model.InitiatorPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                model.InitiatorPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                            }
 
                             //открываем согласование для следующего участника процесса
                             model.IsCuratorApproveAvailable = model.IsCurator || model.IsConsultant ? true : false;
@@ -3521,6 +3552,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsCuratorApprove = true;
                             model.IsCuratorApproveAvailable = false;
                             model.CuratorApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Куратор: " + item.ApproveUser.Name;
+                            if (!string.IsNullOrEmpty(PyrusNumber))
+                            {
+                                model.CuratorPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                model.CuratorPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                            }
 
                             //открываем согласование для следующего участника процесса
                             model.IsPersonnelBankApproveAvailable = model.IsPersonnelBank || model.IsConsultant ? true : false;
@@ -3530,6 +3566,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsPersonnelBankApprove = true;
                             model.IsPersonnelBankApproveAvailable = false;
                             model.PersonnelBankApproveName = "Заявка проверена " + item.CreateDate.Value.ToShortDateString() + " " + "Кадровик банка: " + item.ApproveUser.Name;
+                            if (!string.IsNullOrEmpty(PyrusNumber))
+                            {
+                                model.PersonnelBankPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                model.PersonnelBankPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                            }
 
                             //открываем согласование для следующего участника процесса
                             model.IsTopManagerApproveAvailable = model.TopManagers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.TopManagers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
@@ -3541,6 +3582,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.TopManagerApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + (item.AssistantUser == null ? "Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name
                                 : "Согласовал: " + item.AssistantUser.Name + "; Согласовант: " + item.ApproveUser.Name + " - " + item.ApproveUser.Position.Name);
                             model.TopManagerId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
+                            if (!string.IsNullOrEmpty(PyrusNumber))
+                            {
+                                model.TopManagerPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                model.TopManagerPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                            }
 
                             //открываем согласование для следующего участника процесса
                             model.IsBoardMemberApproveAvailable = model.BoardMembers.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.BoardMembers.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false;
@@ -3553,6 +3599,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 : "Утвердил: " + item.AssistantUser.Name + "; Утверждающий: " + item.ApproveUser.Name + " - Член правления банка");
                             model.BoardMemberId = item.AssistantUser == null ? item.ApproveUser.Id : item.AssistantUser.Id;
                             model.IsAgreeButtonAvailable = false;
+
+                            if (!string.IsNullOrEmpty(PyrusNumber))
+                            {
+                                model.BoardMemberPyrusName = "Задача в Пайрус № " + PyrusNumber;
+                                model.BoardMemberPyrusRef = @"https://pyrus.com/t#id" + PyrusNumber;
+                            }
                             break;
                     }
                 }
@@ -3617,6 +3669,132 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region Заявки на создание вакансий при длительном отсутствии сотрудников.
+        /// <summary>
+        /// Загрузка формы реестра для заявок на создание временных вакансий.
+        /// </summary>
+        /// <returns></returns>
+        public StaffTemporaryReleaseVacancyRequestListModel GetStaffTemporaryReleaseVacancyRequestList()
+        {
+            StaffTemporaryReleaseVacancyRequestListModel model = new StaffTemporaryReleaseVacancyRequestListModel();
+            DateTime today = DateTime.Today;
+            model.DateBegin = new DateTime(today.Year, today.Month, 1);
+            model.DateEnd = today;
+            LoadDictionaries(model);
+            return model;
+        }
+        /// <summary>
+        /// Загрузка реестра для заявок на создание временных вакансий.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public StaffTemporaryReleaseVacancyRequestListModel SetStaffTemporaryReleaseVacancyRequestListModel(StaffTemporaryReleaseVacancyRequestListModel model)
+        {
+            model.TemporaryReleaseVacancyList = StaffTemporaryReleaseVacancyRequestDao.GetTemporaryReleaseVacancyList(userDao.Load(AuthenticationService.CurrentUser.Id),
+                AuthenticationService.CurrentUser.UserRole,
+                model.DepartmentId,
+                model.Id.HasValue ? model.Id.Value : 0,
+                model.SEPId.HasValue ? model.SEPId.Value : 0,
+                model.Surname,
+                model.DateBegin,
+                model.DateEnd,
+                model.AbsencesTypeId,
+                model.SortBy,
+                model.SortDescending);
+
+            LoadDictionaries(model);
+            return model;
+        }
+        /// <summary>
+        /// Заполняем модель заявки.
+        /// </summary>
+        /// <param name="Id">Id заявки.</param>
+        /// <returns></returns>
+        public StaffTemporaryReleaseVacancyRequestModel GetStaffTemporaryReleaseVacancyRequest(int Id)
+        {
+            StaffTemporaryReleaseVacancyRequestModel model = new StaffTemporaryReleaseVacancyRequestModel();
+            StaffTemporaryReleaseVacancyRequest entity = StaffTemporaryReleaseVacancyRequestDao.Get(Id);
+
+            model.CreateDate = entity.CreateDate;
+            model.Id = entity.Id;
+            model.RequestInitiator = entity.Creator.Name + (entity.Creator.Position != null ? " - " + entity.Creator.Position.Name : "");
+            model.SEPId = entity.EstablishedPostUserLinks.StaffEstablishedPost.Id;
+            model.DepartmentId = entity.EstablishedPostUserLinks.StaffEstablishedPost.Department.Id;
+            model.DepartmentName = entity.EstablishedPostUserLinks.StaffEstablishedPost.Department.Name;
+            model.AccessoryName = entity.EstablishedPostUserLinks.StaffEstablishedPost.Department.DepartmentAccessory != null ? entity.EstablishedPostUserLinks.StaffEstablishedPost.Department.DepartmentAccessory.Name : "";
+            model.PositionId = entity.EstablishedPostUserLinks.StaffEstablishedPost.Position.Id;
+            model.PositionName = entity.EstablishedPostUserLinks.StaffEstablishedPost.Position.Name;
+            model.Surname = entity.ReplacedUser.Name;
+            model.AbsencesTypeId = entity.AbsencesType.Id;
+            model.DateBegin = entity.DateBegin;
+            model.DateEnd = entity.DateEnd;
+            model.Note = entity.Note;
+            model.IsUsed = entity.IsUsed;
+            
+
+            //кнопки
+            //model.IsDraftButtonAvailable = entity.DeleteDate.HasValue ? false : true;
+            //model.IsAgreeButtonAvailable = entity.DeleteDate.HasValue ? false : !entity.DateAccept.HasValue;
+
+            LoadDictionaries(model);
+
+            return model;
+        }
+        /// <summary>
+        /// сохраняем изменения заявки заявки.
+        /// </summary>
+        /// <param name="Id">Id заявки.</param>
+        /// <returns></returns>
+        public bool SaveStaffTemporaryReleaseVacancyRequest(StaffTemporaryReleaseVacancyRequestModel model, out string error)
+        {
+            error = string.Empty;
+            StaffTemporaryReleaseVacancyRequest entity = StaffTemporaryReleaseVacancyRequestDao.Get(model.Id);
+
+            if (entity == null)
+            {
+                error = "Произошла ошибка при редактировании данных! Обратитесь к разработчикам!";
+                return false;
+            }
+
+
+
+            if (!ValidateModel(new StaffListArrangementModel() { DateBegin = model.DateBegin,
+                                                                 DateEnd = model.DateEnd,
+                                                                 UserLinkId = entity.EstablishedPostUserLinks.Id}, out error))
+                return false;
+
+            entity.DateBegin = model.DateBegin;
+            entity.DateEnd = model.DateEnd;
+            entity.AbsencesType = StaffLongAbsencesTypesDao.Get(model.AbsencesTypeId);
+            entity.Note = model.Note;
+            entity.IsUsed = model.IsUsed;
+            entity.Editor = UserDao.Get(AuthenticationService.CurrentUser.Id);
+            entity.EditDate = DateTime.Now;
+
+
+            if (model.Id != 0)
+            {
+                try
+                {
+                    StaffTemporaryReleaseVacancyRequestDao.SaveAndFlush(entity);
+                    model.Id = entity.Id;
+                    if (model.IsUsed)
+                        error = "Данные сохранены!";
+                    else
+                        error = "Заявка отклонена!";
+                }
+                catch (Exception ex)
+                {
+                    StaffTemporaryReleaseVacancyRequestDao.RollbackTran();
+                    error = string.Format("Произошла ошибка при сохранении данных! Исключение:{0}", ex.GetBaseException().Message);
+                    return false;
+                }
+
+                return true;
+            }
+           
+
+            return true;
+        }
         /// <summary>
         /// Создание заявки на вакансию при длительном отсутствии сотрудника. 
         /// </summary>
@@ -3717,7 +3895,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             //если есть длительное отсутствие, конец периода не обязателен, по этому конец проверяем только для ОЖ и перемещениям
-            if (MaxEndDate.HasValue && !model.DateEnd.HasValue)
+            if (/*MaxEndDate.HasValue &&*/ !model.DateEnd.HasValue)
             {
                 error = "Укажите конец периода!";
                 return false;
@@ -4323,7 +4501,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public StaffDepartmentManagementModel GetStaffDepartmentManagement(StaffDepartmentManagementModel model)
         {
-            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(0);
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(0).OrderBy(x => x.mName).ToList();
             model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
             model.ThreeLevelDeps = DepartmentDao.LoadAll().Where(x => x.ItemLevel == 3 && !x.Name.Contains("не исп") && !x.Name.Contains("ГПД")).OrderBy(x => x.Name).ToList();
             return model;
@@ -4480,10 +4658,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public StaffDepartmentAdministrationModel GetStaffDepartmentAdministration(StaffDepartmentAdministrationModel model, int ManagementFilterId, int BranchFilterId)
         {
-            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations(ManagementFilterId, BranchFilterId);
+            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations(ManagementFilterId, BranchFilterId).OrderBy(x => x.aName).ToList();
             model.Administrations.Insert(0, new StaffDepartmentAdministrationDto() { aId = 0, aName = "" });
 
-            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(BranchFilterId);
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(BranchFilterId).OrderBy(x => x.mName).ToList();
             model.Managements.Insert(0, new StaffDepartmentManagementDto() { mId = 0, mName = "" });
 
             model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
@@ -4650,12 +4828,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public StaffDepartmentBusinessGroupModel GetStaffDepartmentBusinessGroup(StaffDepartmentBusinessGroupModel model, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
-            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups(AdminFilterId, ManagementFilterId, BranchFilterId);
+            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups(AdminFilterId, ManagementFilterId, BranchFilterId).OrderBy(x => x.bName).ToList();
 
-            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations(ManagementFilterId, BranchFilterId);
+            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations(ManagementFilterId, BranchFilterId).OrderBy(x => x.aName).ToList();
             model.Administrations.Insert(0, new StaffDepartmentAdministrationDto() { aId = 0, aName = "" });
 
-            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(BranchFilterId);
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(BranchFilterId).OrderBy(x => x.mName).ToList();
             model.Managements.Insert(0, new StaffDepartmentManagementDto() { mId = 0, mName = "" });
 
             model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
@@ -4824,15 +5002,15 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public StaffDepartmentRPLinkModel GetStaffDepartmentRPLink(StaffDepartmentRPLinkModel model, int BGFilterId, int AdminFilterId, int ManagementFilterId, int BranchFilterId)
         {
-            model.RPLinks = StaffDepartmentRPLinkDao.GetDepartmentRPLinks(BGFilterId, AdminFilterId, ManagementFilterId, BranchFilterId);
+            model.RPLinks = StaffDepartmentRPLinkDao.GetDepartmentRPLinks(BGFilterId, AdminFilterId, ManagementFilterId, BranchFilterId).OrderBy(x => x.rName).ToList();
 
-            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups(AdminFilterId, ManagementFilterId, BranchFilterId);
+            model.BusinessGroups = StaffDepartmentBusinessGroupDao.GetDepartmentBusinessGroups(AdminFilterId, ManagementFilterId, BranchFilterId).OrderBy(x => x.bName).ToList();
             model.BusinessGroups.Insert(0, new StaffDepartmentBusinessGroupDto() { bId = 0, bName = "" });
 
-            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations(ManagementFilterId, BranchFilterId);
+            model.Administrations = StaffDepartmentAdministrationDao.GetDepartmentAdministrations(ManagementFilterId, BranchFilterId).OrderBy(x => x.aName).ToList();
             model.Administrations.Insert(0, new StaffDepartmentAdministrationDto() { aId = 0, aName = "" });
 
-            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(BranchFilterId);
+            model.Managements = StaffDepartmentManagementDao.GetDepartmentManagements(BranchFilterId).OrderBy(x => x.mName).ToList();
             model.Managements.Insert(0, new StaffDepartmentManagementDto() { mId = 0, mName = "" });
 
             model.Branches = StaffDepartmentBranchDao.GetDepartmentBranches();
@@ -5487,7 +5665,41 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         /// <summary>
-        /// Заполняем список видов заявок для подразделений.
+        /// Загрузка справочников для реестра заявок на создание временных вакансий.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        public void LoadDictionaries(StaffTemporaryReleaseVacancyRequestListModel model)
+        {
+            //реквизиты инициатора
+            model.AbsencesTypes = StaffLongAbsencesTypesDao.LoadAll().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            model.AbsencesTypes.Insert(0, new IdNameDto { Id = 0, Name = "" });
+        }
+        /// <summary>
+        /// Загрузка справочников модели для заявок на создание временных вакансий при длительном отсутствии сотрудников.
+        /// </summary>
+        /// <param name="model">Модель заявки.</param>
+        public void LoadDictionaries(StaffTemporaryReleaseVacancyRequestModel model)
+        {
+            //реквизиты инициатора
+            model.AbsencesTypes = StaffLongAbsencesTypesDao.LoadAll().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            
+            
+
+            //список руководителей
+            IList<User> managers = DepartmentDao.GetDepartmentManagersWithManualLinks(model.DepartmentId);
+            //model.InitiatorId
+            StringBuilder managersBuilder = new StringBuilder();
+            foreach (var manager in managers)
+            {
+                managersBuilder.AppendFormat("{0} ({1}), ", manager.Name, manager.Position == null ? "<не указана>" : manager.Position.Name);
+            }
+            model.Managers = managersBuilder.ToString();
+
+
+
+        }
+        /// <summary>
+        /// Заполняем список статусов заявок для штатных единиц.
         /// </summary>
         /// <returns></returns>
         public IList<IdNameDto> GetDepRequestStatuses()
@@ -5498,6 +5710,38 @@ namespace Reports.Presenters.UI.Bl.Impl
             dto.Add(new IdNameDto { Id = 2, Name = "На согласовании" });
             dto.Add(new IdNameDto { Id = 3, Name = "Утверждено" });
             dto.Add(new IdNameDto { Id = 4, Name = "Отклонено" });
+
+            return dto;
+        }
+        /// <summary>
+        /// Заполняем список статусов заявок для штатных единиц.
+        /// </summary>
+        /// <returns></returns>
+        public IList<IdNameDto> GetSERequestStatuses()
+        {
+            IList<IdNameDto> dto = new List<IdNameDto>();
+            dto.Add(new IdNameDto { Id = 0, Name = "Все" });
+            dto.Add(new IdNameDto { Id = 1, Name = "Черновик" });
+            dto.Add(new IdNameDto { Id = 2, Name = "Заявка создана" });
+            dto.Add(new IdNameDto { Id = 3, Name = "Заявка проверена куратором" });
+            dto.Add(new IdNameDto { Id = 4, Name = "Заявка проверена кадровиком" });
+            dto.Add(new IdNameDto { Id = 5, Name = "Заявка согласована высшим руководителем" });
+            dto.Add(new IdNameDto { Id = 6, Name = "Заявка утверждена" });
+            dto.Add(new IdNameDto { Id = 7, Name = "Отклонено" });
+
+            return dto;
+        }
+        /// <summary>
+        /// Заполняем список принадлежностей подразделения.
+        /// </summary>
+        /// <returns></returns>
+        public IList<IdNameDto> GetDepartmentAccessoryes()
+        {
+            IList<IdNameDto> dto = new List<IdNameDto>();
+            dto.Add(new IdNameDto { Id = 0, Name = "Все" });
+            dto.Add(new IdNameDto { Id = 1, Name = "Бэк" });
+            dto.Add(new IdNameDto { Id = 2, Name = "Фронт" });
+            dto.Add(new IdNameDto { Id = 3, Name = "БэкФронт" });
 
             return dto;
         }

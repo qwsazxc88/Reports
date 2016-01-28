@@ -372,7 +372,72 @@ namespace WebMvc.Controllers
 
         #region Заявки на создание вакансий при длительном отсутствии сотрудников.
         /// <summary>
-        /// Штатное расписание, подгружаем уровень подразделений с должностями и сотрудниками.
+        /// Реестр заявок на создание временных вакансий.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager)]
+        public ActionResult StaffTemporaryReleaseVacancyRequestList()
+        {
+            string error = string.Empty;
+            StaffTemporaryReleaseVacancyRequestListModel model = StaffListBl.GetStaffTemporaryReleaseVacancyRequestList();
+            return View(model);
+        }
+        /// <summary>
+        /// Реестр заявок на создание временных вакансий.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager)]
+        public ActionResult StaffTemporaryReleaseVacancyRequestList(StaffTemporaryReleaseVacancyRequestListModel model)
+        {
+            string error = string.Empty;
+            StaffListBl.SetStaffTemporaryReleaseVacancyRequestListModel(model);
+            return View(model);
+        }
+        /// <summary>
+        /// Загрузка заявки на создание временной вакансии при длительном отсутствии сотрудника.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager)]
+        public ActionResult StaffTemporaryReleaseVacancyRequest(int Id)
+        {
+            StaffTemporaryReleaseVacancyRequestModel model = StaffListBl.GetStaffTemporaryReleaseVacancyRequest(Id);
+            return View(model);
+        }
+        /// <summary>
+        /// Заявка на создание временной вакансии при длительном отсутствии сотрудника.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director | UserRole.ConsultantPersonnel | UserRole.OutsourcingManager | UserRole.ConsultantOutsourcing | UserRole.PersonnelManager)]
+        public ActionResult StaffTemporaryReleaseVacancyRequest(StaffTemporaryReleaseVacancyRequestModel model)
+        {
+            ModelState.Clear();
+            string error = string.Empty;
+            bool IsComplete = false;
+ 
+
+            if (ValidateModel(model))//проверки
+            {
+                IsComplete = StaffListBl.SaveStaffTemporaryReleaseVacancyRequest(model, out error);
+                if(IsComplete)
+                    model = StaffListBl.GetStaffTemporaryReleaseVacancyRequest(model.Id);
+                else
+                    StaffListBl.LoadDictionaries(model);
+
+                ModelState.AddModelError("MessageStr", error);
+            }
+            else
+                StaffListBl.LoadDictionaries(model);
+
+            return View(model);
+        }
+        /// <summary>
+        /// Создаем заявку на временную вакансию при длительном отсутствии сотрудника.
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -1237,6 +1302,10 @@ namespace WebMvc.Controllers
                 }
             }
 
+            return ModelState.IsValid;
+        }
+        protected bool ValidateModel(StaffTemporaryReleaseVacancyRequestModel model)
+        {
             return ModelState.IsValid;
         }
         protected bool ValidateModel(StaffDepartmentSoftGroupDto EditRow, out string error)

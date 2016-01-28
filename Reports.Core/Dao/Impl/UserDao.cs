@@ -1339,5 +1339,70 @@ namespace Reports.Core.Dao.Impl
         {
             return Session.Query<User>().Where(x => x.Department.Id == DepartmentId && x.IsActive).ToList();
         }
+        private static string addToWhere(string where, string add)
+        {
+            if (String.IsNullOrEmpty(where))
+                where = " where ";
+            else where += " and ";
+            where += add+' ';
+            return where;
+        }
+        public void UpdateUserInn(int persid, string inn)
+        {
+            string sqlQuery = @"exec spSetPersonInn " + persid + ", '" + inn + "'";
+            Session.CreateSQLQuery(sqlQuery).List();
+        }
+        public string GetUserInn(int persId)
+        {
+            String sqlq = @"SELECT top 1 INN fROM RefPeople where id="+persId;
+            var query = Session.CreateSQLQuery(sqlq);
+            return query.UniqueResult<string>(); 
+
+        }
+        public IList<UserPersonnelDataDto> GetUserPersonnelData(int CurrentUserId, UserRole role, string fio, int DepId)
+        {
+            string sqlQuery = @"SELECT * FROM vwInnForAll inn"+ Environment.NewLine;
+            string wherestr = String.Empty;
+            switch (role)
+            {
+                case UserRole.ConsultantPersonnel:
+                case UserRole.ConsultantOutsourcing:
+                case UserRole.OutsourcingManager:
+                case UserRole.TaxCollector:
+                case UserRole.Accountant:
+                    break;
+                case UserRole.Manager:
+                    wherestr = addToWhere(wherestr, "(inn.depid in(	select dd.Id from Users u inner join Department ud ON u.DepartmentId=ud.Id	inner join Department dd ON dd.Path like ud.Path+'%'	where u.id="+CurrentUserId+"	union	SELECT md.Id FROM Department dep 	INNER JOIN ManualRoleRecord mrr ON mrr.UserId="+CurrentUserId+" and dep.id=mrr.TargetDepartmentId	INNER join Department md ON md.Path like dep.Path+'%'))");
+                    break;
+                case UserRole.PersonnelManager:
+                    wherestr = addToWhere(wherestr, "(inn.UserId in (	Select userid from UserToPersonnel	where PersonnelId="+CurrentUserId+"))");
+                    break;
+                case UserRole.Employee:
+                    wherestr= addToWhere(wherestr,"(inn.UserId ="+CurrentUserId+")");
+                    break;
+                default: throw new Exception("Недостаточно прав.");
+            }
+            if (!String.IsNullOrEmpty(fio))
+                wherestr = addToWhere(wherestr, "(inn.UserName like '"+fio+"%' or inn.fio like '"+fio+"%')");
+            if (DepId>0)
+                wherestr = addToWhere(wherestr, "(inn.DepId in (SELECT d1.Id FROM Department d inner join Department d1 on d1.Path like d.Path+'%' where d.Id="+DepId+" ))");
+            sqlQuery += wherestr;
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("PeopleId", NHibernateUtil.Int32).
+                AddScalar("chilvacationend",NHibernateUtil.DateTime).
+                AddScalar("UserId", NHibernateUtil.Int32).
+                AddScalar("DepId", NHibernateUtil.Int32).
+                AddScalar("DateAccept", NHibernateUtil.DateTime).
+                AddScalar("DateRelease", NHibernateUtil.DateTime).
+                AddScalar("Dep3Name", NHibernateUtil.String).
+                AddScalar("Dep7Name", NHibernateUtil.String).
+                AddScalar("GPDFlag", NHibernateUtil.Boolean).
+                AddScalar("UserFlag", NHibernateUtil.Boolean).
+                AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("INN", NHibernateUtil.String).
+                AddScalar("FIO", NHibernateUtil.String);
+            IList<UserPersonnelDataDto> users = query.SetResultTransformer(Transformers.AliasToBean(typeof(UserPersonnelDataDto))).List<UserPersonnelDataDto>();
+            return users;
+        }
     }
 }
