@@ -26,9 +26,10 @@ namespace Reports.Core.Dao
         /// Список сотрудников с должностями к подразделению с возможностью отключения показа окладов и надбавок.
         /// </summary>
         /// <param name="DepartmentId">Id подразделения</param>
-        /// <param name="SalaryEnabel">Признак по которому показываем оклад и надбавки</param>
+        /// <param name="PersonnelId">Id кадровика РК</param>
+        /// <param name="ManagerId">Id руководителя</param>
         /// <returns></returns>
-        IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId, int PersonnelId);
+        IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId, int PersonnelId, int ManagerId);
         /// <summary>
         /// Достаем количество сотрудников, закрепленных за данной штатной единицей.
         /// </summary>

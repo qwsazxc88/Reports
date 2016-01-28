@@ -5170,6 +5170,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return false;
             }
 
+            if (entity.Candidate.Managers.SalaryMultiplier.HasValue)
+            {
+                if (entity.Candidate.Managers.SalaryMultiplier.Value < 1 && !entity.IsHourlySalaryBasis)
+                {
+                    error = "При значении ставки меньше единицы оклад может быть только по часам!";
+                    return false;
+                }
+            }
+
             #region SetEntityProps
             entity.AccessGroup = AccessGroupDao.Load(viewModel.AccessGroupId);
             //entity.ApprovedByPersonnelManager = viewModel.ApprovedByPersonnelManager;
@@ -6112,6 +6121,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         error = "Нет сканов документов для приема!";
                         return false;
+                    }
+
+                    if (entity.Candidate.Managers.SalaryMultiplier.HasValue)
+                    {
+                        if (entity.Candidate.Managers.SalaryMultiplier.Value < 1 && !entity.IsHourlySalaryBasis)
+                        {
+                            error = "При значении ставки меньше единицы оклад может быть только по часам!";
+                            return false;
+                        }
                     }
                     //формирование номера ТД  и приказа о приеме перенес в сохранение кадровиком списка документов для подписи кандидатом
                     //string NewEmploymentContractNumber = null;
