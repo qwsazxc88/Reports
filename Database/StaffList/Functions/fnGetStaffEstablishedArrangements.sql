@@ -5,8 +5,9 @@ GO
 --функция достает штатную расстановку по выбранному подразделению + текущее состояние надбавок 
 CREATE FUNCTION [dbo].[fnGetStaffEstablishedArrangements]
 (
-	@DepartmentId int	
-	,@PersonnelId int
+	@DepartmentId int	--подразделение	
+	,@PersonnelId int	--кадровик РК
+	,@ManagerId int	--руководитель
 )
 RETURNS 
 @ReturnTable TABLE 
@@ -54,6 +55,11 @@ AS
 BEGIN
 DECLARE 
 	@IsSalaryEnable bit
+	,@IsMainManager bit
+	,@Rank int	--ранг должности руководителя
+	,@Login nvarchar(50)
+	,@UserId int		--учетка руководителя-сотрудника
+	,@Itemlevel int
 
 	SET @IsSalaryEnable = 0
 
@@ -66,9 +72,27 @@ DECLARE
 	END
 
 
+	IF @ManagerId <> 0
+	BEGIN
+		--определяем руководителя/зама
+		SELECT @IsMainManager = A.IsMainManager, @Rank = B.[Rank], @Itemlevel = B.Itemlevel, @Login = A.[Login]
+		FROM Users as A
+		INNER JOIN Position as B ON B.Id = A.PositionId
+		WHERE A.Id = @ManagerId
+
+		SELECT @UserId = Id FROM Users WHERE RoleId & 2 > 0 and [Login] = substring(@Login, 1, LEN(@Login) - 1)
+	END
+
+
+--select * from dbo.fnGetStaffEstablishedArrangements(126, 0, 14406) 
 	INSERT INTO @ReturnTable
 	SELECT F.Id, A.Id as SEPId, A.PositionId, B.Name as PositionName, A.DepartmentId, 1 as Quantity
-				 ,case when @IsSalaryEnable = 1 then A.Salary else 0 end as Salary
+				 ,case when @ManagerId <> 0 and @IsMainManager = 1 then A.Salary --руководитель видит все оклады
+							 when @ManagerId <> 0 and @IsMainManager = 0 then (case when @Itemlevel = isnull(B.Itemlevel, 7) and @Rank = isnull(B.[Rank], 3) and isnull(F.UserId, 0) = @UserId then A.Salary --на одном уровне зам видит только свой оклад
+																																			when @Itemlevel < isnull(B.Itemlevel, 7) then A.Salary --зам видит подчиненных
+																																			else 0 end)		--замы видят свои оклады и оклады подчиненых, не видят оклад начальника и других замов
+							 when @IsSalaryEnable = 1 then A.Salary	--для кадровиков
+							 else 0 end as Salary
 				 ,C.Path, D.Id as RequestId, 
 				 E.Rate,	--ставка
 				 --если в отпуске о уходу за ребенокм и нет замены показываем в колонках для заменяемых
@@ -97,15 +121,51 @@ DECLARE
 				 ,case when J.UserId is null then 0 else 1 end as IsDismiss	--увольнение
 				 ,F.IsDismissal		--сокращение
 				 --оклад и надбавки
-				 ,case when @IsSalaryEnable = 1 then I.Salary else 0 end as SalaryPersonnel
-				 ,case when @IsSalaryEnable = 1 then I.Regional else 0 end as Regional
-				 ,case when @IsSalaryEnable = 1 then I.Personnel else 0 end as Personnel
-				 ,case when @IsSalaryEnable = 1 then I.Territory else 0 end as Territory
-				 ,case when @IsSalaryEnable = 1 then I.Front else 0 end as Front
-				 ,case when @IsSalaryEnable = 1 then I.Drive else 0 end as Drive
-				 ,case when @IsSalaryEnable = 1 then I.North else 0 end as North
-				 ,case when @IsSalaryEnable = 1 then I.Qualification else 0 end as Qualification
-				 ,case when @IsSalaryEnable = 1 then isnull(I.TotalSalary, A.Salary) else 0 end as TotalSalary	--если вакансия, то надо показать оклад штатной единицы
+				 ,case when @ManagerId <> 0 and @IsMainManager = 1 then I.Salary --руководитель видит надбавки всех
+							 when @ManagerId <> 0 and @IsMainManager = 0 then (case when @Itemlevel = isnull(B.Itemlevel, 7) and @Rank = isnull(B.[Rank], 3) and isnull(F.UserId, 0) = @UserId then I.Salary --на одном уровне зам видит только свои надбавки
+																																			when @Itemlevel < isnull(B.Itemlevel, 7) then I.Salary --зам видит надбавки подчиненных
+																																			else 0 end)		
+							 when @IsSalaryEnable = 1 then I.Salary else 0 end as SalaryPersonnel
+				 ,case when @ManagerId <> 0 and @IsMainManager = 1 then I.Regional --руководитель видит надбавки всех
+							 when @ManagerId <> 0 and @IsMainManager = 0 then (case when @Itemlevel = isnull(B.Itemlevel, 7) and @Rank = isnull(B.[Rank], 3) and isnull(F.UserId, 0) = @UserId then I.Regional --на одном уровне зам видит только свои надбавки
+																																			when @Itemlevel < isnull(B.Itemlevel, 7) then I.Regional --зам видит надбавки подчиненных
+																																			else 0 end)		
+							 when @IsSalaryEnable = 1 then I.Regional else 0 end as Regional
+				 ,case when @ManagerId <> 0 and @IsMainManager = 1 then I.Personnel --руководитель видит надбавки всех
+							 when @ManagerId <> 0 and @IsMainManager = 0 then (case when @Itemlevel = isnull(B.Itemlevel, 7) and @Rank = isnull(B.[Rank], 3) and isnull(F.UserId, 0) = @UserId then I.Personnel --на одном уровне зам видит только свои надбавки
+																																			when @Itemlevel < isnull(B.Itemlevel, 7) then I.Personnel --зам видит надбавки подчиненных
+																																			else 0 end)		
+							 when @IsSalaryEnable = 1 then I.Personnel else 0 end as Personnel
+				 ,case when @ManagerId <> 0 and @IsMainManager = 1 then I.Territory --руководитель видит надбавки всех
+							 when @ManagerId <> 0 and @IsMainManager = 0 then (case when @Itemlevel = isnull(B.Itemlevel, 7) and @Rank = isnull(B.[Rank], 3) and isnull(F.UserId, 0) = @UserId then I.Territory --на одном уровне зам видит только свои надбавки
+																																			when @Itemlevel < isnull(B.Itemlevel, 7) then I.Territory --зам видит надбавки подчиненных
+																																			else 0 end)		
+							 when @IsSalaryEnable = 1 then I.Territory else 0 end as Territory
+				 ,case when @ManagerId <> 0 and @IsMainManager = 1 then I.Front --руководитель видит надбавки всех
+							 when @ManagerId <> 0 and @IsMainManager = 0 then (case when @Itemlevel = isnull(B.Itemlevel, 7) and @Rank = isnull(B.[Rank], 3) and isnull(F.UserId, 0) = @UserId then I.Front --на одном уровне зам видит только свои надбавки
+																																			when @Itemlevel < isnull(B.Itemlevel, 7) then I.Front --зам видит надбавки подчиненных
+																																			else 0 end)		
+							 when @IsSalaryEnable = 1 then I.Front else 0 end as Front
+				 ,case when @ManagerId <> 0 and @IsMainManager = 1 then I.Drive --руководитель видит надбавки всех
+							 when @ManagerId <> 0 and @IsMainManager = 0 then (case when @Itemlevel = isnull(B.Itemlevel, 7) and @Rank = isnull(B.[Rank], 3) and isnull(F.UserId, 0) = @UserId then I.Drive --на одном уровне зам видит только свои надбавки
+																																			when @Itemlevel < isnull(B.Itemlevel, 7) then I.Drive --зам видит надбавки подчиненных
+																																			else 0 end)		
+							 when @IsSalaryEnable = 1 then I.Drive else 0 end as Drive
+				 ,case when @ManagerId <> 0 and @IsMainManager = 1 then I.North --руководитель видит надбавки всех
+							 when @ManagerId <> 0 and @IsMainManager = 0 then (case when @Itemlevel = isnull(B.Itemlevel, 7) and @Rank = isnull(B.[Rank], 3) and isnull(F.UserId, 0) = @UserId then I.North --на одном уровне зам видит только свои надбавки
+																																			when @Itemlevel < isnull(B.Itemlevel, 7) then I.North --зам видит надбавки подчиненных
+																																			else 0 end)		
+							 when @IsSalaryEnable = 1 then I.North else 0 end as North
+				 ,case when @ManagerId <> 0 and @IsMainManager = 1 then I.Qualification --руководитель видит надбавки всех
+							 when @ManagerId <> 0 and @IsMainManager = 0 then (case when @Itemlevel = isnull(B.Itemlevel, 7) and @Rank = isnull(B.[Rank], 3) and isnull(F.UserId, 0) = @UserId then I.Qualification --на одном уровне зам видит только свои надбавки
+																																			when @Itemlevel < isnull(B.Itemlevel, 7) then I.Qualification --зам видит надбавки подчиненных
+																																			else 0 end)		
+							 when @IsSalaryEnable = 1 then I.Qualification else 0 end as Qualification
+				 ,case when @ManagerId <> 0 and @IsMainManager = 1 then isnull(I.TotalSalary, A.Salary) --руководитель видит зп всех
+							 when @ManagerId <> 0 and @IsMainManager = 0 then (case when @Itemlevel = isnull(B.Itemlevel, 7) and @Rank = isnull(B.[Rank], 3) and isnull(F.UserId, 0) = @UserId then isnull(I.TotalSalary, A.Salary) --на одном уровне зам видит только свою зп
+																																			when @Itemlevel < isnull(B.Itemlevel, 7) then isnull(I.TotalSalary, A.Salary) --зам видит зп подчиненных
+																																			else 0 end)		
+							 when @IsSalaryEnable = 1 then isnull(I.TotalSalary, A.Salary) else 0 end as TotalSalary	--если вакансия, то надо показать оклад штатной единицы
 				 ,F.DateDistribNote
 				 ,F.DateReceivNote
 				 ,K.Name as BasicUser
@@ -136,7 +196,7 @@ DECLARE
 	ORDER BY A.Priority
 
 		
---select * from dbo.fnGetStaffEstablishedArrangements(12158, 0) 
+--select * from dbo.fnGetStaffEstablishedArrangements(126, 0, 14406) 
 
 	RETURN 
 END

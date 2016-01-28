@@ -80,7 +80,7 @@ namespace WebMvc.Controllers
                     if(model.IsFirstTimeLogin)
                         return RedirectToAction("ChangePassword");
                     if(model.NeedToSelectRole)
-                        return RedirectToAction("ChangeRole");
+                        return RedirectToAction("ChangeRole", new { returnUrl=returnUrl});
                     if (Url.IsLocalUrl(returnUrl))
                         return Redirect(returnUrl);
                     return RedirectToAction("Index", "Home");
@@ -291,16 +291,19 @@ namespace WebMvc.Controllers
 
         [HttpGet]
         [AuthorizeAttribute]
-        public ActionResult ChangeRole()
+        public ActionResult ChangeRole(string returnUrl="")
         {
             return View(LoginBl.GetChangeRoleModel());
         }
         [HttpPost]
         [AuthorizeAttribute]
-        public ActionResult ChangeRole(ChangeRoleModel model)
+        public ActionResult ChangeRole(ChangeRoleModel model, string returnUrl="")
         {
             LoginBl.SetUserRole(model);
-            return RedirectToAction("Index", "Home");  
+            if (string.IsNullOrEmpty(returnUrl.Trim()))
+                return RedirectToAction("Index", "Home");
+            else return Redirect(returnUrl);
+            
         }
 
 

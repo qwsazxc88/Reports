@@ -126,11 +126,13 @@
     <Compile Include="UI\Bl\Impl\EmploymentBl.cs" />
     <Compile Include="UI\Bl\Impl\GpdBl.cs" />
     <Compile Include="UI\Bl\Impl\HelpBl.cs" />
+    <Compile Include="UI\Bl\Impl\ShortCodeBl.cs" />
     <Compile Include="UI\Bl\Impl\StaffListBl.cs" />
     <Compile Include="UI\Bl\Impl\StaffMovementsBl.cs" />
     <Compile Include="UI\Bl\IRequestBl.cs" />
     <Compile Include="UI\Bl\Impl\LoginBL.cs" />
     <Compile Include="UI\Bl\Impl\RequestBl.cs" />
+    <Compile Include="UI\Bl\IShortCodeBl.cs" />
     <Compile Include="UI\Bl\IStaffListBl.cs" />
     <Compile Include="UI\Bl\IStaffMovementsBl.cs" />
     <Compile Include="UI\Bl\ISurchargeBL.cs" />
