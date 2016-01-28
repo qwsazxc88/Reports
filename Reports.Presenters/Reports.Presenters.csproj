@@ -129,6 +129,7 @@
     <Compile Include="UI\Bl\Impl\ShortCodeBl.cs" />
     <Compile Include="UI\Bl\Impl\StaffListBl.cs" />
     <Compile Include="UI\Bl\Impl\StaffMovementsBl.cs" />
+    <Compile Include="UI\Bl\Impl\UserProfile.cs" />
     <Compile Include="UI\Bl\IRequestBl.cs" />
     <Compile Include="UI\Bl\Impl\LoginBL.cs" />
     <Compile Include="UI\Bl\Impl\RequestBl.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="UI\Bl\IStaffMovementsBl.cs" />
     <Compile Include="UI\Bl\ISurchargeBL.cs" />
     <Compile Include="UI\Bl\Impl\SurchargeBl.cs" />
+    <Compile Include="UI\Bl\IUserProfile.cs" />
     <Compile Include="UI\ViewModel\AbsenceEditModel.cs" />
     <Compile Include="UI\ViewModel\AbsenceListModel.cs" />
     <Compile Include="UI\ViewModel\AcceptRequestsModel.cs" />
