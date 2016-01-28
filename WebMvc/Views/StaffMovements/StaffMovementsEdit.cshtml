@@ -836,9 +836,10 @@ label { font-size:1.1em; }
             addControlError($("#JSError"),'Необходимо выбрать дату перевода');
             result = false;
         }
+        
         @if (Model.IsManagerEditable)
         {<text>
-            clearControlErrors($("#PyrusLink"));
+            
             clearControlErrors($("#MovementTempTo"));
             if($('[name="IsTempMoving"]:checked').val()=="True")
             {             
@@ -849,6 +850,7 @@ label { font-size:1.1em; }
                     result = false;
                 }   
             }
+            clearControlErrors($("#PyrusLink"));
             if($("#PyrusLink").val() == '')
             {
                 addControlError($("#PyrusLink"),'Необходимо создать задачу в Pyrus');
@@ -868,7 +870,13 @@ label { font-size:1.1em; }
         }
         @if (Model.IsPersonnelManagerEditable)
         {<text>  
-        
+        clearControlErrors($("#IsHourlyContainer"));
+            if($('[name="TargetCasingType"]:checked').val() == 'False' && ( parseFloat($("#TargetSalaryCount").val().replace(',','.'))<1) )
+            {
+                addControlError($("#IsHourlyContainer"),'если ставка <1, то оклад  может быть  ТОЛЬКО  по  часам');
+                addControlError($("#JSError"),'если ставка <1, то оклад  может быть  ТОЛЬКО  по  часам');
+                result = false;
+            }
         clearControlErrors($("#MovementTempTo"));
             if($('[name="IsTempMoving"]:checked').val()=="True")
             {             
@@ -885,7 +893,8 @@ label { font-size:1.1em; }
                 addControlError($("#TargetSalaryCount"),'Необходимо заполнить ставку');
                 addControlError($("#JSError"),'Необходимо заполнить грейд');
                 result = false;
-            }          
+            }
+                      
             clearControlErrors($("#Grade"));
             if($("#Grade").val() == '')
             {
