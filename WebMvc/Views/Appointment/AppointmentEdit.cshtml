@@ -4,7 +4,7 @@
 @model Reports.Presenters.UI.ViewModel.AppointmentEditModel
 @{
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
-    Layout = "~/Views/Shared/_LayoutAppointment.cshtml";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
     ViewBag.Title = "Заявка на подбор сотрудника";
 }
 <div style="visibility:hidden">
@@ -343,7 +343,7 @@
                 <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDeleted" />
                 <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
                 <input type="hidden" id="DateCreated" name="DateCreated" value="@Model.DateCreated" />
-                    Руководитель (заказчик) - Автор:
+                    Руководитель (автор):
                 </td>
                 <td>
                     @Html.CheckBox("IsManagerApproved", Model.IsManagerApproved, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) 

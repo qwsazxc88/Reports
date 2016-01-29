@@ -105,14 +105,7 @@
                                 @Html.EditorFor(model => model.EndDate) 
                              </td>
                         </tr>
-                        <tr>
-                            <td colspan="2">
-                                Период по дате создания заявки с:
-                                @Html.EditorFor(model => model.BeginCreateDate) 
-                                по:
-                                @Html.EditorFor(model => model.EndCreateDate) 
-                             </td>
-                        </tr>
+                        
                         <tr>
                           <td colspan="2">
                             <input type="submit" value="Выбрать"/>
@@ -299,8 +292,6 @@
     $(document).ready(function () {
         $("#BeginDate").datepicker({changeMonth: true, changeYear: true});
         $("#EndDate").datepicker({changeMonth: true, changeYear: true});
-        $("#BeginCreateDate").datepicker({changeMonth: true, changeYear: true});
-        $("#EndCreateDate").datepicker({changeMonth: true, changeYear: true});
         $(".hasDatepicker").width("75px");
         setSortFields();
         setActiveMenuItem("userDismissal");

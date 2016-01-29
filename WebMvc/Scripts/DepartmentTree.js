@@ -8,10 +8,8 @@ function createDepartmentDialog(SelType) {
     elem.id = "divDepartmentDialog";
     var newDiv = $(elem);
     //var departmentId = $("#DepartmentId").val();
-
-
     var departmentId = 0;
-    if (SelType == null) { SelType = 0; ; }
+    if (SelType == null) { SelType = 0; }
     //для всего остального
     if (SelType == 0) { departmentId = $("#DepartmentId").val(); }
         
@@ -21,8 +19,6 @@ function createDepartmentDialog(SelType) {
     if (SelType == 3) { departmentId = $("#DepATMId").val(); }
     if (SelType == 6) { departmentId = $("#ParentId").val(); }
     if (SelType == 8) { departmentId = $("#DepDepositId").val(); }
-
-
     //Кадровые перемещения
     if (SelType == 4) { departmentId = $("#SourceDepartmentId").val(); }
     if (SelType == 5) { departmentId = $("#TargetDepartmentId").val(); }
@@ -145,14 +141,14 @@ function SaveDepartment(SelType) {
         $('#DepATMName').val("");
         $('#DepATMNameLabel').text("");
     }
-
+    
     //для штатного расписания
     if (SelType == 6) {
         $('#ParentId').val("0");
         $('#DepParentName').val("");
         $('#DepParentNameLabel').text("");
     }
-
+    
     //для штатного расписания
     if (SelType == 8) {
         $('#DepDepositId').val("0");

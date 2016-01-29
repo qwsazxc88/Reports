@@ -2217,7 +2217,6 @@ GO
 		INSERT INTO dbo.Country(Version, Code, Name) VALUES(1, N'398', N' ¿«¿’—“¿Õ')
 		INSERT INTO dbo.Country(Version, Code, Name) VALUES(1, N'643', N'–Œ——»ﬂ')
 		INSERT INTO dbo.Country(Version, Code, Name) VALUES(1, N'804', N'” –¿»Õ¿')
-		INSERT INTO dbo.Country(Version, Code, Name) VALUES(1, N'860', N'”«¡≈ »—“¿Õ')
 
 		--DisabilityDegree (ÂÒÚ¸ ‰‡ÌÌ˚Â)
 		INSERT INTO dbo.DisabilityDegree(Version, Name) VALUES(1, N'I')

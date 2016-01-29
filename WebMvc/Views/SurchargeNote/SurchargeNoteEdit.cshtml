@@ -4,7 +4,7 @@
 @using Reports.Presenters.UI.Bl.Impl;
 
 @{
-    Layout = "~/Views/Shared/_LayoutSurchargeNote.cshtml";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
     ViewBag.Title = "Начисления";
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     ViewBag.PlaceId = Model.Id;

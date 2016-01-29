@@ -102,10 +102,10 @@
     <Compile Include="Dao\IEmploymentCandidateCommentDao.cs" />
     <Compile Include="Dao\IGpdChargingTypeDao.cs" />
     <Compile Include="Dao\IEmploymentCandidateDocNeededDao.cs" />
-    <Compile Include="Dao\IKladrDao.cs" />
     <Compile Include="Dao\IMailConfirmDao.cs" />
     <Compile Include="Dao\IMailListDao.cs" />
     <Compile Include="Dao\IManualDeductionDao.cs" />
+    <Compile Include="Dao\IKladrDao.cs" />
     <Compile Include="Dao\IMessagesDao.cs" />
     <Compile Include="Dao\Impl\AnalyticalStatementDao.cs" />
     <Compile Include="Dao\IEmploymentEducationTypeDao.cs" />
@@ -694,9 +694,6 @@
     <Compile Include="Domain\SicklistPaymentRestrictType.cs" />
     <Compile Include="Domain\SicklistPaymentType.cs" />
     <Compile Include="Domain\SicklistType.cs" />
-    <Compile Include="Domain\StaffMovements\StaffMovements.cs" />
-    <Compile Include="Domain\StaffMovements\StaffMovementsData.cs" />
-    <Compile Include="Domain\StaffMovements\StaffMovementsDocs.cs" />
     <Compile Include="Domain\StaffList\DepartmentArchive.cs" />
     <Compile Include="Domain\StaffList\RefAddresses.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentAdministration.cs" />
@@ -705,6 +702,9 @@
     <Compile Include="Domain\StaffList\StaffDepartmentCashDeskAvailable.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentCBDetails.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentInstallSoft.cs" />
+    <Compile Include="Domain\StaffMovements\StaffMovements.cs" />
+    <Compile Include="Domain\StaffMovements\StaffMovementsData.cs" />
+    <Compile Include="Domain\StaffMovements\StaffMovementsDocs.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentLandmarks.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentManagement.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentManagerDetails.cs" />
@@ -1453,9 +1453,6 @@
     <EmbeddedResource Include="Domain\StaffList\StaffRequestPyrusTasks.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffWorkingConditions.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentAccessory.hbm.xml" />
-    <EmbeddedResource Include="Domain\UserRequest\refVacationReturnStatus.hbm.xml" />
-    <EmbeddedResource Include="Domain\UserRequest\refVacationReturnTypes.hbm.xml" />
-    <EmbeddedResource Include="Domain\UserRequest\VacationReturn.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsRejectReason.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsStatus.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffMovements\refStaffMovementsTypes.hbm.xml" />
@@ -1470,6 +1467,9 @@
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentBranch.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentSoftGroupLinks.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentSoftGroup.hbm.xml" />
+    <EmbeddedResource Include="Domain\UserRequest\refVacationReturnStatus.hbm.xml" />
+    <EmbeddedResource Include="Domain\UserRequest\refVacationReturnTypes.hbm.xml" />
+    <EmbeddedResource Include="Domain\UserRequest\VacationReturn.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentInstallSoft.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentSKB_GE.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffDepartmentRentPlace.hbm.xml" />

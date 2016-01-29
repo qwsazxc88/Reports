@@ -64,7 +64,44 @@
             <table style="width:100%">
                 <tr>
                     <td style="vertical-align:top">
-                            @Html.Partial("_MenuPartialTemplate")
+					
+					@*@Html.Partial("_MenuGeneral")*@
+										
+					
+					
+@{ 
+    var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+	switch (controllerName) 
+	{
+	case "Appointment": @Html.Partial("_MenuPartialAppointment");
+	break;
+	case "Deduction": @Html.Partial("_MenuPartialDeduction");
+	break;
+	case "Employment": @Html.Partial("_MenuPartialEmployment");
+	break;
+	case "GPD": @Html.Partial("_MenuPartialGPD");
+	break;
+	case "Graphics": @Html.Partial("_MenuPartialGraphics");
+	break;
+	case "Help": @Html.Partial("_MenuPartialHelp");
+	break;
+	case "Info": @Html.Partial("_MenuPartialInfo");
+	break;
+	case "MissionOrder": @Html.Partial("_MenuPartialMissionOrder");
+	break;
+	case "StaffList": @Html.Partial("_MenuPartialStaffList");
+	break;
+	case "StaffMovements": @Html.Partial("_MenuPartialStaffMovements");
+	break;
+	case "Surcharge": @Html.Partial("_MenuPartialMissionOrder");
+	//TODO move Surcharge to MissionOrder
+	break;
+	case "SurchargeNote": @Html.Partial("_MenuPartialSurchargeNote");
+	break;
+	//_LayoutModern
+	};
+}
+                            @*Html.Partial("_MenuPartialTemplate")*@
                     </td>
                 </tr>
                 <tr>

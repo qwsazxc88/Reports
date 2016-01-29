@@ -859,9 +859,8 @@ namespace Reports.Presenters.UI.Bl.Impl
               0,
               0,
               model.StatusId,
-              null, null,
               model.BeginDate,
-              model.EndDate,              
+              model.EndDate,
               model.UserName,
               model.SortBy, model.SortDescending, model.Number).ToList().ConvertAll(x => new AllRequestDto
               {
@@ -1913,8 +1912,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //0,
                 model.BeginDate,
                 model.EndDate,
-                model.BeginCreateDate,
-                model.EndCreateDate,
                 model.UserName,
                 model.SortBy,
                 model.SortDescending,

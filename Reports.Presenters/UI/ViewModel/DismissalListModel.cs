@@ -33,8 +33,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "по")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? EndDate { get; set; }
-        public DateTime? BeginCreateDate { get; set; }
-        public DateTime? EndCreateDate {get;set;}
+
         [Display(Name = "Статус заявки")]
         public int StatusId { get; set; }
         public IList<IdNameDto> Statuses;

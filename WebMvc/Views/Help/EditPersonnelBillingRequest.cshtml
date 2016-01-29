@@ -1,6 +1,6 @@
 ﻿@model Reports.Presenters.UI.ViewModel.EditPersonnelBillingRequestViewModel
 @{
-    Layout = "~/Views/Shared/_HelpInfo.cshtml";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
     ViewBag.Title = "Редактирование запроса (внутренний биллинг)";
 }
 @using (Html.BeginForm("EditPersonnelBillingRequest", "Help", FormMethod.Post, new { onkeydown = "return event.keyCode!=13", enctype = "multipart/form-data", Id = "EditBillingRequestForm" }))

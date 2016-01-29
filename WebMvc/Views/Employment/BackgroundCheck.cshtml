@@ -5,7 +5,7 @@
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     if ((dto.UserRole & UserRole.Candidate) > 0)
     {
-        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
         ViewBag.Title = "Прием - Департамент безопасности";
     }
 }
@@ -363,7 +363,8 @@
             </div>
         }
     </div>
-    <div class="formfield clear">
+    
+    <div class="clear">
         @Html.CheckBoxFor(m => m.IsValidate, Model.IsDraft ? null : (object)new { disabled = "disabled" })@Html.LabelFor(m => m.IsValidate)<br />
         @*@Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
         @Html.HiddenFor(m => m.IsBGDraft)
