@@ -11,6 +11,7 @@
 		<!--<many-to-one  name="Parent" class="Department" column="ParentId" property-ref="Code1C" foreign-key="FK_Department_Department" not-null="false" lazy="proxy" />-->
 		<property name="Path" length="128" not-null="false"/>
 		<property name="ItemLevel" not-null="false"/>
+		
     <property name="CodeSKD" not-null="false"/>
     <property name="Priority" not-null="false"/>
     <property name="IsUsed" not-null="false"/>

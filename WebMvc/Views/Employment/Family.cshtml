@@ -5,7 +5,7 @@
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     if ((dto.UserRole & UserRole.Candidate) > 0)
     {
-        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+        Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
         ViewBag.Title = "Прием - Состав семьи";
     }
 }

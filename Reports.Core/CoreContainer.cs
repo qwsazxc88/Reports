@@ -611,6 +611,11 @@ namespace Reports.Core
                     .Instance(SessionFactory)
                     .LifeStyle.Is(LifestyleType.Singleton));
 			//Kernel.AddComponentInstance("ISessionFactory", typeof(ISessionFactory), SessionFactory);
+
+            Register(Component.For<IKladrDao>()
+                .ImplementedBy<KladrDao>()
+                .LifeStyle.Is(type));
+
             Register(Component.For(typeof(INoteTypeDao))
                 .ImplementedBy<NoteTypeDao>()
                 .LifeStyle.Is(type));
@@ -628,9 +633,6 @@ namespace Reports.Core
                 .LifeStyle.Is(type));
             Register(Component.For<INewsDao>()
                 .ImplementedBy<NewsDao>()
-                .LifeStyle.Is(type));
-            Register(Component.For<IKladrDao>()
-                .ImplementedBy<KladrDao>()
                 .LifeStyle.Is(type));
             Register(Component.For<ISurchargeNoteDao>()
                 .ImplementedBy<SurchargeNoteDao>()
@@ -650,8 +652,6 @@ namespace Reports.Core
             Register(Component.For<IDocumentApprovalDao>()
                 .ImplementedBy<DocumentApprovalDao>()
                 .LifeStyle.Is(type));
-
-
             #region StaffMovements
             Register(Component.For<IrefStaffMovementsRejectReasonDao>()
                 .ImplementedBy<refStaffMovementsRejectReasonDao>()
@@ -672,7 +672,6 @@ namespace Reports.Core
                 .ImplementedBy<StaffMovementsDataDao>()
                 .LifeStyle.Is(type));
             #endregion
-
             #region Штатное расписание
             Register(Component.For<IDepartmentArchiveDao>()
                 .ImplementedBy<DepartmentArchiveDao>()
@@ -815,8 +814,8 @@ namespace Reports.Core
             Register(Component.For<IStaffTemporaryReleaseVacancyRequestDao>()
                 .ImplementedBy<StaffTemporaryReleaseVacancyRequestDao>()
                 .LifeStyle.Is(type));
+
             #endregion
-            
             
         }
         #endregion

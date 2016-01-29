@@ -1820,6 +1820,38 @@ legend {
     user-select: none;
 }
 
+  .sortorder:after {
+    content: '\25b2';
+    color:Blue;
+  }
+  .sortorder.reverse:after {
+    content: '\25bc';
+    color:Blue;
+  }
+  .filterinput {
+    width: 100%;
+    margin: 0px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    border: 1px solid #aaa;
+ }
+  .custom-combobox {
+    position: relative;
+    display: inline-block;
+  }
+  .custom-combobox-toggle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin-left: -1px;
+    padding: 0;
+  }
+  .custom-combobox-input {
+    margin: 0;
+    padding: 5px 10px;
+  }
+  legend.bordered
 /*Штатное расписание*/
 .collapse 
 {
@@ -1910,7 +1942,6 @@ legend {
     display:inline-block;
     cursor:pointer;   
 }
-    
 .btnPosEdit
 {
     width:25px;

@@ -86,14 +86,14 @@ namespace Reports.Core.Dto.Employment2
         public bool IsApproveByHigherManagerAvailable { get; set; }
 
         public bool IsContractChangedToIndefinite { get; set; }
-        public DateTime? DismissalDate { get; set; }
+
         public int AppointmentReportId { get; set; }
         public string AppointmentReportNumber { get; set; }
         public int AppointmentId { get; set; }
         public int? AppointmentNumber { get; set; }
         public bool IsTechDissmiss { get; set; }
         public bool IsBlocked { get; set; }
-
+        public DateTime? DismissalDate { get; set; }
         public string MentorName { get; set; }
         public DateTime? PlanRegistrationDate { get; set; }
 

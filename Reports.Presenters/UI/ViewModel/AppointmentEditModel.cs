@@ -43,10 +43,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Основание появления вакансии")]
         public int ReasonId { get; set; }
         public int ReasonIdHidden { get; set; }
+        public IList<IdNameDto> Reasons;
         public IList<IdNameDto> UsersList { get; set; }
         public int ReasonPositionId { get; set; }
-        public IList<IdNameDto> Reasons;
-
         //[Display(Name = "Должность")]
         public string ReasonPosition { get; set; }
         //[Display(Name = "С даты")]

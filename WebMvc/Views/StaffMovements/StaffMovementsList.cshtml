@@ -5,7 +5,7 @@
 @{
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     ViewBag.Title = "Кадровые перемещения - реестр заявок";
-    Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
 }
 <script type="text/javascript" src="../../Scripts/angular.min.js"></script>
 <div ng-app="GridApp" >
