@@ -5865,6 +5865,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.Position = PositionDao.Load(Vacation.PositionId);
                             entity.Candidate.User.Position = PositionDao.Load(Vacation.PositionId);
                             entity.Candidate.User.SEPId = Vacation.SEPId;
+                            entity.Candidate.UserLinkId = Vacation.Id;
                             //entity.Candidate.User.Department = DepartmentDao.Load(viewModel.DepartmentId);
                             //entity.Position = PositionDao.Load(viewModel.PositionId);
                         }
