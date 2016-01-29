@@ -21,7 +21,7 @@ using System.Linq;
 namespace WebMvc.Controllers
 {
     [PreventSpamAttribute]
-    [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator)]
+    [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Estimator | UserRole.Admin)]
     public class DeductionController : BaseController
     {
         protected IRequestBl requestBl;
@@ -63,6 +63,27 @@ namespace WebMvc.Controllers
         public ActionResult DeductionEdit(int id)
         {
             DeductionEditModel model = RequestBl.GetDeductionEditModel(id);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult DeductionEditAdmin(int id)
+        {
+            DeductionEditModel model = RequestBl.GetDeductionEditModel(id);
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult DeductionEditAdmin(DeductionEditModel model)
+        {
+            //ModelState.Clear();
+            CorrectCheckboxes(model);
+            //CorrectDropdowns(model);
+            model.TypeId = model.TypeIdHidden;
+            model.KindId = model.KindIdHidden;
+            model.MonthId = model.MonthIdHidden;
+            model.UserId = model.UserIdHidden;
+            //
+            RequestBl.SaveDeductionEditAdminModel(model);
             return View(model);
         }
         [HttpPost]
