@@ -3365,7 +3365,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 IsBeforEmployment = model.IsTrainingNeeded ? model.IsBeforEmployment : false,
                 Appointment = (model.AppointmentId!=0)?AppointmentDao.Load(model.AppointmentId):null,
                 AppointmentReport =(model.AppointmentReportId!=0)?AppointmentReportDao.Load(model.AppointmentReportId):null,
-                PyrusNumber = model.PyrusNumber
+                PyrusNumber = model.PyrusNumber,
+                UserLinkId = PostUserLink.Id
             };
             
             EmploymentCommonDao.SaveAndFlush(candidate);
@@ -5127,6 +5128,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Candidate.PersonnelManagers.CompetenceAddition = viewModel.CompetenceAddition;
             entity.Candidate.PersonnelManagers.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
             entity.PyrusNumber = viewModel.PyrusNumber;
+            entity.Candidate.UserLinkId = viewModel.UserLinkId;
 
             if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
             {
