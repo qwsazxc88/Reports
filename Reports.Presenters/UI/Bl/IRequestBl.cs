@@ -130,6 +130,7 @@ namespace Reports.Presenters.UI.Bl
         DeductionEditModel GetDeductionEditModel(int id);
         void SetDeductionUserInfoModel(DeductionUserInfoModel model, int userId);
         void ReloadDictionariesToModel(DeductionEditModel model);
+        void SaveDeductionEditAdminModel(DeductionEditModel model);
         bool SaveDeductionEditModel(DeductionEditModel model, bool EnableSendEmail, out string error);
         IList<IdNameDto> GetUserListForDeduction(string Name, int UserId);
         User GetUser(int Id);
