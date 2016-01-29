@@ -51,7 +51,6 @@ namespace Reports.Core.Dao.Impl
         /// Список сотрудников с должностями к подразделению.
         /// </summary>
         /// <param name="DepartmentId">Id подразделения</param>
-        /// <param name="SalaryEnabel">Признак по которому показываем оклад и надбавки</param>
         /// <returns></returns>
         public IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId)
         {
@@ -72,7 +71,7 @@ namespace Reports.Core.Dao.Impl
                                               ,BasicUser
                                               ,TemporaryMovementUsers
                                               ,LongAbsencesUsers
-                                       FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId, 0)");
+                                       FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId, 0, 0)");
 
             
 
@@ -122,9 +121,10 @@ namespace Reports.Core.Dao.Impl
         /// Список сотрудников с должностями к подразделению с возможностью отключения показа окладов и надбавок.
         /// </summary>
         /// <param name="DepartmentId">Id подразделения</param>
-        /// <param name="SalaryEnabel">Признак по которому показываем оклад и надбавки</param>
+        /// <param name="PersonnelId">Id кадровика РК</param>
+        /// <param name="ManagerId">Id руководителя</param>
         /// <returns></returns>
-        public IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId, int PersonnelId)
+        public IList<StaffEstablishedPostDto> GetStaffEstablishedArrangements(int DepartmentId, int PersonnelId, int ManagerId)
         {
             string sqlQuery = (@"SELECT Id, SEPId, PositionId, PositionName, DepartmentId, Quantity, Salary
                                         ,Path, RequestId, Rate, UserId, Surname, ReplacedId, ReplacedName, ReserveType, Reserve, DocId
@@ -143,7 +143,7 @@ namespace Reports.Core.Dao.Impl
                                               ,BasicUser
                                               ,TemporaryMovementUsers
                                               ,LongAbsencesUsers
-                                       FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId, :PersonnelId)");
+                                       FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId, :PersonnelId, :ManagerId)");
 
             return Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
@@ -185,6 +185,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("LongAbsencesUsers", NHibernateUtil.String)
                 .SetInt32("DepartmentId", DepartmentId)
                 .SetInt32("PersonnelId", PersonnelId)
+                .SetInt32("ManagerId", ManagerId)
                 .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
                 List<StaffEstablishedPostDto>();
         }

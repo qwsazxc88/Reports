@@ -54,7 +54,7 @@ BEGIN TRANSACTION
 	--ставим принятого сотрудника на зарезервированное место
 	UPDATE StaffEstablishedPostUserLinks SET UserId = @UserId, DocId = null, ReserveType = null, IsDismissal = 0, IsUsed = 1
 	WHERE Id = @UserLinkId
-
+	
 	--заносим персональные надбавки
 	SELECT @PersonalAddition = isnull(B.PersonalAddition, 0)
 				,@AreaAddition = isnull(B.AreaAddition, 0)

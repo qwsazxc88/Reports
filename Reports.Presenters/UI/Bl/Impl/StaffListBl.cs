@@ -1621,6 +1621,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected bool SaveDepartmentReference(StaffDepartmentRequest entity, User curUser, out string error)
         {
             error = string.Empty;
+            //bool IsParentChange = false;
+            //IList<Department> ChildDeps = null;
 
             if (entity.DepNext != null && entity.DepartmentAccessory.Id == 2)
             {
@@ -1631,7 +1633,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
-
+            
             Department dep = entity.Department != null ? DepartmentDao.Get(entity.Department.Id) : new Department();
             //родительское подразделение
             Department ParentDep = entity.ParentDepartment != null ? DepartmentDao.Get(entity.ParentDepartment.Id) : new Department();
@@ -1658,6 +1660,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 if (entity.RequestType.Id == 2)
                 {
+                    ////если меняется родитель запоминаем, чтобы у подчиненых подразделений изменить путь
+                    //if (dep.ParentId.Value != ParentDep.Code1C)
+                    //{
+                    //    IsParentChange = true;
+                    //    ChildDeps = DepartmentDao.GetChildDepartments(dep);//собираем подчиненные подразделения для подразделения у которого меняется родитель
+                    //}
+
                     dep.Name = entity.Name;
                     dep.ParentId = ParentDep.Code1C;
                     dep.Path = ParentDep.ItemLevel != entity.ItemLevel ? ParentDep.Path + "__new" : dep.Path;
@@ -1682,6 +1691,17 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 //если нет кода или изменился родитель, то надо подкорректировать путь
                 dep.Path = ParentDep.Path + (dep.Code1C.HasValue ? dep.Code1C.Value.ToString() : dep.Id.ToString()) + ".";
+
+                ////меняем пути у подчиненных подразделений
+                ////РАБОТАЕТ НА ОДНОМ УРОВНЕ, ДОРАБОТАТЬ, ЧТОБЫ ИЗМЕНЯЛИСЬ ПУТИ У ВСЕЙ ВЕТКИ
+                //if (IsParentChange)
+                //{
+                //    foreach (Department item in ChildDeps)
+                //    {
+                //        item.Path = dep.Path + item.Id.ToString() + ".";
+                //        DepartmentDao.SaveAndFlush(item);
+                //    }
+                //}
 
                 //только при добавлении надо заполнить эти поля, так как в структуре на поле Code1C ссылается поле ParentId, то есть значения в поле Code1C должны быть уникальными
                 if (entity.RequestType.Id == 1 || entity.RequestType.Id == 4)
@@ -5457,20 +5477,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             Department dep = DepartmentDao.GetByCode(DepId);
             int DepartmentId = dep.Id;
             int itemLevel = dep.ItemLevel.Value;
-
+            
+            
             int PersonnelId = AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager ? AuthenticationService.CurrentUser.Id : 0;
+            //для замов нужно скрывать оклад руководителя
+            int ManagerId = AuthenticationService.CurrentUser.UserRole == UserRole.Manager ? AuthenticationService.CurrentUser.Id : 0;
+            
 
             //достаем уровень подразделений и сотрудников с должностями к ним
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
             if (itemLevel != 7)
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId, PersonnelId);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId, PersonnelId, ManagerId);
                 //уровень подразделений
                 model.Departments = GetDepartmentListByParent(DepId, false, IsBegin).OrderBy(x => x.Priority).ToList();
             }
             else
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId, PersonnelId);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedArrangements(DepartmentId, PersonnelId, ManagerId);
             }
 
             return model;
