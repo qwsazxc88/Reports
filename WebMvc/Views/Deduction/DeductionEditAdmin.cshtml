@@ -1,0 +1,361 @@
+﻿@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@model Reports.Presenters.UI.ViewModel.DeductionEditModel
+@{
+    Layout = "~/Views/Shared/_LayoutDeduction.cshtml";
+    ViewBag.Title = "Редактирование удержания";
+}
+
+@using (Html.BeginForm())
+{
+
+        <div class="action-wrap">
+            <table style="width:100%">
+                <tr>
+                        <td colspan="2">
+                            @if (Model.IsCreateButtonVisible)
+                            {
+                                <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("DeductionEdit", "Deduction", new { id = 0 })'"/>
+                            }
+
+                            @if ((((ReportPrincipal)HttpContext.Current.User).UserRole & UserRole.Accountant) > 0)
+                            {
+                               <input type="button" value="Загрузить заявки автоматически из внешнего файла" onclick="@("window.location.href='" + @Url.Action("DeductionImport", "Deduction") + "'");" />
+                            }
+                        </td>
+                    </tr>
+            </table>
+        </div>
+
+
+    <div class="doc-wrap">
+    <table style="width:100%">
+    <tr>
+        <td colspan="2">
+            <input type="hidden" id="Guid" name="Guid" value="@Model.Guid" />
+            @Html.ValidationSummary(false)
+            <div id="Error" style="color:Red;display:none;"></div>
+            @*<div id="Success" style="color:Green;display:none;">Письмо успешно отправлено в биллинг.</div>*@
+        </td>
+    </tr>
+    <tr>
+        <td> <p style="color:Red">Эта форма не использует валидацию!</p>
+        </td>
+    </tr>
+    <tr>
+        <td style="width:250px">
+            @Html.LabelFor(m => m.DocumentNumber):
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DocumentNumber)
+
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.DateEdited):
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DateEdited)
+
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="padding-left:0px;padding-bottom:0px;padding-top:0px;">
+            @Html.Partial("DeductionUserInfo", Model)
+        </td>
+    </tr>
+     @if (Model.IsDeleted)
+     {
+        <tr>
+            <td colspan="2" style="color:Red">Заявка отклонена</td>
+        </tr>
+     }
+    @* <tr>
+        <td style="width:205px">
+            @Html.LabelFor(m => m.EndDate):
+        </td>
+        <td>
+            @if (Model.IsEditable)
+            {
+                @Html.EditorFor(model => model.EndDate)
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.EndDate)
+                @Html.HiddenFor(model => model.EndDate)
+            }
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Compensation):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Compensation, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Reduction):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Reduction, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Reason):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Reason, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" })
+        </td>
+    </tr>*@
+     <tr>
+        <td colspan="2">
+            <input type="hidden" id="UserIdHidden" name="UserIdHidden" value="@Model.UserIdHidden" />
+            @Html.LabelFor(m => m.Surname):
+        </td>
+     </tr>
+     <tr>
+        <td colspan="2">
+            @*@Html.DropDownListFor(model => model.UserId, new SelectList(Model.Users, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "userChange();" } : (object)new { disabled = "disabled" }) *@
+            @if (Model.IsEditable)
+            {
+                <input type="text" name="Surname" id="Surname" value="@Model.Surname" style="width:600px" onchange="userChange();"  data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "Deduction")" disabled="disabled"/>
+                @Html.ValidationMessageFor(m => m.Surname)
+            }
+            else
+            {
+                <label>@Model.Surname</label>
+            }
+            <input type="hidden" id="UserId" name="UserId" value="@Model.UserId"/>
+            <input type="hidden" id="Surname" name="Surname" value="@Model.Surname"/>
+        </td>
+    </tr>
+     <tr>
+        <td>
+            <input type="hidden" id="KindIdHidden" name="KindIdHidden" value="@Model.KindIdHidden" />
+            @Html.LabelFor(m => m.KindId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.KindId, new SelectList(Model.Kindes, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="hidden" id="MonthIdHidden" name="MonthIdHidden" value="@Model.MonthIdHidden" />
+            @Html.LabelFor(m => m.MonthId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.MonthId, new SelectList(Model.Monthes, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" })
+        </td>
+    </tr>
+     <tr>
+        <td>
+            @Html.LabelFor(m => m.Sum):
+        </td>
+        <td>
+            @*Html.TextBoxFor(model => model.Sum, Model.IsEditable ? null : (object)new { @readonly = "readonly" })*@
+            @Html.TextBoxFor(model => model.Sum, (object)new { @readonly = "readonly" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+          @*  <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />*@
+            <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+            <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+            <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+            <input type="hidden" id="IsDeleteAvailable" name="IsDeleteAvailable" value="@Model.IsDeleteAvailable" />
+            <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDelete" />
+            <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
+            <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
+            <input type="hidden" id="DateEdited" name="DateEdited" value="@Model.DateEdited" />
+         @*   <input type="hidden" id="IsPersonnelFieldsEditable" name="IsPersonnelFieldsEditable" value="@Model.IsPersonnelFieldsEditable" />*@
+            @Html.LabelFor(m => m.TypeId):
+        </td>
+
+        <td>@*@Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "setDismissalDateState();" } : (object)new { disabled = "disabled" }) *@
+            @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), (object)new { disabled = "disabled" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+        @Html.LabelFor(m => m.MissionReportNumber)
+        </td>
+        <td>
+        @if (Model.MissionReportNumber > 0)
+        {
+        @Html.DisplayFor(m => m.MissionReportNumber)
+        }
+
+        </td>
+    </tr>
+    <tr>
+        <td style="width:210px">
+            @Html.LabelFor(m => m.DismissalDate):
+        </td>
+        <td>
+            @if (Model.IsEditable)
+            {
+                @Html.EditorFor(model => model.DismissalDate)
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.DismissalDate)
+                @Html.HiddenFor(model => model.DismissalDate)
+            }
+        </td>
+     </tr>
+     @*<tr>
+        <td>
+            @Html.LabelFor(m => m.StatusId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name"), Model.IsPersonnelFieldsEditable ? null : (object)new { disabled = "disabled" })
+        </td>
+    </tr>*@
+    <tr>
+            <td colspan="2">
+                @*<input type="hidden" id="IsFastDismissalEnabled" name="IsFastDismissalEnabled" value="@Model.IsFastDismissalEnabled" />*@
+                @*<input type="checkbox" id="IsFastDismissal" name="IsFastDismissal" @if (Model.IsFastDismissal) {<text>checked="checked"</text>} />*@
+                @Html.CheckBox("IsFastDismissal", Model.IsFastDismissal, Model.IsEditable ? null : (object)new { disabled = "disabled" })
+                @Html.LabelFor(model => model.IsFastDismissal)
+                @if (!Model.IsEditable)
+                {
+                    <input type="hidden" id="IsFastDismissalHidden" name="IsFastDismissalHidden" value="@Model.IsFastDismissalHidden" />
+                }
+            </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Editor):
+        </td>
+        <td>
+            @Html.DisplayFor(model => model.Editor)
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Status):
+        </td>
+        <td>
+            @Html.DisplayFor(model => model.Status)
+         </td>
+    </tr>
+    @if (Model.Id > 0)
+    {
+        <tr>
+            <td colspan="2">
+                Сотруднику отправлено уведомление на e-mail
+            </td>
+        </tr>
+    }
+    <tr>
+        <td colspan="2">
+            <input type="submit" value="Записать" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
+                                                                                   {<text>style="display:none"</text>}/>
+            <input type="submit" value="Отклонить заявку" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
+                                                                                     {<text>style="display:none"</text>}/>
+         @*   <input type="button" value="Печать" name="PrintButton" onclick="window.location.href='@Url.Action("GetPrintForm", "UserRequest", new { id = Model.Id, typeId = 2 })';"
+                                                                @if (!Model.IsPrintAvailable)
+                                                                {<text>style="display:none"</text>}  />*@
+
+         </td>
+    </tr>
+    </table>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //$("#BeginDate").datepicker({changeMonth: true, changeYear: true});
+            $("#DismissalDate").datepicker({changeMonth: true, changeYear: true});
+            $(".hasDatepicker").width("75px");
+            $("#Sum").width("75px");
+            setDismissalDateState();
+            //            $("#Reduction").width("50px");
+            //            $("#Reason").width("350px");
+            //            setActiveMenuItem("userDismissal");
+            //автозаполнение сотрудников
+            $(function ()
+            {
+                $("[data-autocomplete-source]").each(
+                    function ()
+                    {
+                        var target = $(this);
+                        target.autocomplete({ source: target.attr("data-autocomplete-source"),
+                                              select : function(event, ui)
+                                                        {
+                                                            if (ui.item.UserId != null){
+                                                                $("#Surname").val(ui.item.label);
+                                                                $("#UserId").val(ui.item.UserId);
+                                                                $("#UserIdHidden").val(ui.item.UserId);
+                                                            }
+                                                            return true;
+                                                        }
+                                             });
+                      });
+            });
+
+        });
+        function ValidateForm() {
+            return true;
+        }
+//        function SetApprovedForAllAndValidateForm() {
+//            SetApprovedAndValidateForm();
+//            $("#IsApprovedForAll").val('true');
+//            return true;
+//        }
+//        function SetApprovedAndValidateForm() {
+//            $("#IsApproved").val('true');
+//            return true;
+//        }
+        function Delete() {
+            $("#IsDelete").val("true");
+            return true;
+        }
+        function setDismissalDateState() {
+            if ($("#IsEditable").val() == "False")
+                return;
+
+            if ($("#TypeId").val() == 1) {
+                $("#DismissalDate").attr("disabled", "disabled");
+                $("#DismissalDate").val("");
+                $("#IsFastDismissal").attr("disabled", "disabled");
+                $('#IsFastDismissal').removeAttr('checked');
+            }
+            else {
+                $("#DismissalDate").removeAttr("disabled");
+                if ($("#DismissalDate").val() == "")
+                    $("#DismissalDate").val($("#DateRelease").val());
+                $("#IsFastDismissal").removeAttr("disabled");
+            }
+        }
+        function userChange() {
+           if ($('#Surname').val() == ''){$('#UserId').val('0');}
+           clearErrors();
+            $.ajax(
+             {
+                 type: 'POST',
+                 contentType: 'application/json; charset=utf-8',
+                 data: "{'userId':" + "'" + $("#UserId").val() + "'}",
+                 dataType: 'html',
+                 url: "@Url.Action("UserChange", "Deduction")",
+                 success: function (result) {
+                      $("#UserInfo").html(result);
+                      if($("#UserInfoError").val() != "" ) {
+                        addError($("#UserInfoError").val());
+                      }
+                       if ($("#TypeId").val() != 1)
+                            $("#DismissalDate").val($("#DateRelease").val());
+                      //setDismissalDateState();
+                      //if ($("#DateRelease").val() != "")
+                      //$("#DismissalDate").val($("#DateRelease").val());
+                 },
+
+                 error: function (error) {
+                      addError(error);
+                 }
+             });
+        }
+    </script>
+}
