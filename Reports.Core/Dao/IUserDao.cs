@@ -11,6 +11,7 @@ namespace Reports.Core.Dao
         User FindByLogin(string login);
         void UpdateUserInn(int persid, string inn);
         string GetUserInn(int persId);
+        IList<UserAllRolesDto> GetAllUserRoles(int userId);
         bool CheckUserDismissal(int userid);
         IList<User> FindByCnilc(string cnilc);
         IList<User> FindByEmail(string email);

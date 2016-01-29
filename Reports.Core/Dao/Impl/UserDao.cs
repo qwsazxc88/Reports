@@ -19,7 +19,24 @@ namespace Reports.Core.Dao.Impl
         public const string MiddleNameSortFieldName = "MiddleName";
         public const int bufferSize = 1000;
 
-
+        IList<UserDocsDto> GetAllUserDocs(int userId, int doctype)
+        {
+            var roles= this.GetAllUserRoles(userId);
+            string sql = "";
+            foreach (var role in roles)
+            {
+                switch (role.RoleId)
+                {
+                    case (int)UserRole.Manager:
+                        sql = "exec spGetStaffEstablishedPostRequestForManager;";
+                    break;
+                }
+            }
+            var query = Session.CreateSQLQuery(sql)
+                .AddScalar("Id", NHibernateUtil.Int32);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(UserDocsDto))).List<UserDocsDto>();
+            
+        }
        
 
         public int PageSize
@@ -1358,6 +1375,20 @@ namespace Reports.Core.Dao.Impl
             var query = Session.CreateSQLQuery(sqlq);
             return query.UniqueResult<string>(); 
 
+        }
+        
+        public IList<UserAllRolesDto> GetAllUserRoles(int userId)
+        {
+            String sqlq = @"exec spGetAllUserAccounts " + userId;
+            var query = Session.CreateSQLQuery(sqlq);
+            query.AddScalar("UserId", NHibernateUtil.Int32)
+                .AddScalar("UserName", NHibernateUtil.String)
+                .AddScalar("RoleId", NHibernateUtil.Int32)
+                .AddScalar("RoleName", NHibernateUtil.String)
+                .AddScalar("PeopleCode",NHibernateUtil.String)
+                ;
+
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(UserAllRolesDto))).List<UserAllRolesDto>();         
         }
         public IList<UserPersonnelDataDto> GetUserPersonnelData(int CurrentUserId, UserRole role, string fio, int DepId)
         {
