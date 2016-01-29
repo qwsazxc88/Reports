@@ -181,14 +181,14 @@ namespace Reports.Core.Dao.Impl
 										FROM ManualRoleRecord as A
                                         INNER JOIN Department as B ON B.Id = A.TargetDepartmentId
                                         INNER JOIN Department as C ON C.Path like B.Path + N'%' --and C.ItemLevel <> B.ItemLevel
-						                WHERE A.UserId = :userId) as A ) as F ON F.Id = isnull(A.DepartmentId, A.ParentId) and isnull(F.BFGId, 0) = isnull(B.BFGId, 0) ";
+						                WHERE A.UserId = :userId) as A ) as F ON F.Id = isnull(A.DepartmentId, B.ParentId) and isnull(F.BFGId, 0) = isnull(B.BFGId, 0) ";
                     break;
                 case UserRole.PersonnelManager:
-                    sqlWhere = @" INNER JOIN vwDepartmentToPersonnels as F ON F.DepartmentId = isnull(A.DepartmentId, A.ParentId) and F.PersonnelId = :userId";
+                    sqlWhere = @" INNER JOIN vwDepartmentToPersonnels as F ON F.DepartmentId = isnull(A.DepartmentId, B.ParentId) and F.PersonnelId = :userId";
                     break;
                 case UserRole.Inspector:
                     //кураторам показываем фронты и бэкфронты
-                    sqlWhere = @" INNER JOIN Department as F ON F.Id = isnull(A.DepartmentId, A.ParentId) and isnull(F.BFGId, 2) in (2, 6)";
+                    sqlWhere = @" INNER JOIN Department as F ON F.Id = isnull(A.DepartmentId, B.ParentId) and isnull(F.BFGId, 2) in (2, 6)";
                     break;
             }
             return sqlWhere;
