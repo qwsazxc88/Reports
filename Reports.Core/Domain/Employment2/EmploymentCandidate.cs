@@ -56,5 +56,6 @@ namespace Reports.Core.Domain
         public virtual DateTime? TDReceivedDate { get; set; }
         public virtual User TDMarkUser { get; set; }
         public virtual string PyrusNumber { get; set; }
+        public virtual int? UserLinkId { get; set; }
     }
 }
