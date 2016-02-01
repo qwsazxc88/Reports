@@ -28,19 +28,24 @@ DECLARE
 			SET @ReplacedName = N''
 
 			SELECT @ReplacedName += case when len(isnull(@ReplacedName, N'')) = 0 then N'' else N'; ' end +
-															N'(' + B.Name + case when C.Id is null then N'' else N' ' + convert(nvarchar, C.BeginDate, 103) + N' - ' + convert(nvarchar, C.EndDate, 103) end + ')'
+															N'(' + B.Name + case when C.Id is null then N'' else N' ' + convert(nvarchar, isnull(C.BeginDate, D.BeginDate), 103) + N' - ' + convert(nvarchar, isnull(C.EndDate, D.EndDate), 103) end + ')'
 			FROM StaffPostReplacement as A
 			INNER JOIN Users as B ON B.Id = A.ReplacedId and B.IsActive = 1 and B.RoleId & 2 > 0
 			--пока цепляемся отпускам по уходу за ребенком
 			LEFT JOIN ChildVacation as C ON C.UserId = B.Id and C.SendTo1C is not null and C.DeleteDate is null and getdate() between C.BeginDate and C.EndDate 
+			LEFT JOIN Sicklist as D ON D.UserId = B.Id and D.SendTo1C is not null and D.DeleteDate is null and getdate() between D.BeginDate and D.EndDate 
 			WHERE A.UserLinkId = @LinkId and A.ReasonId = 1 and A.IsUsed = 1
 			--ORDER BY A.Id desc
 		END
 		ELSE	--определяем сотрудника, который ушел в отпуск по уходу за ребенком, но должность его свободна
-			SELECT @ReplacedName = N'(' + A.Name + N' ' + convert(nvarchar, B.BeginDate, 103) + N' - ' + convert(nvarchar, B.EndDate, 103) + N')'
+			SET @ReplacedName = N''
+
+			SELECT @ReplacedName += case when len(isnull(@ReplacedName, N'')) = 0 then N'' else N'; ' end + 
+														  N'(' + A.Name + N' ' + convert(nvarchar, isnull(B.BeginDate, C.BeginDate), 103) + N' - ' + convert(nvarchar, isnull(B.EndDate, C.EndDate), 103) + N')'
 			FROM Users as A 
 			--пока цепляемся отпускам по уходу за ребенком
 			LEFT JOIN ChildVacation as B ON B.UserId = A.Id and B.SendTo1C is not null and B.DeleteDate is null and getdate() between B.BeginDate and B.EndDate 
+			LEFT JOIN Sicklist as C ON C.UserId = A.Id and C.SendTo1C is not null and C.DeleteDate is null and getdate() between C.BeginDate and C.EndDate 
 			WHERE A.Id = @ReplacedId and A.IsActive = 1 and A.RoleId & 2 > 0
 	END
 	
