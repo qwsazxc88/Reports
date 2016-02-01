@@ -11005,15 +11005,15 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                             && usersManagerAccount.Department != null
                             // не в ветке руководства
-                            && !usersManagerAccount.Department.Path.StartsWith("9900424.9900426.9900427.")
+                            && !usersManagerAccount.Department.Path.StartsWith("4128.4205.4297.")
                             // в ветке текущего пользователя
                             && usersManagerAccount.Department.Path.StartsWith(currentUser.Department.Path))
                         {
                             canEdit = true;
                             return true;
                         }
-
-                        if (usersManagerAccount == currentUser && !usersManagerAccount.Department.Path.StartsWith("9900424.9900426.9900427."))
+                        //Видимо этот код нужен для ветки руководства, исправил код подразделения, убрал воскл.знак перед usersManagerAccount. Артём 01.02.2016
+                        if (usersManagerAccount == currentUser && usersManagerAccount.Department.Path.StartsWith("4128.4205.4297."))
                         {
                             canEdit = true;
                             return true;
