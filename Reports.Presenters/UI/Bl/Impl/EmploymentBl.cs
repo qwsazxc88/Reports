@@ -5174,7 +5174,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (entity.Candidate.Managers.SalaryMultiplier.HasValue)
             {
-                if (entity.Candidate.Managers.SalaryMultiplier.Value < 1 && !entity.IsHourlySalaryBasis)
+                if (entity.Candidate.Managers.SalaryMultiplier.Value < 1 && !viewModel.IsHourlySalaryBasis)
                 {
                     error = "При значении ставки меньше единицы оклад может быть только по часам!";
                     return false;
