@@ -7062,8 +7062,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //оклад штатной единицы
                     model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
                     //районный коэффициент
-                    if (PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Count() != 0)
-                        model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Single().Amount;
+                    if (PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4 && x.EstablishedPostRequest.IsUsed).Count() != 0)
+                        model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4 && x.EstablishedPostRequest.IsUsed).Single().Amount;
                     else
                         model.AreaMultiplier = 0;
                 }
