@@ -1430,8 +1430,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.UserLinkId = PostUserLink.Id;
                     model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
                     model.SalaryMultiplier = entity.SalaryMultiplier;
-                    model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Count() == 0 ? 0 :
-                        PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Single().Amount;
+                    model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4 && x.EstablishedPostRequest.IsUsed).Count() == 0 ? 0 :
+                        PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4 && x.EstablishedPostRequest.IsUsed).Single().Amount;
                 }
             }
             else
@@ -3365,7 +3365,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 IsBeforEmployment = model.IsTrainingNeeded ? model.IsBeforEmployment : false,
                 Appointment = (model.AppointmentId!=0)?AppointmentDao.Load(model.AppointmentId):null,
                 AppointmentReport =(model.AppointmentReportId!=0)?AppointmentReportDao.Load(model.AppointmentReportId):null,
-                PyrusNumber = model.PyrusNumber
+                PyrusNumber = model.PyrusNumber,
+                UserLinkId = PostUserLink.Id
             };
             
             EmploymentCommonDao.SaveAndFlush(candidate);
@@ -5127,6 +5128,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Candidate.PersonnelManagers.CompetenceAddition = viewModel.CompetenceAddition;
             entity.Candidate.PersonnelManagers.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
             entity.PyrusNumber = viewModel.PyrusNumber;
+            entity.Candidate.UserLinkId = viewModel.UserLinkId;
 
             if (!entity.Candidate.SendTo1C.HasValue && !viewModel.SendTo1C.HasValue)
             {
@@ -5863,6 +5865,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.Position = PositionDao.Load(Vacation.PositionId);
                             entity.Candidate.User.Position = PositionDao.Load(Vacation.PositionId);
                             entity.Candidate.User.SEPId = Vacation.SEPId;
+                            entity.Candidate.UserLinkId = Vacation.Id;
                             //entity.Candidate.User.Department = DepartmentDao.Load(viewModel.DepartmentId);
                             //entity.Position = PositionDao.Load(viewModel.PositionId);
                         }
