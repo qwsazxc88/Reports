@@ -37,7 +37,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsExternalPTWorker { get; set; } //ok
 
         [Display(Name = "Испытательный срок"),
-            RegularExpression(@"^\d$", ErrorMessage = "Это числовое поле!"),
+            //RegularExpression(@"^\d", ErrorMessage = "Это числовое поле!"),
             StringLength(3, ErrorMessage = "Введите значение не более 3 знаков.")]
         public string ProbationaryPeriod { get; set; } //ok
 
@@ -45,8 +45,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public decimal? SalaryBasis { get; set; }
 
         [Display(Name = "Ставка"),
-            Required(ErrorMessage = "Обязательное для заполнения поле!"),
-            RegularExpression(@"^\d$", ErrorMessage = "Это числовое поле!")]
+            Required(ErrorMessage = "Обязательное для заполнения поле!")
+            //,RegularExpression(@"^\d", ErrorMessage = "Это числовое поле!")
+        ]
         public decimal? SalaryMultiplier { get; set; }
 
         [Display(Name = "Место работы по ТД (нас. пункт)"),
