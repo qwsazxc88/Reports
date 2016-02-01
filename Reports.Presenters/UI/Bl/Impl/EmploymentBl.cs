@@ -1430,8 +1430,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.UserLinkId = PostUserLink.Id;
                     model.SalaryBasis = PostUserLink.StaffEstablishedPost.Salary;
                     model.SalaryMultiplier = entity.SalaryMultiplier;
-                    model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Count() == 0 ? 0 :
-                        PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4).Single().Amount;
+                    model.AreaMultiplier = PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4 && x.EstablishedPostRequest.IsUsed).Count() == 0 ? 0 :
+                        PostUserLink.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges.GUID == "66f08438-f006-44e8-b9ee-32a8dcf557ba" && x.ExtraChargeActions.Id != 0 && x.ExtraChargeActions.Id != 4 && x.EstablishedPostRequest.IsUsed).Single().Amount;
                 }
             }
             else
