@@ -7,6 +7,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 {
     public class UserProfile: IUserProfile
     {
+        public void  SendEmailsWithDocuments()
+        {
 
+        }
     }
 }

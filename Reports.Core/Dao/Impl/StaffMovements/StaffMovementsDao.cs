@@ -20,19 +20,19 @@ namespace Reports.Core.Dao.Impl
         }
         public decimal GetUserSalary(int UserId)
         {
-            var query = Session.CreateSQLQuery(String.Format("select Salary from vwStaffPostSalary where userid={0}", UserId));
+            var query = Session.CreateSQLQuery(String.Format("select top 1 Salary from vwStaffPostSalary where userid={0}", UserId));
             //query.AddScalar("Salary", NHibernateUtil.Decimal);
             return query.UniqueResult<Decimal>();            
         }
         public decimal GetUserTotalSalary(int UserId)
         {
-            var query = Session.CreateSQLQuery(String.Format("select TotalSalary from vwStaffPostSalary where userid={0}", UserId));
+            var query = Session.CreateSQLQuery(String.Format("select top 1 TotalSalary from vwStaffPostSalary where userid={0}", UserId));
             //query.AddScalar("Salary", NHibernateUtil.Decimal);
             return query.UniqueResult<Decimal>();
         }
         public decimal GetUserRegionCoeff(int UserId)
         {
-            var query = Session.CreateSQLQuery(String.Format("select Regional from vwStaffPostSalary where userid={0}", UserId));
+            var query = Session.CreateSQLQuery(String.Format("select top 1 Regional from vwStaffPostSalary where userid={0}", UserId));
             return query.UniqueResult<Decimal>();  
             /*query.AddScalar("Regional", NHibernateUtil.Decimal);
             var result = query.SetResultTransformer(Transformers.AliasToBean(typeof(decimal))).List<decimal>();

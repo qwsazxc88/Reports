@@ -869,6 +869,7 @@
     <Compile Include="Dto\TimesheetDaysDto.cs" />
     <Compile Include="Dto\TimesheetDto.cs" />
     <Compile Include="Dto\UploadFileDto.cs" />
+    <Compile Include="Dto\UserAllRolesDto.cs" />
     <Compile Include="Dto\UserDto.cs" />
     <Compile Include="Dto\UserLoginItemDto.cs" />
     <Compile Include="Dto\UserPersonnelDataDto.cs" />
