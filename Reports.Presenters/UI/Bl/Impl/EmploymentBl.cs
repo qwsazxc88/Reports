@@ -6460,19 +6460,25 @@ namespace Reports.Presenters.UI.Bl.Impl
                 IsValid = true;
 
 
-            switch (current.Level)
+            //руководители по ручным привязкам могут быть больше 3 уровня
+            if (MissionOrderRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000058").Where(roleRecord => (roleRecord.TargetDepartment != null && creator.Department.Path.StartsWith(roleRecord.TargetDepartment.Path))).Count() != 0)
+                return IsValid = true;
+            else
             {
-                case 2:
-                case 3:
-                    // Для руководителей 3 уровня получаем список ручных привязок к подразделениям, если первые две проверки по автоматическим правам не прошли.
-                    return IsValid ? IsValid :  MissionOrderRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000058")
-                        .Any(roleRecord => (roleRecord.TargetDepartment != null && creator.Department.Path.StartsWith(roleRecord.TargetDepartment.Path)));
-                case 4:
-                case 5:
-                    return creator.Department.Path.StartsWith(current.Department.Path)
-                        && creator.Department.Path.Length > current.Department.Path.Length;
-                default:
-                    return false;
+                switch (current.Level)
+                {
+                    case 2:
+                    case 3:
+                        // Для руководителей 3 уровня получаем список ручных привязок к подразделениям, если первые две проверки по автоматическим правам не прошли.
+                        return IsValid ? IsValid : MissionOrderRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000058")
+                            .Any(roleRecord => (roleRecord.TargetDepartment != null && creator.Department.Path.StartsWith(roleRecord.TargetDepartment.Path)));
+                    case 4:
+                    case 5:
+                        return creator.Department.Path.StartsWith(current.Department.Path)
+                            && creator.Department.Path.Length > current.Department.Path.Length;
+                    default:
+                        return false;
+                }
             }
         }
 
