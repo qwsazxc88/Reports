@@ -22,9 +22,19 @@ namespace WebMvc.Controllers
                 return Validate.Dependency(shortCodeBl);
             }
         }
-
-        public RedirectToRouteResult Index(string id)
+        protected ILoginBl loginBl;
+        public ILoginBl LoginBl
         {
+            get
+            {
+                loginBl = Ioc.Resolve<ILoginBl>();
+                return Validate.Dependency(loginBl);
+            }
+        }
+        public RedirectToRouteResult Index(string id,int roleId=0)
+        {
+            if (roleId > 0)
+                ShortCodeBl.SetUserRole(roleId);
             
             string regex=@"(?<id>[0-9]+)(?<type>\w+)";
             var m = Regex.Match(id, regex);
