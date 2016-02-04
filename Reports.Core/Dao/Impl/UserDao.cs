@@ -22,7 +22,7 @@ namespace Reports.Core.Dao.Impl
         public IList<UserDocsDto> GetAllUserDocs(int userId, int roleId)
         { 
             string name = "";
-            string sql = "SELECT * FROM vwStaffEstablishedPostRequestNotApprovedBy{0} na ";                 
+            string sql = "SELECT * FROM vwRequestNotApprovedBy{0} na ";                 
                    
             switch (roleId)
             {
