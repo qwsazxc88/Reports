@@ -3736,7 +3736,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.CreateDate = entity.CreateDate;
             model.Id = entity.Id;
-            model.RequestInitiator = entity.Creator.Name + (entity.Creator.Position != null ? " - " + entity.Creator.Position.Name : "");
+            model.RequestInitiator = entity.Creator != null ? entity.Creator.Name + (entity.Creator.Position != null ? " - " + entity.Creator.Position.Name : "") : "Автозагрузка";
             model.SEPId = entity.EstablishedPostUserLinks.StaffEstablishedPost.Id;
             model.DepartmentId = entity.EstablishedPostUserLinks.StaffEstablishedPost.Department.Id;
             model.DepartmentName = entity.EstablishedPostUserLinks.StaffEstablishedPost.Department.Name;
