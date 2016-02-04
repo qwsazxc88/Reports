@@ -59,7 +59,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("RoleId",NHibernateUtil.Int32)
                 .AddScalar("Name", NHibernateUtil.String)
-                 .AddScalar("TypeId", NHibernateUtil.Int32)
+                .AddScalar("TypeId", NHibernateUtil.Int32)
+                .AddScalar("Department3Name",NHibernateUtil.String)
                ;
             
             try

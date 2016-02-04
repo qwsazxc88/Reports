@@ -7,7 +7,7 @@
     Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";
     ViewBag.PlaceId = Model.Id;
     ViewBag.PlaceTypeId = (int)Reports.Core.Enum.CommentsPlaceTypes.StaffMovements;
-    DateTime NextDay = DateTime.Now.AddDays(1);
+    DateTime NextDay = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
     var dto =  UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
 }
 <div id="DivEmal" style="display:none;">
