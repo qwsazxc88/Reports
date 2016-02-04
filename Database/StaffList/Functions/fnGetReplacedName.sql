@@ -68,7 +68,7 @@ DECLARE
 		SET @ReplacedName = N''
 
 		SELECT @ReplacedName += case when len(isnull(@ReplacedName, N'')) = 0 then N'' else N'; ' end +
-															N'(' + B.Name + N' ' + convert(nvarchar, A.DateBegin, 103) + N' - ' + convert(nvarchar, A.DateEnd, 103) + ')' 
+															N'(' + B.Name + N' ' + case when A.DateBegin is not null then convert(nvarchar, A.DateBegin, 103) else N'' end + N' - ' + case when A.DateEnd is not null then convert(nvarchar, A.DateEnd, 103) else N'' end + ')' 
 		FROM StaffTemporaryReleaseVacancyRequest as A
 		INNER JOIN Users as B ON B.Id = A.ReplacedId
 		WHERE A.UserLinkId = @LinkId and A.IsUsed = 1
@@ -77,7 +77,7 @@ DECLARE
 	END
 	
 	RETURN @ReplacedName
---SELECT dbo.fnGetReplacedName(7353, NULL, 3)
+--SELECT dbo.fnGetReplacedName(6242, NULL, 3)
 
 END
 GO

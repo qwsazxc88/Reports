@@ -7,5 +7,6 @@ namespace Reports.Presenters.UI.Bl
 {
     public interface IUserProfile
     {
+        void SendEmailToAll();
     }
 }

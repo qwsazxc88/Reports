@@ -19,25 +19,73 @@ namespace Reports.Core.Dao.Impl
         public const string MiddleNameSortFieldName = "MiddleName";
         public const int bufferSize = 1000;
 
-        IList<UserDocsDto> GetAllUserDocs(int userId, int doctype)
-        {
-            var roles= this.GetAllUserRoles(userId);
-            string sql = "";
-            foreach (var role in roles)
+        public IList<UserDocsDto> GetAllUserDocs(int userId, int roleId)
+        { 
+            string name = "";
+            string sql = "SELECT * FROM vwStaffEstablishedPostRequestNotApprovedBy{0} na ";                 
+                   
+            switch (roleId)
             {
-                switch (role.RoleId)
-                {
-                    case (int)UserRole.Manager:
-                        sql = "exec spGetStaffEstablishedPostRequestForManager;";
+                case (int)UserRole.Director:
+                    sql = String.Format(sql, "Director ");
                     break;
-                }
+                case (int)UserRole.Manager:
+                    sql = String.Format(sql, "Chief ")
+                        +"inner join (SELECT dep2.id FROM Department dep "
+                        +"INNER JOIN Users u ON u.DepartmentId=dep.Id "
+                        +"LEFT JOIN Department dep2 on dep2.Path like dep.Path+'%'	where u.id="
+                        +userId
+                        +" union "
+                        +"SELECT dep2.id FROM ManualRoleRecord mrr "
+                        +"inner join Department dep on mrr.TargetDepartmentId=dep.Id "
+                        +"LEFT JOIN Department dep2 on dep2.Path like dep.Path+'%' where mrr.UserId="
+                        +userId
+                        +" and mrr.RoleId in (5,6)	) rights on na.DepartmentId=rights.id";
+                    break;
+                case (int)UserRole.TaxCollector:
+                    sql = String.Format(sql, "TaxCollector ");
+                    break;
+                case (int)UserRole.ConsultantPersonnel:
+                    sql = String.Format(sql, "PersonnelManagerBank ");
+                    break;
+                case (int)UserRole.Inspector:
+                    sql = String.Format(sql, "Curator ");
+                    break;
+                default: sql = string.Empty; break;
             }
+            IList<UserDocsDto>  result =new List<UserDocsDto>();
+            if (String.IsNullOrEmpty(sql)) return result;
             var query = Session.CreateSQLQuery(sql)
-                .AddScalar("Id", NHibernateUtil.Int32);
-            return query.SetResultTransformer(Transformers.AliasToBean(typeof(UserDocsDto))).List<UserDocsDto>();
+                .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("RoleId",NHibernateUtil.Int32)
+                .AddScalar("Name", NHibernateUtil.String)
+                 .AddScalar("TypeId", NHibernateUtil.Int32)
+               ;
             
+            try
+            {
+                result = query.SetResultTransformer(Transformers.AliasToBean(typeof(UserDocsDto))).List<UserDocsDto>();
+            }
+            catch (Exception e) { return new List<UserDocsDto>(); }
+            foreach (var element in result)
+            {                
+                element.ShortLink = String.Format("https://ruscount.com:8002/заявка/{0}{1}?roleId={2}", element.Id, AllRequestConstants.ShortNames[element.TypeId], roleId);                
+            }
+            return result;
         }
-       
+
+        public IList<User> GetUsersWhoMailNeeded()
+        {
+            string sql = @"SELECT Users.* FROM Users inner join
+                            (SELECt MAX(u.id) as userid from UserSettings us
+                            inner join RefPeople rp ON us.PeopleId=rp.Id
+                            inner join Users u ON rp.Code=u.CodePeople
+                            WHERE u.IsActive=1 and us.IsEmailNeeded=1
+                            Group by us.PeopleId) mailneed ON mailneed.userid=Users.Id";
+            var query = Session.CreateSQLQuery(sql).AddEntity(typeof(User));
+            return query.List<User>();
+        }
+
 
         public int PageSize
         {
