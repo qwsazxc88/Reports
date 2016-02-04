@@ -9,8 +9,14 @@
 
 <div>
     <a href="@Url.Content("~/Templates/InstructionEmpoymentCandidate.docx")" target="_blank" style="color:Blue;font-weight:bold">Инструкция для кандидата</a><br />
-    <a href="@Url.Content("~/Templates/InstructionEmpoymentManagers.docx")" target="_blank" style="color:Blue;font-weight:bold">Инструкция для руководителей</a><br />
-    <a href="@Url.Content("~/Templates/InstructionEmpoymentSpecialist.docx")" target="_blank" style="color:Blue;font-weight:bold">Инструкция для специалистов</a>
+    @if ((dto.UserRole & UserRole.Candidate) != UserRole.Candidate)
+    {
+        <a href="@Url.Content("~/Templates/InstructionEmpoymentSpecialist.docx")" target="_blank" style="color:Blue;font-weight:bold">Инструкция для руководителей и специалистов банка</a><br />
+        if ((dto.UserRole & UserRole.Manager) == UserRole.Manager)
+        {
+            <a href="@Url.Content("~/Templates/InstructionEmpoymentManagers.docx")" target="_blank" style="color:Blue;font-weight:bold">Инструкция для руководителей</a>
+        }
+    }
 </div>
 @*
 <style>
