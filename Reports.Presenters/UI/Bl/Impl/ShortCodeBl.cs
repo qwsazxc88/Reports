@@ -6,11 +6,11 @@ using Reports.Presenters.UI.Bl;
 using System.Web.Mvc;
 using Reports.Core;
 using Reports.Core.Dao;
-
+using Reports.Core.Domain;
 namespace Reports.Presenters.UI.Bl.Impl
 {
     
-    public class ShortCodeBl : IShortCodeBl
+    public class ShortCodeBl : BaseBl,IShortCodeBl
     {
         #region Dependencies
         protected IAppointmentReasonDao appointmentreasonDao;
@@ -19,7 +19,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(appointmentreasonDao); }
             set { appointmentreasonDao = value; }
         }
-
+        protected IUserLoginDao userLoginDao;
+        public IUserLoginDao UserLoginDao
+        {
+            get { return Validate.Dependency(userLoginDao); }
+            set { userLoginDao = value; }
+        }
         protected IKladrDao kladrDao;
         public IKladrDao KladrDao
         {
@@ -328,7 +333,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { stafftemporaryReleaseVacancyRequestDao = value; }
         }
         #endregion
-
+        public void SetUserRole(int roleId)
+        {
+            var accounts = UserDao.GetAllUserRoles(CurrentUser.Id);
+            if (accounts != null)
+            {
+                var users = accounts.Where(x => (x.RoleId & roleId) > 0);
+                int userid = 0;
+                if (users != null) userid = users.First().UserId;
+                if (userid > 0)
+                {
+                    var user = UserDao.Load(userid);
+                    var dto = AuthenticationService.CreateUser(user, (UserRole)roleId);
+                    AuthenticationService.setAuthTicket(dto);
+                    var userLogin = new UserLogin(user) { RoleId = (int)roleId };
+                    UserLoginDao.MergeAndFlush(userLogin);
+                }
+            }
+        }
         public RouteVal GetRouteValues(int id, string type)
         {
             switch (type)
