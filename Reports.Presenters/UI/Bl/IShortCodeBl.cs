@@ -17,8 +17,10 @@ namespace Reports.Presenters.UI.Bl
             this.Values = _values;
         }
     }
+   
     public interface IShortCodeBl
     {
         RouteVal GetRouteValues(int id, string type);
+        void SetUserRole(int roleId);
     }
 }

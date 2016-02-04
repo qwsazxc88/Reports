@@ -118,7 +118,7 @@ namespace Reports.Core
         //утверждает прием
         ApprovesEmployment = 3
     }
-
+    
     public class ReportRoleConstants
     {
         public const string Admin = "1";
@@ -149,7 +149,34 @@ namespace Reports.Core
         public const string TaxCollector = "8388608";
 
         public static Dictionary<UserRole, string> Mapper { get; private set; }
-
+        public static Dictionary<int, string> RoleName = new Dictionary<int, string>() 
+            {
+                {(int)UserRole.NoRole,"Нет роли"},
+                {(int)UserRole.Admin,"Администратор"},
+                {(int)UserRole.Employee,"Сотрудник"},
+                {(int)UserRole.Manager,"Руководитель"},
+                {(int)UserRole.PersonnelManager,"Кадровик"},
+                {(int)UserRole.BudgetManager,"Бюджет"},
+                {(int)UserRole.OutsourcingManager,"Просмотр"},
+                {(int)UserRole.Inspector,"Куратор"},
+                {(int)UserRole.Chief,"Начальник"},
+                {(int)UserRole.Accountant,"Бухгалтер"},
+                {(int)UserRole.Director,"Член правления"},
+                {(int)UserRole.Secretary,"Секретарь"},
+                {(int)UserRole.Findep,"Сотрудник фин.департамента"},
+                {(int)UserRole.StaffManager,"Специалист по подбору персонала"},
+                {(int)UserRole.Archivist,"Архивариус"},
+                {(int)UserRole.Candidate,"Кандидат"},
+                {(int)UserRole.Security,"Сотрудник службы безопасности"},
+                {(int)UserRole.Trainer,"Тренер"},
+                {(int)UserRole.ConsultantOutsourcing,"Консультант"},
+                {(int)UserRole.ConsultantPersonnel,"Кадровик Банк"},
+                {(int)UserRole.SoftAdmin,"Администратор ПО банка"},
+                {(int)UserRole.StaffListOrder,"Ответственный за приказы штатного расписания"},
+                {(int)UserRole.DismissedEmployee,"Уволенный сотрудник"},
+                {(int)UserRole.Estimator,"Расчётчик"},
+                {(int)UserRole.TaxCollector,"Налоговик"}
+            };
         static ReportRoleConstants()
         {
             Mapper = new Dictionary<UserRole, string>
