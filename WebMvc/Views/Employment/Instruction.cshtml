@@ -14,7 +14,8 @@
         <a href="@Url.Content("~/Templates/InstructionEmpoymentSpecialist.docx")" target="_blank" style="color:Blue;font-weight:bold">Инструкция для руководителей и специалистов банка</a><br />
         if ((dto.UserRole & UserRole.Manager) == UserRole.Manager || (dto.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing || (dto.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
         {
-            <a href="@Url.Content("~/Templates/InstructionEmpoymentManagers.docx")" target="_blank" style="color:Blue;font-weight:bold">Инструкция для руководителей</a>
+            @*<a href="@Url.Content("~/Templates/InstructionEmpoymentManagers.docx")" target="_blank" style="color:Blue;font-weight:bold">Инструкция для руководителей</a>*@
+            <a href="@Url.Content("~/Templates/InstructionEmpoymentManagers.odt")" target="_blank" style="color:Blue;font-weight:bold">Инструкция для руководителей</a>
         }
     }
 </div>
