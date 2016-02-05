@@ -48,7 +48,7 @@ INNER JOIN Department as Dep7 ON Dep7.Id = A.DepartmentId
 INNER JOIN Department as Dep6 ON Dep6.Id = Dep7.ParentId
 INNER JOIN Department as Dep5 ON Dep5.Id = Dep6.ParentId
 INNER JOIN Department as Dep4 ON Dep4.Id = Dep5.ParentId
-INNER JOIN Department as Dep3 ON Dep3.Id = Dep4.ParentId and Dep3.Id = 4189
+INNER JOIN Department as Dep3 ON Dep3.Id = Dep4.ParentId and Dep3.Id = 4175
 INNER JOIN Department as Dep2 ON Dep2.Id = Dep3.ParentId
 INNER JOIN Position as C ON C.Id = A.PositionId
 --LEFT JOIN vwStaffPostSalary as D ON D.UserLinkId = A.Id --and D.UserId = A.UserId
@@ -72,6 +72,7 @@ ORDER BY Dep2.Name, Dep3.Name, Dep4.Name, Dep5.Name, Dep6.Name, Dep7.Name
 --select * from StaffDepartmentTaxDetails where DepartmentId in (11379, 12090, 12093, 12315)
 
 
---select * from Department where Name like '%дирекция%' and ItemLevel = 3
+--select * from Department where (Name like '%дирекция%' or name = 'ауп мф') and ItemLevel = 3
 --4189 - Дирекция ДАЛЬНЕВОСТОЧНАЯ
 --12161 - ЮГО-ЗАПАДНАЯ дирекция
+--4175 - АУП МФ
