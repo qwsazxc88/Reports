@@ -196,7 +196,7 @@ DECLARE
 	ORDER BY A.Priority
 
 		
---select * from dbo.fnGetStaffEstablishedArrangements(11387, 0, 0) 
+--select * from dbo.fnGetStaffEstablishedArrangements(8173, 0, 0) 
 
 	RETURN 
 END
