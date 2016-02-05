@@ -46,7 +46,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     foreach (var doc in docs)
                     {
                         i++;
-                        Message += String.Format("<tr><td>{0}</td><td><a href='{1}'>{2}</a></td></tr>",i,doc.ShortLink,doc.Name);
+                        Message += String.Format("<tr><td>{0}</td><td><a href='{1}'>{2}</a></td><td>{3}</td></tr>",i,doc.ShortLink,doc.Name,doc.Department3Name);
                     }
                     Message += "</table>";
                 }

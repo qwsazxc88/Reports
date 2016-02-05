@@ -2098,7 +2098,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PostUserLinks = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId)
                 .Where(x => x.IsVacation)
                 .ToList()
-                .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") + (x.ReplacedId != 0 ? " - " + x.ReplacedName : "") });
+                .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") + (x.IsPregnant.Value ? " - " + x.ReplacedName : " - " + x.LongAbsencesUsers) });
             return model;
         }
 
@@ -7056,7 +7056,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PostUserLinks = StaffEstablishedPostDao.GetStaffEstablishedArrangements(model.DepartmentId)
                 .Where(x => x.IsVacation || (x.IsReserve && x.Id == model.UserLinkId))
                 .ToList()
-                .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") + (x.ReplacedId != 0 ? " - " + x.ReplacedName : "")  });
+                .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.PositionName + (x.IsSTD ? " - СТД" : "") + (x.IsPregnant.Value ? " - " + x.ReplacedName : " - " + x.LongAbsencesUsers) });
 
                 model.PostUserLinks.Insert(0, new IdNameDto { Id = 0, Name = "" });
             }

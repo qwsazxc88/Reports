@@ -53,6 +53,7 @@ WHILE EXISTS (SELECT * FROM #PA WHERE IsComplete = 0)
 BEGIN
 	--берем необработанные записи
 	SELECT top 1 @Id = A.Id, @UserCode = A.UserCode, @RegularCode = A.RegularCode, @PregCode = A.PregCode, @MoveCode = A.MoveCode, @AbsentCode = A.AbsentCode
+				 ,@MoveBeginDate = MoveBeginDate, @AbsentBeginDate = A.AbsentBeginDate
 				 ,@STDType = case when A.ContractType = 'Бессрочный' then 1 when A.ContractType = 'СТД' then 2 else 3 end 
 				 ,@UserId = B.Id, @UserName = B.Name, @PosititonId = B.PositionId, @DepartmentId = B.DepartmentId, @IsPreg = B.IsPregnant
 				 ,@RegUserId = C.Id, @RegUserName = C.Name, @RegPosititonId = C.PositionId, @RegDepartmentId = C.DepartmentId, @IsRegPreg = C.IsPregnant
@@ -100,7 +101,7 @@ BEGIN
 		SELECT @PregBeginDate = MIN(BeginDate) 
 		FROM (SELECT BeginDate, EndDate FROM ChildVacation WHERE UserId = @RegUserId and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate 
 					UNION ALL
-					SELECT BeginDate, EndDate FROM Sicklist WHERE UserId = @RegUserId and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate ) as A
+					SELECT BeginDate, EndDate FROM Sicklist WHERE UserId = @RegUserId and TypeId = 12 and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate ) as A
 
 		IF @PregBeginDate is not null
 		BEGIN
@@ -115,7 +116,9 @@ BEGIN
 	END
 
 	--находим штатную единицу по фактическому струднику
-	SELECT @SEPId = Id FROM StaffEstablishedPost WHERE PositionId = @PosititonId and DepartmentId = @DepartmentId and IsUsed = 1 and Quantity <> 0
+	SELECT @SEPId = A.Id FROM StaffEstablishedPost as A
+	INNER JOIN StaffEstablishedPostUserLinks as B ON B.SEPId = A.Id and B.UserId = @UserId and B.IsUsed = 1
+	WHERE A.PositionId = @PosititonId and A.DepartmentId = @DepartmentId and A.IsUsed = 1 and A.Quantity <> 0
 	
 	IF isnull(@SEPId, 0) = 0
 	BEGIN
@@ -151,7 +154,7 @@ BEGIN
 			IF NOT EXISTS (SELECT *
 										 FROM (SELECT BeginDate, EndDate FROM ChildVacation WHERE UserId = @RegUserId and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate 
 											 		 UNION ALL
-													 SELECT BeginDate, EndDate FROM Sicklist WHERE UserId = @RegUserId and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate ) as A) and isnull(@IsRegPreg, 0) = 1
+													 SELECT BeginDate, EndDate FROM Sicklist WHERE UserId = @RegUserId and TypeId = 12 and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate ) as A) and isnull(@IsRegPreg, 0) = 1
 			BEGIN
 				--сформировать заявку на ДО (досрочницы)
 				INSERT INTO StaffTemporaryReleaseVacancyRequest(Version, UserLinkId, ReplacedId, DateBegin, DateEnd, AbsencesTypeId, IsUsed, Note)
@@ -201,11 +204,18 @@ BEGIN
 		--временное место работы надо определять по записи, где основа является фактом (@TempUserLinkId)
 		IF EXISTS(SELECT * FROM #PA WHERE UserCode = @RegularCode and RegularCode <> @RegularCode)
 		BEGIN
-			SELECT @PosititonId = B.PositionId, @DepartmentId = B.DepartmentId FROM #PA as A
-			INNER JOIN Users as B ON B.Code = A.UserCode
-			WHERE A.UserCode = @RegularCode and A.RegularCode <> @RegularCode
+			--находим штатную единицу по фактическому струднику
 			--определяем штатную единицу для временного места работы
-			SELECT @TempSEPId = Id FROM StaffEstablishedPost WHERE PositionId = @PosititonId and DepartmentId = @DepartmentId and IsUsed = 1 and Quantity <> 0
+			
+			SELECT @PosititonId = B.PositionId, @DepartmentId = B.DepartmentId, @TempSEPId = C.Id
+			FROM #PA as A
+			INNER JOIN Users as B ON B.Code = A.UserCode
+			INNER JOIN StaffEstablishedPost as C ON C.PositionId = B.PositionId and C.DepartmentId = B.DepartmentId and C.IsUsed = 1 and C.Quantity <> 0
+			INNER JOIN StaffEstablishedPostUserLinks as D ON D.SEPId = C.Id and D.UserId = B.Id and D.IsUsed = 1
+			WHERE A.UserCode = @RegularCode and A.RegularCode <> @RegularCode
+
+			--SELECT @TempSEPId = Id FROM StaffEstablishedPost WHERE PositionId = @PosititonId and DepartmentId = @DepartmentId and IsUsed = 1 and Quantity <> 0
+
 
 			SELECT @TempUserLinkId = Id FROM StaffEstablishedPostUserLinks WHERE SEPId = @TempSEPId and UserId = @RegUserId and IsUsed = 1 and isnull(ReserveType, 0) = 0
 			--если не смогли определить, то возможно основного уже кто-то заменяет, ищем в заменах
@@ -259,7 +269,7 @@ BEGIN
 			IF NOT EXISTS (SELECT *
 										 FROM (SELECT BeginDate, EndDate FROM ChildVacation WHERE UserId = @RegUserId and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate 
 											 		 UNION ALL
-													 SELECT BeginDate, EndDate FROM Sicklist WHERE UserId = @RegUserId and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate ) as A) and isnull(@IsRegPreg, 0) = 1
+													 SELECT BeginDate, EndDate FROM Sicklist WHERE UserId = @RegUserId and TypeId = 12 and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate ) as A) and isnull(@IsRegPreg, 0) = 1
 			BEGIN
 				--сформировать заявку на ДО (досрочницы)
 				INSERT INTO StaffTemporaryReleaseVacancyRequest(Version, UserLinkId, ReplacedId, DateBegin, DateEnd, AbsencesTypeId, IsUsed, Note)
@@ -298,6 +308,9 @@ BEGIN
 						BEGIN
 							--место основного сделать вакантным
 							UPDATE StaffEstablishedPostUserLinks SET UserId = null WHERE SEPId = @SEPId and UserId = @RegUserId
+
+							--если ранее в обработке по основному сотруднику заводились заявки на ДО, то перенесем ее на это место
+							UPDATE StaffTemporaryReleaseVacancyRequest SET UserLinkId = @UserLinkId WHERE ReplacedId = @RegUserId and CreatorId is null
 						END
 						ELSE
 						BEGIN
@@ -332,7 +345,7 @@ BEGIN
 			BEGIN
 				--сформировать заявку на ДО (досрочницы)
 				INSERT INTO StaffTemporaryReleaseVacancyRequest(Version, UserLinkId, ReplacedId, DateBegin, DateEnd, AbsencesTypeId, IsUsed, Note)
-				VALUES(1, @UserLinkId, @RegUserId, @PregBeginDate, null, 3, 1, N'Автоматическая обработка данных: в обрабатываемых данных кадровиками было указано кадровое перемещение, но заявки нет!')
+				VALUES(1, @UserLinkId, @RegUserId, @MoveBeginDate, null, 3, 1, N'Автоматическая обработка данных: в обрабатываемых данных кадровиками было указано кадровое перемещение, но заявки нет!')
 			END
 
 
@@ -367,6 +380,9 @@ BEGIN
 						BEGIN
 							--место основного сделать вакантным
 							UPDATE StaffEstablishedPostUserLinks SET UserId = null WHERE SEPId = @SEPId and UserId = @RegUserId
+
+							--если ранее в обработке по основному сотруднику заводились заявки на ДО, то перенесем ее на это место
+							UPDATE StaffTemporaryReleaseVacancyRequest SET UserLinkId = @UserLinkId WHERE ReplacedId = @RegUserId and CreatorId is null
 						END
 						/*ELSE
 						BEGIN
@@ -401,7 +417,7 @@ BEGIN
 			BEGIN
 				--сформировать заявку на ДО 
 				INSERT INTO StaffTemporaryReleaseVacancyRequest(Version, UserLinkId, ReplacedId, DateBegin, DateEnd, AbsencesTypeId, IsUsed, Note)
-				VALUES(1, @UserLinkId, @RegUserId, @PregBeginDate, null, 3, 1, N'Автоматическая обработка данных: в обрабатываемых данных кадровиками было указано длительное отсутствие.')
+				VALUES(1, @UserLinkId, @RegUserId, @AbsentBeginDate, null, 3, 1, N'Автоматическая обработка данных: в обрабатываемых данных кадровиками было указано длительное отсутствие.')
 			END
 		END
 
@@ -430,13 +446,16 @@ BEGIN
 				BEGIN
 				--создаем на основе фактического сотрудника
 					INSERT INTO StaffPostReplacement (UserLinkId, UserId, ReplacedId, IsUsed, ReasonId)
-					SELECT Id, UserId, @RegUserId, 1, 1 FROM StaffEstablishedPostUserLinks WHERE Id = @UserLinkId
+					SELECT Id, UserId, @RegUserId, 1, 3 FROM StaffEstablishedPostUserLinks WHERE Id = @UserLinkId
 					
 					--нужно в расстановке фактического сотрудника перетащить на позицию основного сотрудника
 					IF EXISTS (SELECT * FROM StaffEstablishedPostUserLinks WHERE SEPId = @SEPId and UserId = @RegUserId)
 					BEGIN
 						--место основного сделать вакантным
 						UPDATE StaffEstablishedPostUserLinks SET UserId = null WHERE SEPId = @SEPId and UserId = @RegUserId
+
+						--если ранее в обработке по основному сотруднику заводились заявки на ДО, то перенесем ее на это место
+							UPDATE StaffTemporaryReleaseVacancyRequest SET UserLinkId = @UserLinkId WHERE ReplacedId = @RegUserId and CreatorId is null
 					END
 					ELSE
 					BEGIN

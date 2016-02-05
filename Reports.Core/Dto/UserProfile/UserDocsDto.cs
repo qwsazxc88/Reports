@@ -13,5 +13,6 @@ namespace Reports.Core.Dto
         public string Name { get; set; }
         public int RoleId { get; set; }
         public int TypeId { get; set; }
+        public string Department3Name { get; set; }
     }
 }
