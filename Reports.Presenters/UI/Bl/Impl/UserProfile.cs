@@ -39,14 +39,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 var docs = UserDao.GetAllUserDocs(role.UserId, role.RoleId);
                 if(docs!=null && docs.Any())
                 {
-                    if (String.IsNullOrEmpty(Message)) Message = "<html><head><style>body{font-family: Arial;}table {border-radius:5px;border:1px solid #E9F2F2;-webkit-box-shadow: 0px 0px 12px 1px rgba(70, 70, 70, 0.55);-moz-box-shadow:    0px 0px 12px 1px rgba(70, 70, 70, 0.55);box-shadow:         0px 0px 12px 1px rgba(70, 70, 70, 0.55);}td{border-radius:2px;}tbody > tr:nth-of-type(odd) {  background-color: #f9f9f9;}tbody > tr:nth-of-type(even) {  background-color: #E9F2F2;}tbody > tr:hover {  background-color: #CBDFF5;}</style><meta charset='UTF-8'/></head><body>";                    
+                    if (String.IsNullOrEmpty(Message)) Message = "<html><head><style>body{font-family: Arial;}table {border-radius:5px;border:1px solid #E9F2F2;}td{border-radius:2px;}tr.odd {  background-color: #f9f9f9;}tr.even {  background-color: #E9F2F2;}</style><meta charset='UTF-8'/></head><body>";                    
                     Message += "<h2>Для роли " + ReportRoleConstants.RoleName[role.RoleId]+"</h2>";
                     Message += "<table>";
                     int i = 0;
                     foreach (var doc in docs)
                     {
                         i++;
-                        Message += String.Format("<tr><td>{0}</td><td><a href='{1}'>{2}</a></td><td>{3}</td></tr>",i,doc.ShortLink,doc.Name,doc.Department3Name);
+                        Message += String.Format("<tr class='{0}'><td>{1}</td><td><a href='{2}'>{3}</a></td><td>{4}</td></tr>",i%2==0?"odd":"even",i,doc.ShortLink,doc.Name,doc.Department3Name);
                     }
                     Message += "</table>";
                 }
