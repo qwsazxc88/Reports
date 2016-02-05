@@ -27,7 +27,9 @@ namespace Reports.Core.Dao.Impl
             switch (roleId)
             {
                 case (int)UserRole.Director:
-                    sql = String.Format(sql, "Director ");
+                    sql = String.Format(sql, "Director ")
+                        + " INNER JOIN DirectorsRight DR ON na.AccessoryId=DR.DepartmentAccessoryId where dr.UserId="+userId
+                        ;
                     break;
                 case (int)UserRole.Manager:
                     sql = String.Format(sql, "Chief ")
@@ -40,7 +42,8 @@ namespace Reports.Core.Dao.Impl
                         +"inner join Department dep on mrr.TargetDepartmentId=dep.Id "
                         +"LEFT JOIN Department dep2 on dep2.Path like dep.Path+'%' where mrr.UserId="
                         +userId
-                        +" and mrr.RoleId in (5,6)	) rights on na.DepartmentId=rights.id";
+                        +" and mrr.RoleId in (5,6)	) rights on na.DepartmentId=rights.id"
+                        +" where (ConcreteManager is null or ConcreteManager="+userId+")";
                     break;
                 case (int)UserRole.TaxCollector:
                     sql = String.Format(sql, "TaxCollector ");
