@@ -446,7 +446,7 @@ BEGIN
 				BEGIN
 				--создаем на основе фактического сотрудника
 					INSERT INTO StaffPostReplacement (UserLinkId, UserId, ReplacedId, IsUsed, ReasonId)
-					SELECT Id, UserId, @RegUserId, 1, 1 FROM StaffEstablishedPostUserLinks WHERE Id = @UserLinkId
+					SELECT Id, UserId, @RegUserId, 1, 3 FROM StaffEstablishedPostUserLinks WHERE Id = @UserLinkId
 					
 					--нужно в расстановке фактического сотрудника перетащить на позицию основного сотрудника
 					IF EXISTS (SELECT * FROM StaffEstablishedPostUserLinks WHERE SEPId = @SEPId and UserId = @RegUserId)

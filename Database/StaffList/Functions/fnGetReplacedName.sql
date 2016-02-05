@@ -30,11 +30,11 @@ DECLARE
 			SELECT @ReplacedName += case when len(isnull(@ReplacedName, N'')) = 0 then N'' else N'; ' end +
 															N'(' + B.Name + case when isnull(C.Id, D.Id) is null then N'' else N' ' + convert(nvarchar, isnull(C.BeginDate, D.BeginDate), 103) + N' - ' + convert(nvarchar, isnull(C.EndDate, D.EndDate), 103) end + ')'
 			FROM StaffPostReplacement as A
-			INNER JOIN Users as B ON B.Id = A.ReplacedId and B.IsActive = 1 and B.RoleId & 2 > 0
+			INNER JOIN Users as B ON B.Id = A.ReplacedId and B.IsActive = 1 and B.RoleId & 2 > 0 and isnull(B.IsPregnant, 0) = 1
 			--пока цепляемся отпускам по уходу за ребенком
 			LEFT JOIN ChildVacation as C ON C.UserId = B.Id and C.SendTo1C is not null and C.DeleteDate is null and getdate() between C.BeginDate and C.EndDate 
 			LEFT JOIN Sicklist as D ON D.UserId = B.Id and D.TypeId = 12 and D.SendTo1C is not null and D.DeleteDate is null and getdate() between D.BeginDate and D.EndDate 
-			WHERE A.UserLinkId = @LinkId and A.ReasonId = 1 and A.IsUsed = 1
+			WHERE A.UserLinkId = @LinkId and A.IsUsed = 1
 			--ORDER BY A.Id desc
 		END
 		ELSE	--определяем сотрудника, который ушел в отпуск по уходу за ребенком, но должность его свободна
@@ -71,8 +71,8 @@ DECLARE
 	END
 	
 	RETURN @ReplacedName
---SELECT dbo.fnGetReplacedName(6902, NULL, 1)
---SELECT dbo.fnGetReplacedName(6902, 15227, 1)
+--SELECT dbo.fnGetReplacedName(6227, NULL, 1)
+--SELECT dbo.fnGetReplacedName(6902, 4670, 1)
 
 
 END

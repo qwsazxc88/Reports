@@ -117,7 +117,7 @@ DECLARE
 				 ,cast(case when isnull(F.DocId, 0) = 0 then 0 else 1 end as bit) as IsReserve
 				 ,isnull(E.IsPregnant, 0) as IsPregnant
 				 ,case when (isnull(E.IsPregnant, 0) = 1 or F.UserId is null) and isnull(F.ReserveType, 0) = 0 or exists(SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and ReplacedId = F.UserId and IsUsed = 1) then 1 else 0 end as IsVacation
-				 ,case when F.UserId is null then 0 else (case when isnull(E.IsPregnant, 0) = 1 or H.Id is not null then 1 else 0 end) end as IsSTD
+				 ,case when F.UserId is null then 0 else (case when isnull(E.IsPregnant, 0) = 1 or H.Id is not null or exists(SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and ReplacedId = F.UserId and IsUsed = 1) then 1 else 0 end) end as IsSTD
 				 ,case when J.UserId is null then 0 else 1 end as IsDismiss	--увольнение
 				 ,F.IsDismissal		--сокращение
 				 --оклад и надбавки
@@ -196,7 +196,7 @@ DECLARE
 	ORDER BY A.Priority
 
 		
---select * from dbo.fnGetStaffEstablishedArrangements(8173, 0, 0) 
+--select * from dbo.fnGetStaffEstablishedArrangements(1093, 0, 0) 
 
 	RETURN 
 END
