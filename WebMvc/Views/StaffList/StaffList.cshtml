@@ -97,7 +97,7 @@
                                                                                                                                                                                           {<text>display:none;</text>}"></button></td>
                     <td class="tdBtn"></td>
                     <td class="tdBtn"></td>
-                    <td class="tdBtn"><button type="button" class="btnPosAdd" title="Создать заявку на создание новой штатной единицы" onclick="GetEstablishedPostRequest(1, @item.Id);"></button></td>
+                    <td class="tdBtn">@*<button type="button" class="btnPosAdd" title="Создать заявку на создание новой штатной единицы" onclick="GetEstablishedPostRequest(1, @item.Id);"></button>*@</td>
                     <td class="tdBtn"></td>
                     <td class="tdBtn"></td>
                     <td>@item.DepFingradName</td>
@@ -265,9 +265,16 @@
                                         "<td></td>" +
                                         "<td class='tdBtn'><button type='button' class='btnDepAdd' title='Создать заявку на создание нового подразделения' onclick='GetDepartmentRequest(1, " + result.Departments[i].Id + ");' " + (result.Departments[i].ItemLevel == 7 ? "style='display:none;'" : "") + "></td>" +
                                         "<td class='tdBtn'><button type='button' class='btnDepEdit' title='Создать заявку на изменение данного подразделения' onclick='GetDepartmentRequest(2, " + result.Departments[i].Id + ");'></button></td>" +
-                                        "<td class='tdBtn'><button type='button' class='btnDepDelete' title='Создать заявку на закрытие данного подразделения' onclick='GetDepartmentRequest(3, " + result.Departments[i].Id + ");'></button></td>" +
-                                        "<td class='tdBtn'><button type='button' class='btnPosAdd' title='Создать заявку на создание новой штатной единицы' onclick='GetEstablishedPostRequest(1, " + result.Departments[i].Id + ");'></button></td>" +
-                                        "<td></td>" +
+                                        "<td class='tdBtn'><button type='button' class='btnDepDelete' title='Создать заявку на закрытие данного подразделения' onclick='GetDepartmentRequest(3, " + result.Departments[i].Id + ");'></button></td>" 
+                                        if (result.Departments[i].ItemLevel == 7)
+                                        {
+                                            tblStr += "<td class='tdBtn'><button type='button' class='btnPosAdd' title='Создать заявку на создание новой штатной единицы' onclick='GetEstablishedPostRequest(1, " + result.Departments[i].Id + ");'></button></td>";
+                                        }
+                                        else
+                                        {
+                                            tblStr += "<td class='tdBtn'></td>";
+                                        }
+                                        tblStr += "<td></td>" +
                                         "<td></td>" +
                                         "<td>" + (result.Departments[i].DepFingradName == null ? "" : result.Departments[i].DepFingradName) + "</td>" +
                                         "<td>" + (result.Departments[i].DepFingradNameComment == null ? "" : result.Departments[i].DepFingradNameComment) + "</td>" +
