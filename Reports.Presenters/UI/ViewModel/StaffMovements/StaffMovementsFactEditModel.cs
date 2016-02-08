@@ -7,12 +7,17 @@ using Reports.Core.Dto;
 using System.Web;
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class StaffMovementsFactEditModel : StandartEditModel
+    public class StaffMovementsFactEditModel : StandartEditModel, IPreventDCModel
     {
         public StaffMovementsFactEditModel()
         {
             this.User = new StandartUserDto();
             this.StatusId = 1;
+        }
+        public string Guid
+        {
+            get;
+            set;
         }
         public IList<AdditionsDto> ActiveAdditions { get; set; }
         public bool IsAgreementAvailable { get; set; }

@@ -5,7 +5,7 @@
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
     if (dto.UserRole == UserRole.Employee) {Model.User.Id = dto.Id;}
     ViewBag.Title = "Создание заявки на перемещение";
-    Layout = "~/Views/Shared/_LayoutStaffMovements.cshtml";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
 }
 @using (Html.BeginForm("Edit","StaffMovements"))
 {

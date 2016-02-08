@@ -2,7 +2,7 @@
 @using Reports.Presenters.Services.Impl
 @using Reports.Core
 @{
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
     ViewBag.Title = "Просмотр личных данных кандидата";
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
 }
