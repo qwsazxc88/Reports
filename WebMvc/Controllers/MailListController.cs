@@ -18,12 +18,24 @@ namespace WebMvc.Controllers
                 return Validate.Dependency(requestBl);
             }
         }
-
+        protected IUserProfile userProfile;
+        public IUserProfile UserProfile
+        {
+            get
+            {
+                userProfile = Ioc.Resolve<IUserProfile>();
+                return Validate.Dependency(userProfile);
+            }
+        }
         public EmptyResult Index()
         {
             RequestBl.SendMail();
             return new EmptyResult();
         }
-
+        public EmptyResult SendEmailsWithDocs()
+        {
+            UserProfile.SendEmailToAll();
+            return new EmptyResult();
+        }
     }
 }

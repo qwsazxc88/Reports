@@ -29,7 +29,8 @@ BEGIN TRANSACTION
 	BEGIN
 		--определяем по замещаемому сотруднику вид временной вакансии ОЖ/КП/ДО
 		--ОЖ
-		IF EXISTS (SELECT * FROM ChildVacation WHERE UserId = @ReplacedId and SendTo1C is not null and DeleteDate is null and GETDATE() between BeginDate and EndDate)
+		IF EXISTS (SELECT * FROM ChildVacation WHERE UserId = @ReplacedId and SendTo1C is not null and DeleteDate is null and GETDATE() between BeginDate and EndDate) or
+			 EXISTS (SELECT * FROM Sicklist WHERE UserId = @ReplacedId and TypeId = 12 and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate)
 			SET @ReasonId = 1
 
 		--КП

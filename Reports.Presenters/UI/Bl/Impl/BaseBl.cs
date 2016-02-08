@@ -38,6 +38,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IAuthenticationService authenticationService;
         protected IUserDao userDao;
         protected IMailConfirmDao mailConfirmDao;
+        protected IMailListDao mailListDao;
         protected ISettingsDao settingsDao;
         protected IDepartmentDao departmentDao;
         protected IRequestNextNumberDao requestNextNumberDao;
@@ -46,6 +47,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(mailConfirmDao); }
             set { mailConfirmDao = value; }
+        }
+        public IMailListDao MailListDao
+        {
+            get { return Validate.Dependency(mailListDao); }
+            set { mailListDao = value; }
         }
         public IAuthenticationService AuthenticationService
         {
