@@ -2582,7 +2582,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //члены правления
             model.BoardMembers = UserDao.GetUsersWithRole(UserRole.Director)
-                .Where(x => x.IsActive)
+                .Where(x => x.IsActive && x.DirectorsRight.Count != 0)
                 .ToList()
                 .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - Член правления банка" });
 
@@ -3681,7 +3681,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //члены правления
             model.BoardMembers = UserDao.GetUsersWithRole(UserRole.Director)
-                .Where(x => x.IsActive)
+                .Where(x => x.IsActive && x.DirectorsRight.Count != 0)
                 .ToList()
                 .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - Член правления банка" });
 

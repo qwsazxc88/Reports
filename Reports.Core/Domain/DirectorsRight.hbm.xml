@@ -1,0 +1,9 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="DirectorsRight">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <many-to-one name="User" class="User" column="UserId" foreign-key="FK_DirectorsRights_Users" index="DirectorsRights_Users"  not-null="true"/>
+    <many-to-one name="DepartmentAccessory" class="StaffDepartmentAccessory" column="DepartmentAccessoryId" foreign-key="FK_DirectorsRights_StaffDepartmentAccessory" index="DirectorsRights_StaffDepartmentAccessory"  not-null="true"/>
+  </class>
+</hibernate-mapping>
