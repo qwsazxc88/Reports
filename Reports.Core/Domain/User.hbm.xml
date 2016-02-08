@@ -99,6 +99,10 @@
       <key column="UserId" foreign-key="FK_StaffMovements_User"/>
       <one-to-many class="StaffMovements" />
     </bag>
+    <bag name="DirectorsRight" table="DirectorsRight" lazy="true" cascade="save-update">
+      <key column="UserId" foreign-key="FK_DirectorsRights_Users"/>
+      <one-to-many class="DirectorsRight" />
+    </bag>
     <!--
     <many-to-one name="StaffEstablishedPost" class="StaffEstablishedPost" column="SEPId" foreign-key="FK_Users_StaffEstablishedPost" index="Users_StaffEstablishedPost"  not-null="false"/>
     -->

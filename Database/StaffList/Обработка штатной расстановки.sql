@@ -7,11 +7,14 @@ DECLARE
 	,@MoveCode nvarchar(20)
 	,@AbsentCode nvarchar(20)
 	,@Id int
+	,@DateAccept datetime
 	,@PregBeginDate datetime
+	,@PregEndDate datetime
 	,@MoveBeginDate datetime
 	,@AbsentBeginDate datetime
 	,@UserId int			--факт
 	,@RegUserId int		--основа
+	,@ReplaceUserId int	--последний заменяющий 
 	,@PosititonId int
 	,@RegPosititonId int
 	,@DepartmentId int
@@ -43,6 +46,15 @@ BEGIN
 	RETURN
 END
 
+
+IF EXISTS (SELECT * FROM #PA WHERE MoveCode is not null and RegularCode <> MoveCode)
+BEGIN
+	PRINT N'№16 Обнаружены записи, где некорректно внесены данные по временному переводу!'
+	DROP TABLE #PA
+	RETURN
+END
+
+
 SELECT @CountRow = COUNT(*) FROM #PA WHERE IsComplete = 0
 PRINT N'Нужно обработать ' + cast(@CountRow as nvarchar) + N' записей'
 
@@ -53,7 +65,7 @@ WHILE EXISTS (SELECT * FROM #PA WHERE IsComplete = 0)
 BEGIN
 	--берем необработанные записи
 	SELECT top 1 @Id = A.Id, @UserCode = A.UserCode, @RegularCode = A.RegularCode, @PregCode = A.PregCode, @MoveCode = A.MoveCode, @AbsentCode = A.AbsentCode
-				 ,@MoveBeginDate = MoveBeginDate, @AbsentBeginDate = A.AbsentBeginDate
+				 ,@MoveBeginDate = MoveBeginDate, @AbsentBeginDate = A.AbsentBeginDate, @DateAccept = A.DateAccept
 				 ,@STDType = case when A.ContractType = 'Бессрочный' then 1 when A.ContractType = 'СТД' then 2 else 3 end 
 				 ,@UserId = B.Id, @UserName = B.Name, @PosititonId = B.PositionId, @DepartmentId = B.DepartmentId, @IsPreg = B.IsPregnant
 				 ,@RegUserId = C.Id, @RegUserName = C.Name, @RegPosititonId = C.PositionId, @RegDepartmentId = C.DepartmentId, @IsRegPreg = C.IsPregnant
@@ -94,15 +106,19 @@ BEGIN
 		RETURN
 	END
 
+	--если поля с ОЖ заполнены пытаемся найти даты периода
+	IF @PregCode is not null
+	BEGIN
+		SELECT @PregBeginDate = MIN(BeginDate), @PregEndDate = MAX(EndDate)
+		FROM (SELECT BeginDate, EndDate FROM ChildVacation WHERE UserId = @RegUserId and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate 
+					UNION ALL
+					SELECT BeginDate, EndDate FROM Sicklist WHERE UserId = @RegUserId and TypeId = 12 and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate ) as A
+	END
+
 
 	--если основа указана в колонках ОЖ, КП и ДО одновременно, проверить хронологию по датам (хронология: ОЖ, КП, ДО)
 	IF @RegularCode = @PregCode and @RegularCode = @MoveCode and @RegularCode = @AbsentCode
 	BEGIN
-		SELECT @PregBeginDate = MIN(BeginDate) 
-		FROM (SELECT BeginDate, EndDate FROM ChildVacation WHERE UserId = @RegUserId and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate 
-					UNION ALL
-					SELECT BeginDate, EndDate FROM Sicklist WHERE UserId = @RegUserId and TypeId = 12 and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate ) as A
-
 		IF @PregBeginDate is not null
 		BEGIN
 			IF @PregBeginDate > @MoveBeginDate or @PregBeginDate > @AbsentBeginDate or @MoveBeginDate > @AbsentBeginDate
@@ -158,7 +174,7 @@ BEGIN
 			BEGIN
 				--сформировать заявку на ДО (досрочницы)
 				INSERT INTO StaffTemporaryReleaseVacancyRequest(Version, UserLinkId, ReplacedId, DateBegin, DateEnd, AbsencesTypeId, IsUsed, Note)
-				VALUES(1, @UserLinkId, @RegUserId, @PregBeginDate, null, 3, 1, N'Автоматическая обработка данных: на момент обработки данных был указан признак ОЖ')
+				VALUES(1, @UserLinkId, @RegUserId, @PregBeginDate, @PregEndDate, 3, 1, N'Автоматическая обработка данных: на момент обработки данных был указан признак ОЖ')
 			END
 		END
 
@@ -273,7 +289,7 @@ BEGIN
 			BEGIN
 				--сформировать заявку на ДО (досрочницы)
 				INSERT INTO StaffTemporaryReleaseVacancyRequest(Version, UserLinkId, ReplacedId, DateBegin, DateEnd, AbsencesTypeId, IsUsed, Note)
-				VALUES(1, @UserLinkId, @RegUserId, @PregBeginDate, null, 3, 1, N'Автоматическая обработка данных: на момент обработки данных был указан признак ОЖ')
+				VALUES(1, @UserLinkId, @RegUserId, @PregBeginDate, @PregEndDate, 3, 1, N'Автоматическая обработка данных: на момент обработки данных был указан признак ОЖ')
 			END
 
 
@@ -334,6 +350,114 @@ BEGIN
 				END
 			END
 		END
+
+
+		--если факт не является основным и в ОЖ, (это сотрудники приняты по СТД и у них нет постоянного места работы)
+		IF @UserCode <> @RegularCode and @UserCode = @PregCode
+		BEGIN
+			--если по фактическому сотруднику нет действующих заявок на отпуск по уходу за ребенком, больничного по беременности, и признак беременности в учетку пришел из 1С
+			IF NOT EXISTS (SELECT *
+										 FROM (SELECT BeginDate, EndDate FROM ChildVacation WHERE UserId = @UserId and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate 
+											 		 UNION ALL
+													 SELECT BeginDate, EndDate FROM Sicklist WHERE UserId = @UserId and TypeId = 12 and SendTo1C is not null and DeleteDate is null and getdate() between BeginDate and EndDate ) as A) and isnull(@IsPreg, 0) = 1
+			BEGIN
+				--сформировать заявку на ДО (досрочницы)
+				INSERT INTO StaffTemporaryReleaseVacancyRequest(Version, UserLinkId, ReplacedId, DateBegin, DateEnd, AbsencesTypeId, IsUsed, Note)
+				VALUES(1, @UserLinkId, @UserId, @PregBeginDate, @PregEndDate, 3, 1, N'Автоматическая обработка данных: на момент обработки данных был указан признак ОЖ')
+			END
+
+
+			--надо найти фактического сотрудника в расстановке, если не нашли
+			IF NOT EXISTS (SELECT * FROM StaffEstablishedPostUserLinks WHERE UserId = @UserId)
+			BEGIN
+				--надо проверить в расстановке, была ли замена фактического сотрудника
+				IF NOT EXISTS (SELECT * FROM StaffPostReplacement WHERE ReplacedId = @UserId and IsUsed = 1)
+				BEGIN
+					PRINT N'№9 Фактического сотрудника нет в расстановке и нет замены фактическим сотрудником ' + @UserName + N' (' + @UserCode + N') основного ' + @RegUserName + N' (' + @RegularCode + N')'
+					ROLLBACK TRANSACTION
+					DROP TABLE #PA
+					RETURN
+				END
+					--если была, то ПОКА ИДЕМ ДАЛЬШЕ ()
+			END
+			ELSE--если фактический сотрудник есть в расстановке
+			BEGIN
+				--нужно проверить заменяет ли он основного
+				IF NOT EXISTS (SELECT * FROM StaffPostReplacement WHERE UserId = @UserId AND ReplacedId = @RegUserId and IsUsed = 1)
+				BEGIN
+					--если не заменяет, а основной сотрудник все еще в расстановке на прежнем месте или основной уже находится на другом месте, то создать строку замены 
+					IF EXISTS (SELECT * FROM StaffEstablishedPostUserLinks WHERE UserId = @RegUserId and SEPId = @SEPId) or
+						 EXISTS (SELECT * FROM StaffEstablishedPostUserLinks WHERE UserId = @RegUserId and SEPId <> @SEPId)
+					BEGIN
+						--создаем на основе фактического сотрудника
+						INSERT INTO StaffPostReplacement (UserLinkId, UserId, ReplacedId, IsUsed, ReasonId)
+						SELECT Id, UserId, @RegUserId, 1, 1 FROM StaffEstablishedPostUserLinks WHERE Id = @UserLinkId
+
+						--нужно в расстановке фактического сотрудника перетащить на позицию основного сотрудника
+						IF EXISTS (SELECT * FROM StaffEstablishedPostUserLinks WHERE SEPId = @SEPId and UserId = @RegUserId)
+						BEGIN
+							--место основного сделать вакантным
+							UPDATE StaffEstablishedPostUserLinks SET UserId = null WHERE SEPId = @SEPId and UserId = @RegUserId
+
+							--если ранее в обработке по основному сотруднику заводились заявки на ДО, то перенесем ее на это место
+							UPDATE StaffTemporaryReleaseVacancyRequest SET UserLinkId = @UserLinkId WHERE ReplacedId = @RegUserId and CreatorId is null
+						END
+						ELSE
+						BEGIN
+							--основной и фактический сотрудник ошибочно могут быть в разных штатных единицах, по этому нужно позицию основного сотрудника сделать вакантным вторым способом
+							--пока это вариант с поиском по Id основного сотрудника и отсутствие замен по этой позиции
+							UPDATE StaffEstablishedPostUserLinks SET UserId = null 
+							FROM StaffEstablishedPostUserLinks as A
+							WHERE A.UserId = @RegUserId and not exists (SELECT * FROM StaffPostReplacement WHERE UserLinkId = A.Id)
+						END
+					END
+					ELSE	--если факт не заменяет основу и основы уже нет в расстановке (МНОГОЭТАЖНОСТЬ)
+					BEGIN
+						--надо найти замену основы кем-то, где этот кто-то находится в факте
+						IF EXISTS (SELECT * FROM StaffPostReplacement WHERE ReplacedId = @RegUserId and IsUsed = 1)
+						BEGIN
+							--определяем последнего заменяющего
+							SELECT top 1 @ReplaceUserId = B.UserId
+							FROM StaffPostReplacement as A
+							INNER JOIN StaffPostReplacement as B ON B.UserLinkId = A.UserLinkId
+							WHERE A.ReplacedId = @RegUserId
+							ORDER BY B.Id desc
+
+							--проверить наличие отметки ОЖ или ДО у сотрудника, который на данный момент заменяет основу
+							IF NOT EXISTS (SELECT * FROM Users as A
+														 INNER JOIN #PA as B ON B.PregCode = A.Code or B.AbsentCode = A.Code or B.MoveCode = A.Code
+														 WHERE A.Id = @ReplaceUserId)
+							BEGIN
+								--если нет отметки, то выдать сообщение (возможно нарушена сортировка записей при обработке)
+								PRINT N'№17 Обнаружена замена основного сотрудника ' + @RegUserName + N' (' + @RegularCode + N') сотрудником, у которого нет признаком ОЖ и ДО!'
+								ROLLBACK TRANSACTION
+								DROP TABLE #PA
+								RETURN
+							END
+
+							IF NOT EXISTS(SELECT * FROM StaffPostReplacement as A
+														WHERE ReplacedId = @RegUserId)
+							
+						--если есть, то сделать замену
+						--в расстановке почистить место за фактом
+						END
+						--если нет замены основы, выдать сообщение
+					END
+				END
+				ELSE	
+				BEGIN
+					--проверить наличие замены фактическим сотрудником посторонего сотрудника, не основного
+					IF EXISTS (SELECT * FROM StaffPostReplacement WHERE UserId = @UserId and ReplacedId <> @RegUserId and IsUsed = 1)
+					BEGIN
+						PRINT N'№10 Обнаружена замена фактическим сотрудником ' + @UserName + N' (' + @UserCode + N') постороннего сотрудника!'
+						ROLLBACK TRANSACTION
+						DROP TABLE #PA
+						RETURN
+					END
+				END
+			END
+		END
+
 
 
 

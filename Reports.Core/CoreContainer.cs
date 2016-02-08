@@ -650,8 +650,11 @@ namespace Reports.Core
             Register(Component.For<IDocumentApprovalDao>()
                 .ImplementedBy<DocumentApprovalDao>()
                 .LifeStyle.Is(type));
+            //Register(Component.For<IDirectorsRightDao>()
+            //    .ImplementedBy<DirectorsRightDao>()
+            //    .LifeStyle.Is(type));
 
-
+            
             #region StaffMovements
             Register(Component.For<IrefStaffMovementsRejectReasonDao>()
                 .ImplementedBy<refStaffMovementsRejectReasonDao>()
