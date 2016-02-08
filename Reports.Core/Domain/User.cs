@@ -205,6 +205,10 @@ namespace Reports.Core.Domain
         /// Кадровые перемещения сотрудника.
         /// </summary>
         public virtual IList<StaffMovements> StaffMovements { get; set; }
+        /// <summary>
+        /// Права членов правления для согласования заявок в штатном расписании по принадлежности к подразделениям.
+        /// </summary>
+        public virtual IList<DirectorsRight> DirectorsRight { get; set; }
         #endregion
 
         #region Constructors
