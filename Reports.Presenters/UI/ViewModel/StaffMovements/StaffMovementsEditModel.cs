@@ -7,7 +7,7 @@ using Reports.Core.Dto;
 using System.Web;
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class StaffMovementsEditModel:StandartEditModel
+    public class StaffMovementsEditModel : StandartEditModel, IPreventDCModel, IContainId
     {
         public StaffMovementsEditModel()
         {
@@ -176,5 +176,18 @@ namespace Reports.Presenters.UI.ViewModel
         public int MovementNoteAttachmentId { get; set; }
         public UploadFileDto MovementNoteDto { get; set; }
         #endregion
+
+        public string Guid
+        {
+            get;
+            set;
+        }
+
+
+        public int UserId
+        {
+            get;
+            set;
+        }
     }
 }
