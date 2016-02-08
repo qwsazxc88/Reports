@@ -2343,6 +2343,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsOrder = (AuthenticationService.CurrentUser.UserRole == UserRole.StaffListOrder);
             model.IsSoftAdmin = (AuthenticationService.CurrentUser.UserRole == UserRole.SoftAdmin);
 
+            model.IsAgreeButtonAvailable = false;
+
             //разбираемся с состоянием птиц
             //выбираем из согласования не архивные записи.
             IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffDepartmentRequest);
@@ -2477,14 +2479,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 model.IsTaxCollectorApproveAvailable = false;
                                 model.TaxCollectorApproveName = "Заявка согласована " + item.CreateDate.Value.ToShortDateString() + " " + "Налоговик: " + item.ApproveUser.Name;
                                 //если попали сюда, значит согласование данной цепочки уже прошло, задраиваем люки
-                                model.IsAgreeButtonAvailable = model.IsTaxCollectorApproveAvailable;
+                                //model.IsAgreeButtonAvailable = model.IsTaxCollectorApproveAvailable;
                                 break;
-                            case 7://налоговик
+                            case 7://приказы
                                 model.IsOrderApprove = true;
                                 model.IsOrderApproveAvailable = false;
                                 model.OrderApproveName = "Приказы составлены " + item.CreateDate.Value.ToShortDateString() + " " + "Ответственный за составление приказов: " + item.ApproveUser.Name;
                                 //если попали сюда, значит согласование данной цепочки уже прошло, задраиваем люки
-                                model.IsAgreeButtonAvailable = model.IsOrderApproveAvailable;
+                                //model.IsAgreeButtonAvailable = model.IsOrderApproveAvailable;
                                 break;
                         }
                     }
