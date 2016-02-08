@@ -29,6 +29,7 @@
 @using (Html.BeginForm("Edit", "StaffMovements", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {   
     <div style="display:none">
+    <input type="hidden" id="Guid" name="Guid" value="@Model.Guid" />
     @Html.HiddenFor(m=>m.Id)
     @Html.HiddenFor(m => m.RequestType)
     @Html.HiddenFor(m => m.StatusId)
@@ -791,6 +792,8 @@ label { font-size:1.1em; }
     }
     function ValidateForm()
     {
+        var enabledObjects = $('[type="submit"]:enabled');
+        enabledObjects.prop( "disabled", true );
         var result =true;
           
         clearControlErrors($("#TargteDepartmentId"));
@@ -911,10 +914,14 @@ label { font-size:1.1em; }
             }
         </text>
         }
+        if(!result)
+        {        
+        enabledObjects.prop( "disabled", false );
+        }
         return result;
     }
     function ButtonPressed(name)
-    {
+    {        
         var validateResult = ValidateForm();
         if(!validateResult) return false;
         $('#Is'+name+'ButtonPressed').val(true);
