@@ -3,7 +3,7 @@
 @using Reports.Core
 @{
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
-    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
     ViewBag.Title = "Редактирование авансового отчета";
 }
 <div style="visibility:hidden">

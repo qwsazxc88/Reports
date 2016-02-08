@@ -3,7 +3,7 @@
 @using Reports.Core
 @{
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
-    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
     ViewBag.Title = "Инструкция";
 }
 

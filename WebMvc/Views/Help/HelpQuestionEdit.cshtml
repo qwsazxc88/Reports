@@ -6,7 +6,7 @@
 }
 @model Reports.Presenters.UI.ViewModel.HelpQuestionEditModel
 @{
-    Layout = "~/Views/Shared/_HelpInfo.cshtml";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
     ViewBag.Title = "Задать вопрос";
 }
 @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "QuestionEdit" }))

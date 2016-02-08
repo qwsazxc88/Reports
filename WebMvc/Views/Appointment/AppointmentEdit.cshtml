@@ -4,7 +4,7 @@
 @model Reports.Presenters.UI.ViewModel.AppointmentEditModel
 @{
     var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
-    Layout = "~/Views/Shared/_LayoutAppointment.cshtml";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
     ViewBag.Title = "Заявка на подбор сотрудника";
 }
 <div style="visibility:hidden">
