@@ -22,8 +22,10 @@ namespace Reports.Core.Dao.Impl
         public IList<UserDocsDto> GetAllUserDocs(int userId, int roleId)
         { 
             string name = "";
-            string sql = "SELECT * FROM vwRequestNotApprovedBy{0} na ";                 
-                   
+            string sql = "SELECT * FROM vwRequestNotApprovedBy{0} na ";
+            var Currrent = this.Load(userId);
+            int level = 0;
+            if (Currrent != null && Currrent.Level.HasValue) level = Currrent.Level.Value;
             switch (roleId)
             {
                 case (int)UserRole.Director:
@@ -33,11 +35,14 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case (int)UserRole.Manager:
                     sql = String.Format(sql, "Chief ")
-                        +"inner join (SELECT dep2.id FROM Department dep "
+                        +"inner join ("
+
+                        +(level>3?("SELECT dep2.id FROM Department dep "
                         +"INNER JOIN Users u ON u.DepartmentId=dep.Id "
                         +"LEFT JOIN Department dep2 on dep2.Path like dep.Path+'%'	where u.id="
                         +userId
-                        +" union "
+                        +" union "):" ")
+
                         +"SELECT dep2.id FROM ManualRoleRecord mrr "
                         +"inner join Department dep on mrr.TargetDepartmentId=dep.Id "
                         +"LEFT JOIN Department dep2 on dep2.Path like dep.Path+'%' where mrr.UserId="
