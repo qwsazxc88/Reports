@@ -1436,6 +1436,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
+                model.UserLinkId = entity.Candidate.UserLinkId.HasValue ? entity.Candidate.UserLinkId.Value : 0;
                 model.SalaryBasis = entity.SalaryBasis;
                 model.SalaryMultiplier = entity.SalaryMultiplier;
                 model.AreaMultiplier = entity.Candidate.PersonnelManagers.AreaMultiplier.HasValue ? entity.Candidate.PersonnelManagers.AreaMultiplier.Value : 0;

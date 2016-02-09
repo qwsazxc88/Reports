@@ -73,7 +73,7 @@ BEGIN
 	INNER JOIN Users as B ON B.Code = A.UserCode 
 	INNER JOIN Users as C ON C.Code = A.RegularCode 
 	WHERE A.IsComplete = 0
-	ORDER BY case when A.UserCode = A.RegularCode then 0 else 1 end
+	ORDER BY case when A.UserCode = A.RegularCode then 0 else 1 end, A.MoveBeginDate, A.DateAccept
 
 
 	--если факт <> основе, то проверяем учетки сотрудников
@@ -417,7 +417,7 @@ BEGIN
 						IF EXISTS (SELECT * FROM StaffPostReplacement WHERE ReplacedId = @RegUserId and IsUsed = 1)
 						BEGIN
 							--определяем последнего заменяющего
-							SELECT top 1 @ReplaceUserId = B.UserId
+							SELECT top 1 @ReplaceUserId = B.UserId, @UserLinkId = B.UserLinkId
 							FROM StaffPostReplacement as A
 							INNER JOIN StaffPostReplacement as B ON B.UserLinkId = A.UserLinkId
 							WHERE A.ReplacedId = @RegUserId
@@ -425,7 +425,7 @@ BEGIN
 
 							--проверить наличие отметки ОЖ или ДО у сотрудника, который на данный момент заменяет основу
 							IF NOT EXISTS (SELECT * FROM Users as A
-														 INNER JOIN #PA as B ON B.PregCode = A.Code or B.AbsentCode = A.Code or B.MoveCode = A.Code
+														 INNER JOIN #PA as B ON B.PregCode = A.Code --or B.AbsentCode = A.Code or B.MoveCode = A.Code
 														 WHERE A.Id = @ReplaceUserId)
 							BEGIN
 								--если нет отметки, то выдать сообщение (возможно нарушена сортировка записей при обработке)
@@ -435,11 +435,13 @@ BEGIN
 								RETURN
 							END
 
-							IF NOT EXISTS(SELECT * FROM StaffPostReplacement as A
-														WHERE ReplacedId = @RegUserId)
-							
-						--если есть, то сделать замену
-						--в расстановке почистить место за фактом
+						
+							--если есть, то сделать замену
+							INSERT INTO StaffPostReplacement (UserLinkId, UserId, ReplacedId, IsUsed, ReasonId)
+							SELECT Id, @UserId, UserId, 1, 1 FROM StaffEstablishedPostUserLinks WHERE Id = @UserLinkId
+
+							--в расстановке почистить место за фактом
+							UPDATE StaffEstablishedPostUserLinks SET UserId = null WHERE Id <> @UserLinkId and UserId = @UserId
 						END
 						--если нет замены основы, выдать сообщение
 					END
