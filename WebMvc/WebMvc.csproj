@@ -948,6 +948,8 @@
     <Content Include="Views\UserRequest\UserPersonnelDataList.cshtml" />
     <Content Include="Views\StaffList\StaffTemporaryReleaseVacancyRequestList.cshtml" />
     <Content Include="Views\StaffList\StaffTemporaryReleaseVacancyRequest.cshtml" />
+    <Content Include="Views\Shared\_MenuGeneral.cshtml" />
+    <Content Include="Views\Shared\_LayoutGeneral.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
