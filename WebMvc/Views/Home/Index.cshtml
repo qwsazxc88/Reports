@@ -28,6 +28,10 @@
                         {
                             @Html.ActionLink("Табель", "UserList", "Admin")
                         }
+                        else if((dto.UserRole & UserRole.Accountant)>0)
+                        {
+                            @Html.ActionLink("Табель", "UserPersonnelDataList", "UserRequest")
+                        }
                         else if ((dto.UserRole & UserRole.Employee) > 0)
                         {
                             @Html.ActionLink("Табель", "SicklistList", "UserRequest")
@@ -41,7 +45,7 @@
                               || (dto.UserRole & UserRole.PersonnelManager) > 0
                               || (dto.UserRole & UserRole.Inspector) > 0
                               || (dto.UserRole & UserRole.OutsourcingManager) > 0
-                              || (dto.UserRole & UserRole.Estimator)>0
+                              || (dto.UserRole & UserRole.Estimator) > 0
                               || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0)
                         {
                             @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
@@ -51,8 +55,8 @@
                             @Html.ActionLink("Табель", "DismissalList", "UserRequest")
                         }
                     </div>  
-                  }
-                @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer  | UserRole.DismissedEmployee)) == 0)
+                 }
+                @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer | UserRole.DismissedEmployee)) == 0)
                 {
                     
                     <div @if (Model.menuId == 1)
@@ -66,7 +70,7 @@
                     </div> 
                 }
                 
-                @if(UserDto.IsStaffDepartmentAvailable(dto))
+                @if (UserDto.IsStaffDepartmentAvailable(dto))
                 {
                     if ((dto.UserRole & UserRole.PersonnelManager) > 0)
                     {
