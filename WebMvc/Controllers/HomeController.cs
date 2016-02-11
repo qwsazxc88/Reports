@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using System.IO;
 using System.Web.Script.Serialization;
 using Reports.Core;
 using Reports.Core.Dto;
@@ -10,7 +11,7 @@ using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
 using WebMvc.Models;
-
+using System.Web;
 namespace WebMvc.Controllers
 {
     [Authorize]
@@ -60,7 +61,48 @@ namespace WebMvc.Controllers
             IUser user = service.CurrentUser;
             return View(new HomeModel {menuId = menuId.HasValue ? menuId.Value : 0});
         }
-
+        [HttpGet]
+        public ActionResult BugReport()
+        {
+            ModelState.Clear();
+            BugReportModel model = new BugReportModel();
+            model.BrowserVersion = Request.Browser.Version;
+            model.Browser = Request.Browser.Type;
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult BugReport(BugReportModel model)
+        {
+            ModelState.Clear();
+            if (model.Summary == null || string.IsNullOrEmpty(model.Summary.Trim()))
+            {
+                ModelState.AddModelError("Summary", "Необходимо заполнить краткое описание.");
+            }
+            if (model.Description == null || string.IsNullOrEmpty(model.Description.Trim()))
+            {
+                ModelState.AddModelError("Description", "Необходимо заполнить подробное описание.");
+            }
+            if (ModelState.IsValid)
+            {
+                HttpFileCollectionBase files = Request.Files;
+                
+                var guid = Guid.NewGuid();
+                if (files != null && files.Count > 0)
+                    for (int i = 0; i < files.Count;i++ )
+                    {                        
+                        var file = files[i];
+                        if (file.ContentLength > 0)
+                        {
+                            string filename = Path.GetFileName(file.FileName);
+                            string path = Path.Combine(Server.MapPath("~"), "\\Content\\BugReport", guid.ToString());
+                            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+                            path = Path.Combine(path, filename);
+                            file.SaveAs(path);
+                        }
+                    }
+            }
+            return View(model);
+        }
         public ActionResult About()
         {
             return View();

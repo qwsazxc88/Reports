@@ -1,0 +1,23 @@
+﻿@model Reports.Presenters.UI.ViewModel.BugReportEditModel
+@using WebMvc.Helpers
+@{
+    ViewBag.Title = "BugReport";
+}
+
+    using (Html.BeginBlock("filter-wrap"))
+    {
+        @Html.ActionLink("Вернуться на главную", "Index", "Home")
+        @Html.CreateHeader("Сообщить об ошибке");
+        @Html.CreateField(x => x.Browser)<br />
+        @Html.CreateField(x => x.BrowserVersion)<br />
+        @Html.CreateField(x => x.Summary)<br />
+        @Html.LabelFor(x => x.Description)<br />
+        @Html.TextAreaFor(x => x.Description)
+        
+        <br />
+        
+        @foreach(var file in Model.Files)
+        {
+            <img src="@file" /><br />
+        }
+    }
