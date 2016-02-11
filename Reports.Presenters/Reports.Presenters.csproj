@@ -156,6 +156,7 @@
     <Compile Include="UI\ViewModel\AttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AutoImportModel.cs" />
     <Compile Include="UI\ViewModel\BaseModel.cs" />
+    <Compile Include="UI\ViewModel\BugReportEditModel.cs" />
     <Compile Include="UI\ViewModel\BugReportModel.cs" />
     <Compile Include="UI\ViewModel\ChildVacationEditModel.cs" />
     <Compile Include="UI\ViewModel\ChildVacationListModel.cs" />
