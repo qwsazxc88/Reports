@@ -1,0 +1,25 @@
+﻿@model Reports.Presenters.UI.ViewModel.BugReportModel
+@using WebMvc.Helpers
+@{
+    ViewBag.Title = "BugReport";
+}
+@using (Html.BeginForm("BugReport", "Home", FormMethod.Post, new { enctype="multipart/form-data" }))
+{
+    using (Html.BeginBlock("filter-wrap"))
+    {
+        @Html.ActionLink("Вернуться на главную", "Index", "Home")
+        @Html.CreateHeader("Сообщить об ошибке");
+        @Html.CreateField(x => x.Browser)<br />
+        @Html.CreateField(x => x.BrowserVersion)<br />
+        @Html.CreateField(x => x.Summary)<br />
+        @Html.LabelFor(x => x.Description)<br />
+        @Html.TextAreaFor(x => x.Description)
+        <br />
+        <label>Снимки экрана:</label><br />
+        <input type="file" multiple="multiple" name="Sreenshots"/>
+        @Html.CreateButton(true, true, "Отправить")
+        <br />
+    
+        @Html.ActionLink("Вернуться на главную", "Index", "Home")
+    }
+}

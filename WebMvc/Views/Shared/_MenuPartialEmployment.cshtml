@@ -19,6 +19,10 @@
                         {
                             @Html.ActionLink("Табель", "UserList", "Admin")
                         }
+                        else if((dto.UserRole & UserRole.Accountant)>0)
+                        {
+                            @Html.ActionLink("Табель", "UserPersonnelDataList", "UserRequest")
+                        }
                         else if ((dto.UserRole & UserRole.Employee) > 0)
                         {
                             @Html.ActionLink("Табель", "SicklistList", "UserRequest")
@@ -28,7 +32,7 @@
                             @Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)
                         }
                         else if ((dto.UserRole & UserRole.Manager) > 0
-                              || (dto.UserRole & UserRole.ConsultantPersonnel)>0
+                              || (dto.UserRole & UserRole.ConsultantPersonnel) > 0
                               || (dto.UserRole & UserRole.PersonnelManager) > 0
                               || (dto.UserRole & UserRole.Inspector) > 0
                               || (dto.UserRole & UserRole.Estimator) > 0
@@ -46,7 +50,7 @@
                     
                 }
                 
-                @if(UserDto.IsStaffDepartmentAvailable(dto))
+                @if (UserDto.IsStaffDepartmentAvailable(dto))
                 {
                     <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
                 }

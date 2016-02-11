@@ -528,6 +528,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadUserData(model.User);
             var usertomove = UserDao.Load(model.User.Id);
             var userlinks=StaffEstablishedPostUserLinksDao.QueryExpression(x=>x.IsUsed && x.User.Id==model.User.Id);
+            if (userlinks == null || !userlinks.Any())
+                throw new Exception("Сотрудника нет в штатной расстановке.");
             var userlink = userlinks.First();
             model.RegionCoefficient = StaffMovementsDao.GetUserRegionCoeff(model.User.Id);
             model.TotalSalary = StaffMovementsDao.GetUserTotalSalary(model.User.Id);
