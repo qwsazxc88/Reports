@@ -4,7 +4,7 @@
     ViewBag.Title = "BugReport";
 }
 
-    using (Html.BeginBlock("filter-wrap"))
+    @using (Html.BeginBlock("filter-wrap"))
     {
         @Html.ActionLink("Вернуться на главную", "Index", "Home")
         @Html.CreateHeader("Сообщить об ошибке");
@@ -16,8 +16,8 @@
         
         <br />
         
-        @foreach(var file in Model.Files)
+        foreach(var file in Model.Files)
         {
-            <img src="@file" /><br />
+            <a href="@file">@(System.IO.Path.GetFileName(file))</a><br />
         }
     }

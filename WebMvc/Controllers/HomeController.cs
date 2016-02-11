@@ -70,6 +70,18 @@ namespace WebMvc.Controllers
             model.Browser = Request.Browser.Type;
             return View(model);
         }
+        [ReportAuthorize(UserRole.Admin)]
+        public ActionResult BugReportEdit(int Id)
+        {
+            var model = RequestBl.GetBugEditModel(Id,Path.Combine(Server.MapPath("~/Files"),".."));
+            return View(model);
+        }
+        [ReportAuthorize(UserRole.Admin)]
+        public ActionResult BugReportList()
+        {
+            BugReportListModel model = RequestBl.GetBugListModel();
+            return View(model);
+        }
         [HttpPost]
         public ActionResult BugReport(BugReportModel model)
         {
@@ -94,12 +106,18 @@ namespace WebMvc.Controllers
                         if (file.ContentLength > 0)
                         {
                             string filename = Path.GetFileName(file.FileName);
-                            string path = Path.Combine(Server.MapPath("~"), "\\Content\\BugReport", guid.ToString());
+                            string path = Path.Combine(Server.MapPath("~/Files"), "..\\Content\\BugReport", guid.ToString());
                             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
                             path = Path.Combine(path, filename);
                             file.SaveAs(path);
                         }
                     }
+
+                RequestBl.SendBugReport(model, guid.ToString());
+                model = new BugReportModel();
+                model.BrowserVersion = Request.Browser.Version;
+                model.Browser = Request.Browser.Type;
+                ViewBag.Message = "Сообщение отправлено!";
             }
             return View(model);
         }

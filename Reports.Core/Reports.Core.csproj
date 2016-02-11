@@ -779,6 +779,7 @@
     <Compile Include="Dto\AnalyticalStatementDto.cs" />
     <Compile Include="Dto\AppointmentDto.cs" />
     <Compile Include="Dto\BeginEndDateDto.cs" />
+    <Compile Include="Dto\BugReportDto.cs" />
     <Compile Include="Dto\ClearanceChecklistApprovalDto.cs" />
     <Compile Include="Dto\ClearanceChecklistDto.cs" />
     <Compile Include="Dto\CostDto.cs" />
@@ -1529,7 +1530,7 @@
     <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovementsRoleRecords.hbm.xml" />
     <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovements_DocTypes.hbm.xml" />
     <EmbeddedResource Include="Domain\DirectorsRight.hbm.xml" />
-    <Content Include="Domain\BugReport.hbm.xml" />
+    <EmbeddedResource Include="Domain\BugReport.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
   </ItemGroup>

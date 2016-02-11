@@ -13378,13 +13378,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             catch (Exception) { }
             model.Files = new List<string>();
-            path = Path.Combine(path, "\\Content\\BugReport", entity.Guid);
+            path = path+ "\\Content\\BugReport\\"+ entity.Guid;
             DirectoryInfo dir = new DirectoryInfo(path);
             var files = dir.GetFiles();
             foreach (var file in files)
             {
                 model.Files.Add(Path.Combine("\\Content\\BugReport", entity.Guid, Path.GetFileName(file.FullName)));
             }
+            return model;
+        }
+        public BugReportListModel GetBugListModel()
+        {
+            BugReportListModel model = new BugReportListModel();
+            model.Documents = BugReportDao.GetDocuments();
             return model;
         }
         public MissionUserDeptsListModel GetMissionUserDeptsListModel()

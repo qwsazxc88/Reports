@@ -27,8 +27,9 @@
                         @if ((dto.UserRole & UserRole.Admin) > 0)
                         {
                             @Html.ActionLink("Табель", "UserList", "Admin")
+                            @Html.ActionLink("Сообщения об ошибках", "BugReportList", "Home")
                         }
-                        else if((dto.UserRole & UserRole.Accountant)>0)
+                        else if ((dto.UserRole & UserRole.Accountant) > 0)
                         {
                             @Html.ActionLink("Табель", "UserPersonnelDataList", "UserRequest")
                         }

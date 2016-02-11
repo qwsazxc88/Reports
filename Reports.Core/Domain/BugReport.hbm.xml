@@ -3,12 +3,12 @@
     <id name="Id">
       <generator class="native" />
     </id>
-    <property name="Summary" not-null="true"/>
-    <property name="UserRole" not-null="true"/>
-    <property name="Description" not-null="true"/>
-    <property name="Browser" not-null="true"/>
-    <property name="BrowserVersion" not-null="true"/>
-    <property name="Guid" not-null="true"/>
+    <property name="Summary" not-null="false"/>
+    <property name="UserRole" not-null="false"/>
+    <property name="Description" not-null="false"/>
+    <property name="Browser" not-null="false"/>
+    <property name="BrowserVersion" not-null="false"/>
+    <property name="Guid" not-null="false"/>
     <many-to-one name="User" class="User" column="UserId" foreign-key="FK_BugReport_Users" not-null="true"/>
   </class>
 </hibernate-mapping>
