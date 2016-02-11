@@ -792,8 +792,7 @@ label { font-size:1.1em; }
     }
     function ValidateForm()
     {
-        var enabledObjects = $('[type="submit"]:enabled');
-        enabledObjects.prop( "disabled", true );
+        
         var result =true;
           
         clearControlErrors($("#TargteDepartmentId"));
@@ -914,10 +913,7 @@ label { font-size:1.1em; }
             }
         </text>
         }
-        if(result!=true)
-        {        
-        enabledObjects.prop( "disabled", false );
-        }
+        
         return result;
     }
     function ButtonPressed(name)
