@@ -948,6 +948,7 @@
     <Content Include="Views\StaffList\StaffTemporaryReleaseVacancyRequestList.cshtml" />
     <Content Include="Views\StaffList\StaffTemporaryReleaseVacancyRequest.cshtml" />
     <Content Include="Views\Home\BugReport.cshtml" />
+    <Content Include="Views\Home\BugReportEdit.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
