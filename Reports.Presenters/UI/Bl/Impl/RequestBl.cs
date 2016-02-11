@@ -13361,6 +13361,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.User = UserDao.Load(CurrentUser.Id);
             entity.UserRole = (int)CurrentUser.UserRole;
             BugReportDao.SaveAndFlush(entity);
+            try
+            {
+                SendEmail("administrator@ruscount.ru", "[Кадровый портал] Новое сообщение об ошибке", String.Format("<a href='https://ruscount.com:8002/Home/BugReportEdit/{0}'>{1}</a><br/>{2}",entity.Id,entity.Summary,entity.Description));
+            }
+            catch (Exception) { }
         }
         public BugReportEditModel GetBugEditModel(int id, string path)
         {
