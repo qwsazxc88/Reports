@@ -247,7 +247,7 @@
            return false;
         }
 
-        $.post('/UserRequest/SetUserINN', {personId:targetuser, inn:innvalue}, function(){UpdateInn(targetuser);} )
+        $.post('/UserRequest/SetUserINN', {personId:targetuser, inn:innvalue}, function(){UpdateInn(targetuser);} );
         $("#ChangeInnDialog").dialog("close");
 
     }
