@@ -547,14 +547,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.TargetDepartmentId = model.User.Dep7Id;
                     model.TargetDepartmentName = model.User.Dep7Name;
                     model.TargetPositionId = model.User.PositionId;
-                    model.TargetPositions = GetPositionsForDepartment(model.TargetDepartmentId);
-                    model.UserLinkId = userlinks.First().Id;
+                    //model.TargetPositions = GetPositionsForDepartment(model.TargetDepartmentId);
+                    //В случае если КП на изменение надбавок, нужно подгрузить текущий линк, в противном случае нельзя давать возможности выбрать ту же должность
                     model.UserLinks = GetPositionsForDepartment(model.TargetDepartmentId);
-                    if (!model.UserLinks.Any(x => x.Id == model.UserLinkId))
+                    model.TargetPositions = model.UserLinks;
+                    if (model.RequestType == 1)
                     {
-                        model.UserLinks.Add(new IdNameDto { Id = userlink.Id, Name = userlink.StaffEstablishedPost.Position.Name });
+                        model.UserLinkId = userlinks.First().Id;
+                        if (!model.UserLinks.Any(x => x.Id == model.UserLinkId))
+                        {
+                            model.UserLinks.Add(new IdNameDto { Id = userlink.Id, Name = userlink.StaffEstablishedPost.Position.Name });
+                        }
                     }
-                    GetMoneyForStaffEstablishedPostUserLinks(userlink, model);
+                    else if(model.UserLinks!=null && model.UserLinks.Any())
+                    {
+                        model.UserLinkId = model.UserLinks.First().Id;
+                    }
+                    if (model.UserLinkId > 0)
+                    {
+                        userlink = StaffEstablishedPostUserLinksDao.Load(model.UserLinkId);
+                        GetMoneyForStaffEstablishedPostUserLinks(userlink, model);
+                    }
                 }
                 model.Creator = new StandartUserDto();
                 model.Creator.Id = CurrentUser.Id;
