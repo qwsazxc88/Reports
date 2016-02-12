@@ -1,4 +1,4 @@
-﻿function trimSpacesLeft(str) {
+function trimSpacesLeft(str) {
     if (str == undefined) str = "";
     var ptrn = /\s*((\S+\s*)*)/;
     return str.replace(ptrn, "$1");
@@ -41,23 +41,23 @@ function escapeJson(value) {
     return escape(value); //value.replace('"','\x22');
 }
 function setActiveMenuItem(menuName) {
-    $(".on").each(function () {
-        jQuery(this).attr("class", "menuitem");
-    });
+//    $(".on").each(function () {
+//        jQuery(this).attr("class", "menuitem");
+//    });
     $("#" + menuName).attr("class", "on");
 }
 function setMainActiveMenuItem(menuName) {
 //    $(".mainOn").each(function () {
 //        $("#" + this).attr("class", "mainMenuItem");
-    //    });
-    clearMainActiveMenuItem();
+//    });
+//    clearMainActiveMenuItem();
     $("#" + menuName).attr("class", "mainOn");
 }
-function clearMainActiveMenuItem() {
+/*function clearMainActiveMenuItem() {
     $(".mainOn").each(function () {
         jQuery(this).attr("class", "mainMenuItem");
     });
-}
+}*/
 
 function ValidateFloat(control) {
     var hours = $(control).val();

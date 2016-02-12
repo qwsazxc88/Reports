@@ -1,0 +1,32 @@
+﻿@*@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@{
+	var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+} *@
+<div class="menuitem"><a href="#" onclick="$('#InstructionsDialog').dialog('open');">Инструкции</a></div>
+<div class="menuitem" id="StaffMovements">@Html.ActionLink("Реестр заявок на кадровые перемещения", "Index", "StaffMovements")</div>
+<div class="menuitem" id="StaffMovementsFacts">@Html.ActionLink("Реестр проведенных перемещений", "StaffMovementsFactList", "StaffMovements")</div>
+
+<div id="InstructionsDialog" style="display:none" title="Инструкции">
+<ul>
+<li><a href='@Url.Content("~/Templates/InstructionEmployee.docx")'>Инструкция для сотрудника</a></li>
+<li><a href='@Url.Content("~/Templates/InstructionManagerSource.docx")'>Инструкция для руководителя(отпускающего)</a></li>
+<li><a href='@Url.Content("~/Templates/InstructionManagerTarget.docx")'>Инструкция для руководителя(принимающего)</a></li>
+<li><a href='@Url.Content("~/Templates/InstructionChief.docx")'>Инструкция для вышестоящего руководителя(принимающего)</a></li>
+<li><a href='@Url.Content("~/Templates/InstructionPersonnelManagerBank.docx")'>Инструкция для кадровиков банка</a></li>
+</ul>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#InstructionsDialog").dialog(
+            { // initialize dialog box
+                autoOpen: false,
+                modal: true,
+
+                width: 600,
+                height: 350,
+
+            });
+    });
+</script>

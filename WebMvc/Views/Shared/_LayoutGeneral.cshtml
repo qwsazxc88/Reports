@@ -3,115 +3,116 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>@ViewBag.Title</title>
-    <link href="@Url.Content("~/Content/favicon.ico")" rel="shortcut icon" />	
-    <link href="@Url.Content("~/Content/themes/base/jquery-ui.css")" rel="stylesheet" type="text/css" />
-    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
-    @*<link href="@Url.Content("~/Content/MasterPage.css")" rel="stylesheet" type="text/css" />*@
-    <script src="@Url.Content("~/Scripts/jquery-1.4.4.min.js")" type="text/javascript"></script>
-    <script src="@Url.Content("~/Scripts/jquery-ui-1.8.9.custom.min.js")" type="text/javascript"></script>
-    <script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
-    <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
-    <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
-    <script src="@Url.Content("~/Scripts/jquery.global.js")" type="text/javascript"></script>
-    @Html.jQueryGlobalizationScript()
-    @Html.JQueryDatePickerGlobalizationScript(null,Url.Content("~/Scripts/"))
-    <script src="@Url.Content("~/Scripts/localization/messages_ru.js")" type="text/javascript"></script>
-    @*<script src="@Url.Content("~/Scripts/jquery-1.4.4.min.js")" type="text/javascript"></script>*@
-    <script src="@Url.Content("~/Scripts/jquery.upload-1.0.2.min.js")" type="text/javascript"></script>
-    <script src="@Url.Content("~/Scripts/json2.js")" type="text/javascript"></script>
-    <script src="@Url.Content("~/Scripts/jquery.bgiframe.js")" type="text/javascript"></script>
-    <script src="@Url.Content("~/Scripts/jquery.ui.datepicker-ru.js")" type="text/javascript"></script>
-@*    <script src="@Url.Content("~/Scripts/jquery-ui.min.js")" type="text/javascript"></script>
-    <script src="@Url.Content("~/Scripts/jquery-ui-1.8.9.custom.min.js")" type="text/javascript"></script>*@
-    <script src="@Url.Content("~/Scripts/common.js")" type="text/javascript"></script>
-    <script src="@Url.Content("~/Scripts/DepartmentTree.js")" type="text/javascript"></script>
-     <link href="@Url.Content("~/Content/fileuploader.css")" rel="stylesheet" type="text/css" />
-    <script src="@Url.Content("~/Scripts/fileuploader.js")" type="text/javascript"></script>
-    @*<script src="@Url.Content("~/Scripts/jstree.js")" type="text/javascript"></script>*@
-    @*<script type="text/javascript" src="http://cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min.js"></script>*@
+	<title>@ViewBag.Title</title>
+	<link href="@Url.Content("~/Content/favicon.ico")" rel="shortcut icon" />	
+	<link href="@Url.Content("~/Content/themes/base/jquery-ui.css")" rel="stylesheet" type="text/css" />
+	<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+	@*<link href="@Url.Content("~/Content/MasterPage.css")" rel="stylesheet" type="text/css" />*@
+	<script src="@Url.Content("~/Scripts/jquery-1.4.4.min.js")" type="text/javascript"></script>
+	<script src="@Url.Content("~/Scripts/jquery-ui-1.8.9.custom.min.js")" type="text/javascript"></script>
+	<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+	<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+	<script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+	<script src="@Url.Content("~/Scripts/jquery.global.js")" type="text/javascript"></script>
+	@Html.jQueryGlobalizationScript()
+	@Html.JQueryDatePickerGlobalizationScript(null,Url.Content("~/Scripts/"))
+	<script src="@Url.Content("~/Scripts/localization/messages_ru.js")" type="text/javascript"></script>
+	@*<script src="@Url.Content("~/Scripts/jquery-1.4.4.min.js")" type="text/javascript"></script>*@
+	<script src="@Url.Content("~/Scripts/jquery.upload-1.0.2.min.js")" type="text/javascript"></script>
+	<script src="@Url.Content("~/Scripts/json2.js")" type="text/javascript"></script>
+	<script src="@Url.Content("~/Scripts/jquery.bgiframe.js")" type="text/javascript"></script>
+	<script src="@Url.Content("~/Scripts/jquery.ui.datepicker-ru.js")" type="text/javascript"></script>
+	@*    <script src="@Url.Content("~/Scripts/jquery-ui.min.js")" type="text/javascript"></script>
+	<script src="@Url.Content("~/Scripts/jquery-ui-1.8.9.custom.min.js")" type="text/javascript"></script>*@
+	<script src="@Url.Content("~/Scripts/common.js")" type="text/javascript"></script>
+	<script src="@Url.Content("~/Scripts/DepartmentTree.js")" type="text/javascript"></script>
+	<link href="@Url.Content("~/Content/fileuploader.css")" rel="stylesheet" type="text/css" />
+	<script src="@Url.Content("~/Scripts/fileuploader.js")" type="text/javascript"></script>
+	@*<script src="@Url.Content("~/Scripts/jstree.js")" type="text/javascript"></script>*@
+	@*<script type="text/javascript" src="http://cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min.js"></script>*@
 </head>
 <script type="text/javascript">
-//    $.ajaxSetup({
-//        global: true,
-//        error: function (jqXHR, textStatus, errorThrown) {
-//            var error = "";
-//            if (textStatus != null) {
-//                error += textStatus;
-//            }
-//            if (errorThrown != null) {
-//                error += errorThrown;
-//            }
-//            alert("Ошибка при асинхронном запросе:" + error);
-//        }
-//    });
+	//    $.ajaxSetup({
+	//        global: true,
+	//        error: function (jqXHR, textStatus, errorThrown) {
+	//            var error = "";
+	//            if (textStatus != null) {
+	//                error += textStatus;
+	//            }
+	//            if (errorThrown != null) {
+	//                error += errorThrown;
+	//            }
+	//            alert("Ошибка при асинхронном запросе:" + error);
+	//        }
+	//    });
 </script>
 
 <body>
-<div class="header" width=100%><img style="width: 250px; height: 50px;" alt="" src="@Url.Content("~/Content/logo.gif")"/></div>
-    <div class="page">
+	<div class="header" width=100%><img style="width: 250px; height: 50px;" alt="" src="@Url.Content("~/Content/logo.gif")"/></div>
+		<div class="page">
+		<div id="header">
+			<div id="logindisplay">
+				@Html.Partial("_LogOnPartial")
+			</div>
+		</div>
+		@*        <div id="main">*@
+			<table style="width:100%">
+				<tr>
+					<td style="vertical-align:top">
+						@*				@if (Request.IsAuthenticated){*@
 
-        <div id="header">
-@*            <div id="title">
-                <h1>My MVC Application</h1>
-            </div>*@
-
-            <div id="logindisplay">
-                @Html.Partial("_LogOnPartial")
-            </div>
-        </div>
-@*        <div id="main">*@
-            <table style="width:100%">
-                <tr>
-                    <td style="vertical-align:top">
-					
-					@*@Html.Partial("_MenuGeneral")*@
-										
-					
-					
-@{ 
-    var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
-	switch (controllerName) 
-	{
-	case "Appointment": @Html.Partial("_MenuPartialAppointment");
-	break;
-	case "Deduction": @Html.Partial("_MenuPartialDeduction");
-	break;
-	case "Employment": @Html.Partial("_MenuPartialEmployment");
-	break;
-	case "GPD": @Html.Partial("_MenuPartialGPD");
-	break;
-	case "Graphics": @Html.Partial("_MenuPartialGraphics");
-	break;
-	case "Help": @Html.Partial("_MenuPartialHelp");
-	break;
-	case "Info": @Html.Partial("_MenuPartialInfo");
-	break;
-	case "MissionOrder": @Html.Partial("_MenuPartialMissionOrder");
-	break;
-	case "StaffList": @Html.Partial("_MenuPartialStaffList");
-	break;
-	case "StaffMovements": @Html.Partial("_MenuPartialStaffMovements");
-	break;
-	case "Surcharge": @Html.Partial("_MenuPartialMissionOrder");
-	//TODO move Surcharge to MissionOrder
-	break;
-	case "SurchargeNote": @Html.Partial("_MenuPartialSurchargeNote");
-	break;
-	//_LayoutModern
-	};
-}
-                            @*Html.Partial("_MenuPartialTemplate")*@
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding-top:10px;vertical-align:top">
-                        @RenderBody()
-                    </td>
-                </tr>
-               
-            </table>    
-@*        </div>*@
-    </div>
+						<input type="hidden" id="ActiveMenuItem" name="ActiveMenuItem" value="" />
+						<div class="menu-wrap">
+							<div class="menu">
+								@Html.Partial("_MenuGeneral")
+							</div>
+							<div class="podmenu">
+								@{ 
+									var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+									switch (controllerName) 
+									{
+										case "Appointment": @Html.Partial("_SubMenuAppointment");
+										break;
+										case "Deduction": @Html.Partial("_SubMenuDeduction");
+										break;
+										case "Employment": @Html.Partial("_SubMenuEmployment");
+										break;
+										case "GPD": @Html.Partial("_SubMenuGPD");
+										break;
+										case "Graphics": @Html.Partial("_SubMenuGraphics");
+										break;
+										case "Help": @Html.Partial("_SubMenuHelp");
+										break;
+										@* Где испльзуется? *@
+										case "Info": @Html.Partial("_SubMenuInfo");
+										break;
+										case "MissionOrder": @Html.Partial("_SubMenuMissionOrder");
+										break;
+										case "StaffList": @Html.Partial("_SubMenuStaffList");
+										break;
+										case "StaffMovements": @Html.Partial("_SubMenuStaffMovements");
+										break;
+										case "Surcharge": @Html.Partial("_SubMenuMissionOrder");
+										//TODO move Surcharge to MissionOrder
+										break;
+										case "SurchargeNote": @Html.Partial("_SubMenuSurchargeNote");
+										break;
+										//_LayoutModern
+									};
+								}
+								@*Html.Partial("_MenuPartialTemplate")*@
+								<div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="padding-top:10px;vertical-align:top">
+						@RenderBody()
+					</td>
+				</tr>
+			</table>    
+		@*        </div>*@
+	</div>
 </body>
 </html>

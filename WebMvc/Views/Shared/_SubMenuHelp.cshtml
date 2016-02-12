@@ -1,0 +1,28 @@
+﻿@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@{
+	var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+}
+<div class="menuitem" id="helpVersion">@Html.ActionLink("Инструкция", "Version", "Help")</div>
+@if (UserDto.IsHelpServiceAvailable(dto))
+{
+	<div class="menuitem" id="helpAllRequests">@Html.ActionLink("Заказать услугу", "Index", "Help")</div>
+	<div class="menuitem" id="helpFaq">@Html.ActionLink("Типовые вопросы", "Faq", "Help")</div>
+	<div class="menuitem" id="helpQuestionsRequests">@Html.ActionLink("Задать вопрос", "ServiceQuestionsList", "Help")</div>
+	<div class="menuitem" id="helpTemplate">@Html.ActionLink("Образцы документов", "Template", "Help")</div>
+}
+else if (UserDto.IsHelpQuestionAvailable(dto))
+{
+	<div class="menuitem" id="helpQuestionsRequests">@Html.ActionLink("Реестр вопросов", "ServiceQuestionsList", "Help")</div>
+	<div class="menuitem" id="helpTemplate">@Html.ActionLink("Образцы документов", "Template", "Help")</div>
+}
+else if (UserDto.IsHelpTemplateAvailable(dto))
+{
+	<div class="menuitem" id="helpTemplate">@Html.ActionLink("Образцы документов", "Template", "Help")</div>
+}
+
+@if (UserDto.IsHelpPersonnelBillingAvailable(dto))
+{
+	<div class="menuitem" id="helpPersonnelBilling">@Html.ActionLink("Биллинг", "PersonnelBillingList", "Help")</div>
+}
+<div class="menuitem" id="helpInfo">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")</div>

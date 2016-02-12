@@ -1,0 +1,11 @@
+﻿@*@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@{
+	var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+}
+ @if ((dto.UserRole & UserRole.Employee) > 0
+                     || (dto.UserRole & UserRole.Manager) > 0
+                     || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                    {
+                        <div class="on" id="graphicsAll" >@Html.ActionLink("Все заявки", "Index", "Graphics")</div>
+                    }*@

@@ -1,0 +1,23 @@
+﻿@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@{
+	var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+}
+
+@if ((dto.UserRole & UserRole.PersonnelManager) > 0)
+{
+	<div class="menuitem" id="moStaffArrangement">@Html.ActionLink("Штатная расстановка", "StaffListArrangement", "StaffList")</div>
+	<div class="menuitem" id="moSEPRequest">@Html.ActionLink("Заявки для штатных единиц", "StaffEstablishedPostRequestList", "StaffList")</div>
+	<div class="menuitem" id="moTempVacancy">@Html.ActionLink("Длительные отсутствия", "StaffTemporaryReleaseVacancyRequestList", "StaffList")</div>
+}
+else
+{
+	<div class="menuitem" id="moStaffPost">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
+	<div class="menuitem" id="moStaffArrangement">@Html.ActionLink("Штатная расстановка", "StaffListArrangement", "StaffList")</div>
+	<div class="menuitem" id="moDepRequest">@Html.ActionLink("Заявки для подразделений", "StaffDepartmentRequestList", "StaffList")</div>
+	<div class="menuitem" id="moSEPRequest">@Html.ActionLink("Заявки для штатных единиц", "StaffEstablishedPostRequestList", "StaffList")</div>
+	<div class="menuitem" id="moSoftReference">@Html.ActionLink("Справочник ПО", "StaffDepartmentSoftReference", "StaffList")</div>
+	<div class="menuitem" id="moDepEncoding">@Html.ActionLink("Справочник кодировок", "StaffDepartmentEncoding", "StaffList")</div>
+	<div class="menuitem" id="moDepOperRef">@Html.ActionLink("Справочник операций", "StaffDepartmentOperationReference", "StaffList")</div>
+	<div class="menuitem" id="moTempVacancy">@Html.ActionLink("Длительные отсутствия", "StaffTemporaryReleaseVacancyRequestList", "StaffList")</div>
+}

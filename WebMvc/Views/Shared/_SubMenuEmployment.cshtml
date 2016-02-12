@@ -1,0 +1,70 @@
+﻿@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@{
+	var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+}
+<div class="menuitem" id="empInstruction">@Html.ActionLink("Инструкция", "Instruction", "Employment")</div>
+@if ((dto.UserRole & UserRole.Candidate) == UserRole.Candidate)
+{
+	<div class="menuitem" id="empScanOriginalDocuments">@Html.ActionLink("Сканы оригиналов документов", "ScanOriginalDocuments", "Employment")</div>
+	<div class="menuitem" id="empGeneralInfo">@Html.ActionLink("Общая информация", "GeneralInfo", "Employment")</div>
+	<div class="menuitem" id="empPassport">@Html.ActionLink("Паспортные данные", "Passport", "Employment")</div>
+	<div class="menuitem" id="empEducation">@Html.ActionLink("Образование", "Education", "Employment")</div>
+	<div class="menuitem" id="empFamily">@Html.ActionLink("Состав семьи", "Family", "Employment")</div>
+	<div class="menuitem" id="empMilitaryService">@Html.ActionLink("Воинский учет", "MilitaryService", "Employment")</div>
+	<div class="menuitem" id="empExperience">@Html.ActionLink("Трудовая деятельность", "Experience", "Employment")</div>
+	<div class="menuitem" id="empContacts">@Html.ActionLink("Контактные данные", "Contacts", "Employment")</div>
+	<div class="menuitem" id="empBackgroundCheck">@Html.ActionLink("Департамент безопасности", "BackgroundCheck", "Employment")</div>
+}
+
+@*
+	@if ((dto.UserRole & UserRole.Security) == UserRole.Security)
+	{
+	<div class="menuitem" id="empBackgroundCheck">@Html.ActionLink("Служба безопасности", "BackgroundCheck", "Employment")</div>
+	}
+
+	@if ((dto.UserRole & UserRole.Trainer) == UserRole.Trainer)
+	{
+	<div class="menuitem" id="empOnsiteTraining">@Html.ActionLink("Обучение", "OnsiteTraining", "Employment")</div>
+	}
+*@
+
+@if ((dto.UserRole & UserRole.Candidate) == UserRole.Candidate)
+{
+	@*<div class="menuitem" id="empApplicationLetter">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", "Employment")</div>*@
+	<div class="menuitem" id="empCandidateDocuments">@Html.ActionLink("Документы", "CandidateDocuments", "Employment")</div>
+}
+
+@*
+	<div class="menuitem" id="empManagers">@Html.ActionLink("Руководители", "Managers", "Employment")</div>
+	<div class="menuitem" id="empPersonnelManagers">@Html.ActionLink("Кадры", "PersonnelManagers", "Employment")</div>
+*@
+
+@if ((dto.UserRole & (UserRole.Security
+| UserRole.Trainer
+| UserRole.StaffManager
+| UserRole.ConsultantPersonnel
+| UserRole.PersonnelManager
+| UserRole.Chief
+| UserRole.Director
+| UserRole.Manager
+| UserRole.Estimator
+| UserRole.OutsourcingManager
+| UserRole.ConsultantOutsourcing)) > 0)
+{
+	<div class="menuitem" id="empRoster">@Html.ActionLink("Реестр по приему", "Roster", "Employment")</div>
+}
+
+@if ((dto.UserRole & (UserRole.PersonnelManager
+| UserRole.Chief
+| UserRole.Director
+| UserRole.Manager
+| UserRole.Estimator
+| UserRole.OutsourcingManager)) > 0)
+{
+	<div class="menuitem" id="empSigners">@Html.ActionLink("Справочник подписантов", "Signers", "Employment")</div>
+}
+
+@*
+	<div class="menuitem" id="empSigners">@Html.ActionLink("Справочник подписантов", "Signers", "Employment")</div>
+*@
