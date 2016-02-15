@@ -13407,6 +13407,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.User = UserDao.Load(CurrentUser.Id);
             entity.UserRole = (int)CurrentUser.UserRole;
             BugReportDao.SaveAndFlush(entity);
+            try
+            {
+                SendEmail("administrator@ruscount.ru", "[Кадровый портал] Новое сообщение об ошибке", String.Format("<a href='https://ruscount.com:8002/Home/BugReportEdit/{0}'>{1}</a><br/>{2}",entity.Id,entity.Summary,entity.Description));
+            }
+            catch (Exception) { }
         }
         public BugReportEditModel GetBugEditModel(int id, string path)
         {
@@ -13424,13 +13429,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             catch (Exception) { }
             model.Files = new List<string>();
-            path = Path.Combine(path, "\\Content\\BugReport", entity.Guid);
+            path = path+ "\\Content\\BugReport\\"+ entity.Guid;
             DirectoryInfo dir = new DirectoryInfo(path);
             var files = dir.GetFiles();
             foreach (var file in files)
             {
                 model.Files.Add(Path.Combine("\\Content\\BugReport", entity.Guid, Path.GetFileName(file.FullName)));
             }
+            return model;
+        }
+        public BugReportListModel GetBugListModel()
+        {
+            BugReportListModel model = new BugReportListModel();
+            model.Documents = BugReportDao.GetDocuments();
             return model;
         }
         public MissionUserDeptsListModel GetMissionUserDeptsListModel()

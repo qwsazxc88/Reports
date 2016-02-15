@@ -22,7 +22,7 @@
     @Html.JQueryDatePickerGlobalizationScript(null,Url.Content("~/Scripts/"))
 </head>
 <body>
-<div class="header" width='100%'><img style="width: 250px; height: 50px;" alt="" src="@Url.Content("~/Content/logo.gif")"/></div>
+<div class="header" width='100%'><img style="width: 250px; height: 50px;" alt="" src="@(Request.Url.Port == 8002 ? Url.Content("~/Content/logo.gif") : Url.Content("~/Content/testlogo.png"))"/></div>
 <div id="header">
             <div id="logindisplay">
                 @Html.Partial("_LogOnPartial")

@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "BugReport";
 }
+<h2 style="color:Green">@ViewBag.Message</h2>
 @using (Html.BeginForm("BugReport", "Home", FormMethod.Post, new { enctype="multipart/form-data" }))
 {
     using (Html.BeginBlock("filter-wrap"))
