@@ -355,7 +355,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else if ((CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
             {
-                var users = UserDao.GetUsersForPersonnel(CurrentUser.Id).Where(x => x.Name.ToLower().StartsWith(Name.ToLower())).Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+                var users = UserDao.GetEmployeesForCreateHelpServiceRequestOK(Name, AuthenticationService.CurrentUser.Id);//UserDao.GetUsersForPersonnel(CurrentUser.Id).Where(x => x.Name.ToLower().StartsWith(Name.ToLower())).Select(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
                 return users;
             }
             else
