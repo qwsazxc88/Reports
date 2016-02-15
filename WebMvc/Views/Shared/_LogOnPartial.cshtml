@@ -1,7 +1,7 @@
 ﻿@using Reports.Presenters.Services.Impl
 <div style="position:fixed; bottom:0px;left:5px;font-size:8px;"><noscript><p>JavaScript отключен.</p></noscript></div>
 <div style="position:fixed; top:0px;left:5px;font-size:8px;"><noscript><p>JavaScript отключен.</p></noscript></div>
-<div style="position:absolute; font-size:small;"><text>v.</text>@WebMvc.MvcApplication.Version</div>
+<div style="position:absolute; font-size:small;"><text>v.</text>@WebMvc.MvcApplication.Version <span style="font-size:70%">[ @Html.ActionLink("Сообщить об ошибке","BugReport","Home") ]</span></div>
 @if(Request.IsAuthenticated) 
 {
     <text><b>@Context.User.Identity.Name</b>
@@ -26,3 +26,44 @@ else
 {
     @:[ @Html.ActionLink("Вход", "LogOn", "Account") ]
 }
+<script>
+var getElementsByClass= function(classList, node){};
+    if (document.getElementsByClassName) {
+
+        getElementsByClass = function (classList, node) {
+            return (node || document).getElementsByClassName(classList)
+        }
+
+    } else {
+
+        getElementsByClass = function (classList, node) {
+            var node = node || document,
+		list = node.getElementsByTagName('*'),
+		length = list.length,
+		classArray = classList.split(/\s+/),
+		classes = classArray.length,
+		result = [], i, j
+            for (i = 0; i < length; i++) {
+                for (j = 0; j < classes; j++) {
+                    if (list[i].className.search('\\b' + classArray[j] + '\\b') != -1) {
+                        result.push(list[i])
+                        break
+                    }
+                }
+            }
+
+            return result
+        }
+    }
+
+    if (window.location.port != "8002") {
+        var elements = getElementsByClass("header", document);
+        console.log(elements);
+        for (var i = 0; i < elements.length; i++) {
+            var newnode = document.createElement("span");
+            newnode.innerHTML = "<img src='/Content/test.png' style='height:50px;' />";
+            elements[i].appendChild(newnode);
+            console.log(elements[i]);
+        }
+    }
+</script>
