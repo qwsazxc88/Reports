@@ -359,7 +359,13 @@ namespace Reports.Core.Dao.Impl
                             .SetProjection(Projections.RowCount())
                             .UniqueResult();
         }
-
+        public IList<IdNameDto> GetUsersByTerm(string term)
+        {
+            string sql = String.Format("SELECT u.Id,u.Name+' ('+p.Name+') '+d.Name  as Name FROM USers u inner join Department d ON U.departmentid=d.id inner join position p on u.positionid=p.id where u.IsActive=1 and u.RoleId&2>0 and u.Name like '{0}%'",term);
+            var query= Session.CreateSQLQuery(sql).AddScalar("Id",NHibernateUtil.Int32).AddScalar("Name",NHibernateUtil.String);
+            var res = query.SetResultTransformer(Transformers.AliasToBean<IdNameDto>()).List<IdNameDto>();
+            return res;
+        }
         public IList<IdNameDtoWithDates> GetUsersForManagerWithDatePaged(int managerId, UserRole managerRole,
             DateTime beginDate,DateTime endDate,int departmentId, string userName)
         {
