@@ -208,7 +208,7 @@
             </div>
              
              <div style="text-align:center;font-size:larger;"> 
-                <img style="width: 181px; height: 49px;" src="@Url.Content("~/Content/logo-skb.jpg")"/>
+                <img @if(Request.Url.Port==8002){<text> style="width: 181px; height: 49px;"</text>} src="@(Request.Url.Port == 8002 ? Url.Content("~/Content/logo-skb.jpg") : Url.Content("~/Content/test2.png"))"/>
                 <div class="portala-name">Кадровый портал</div>
                 <div class="portala-support">
                    Техническая поддержка: info@ruscount.ru<br>

@@ -156,6 +156,8 @@
     <Content Include="Content\select.min.css" />
     <Content Include="Content\SKB_logo.png" />
     <Content Include="Content\test.png" />
+    <Content Include="Content\test2.png" />
+    <Content Include="Content\testlogo.png" />
     <Content Include="Content\textAngular.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
