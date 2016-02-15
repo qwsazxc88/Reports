@@ -7,7 +7,8 @@
     @using (Html.BeginBlock("filter-wrap"))
     {
         @Html.ActionLink("Вернуться на главную", "Index", "Home")
-        @Html.CreateHeader("Сообщить об ошибке");
+        @Html.CreateHeader("Сообщение об ошибке");
+        @Model.UserName @Model.UserRole @Model.UserEmail   <br />                                     
         @Html.CreateField(x => x.Browser)<br />
         @Html.CreateField(x => x.BrowserVersion)<br />
         @Html.CreateField(x => x.Summary)<br />

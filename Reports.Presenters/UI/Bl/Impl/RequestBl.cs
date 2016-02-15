@@ -13377,6 +13377,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Summary = entity.Summary;
             model.UserName = entity.User.Name;
             model.UserId = entity.User.Id;
+            model.UserEmail = entity.User.Email;
             try
             {
                 model.UserRole = ReportRoleConstants.Mapper[(UserRole)entity.UserRole];
