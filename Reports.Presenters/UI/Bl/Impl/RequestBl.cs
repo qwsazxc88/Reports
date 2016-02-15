@@ -8176,7 +8176,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             user.AcceptRequests.Add(entity);
                             UserDao.Save(user);
                             //EmailDto emailDto = new EmailDto();
-                            EmailDto emailDto = SendEmailForManagerAcceptRequests(user, acceptDate);
+                            //EmailDto emailDto = SendEmailForManagerAcceptRequests(user, acceptDate);
                         }
                         else
                             Log.WarnFormat("Request already accepted for user {0} date {1} at {2}",
