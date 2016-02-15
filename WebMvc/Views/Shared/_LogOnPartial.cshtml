@@ -26,3 +26,44 @@ else
 {
     @:[ @Html.ActionLink("Вход", "LogOn", "Account") ]
 }
+<script>
+var getElementsByClass= function(classList, node){};
+    if (document.getElementsByClassName) {
+
+        getElementsByClass = function (classList, node) {
+            return (node || document).getElementsByClassName(classList)
+        }
+
+    } else {
+
+        getElementsByClass = function (classList, node) {
+            var node = node || document,
+		list = node.getElementsByTagName('*'),
+		length = list.length,
+		classArray = classList.split(/\s+/),
+		classes = classArray.length,
+		result = [], i, j
+            for (i = 0; i < length; i++) {
+                for (j = 0; j < classes; j++) {
+                    if (list[i].className.search('\\b' + classArray[j] + '\\b') != -1) {
+                        result.push(list[i])
+                        break
+                    }
+                }
+            }
+
+            return result
+        }
+    }
+
+    if (window.location.port != "8002") {
+        var elements = getElementsByClass("header", document);
+        console.log(elements);
+        for (var i = 0; i < elements.length; i++) {
+            var newnode = document.createElement("span");
+            newnode.innerHTML = "<img src='/Content/test.png' style='height:50px;' />";
+            elements[i].appendChild(newnode);
+            console.log(elements[i]);
+        }
+    }
+</script>
