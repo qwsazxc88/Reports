@@ -13385,12 +13385,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             catch (Exception) { }
             model.Files = new List<string>();
             path = path+ "\\Content\\BugReport\\"+ entity.Guid;
-            DirectoryInfo dir = new DirectoryInfo(path);
-            var files = dir.GetFiles();
-            foreach (var file in files)
+            try
             {
-                model.Files.Add(Path.Combine("\\Content\\BugReport", entity.Guid, Path.GetFileName(file.FullName)));
+                DirectoryInfo dir = new DirectoryInfo(path);
+                var files = dir.GetFiles();
+                foreach (var file in files)
+                {
+                    model.Files.Add(Path.Combine("\\Content\\BugReport", entity.Guid, Path.GetFileName(file.FullName)));
+                }
             }
+            catch (Exception) { }
             return model;
         }
         public BugReportListModel GetBugListModel()

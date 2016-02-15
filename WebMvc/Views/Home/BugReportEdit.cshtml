@@ -8,7 +8,7 @@
     {
         @Html.ActionLink("Вернуться на главную", "Index", "Home")
         @Html.CreateHeader("Сообщение об ошибке");
-        @Model.UserName @Model.UserRole @Model.UserEmail   <br />                                     
+        @Model.UserName <br /> @Model.UserRole <br /> @Model.UserEmail   <br />                                     
         @Html.CreateField(x => x.Browser)<br />
         @Html.CreateField(x => x.BrowserVersion)<br />
         @Html.CreateField(x => x.Summary)<br />
