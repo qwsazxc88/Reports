@@ -622,7 +622,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             var positions = StaffEstablishedPostDao.GetStaffEstablishedArrangements(id);
             if (positions != null && positions.Any())
             {
-                return positions.Where(x => x.IsVacation).Select(x => new IdNameDto { Id = x.Id, Name = x.PositionName + " " + (x.IsSTD ? "- СТД " : " ") + (String.IsNullOrEmpty(x.ReplacedName)?"":"- ") + x.ReplacedName }).ToList();
+                return positions.Where(x => x.IsVacation).Select(x => new IdNameDto { Id = x.Id, Name = x.PositionName +" "+String.Format("(Уровень:{0} Ранг:{1})",x.PositionLevel,x.PositionRank)
+                    + " " + (x.IsSTD ? "- СТД " : " ") + (String.IsNullOrEmpty(x.ReplacedName)?"":"- ") + x.ReplacedName }).ToList();
             }
             else return new List<IdNameDto>();
             #region depricated
