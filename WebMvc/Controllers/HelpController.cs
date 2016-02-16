@@ -127,8 +127,17 @@ namespace WebMvc.Controllers
         /// <param name="term"></param>
         /// <returns></returns>
         public ActionResult AutocompletePersonSearch(string term)
-        {
-            IList<IdNameDto> Persons = HelpBl.GetPersonAutocomplete(term);
+        {       
+            List<int> roleIds=null;
+            try
+            {
+                if (Request.UrlReferrer.AbsolutePath.ToLower().Contains("staffmovements"))
+                {
+                    roleIds = new List<int>() { 4 };
+                }
+            }
+            catch (Exception e) { Log.Error("Произошла ошибка в контроллере HELP AutocompletePersonSearch ", e); }
+            IList<IdNameDto> Persons = HelpBl.GetPersonAutocomplete(term,roleIds);
 
             var PersonList = Persons.Select(a => new { label = a.Name, Id = a.Id }).Distinct();
 

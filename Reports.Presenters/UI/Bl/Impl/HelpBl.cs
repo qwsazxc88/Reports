@@ -340,7 +340,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="Name">ФИО физического лица</param>
         /// <param name="PersonID">ID физического лица</param>
         /// <returns></returns>
-        public IList<IdNameDto> GetPersonAutocomplete(string Name)
+        public IList<IdNameDto> GetPersonAutocomplete(string Name, List<int> roleIds=null)
         {
             User currentUser = UserDao.Load(CurrentUser.Id);
             
@@ -363,18 +363,25 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     case 2:
                     case 3:
-                        IList<Department> depList = ManualRoleRecordDao.LoadDepartmentsForUserId(currentUser.Id);
-                        if (depList == null || depList.Count() == 0)
-                            throw new ArgumentException(string.Format(StrNoManagerDepartments, currentUser.Id));
-                        list = UserDao.GetEmployeesForCreateHelpServiceRequest(depList.Select(x => x.Id).Distinct().ToList(), Name);
-                        //model.Users = list;
+                        {
+                            IList<Department> depList = ManualRoleRecordDao.LoadDepartmentsForUserId(currentUser.Id, roleIds);
+                            if (depList == null || depList.Count() == 0)
+                                throw new ArgumentException(string.Format(StrNoManagerDepartments, currentUser.Id));
+                            list = UserDao.GetEmployeesForCreateHelpServiceRequest(depList.Select(x => x.Id).Distinct().ToList(), Name);                            
+                        }
                         break;
                     case 4:
                     case 5:
                     case 6:
-                        if (currentUser.Department == null)
-                            throw new ValidationException(string.Format(StrNoDepartmentForUser, currentUser.Id));
-                        list = UserDao.GetEmployeesForCreateHelpServiceRequest(new List<int> { currentUser.Department.Id }, Name);
+                        {//С некоторых пор ручные привязки могут быть даже у дворника
+                            IList<Department> depList = ManualRoleRecordDao.LoadDepartmentsForUserId(currentUser.Id, roleIds);
+                            if ((depList == null || depList.Count() == 0) && currentUser.Department == null)
+                                throw new ArgumentException(string.Format(StrNoManagerDepartments, currentUser.Id));
+                            if ((depList == null)) depList = new List<Department>();
+                            if(currentUser.Department!=null) depList.Add(currentUser.Department);
+                            list = UserDao.GetEmployeesForCreateHelpServiceRequest(depList.Select(x => x.Id).Distinct().ToList(), Name);
+                        }
+                        //list = UserDao.GetEmployeesForCreateHelpServiceRequest(new List<int> { currentUser.Department.Id }, Name);
                         //model.Users = list;
                         break;
                     default:
