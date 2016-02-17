@@ -180,7 +180,9 @@ namespace Reports.Core.Dao.Impl
                   .List<User>().ToList();//—начала получаем пользователей с таким логином
             IList<User> users;
             if (tmp != null && tmp.Any())//≈сли нашли - получаем все учЄтки дл€ его почты
-                users = Session.CreateCriteria<User>().Add(Restrictions.Eq("Email", tmp.First().Email)).List<User>().ToList();
+                //–аньше находили по почте, но в силу дибильной раздачи своей почты сотрудникам теперь будем искать по физлицу, надо проверить что всЄ норм
+                //users = Session.CreateCriteria<User>().Add(Restrictions.Eq("Email", tmp.First().Email)).List<User>().ToList();
+                users = Session.CreateCriteria<User>().Add(Restrictions.Eq("CodePeople",tmp.First().CodePeople)).List<User>().ToList();
             else return null;
             var managers= users.Where(x => (x.UserRole & UserRole.Manager) > 0 && x.IsActive==true);//»щем активную учЄтку руководител€
             if (managers != null && managers.Any())

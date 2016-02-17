@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
@@ -123,6 +124,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DateRelease = user.DateRelease;
             model.FullName = user.FullName;
             return user;
+        }
+        public DepartmentTreeDto GetDepartmentTree()
+        {
+
+            DepartmentTreeDto result = DepartmentDao.GetDepartmentTreeDto();
+            /*var childs = DepartmentDao.SearchByParentId(department.Id);
+            if (childs != null && childs.Any())
+            {
+                result.children = new List<DepartmentTreeDto>();
+                foreach (var child in childs)
+                {
+                    result.children.Add(GetDepartmentTree(child.Id));
+                }
+            }*/
+            return result;
         }
         public Result ConfirmMail(Guid key)
         {

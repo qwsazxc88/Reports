@@ -35,7 +35,14 @@ namespace WebMvc.Controllers
             basebl.AddComment(message);
             return Json("ok");
         }
-        
+        public ContentResult GetAllDepartmentsTree()
+        {
+            
+            var basebl = Ioc.Resolve<Reports.Presenters.UI.Bl.IBaseBl>();
+            var tree = basebl.GetDepartmentTree();
+            var result = Newtonsoft.Json.JsonConvert.SerializeObject(tree);
+            return Content('['+result+']');
+        }
         public IAuthenticationService AuthenticationService
         {
             get

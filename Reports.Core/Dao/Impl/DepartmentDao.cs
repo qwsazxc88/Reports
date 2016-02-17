@@ -95,6 +95,31 @@ namespace Reports.Core.Dao.Impl
                 SetResultTransformer(Transformers.AliasToBean(typeof(Department))).
                 List<Department>();
         }
+        public DepartmentTreeDto GetDepartmentTreeDto()
+        {
+            System.Collections.Hashtable table = new System.Collections.Hashtable();
+            string sql = @"SELECT id,ParentId,Name as text FROM Department
+                            order by ItemLevel,Id";
+            var result = Session.CreateSQLQuery(sql)
+                .AddScalar("id", NHibernateUtil.Int32)
+                .AddScalar("ParentId", NHibernateUtil.Int32)
+                .AddScalar("text", NHibernateUtil.String)
+                .SetResultTransformer(Transformers.AliasToBean<DepartmentTreeDto>()).List<DepartmentTreeDto>();
+            var first = result.First();
+            foreach(var el in result)
+            {
+                table.Add(el.id, el);
+            }
+            foreach (var el in result)
+            {
+                if (el.ParentId > 0)
+                {
+                    ((DepartmentTreeDto)table[el.ParentId]).children.Add(el);
+                }
+            }
+            return first;
+
+        }
         public IList<Reports.Core.Dto.Terrapoint_DepartmentDto> GetTP_D_list()
         {
             var querystr = "SELECT * FROM vwTerrapoint_Department";
