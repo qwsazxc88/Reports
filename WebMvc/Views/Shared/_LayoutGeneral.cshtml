@@ -22,6 +22,7 @@
 		<script src="@Url.Content("~/Scripts/json2.js")" type="text/javascript"></script>
 		<script src="@Url.Content("~/Scripts/jquery.bgiframe.js")" type="text/javascript"></script>
 		<script src="@Url.Content("~/Scripts/jquery.ui.datepicker-ru.js")" type="text/javascript"></script>
+		<script src="@Url.Content("~/Scripts/jquery.maskedinput-1.2.2.js")" type="text/javascript"></script>
 		@*    <script src="@Url.Content("~/Scripts/jquery-ui.min.js")" type="text/javascript"></script>
 		<script src="@Url.Content("~/Scripts/jquery-ui-1.8.9.custom.min.js")" type="text/javascript"></script>*@
 		<script src="@Url.Content("~/Scripts/common.js")" type="text/javascript"></script>
@@ -66,10 +67,9 @@
 									@Html.Partial("_MenuGeneral")
 								</div>
 								<div class="podmenu">
-									@{ 
+								@{
 									var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
-									switch (controllerName) 
-									{
+									switch (controllerName) {
 									case "Appointment": @Html.Partial("_SubMenuAppointment");
 									break;
 									case "Deduction": @Html.Partial("_SubMenuDeduction");
@@ -92,14 +92,26 @@
 									case "StaffMovements": @Html.Partial("_SubMenuStaffMovements");
 									break;
 									case "Surcharge": @Html.Partial("_SubMenuMissionOrder");
-									//TODO move Surcharge to MissionOrder
 									break;
 									case "SurchargeNote": @Html.Partial("_SubMenuSurchargeNote");
 									break;
-									//_LayoutModern
+									case "Account": @Html.Partial("_SubMenuTable");
+									break;									
+									case "Admin": @Html.Partial("_SubMenuTable");
+									break;
+									case "Employee": @Html.Partial("_SubMenuTable");
+									break;
+									case "DocumentMovements": @Html.Partial("_SubMenuTable");
+									break;
+									case "UserRequest": @Html.Partial("_SubMenuTable");
+									break;
+									@*case "Home": @Html.Partial("");
+									break;*@
+									// TODO DO SOMETHING 
+									//Layouts to merge: _LayoutModern _SimpleLayout _SimpleLayoutJquery _PrintLayout _LayoutWithoutMenu
+									//Controllers without menu (seems ok): AutoComplete Base Error MailList Shortcode Template 
 									};
-									}
-									@*Html.Partial("_MenuPartialTemplate")*@
+								}
 									<div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
 								</div>
 							</div>

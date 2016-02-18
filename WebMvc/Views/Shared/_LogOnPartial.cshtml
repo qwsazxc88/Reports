@@ -4,25 +4,25 @@
 <div style="position:absolute; font-size:small;"><text>v.</text>@WebMvc.MvcApplication.Version <span style="font-size:70%">[ @Html.ActionLink("Сообщить об ошибке","BugReport","Home") ]</span></div>
 @if(Request.IsAuthenticated) 
 {
-    <text><b>@Context.User.Identity.Name</b>
-    @{
-         var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
-         bool isLinkAvailable = false;
-         string roleName = UserDto.GetUserRole(dto,out isLinkAvailable);
-         if(isLinkAvailable)
-         {
-            <text><b>Роль: @Html.ActionLink(roleName, "ChangeRole", "Account")</b></text>
-         }
-         else
-         {
-            <text><b>Роль: @roleName</b></text>
-         }
-     }
-    [ @Html.ActionLink("Изменить пароль", "ChangePwd", "Account") ]
-    [ @Html.ActionLink("Выход", "LogOff", "Account") ]
-    </text>
-}
+<text><b>@Context.User.Identity.Name</b>
+@{
+	var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+	bool isLinkAvailable = false;
+	string roleName = UserDto.GetUserRole(dto,out isLinkAvailable);
+	if(isLinkAvailable)
+	{
+	<text><b>Роль: @Html.ActionLink(roleName, "ChangeRole", "Account")</b></text>
+		}
+		else
+	{
+	<text><b>Роль: @roleName</b></text>
+	}
+		}
+		[ @Html.ActionLink("Изменить пароль", "ChangePwd", "Account") ]
+	[ @Html.ActionLink("Выход", "LogOff", "Account") ]
+</text>
+	}
 else
 {
-    @:[ @Html.ActionLink("Вход", "LogOn", "Account") ]
-}
+@:[ @Html.ActionLink("Вход", "LogOn", "Account") ]
+	}
