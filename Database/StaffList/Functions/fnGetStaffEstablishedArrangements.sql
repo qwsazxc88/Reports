@@ -50,6 +50,8 @@ RETURNS
 	,BasicUser nvarchar(250)
 	,TemporaryMovementUsers	nvarchar(500)	--временно переведенные
 	,LongAbsencesUsers nvarchar(500)--сотрудники в длительном отсутствии
+	,PositionRank int
+	,PositionLevel int
 )
 AS
 BEGIN
@@ -75,9 +77,11 @@ DECLARE
 	IF @ManagerId <> 0
 	BEGIN
 		--определяем руководителя/зама
-		SELECT @IsMainManager = A.IsMainManager, @Rank = B.[Rank], @Itemlevel = B.Itemlevel, @Login = A.[Login]
+		SELECT @IsMainManager = A.IsMainManager
+					,@Rank = B.[Rank], @Itemlevel = B.Itemlevel, @Login = A.[Login]
 		FROM Users as A
 		INNER JOIN Position as B ON B.Id = A.PositionId
+		INNER JOIN Department as C ON C.Id = A.DepartmentId
 		WHERE A.Id = @ManagerId
 
 		SELECT @UserId = Id FROM Users WHERE RoleId & 2 > 0 and [Login] = substring(@Login, 1, LEN(@Login) - 1)
@@ -95,7 +99,9 @@ DECLARE
 							 else 0 end as Salary
 				 ,C.Path, D.Id as RequestId, 
 				 E.Rate,	--ставка
-				 --если в отпуске о уходу за ребенокм и нет замены показываем в колонках для заменяемых
+				 --если в ОЖ, КП или ДО и нет замены показываем в колонках для заменяемых
+				 --старый вариант
+				 /*
 				 case when E.IsPregnant = 1 then null else E.Id end as UserId, 
 				 --case when E.IsPregnant = 1 then null else E.Name end as Surname, 
 				 case when (case when (isnull(E.IsPregnant, 0) = 1 or F.UserId is null) then 1 else 0 end) = 1 
@@ -105,10 +111,25 @@ DECLARE
 															or exists(SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and ReplacedId = F.UserId and IsUsed = 1)
 															or exists(SELECT * FROM StaffMovements WHERE UserId = F.UserId and IsTempMoving = 1 and Type in (2, 3) and Status = 12 and GETDATE() between MovementDate and MovementTempTo) 
 												 then 'Временная вакансия' else 'Вакансия' end) 
-							else E.Name end as Surname, 
+							else E.Name end as Surname, */
+				 case when ((E.IsPregnant = 1 or L.UserId is not null) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1)) or
+									 --если текущего перевели и на это место никто не приходил
+									 (exists (SELECT * FROM StaffPostReplacement WHERE UserLinkId <> F.Id and UserId = F.UserId and IsUsed = 1) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1)) or
+									 --если в ДО и место никто не занимал
+									 (exists (SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and ReplacedId = F.UserId and IsUsed = 1) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1))
+							then null else E.Id end as UserId, 
+
+				 case when F.UserId is null then N'Вакансия'
+							when ((E.IsPregnant = 1 or L.UserId is not null) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1)) or
+									 --если текущего перевели и на это место никто не приходил
+									 (exists (SELECT * FROM StaffPostReplacement WHERE UserLinkId <> F.Id and UserId = F.UserId and IsUsed = 1) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1)) or
+									 --если в ДО и место никто не занимал
+									 (exists (SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and ReplacedId = F.UserId and IsUsed = 1) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1))
+							then N'Временная вакансия'
+							else E.Name end as Surname,
 												 
-				 case when isnull(E.IsPregnant, 0) = 1 then E.Id else G.ReplacedId end as ReplacedId
-				 ,case when E.IsPregnant = 1 then isnull(dbo.fnGetReplacedName(null, E.Id, 1), N'(' + E.Name + N')')  else isnull(dbo.fnGetReplacedName(F.Id, null, 1), N'(' + H.Name + N')') end as ReplacedName
+				 case when isnull(E.IsPregnant, 0) = 1 or L.UserId is not null then E.Id else G.ReplacedId end as ReplacedId
+				 ,case when E.IsPregnant = 1 or L.UserId is not null then isnull(dbo.fnGetReplacedName(null, E.Id, 1), N'(' + E.Name + N')')  else isnull(dbo.fnGetReplacedName(F.Id, null, 1), N'(' + H.Name + N')') end as ReplacedName
 				 ,F.ReserveType
 				 ,case when F.ReserveType = 1 then N'Перемещение' 
 							 when F.ReserveType = 2 then N'Прием'
@@ -116,8 +137,21 @@ DECLARE
 				 ,F.DocId
 				 ,cast(case when isnull(F.ReserveType, 0) = 0 then 0 else 1 end as bit) as IsReserve
 				 ,isnull(E.IsPregnant, 0) as IsPregnant
-				 ,case when (isnull(E.IsPregnant, 0) = 1 or F.UserId is null) and isnull(F.ReserveType, 0) = 0 or exists(SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and ReplacedId = F.UserId and IsUsed = 1) then 1 else 0 end as IsVacation
-				 ,case when F.UserId is null then 0 else (case when isnull(E.IsPregnant, 0) = 1 or H.Id is not null or exists(SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and ReplacedId = F.UserId and IsUsed = 1) then 1 else 0 end) end as IsSTD
+				 --,case when (isnull(E.IsPregnant, 0) = 1 or F.UserId is null) and isnull(F.ReserveType, 0) = 0 or exists(SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and ReplacedId = F.UserId and IsUsed = 1) then 1 else 0 end as IsVacation
+				 --,case when F.UserId is null then 0 else (case when isnull(E.IsPregnant, 0) = 1 or H.Id is not null or exists(SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and ReplacedId = F.UserId and IsUsed = 1) then 1 else 0 end) end as IsSTD
+				 ,case when F.UserId is null then 1
+							 when ((E.IsPregnant = 1 or L.UserId is not null) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1)) or
+									 --если текущего перевели и на это место никто не приходил
+									 (exists (SELECT * FROM StaffPostReplacement WHERE UserLinkId <> F.Id and UserId = F.UserId and IsUsed = 1) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1)) or
+									 --если в ДО и место никто не занимал
+									 (exists (SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and ReplacedId = F.UserId and IsUsed = 1) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1))
+							 then 1 else 0 end as IsVacation
+				 ,case when ((E.IsPregnant = 1 or L.UserId is not null) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1)) or
+									 --если текущего перевели и на это место никто не приходил
+									 (exists (SELECT * FROM StaffPostReplacement WHERE UserLinkId <> F.Id and UserId = F.UserId and IsUsed = 1) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1)) or
+									 --если в ДО и место никто не занимал
+									 (exists (SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and ReplacedId = F.UserId and IsUsed = 1) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1))
+							then 1 else 0 end as IsSTD
 				 ,case when J.UserId is null then 0 else 1 end as IsDismiss	--увольнение
 				 ,F.IsDismissal		--сокращение
 				 --оклад и надбавки
@@ -171,32 +205,29 @@ DECLARE
 				 ,K.Name as BasicUser
 				 ,dbo.fnGetReplacedName(F.Id, null, 2) TemporaryMovementUsers
 				 ,dbo.fnGetReplacedName(F.Id, null, 3) as LongAbsencesUsers
+				 ,B.[Rank], B.ItemLevel
 	FROM StaffEstablishedPost as A
 	INNER JOIN Position as B ON B.Id = A.PositionId
 	INNER JOIN Department as C ON C.Id = A.DepartmentId
 	INNER JOIN StaffEstablishedPostRequest as D ON D.SEPId = A.Id and D.IsUsed = 1
 	INNER JOIN StaffEstablishedPostUserLinks as F ON F.SEPId = A.Id and F.IsUsed = 1
 	LEFT JOIN Users as E ON E.Id = F.UserId and E.IsActive = 1 and (E.RoleId & 2 > 0 or E.RoleId & 16384 > 0) --and E.IsPregnant = 0
-	LEFT JOIN StaffPostReplacement as G ON G.UserLinkId = F.Id and G.IsUsed = 1
+	--LEFT JOIN StaffPostReplacement as G ON G.UserLinkId = F.Id and G.IsUsed = 1
+	LEFT JOIN StaffPostReplacement as G ON G.UserLinkId = F.Id and G.IsUsed = 1 and G.ReplacedId = F.UserId
 	LEFT JOIN Users as H ON H.Id = G.ReplacedId
 	LEFT JOIN vwStaffPostSalary as I ON I.UserLinkId = F.Id
 	LEFT JOIN (SELECT UserId FROM Dismissal 
 						 WHERE UserDateAccept is not null and DeleteDate is null
 						 GROUP BY UserId) as J ON J.UserId = E.Id
 	LEFT JOIN Users as K ON K.RegularUserLinkId = F.Id
-	--заявки н создание временной вакансии при длительных отсутствиях
-	/*
-	LEFT JOIN (SELECT distinct UserLinkId
-						 FROM StaffTemporaryReleaseVacancyRequest
-						 WHERE IsUsed = 1) as L ON L.UserLinkId = F.Id
-						 */
+	LEFT JOIN vwStaffPregnantUsers as L ON L.UserId = F.UserId
 	WHERE A.DepartmentId = @DepartmentId /*and A.PositionId = 356*/ and A.IsUsed = 1 
 				--замещенных убираем из списка этим условием
 				--and not exists (SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and ReplacedId = E.Id)
 	ORDER BY A.Priority
 
 		
---select * from dbo.fnGetStaffEstablishedArrangements(5555, 0, 0) 
+--select * from dbo.fnGetStaffEstablishedArrangements(6499, 0, 0) 
 
 	RETURN 
 END
