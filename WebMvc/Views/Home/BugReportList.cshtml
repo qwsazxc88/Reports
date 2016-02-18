@@ -1,0 +1,19 @@
+﻿@model Reports.Presenters.UI.ViewModel.BugReportListModel
+@{
+    ViewBag.Title = "BugReportList";
+}
+
+<h2>Реестр баг-репортов</h2>
+
+<table class="grid">
+@foreach (var bug in Model.Documents)
+{
+    <tr>
+    <td>@Html.ActionLink(bug.Id.ToString(),"BugReportEdit","Home",new {id=bug.Id},null)</td>
+    <td>@bug.CreateDate.ToShortDateString()</td>
+    <td>@bug.UserName</td>
+    <td>@bug.UserRole</td>
+    <td>@bug.Summary</td>
+    </tr>
+}
+</table>

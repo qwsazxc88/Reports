@@ -806,6 +806,10 @@ namespace WebMvc.Controllers
          #endregion
 
          #region UserPersonnelData
+         public ActionResult PersonnelFileList()
+         {
+             return View();
+         }
          [HttpGet]
          [ReportAuthorize((UserRole.ConsultantPersonnel | UserRole.ConsultantOutsourcing | UserRole.OutsourcingManager | UserRole.TaxCollector | UserRole.Accountant | UserRole.Manager | UserRole.PersonnelManager | UserRole.Employee))]
          public ActionResult UserPersonnelDataList()

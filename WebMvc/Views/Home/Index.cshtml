@@ -27,6 +27,11 @@
                         @if ((dto.UserRole & UserRole.Admin) > 0)
                         {
                             @Html.ActionLink("Табель", "UserList", "Admin")
+                            @Html.ActionLink("Сообщения об ошибках", "BugReportList", "Home")
+                        }
+                        else if ((dto.UserRole & UserRole.Accountant) > 0)
+                        {
+                            @Html.ActionLink("Табель", "UserPersonnelDataList", "UserRequest")
                         }
                         else if ((dto.UserRole & UserRole.Employee) > 0)
                         {
@@ -41,7 +46,7 @@
                               || (dto.UserRole & UserRole.PersonnelManager) > 0
                               || (dto.UserRole & UserRole.Inspector) > 0
                               || (dto.UserRole & UserRole.OutsourcingManager) > 0
-                              || (dto.UserRole & UserRole.Estimator)>0
+                              || (dto.UserRole & UserRole.Estimator) > 0
                               || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0)
                         {
                             @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
@@ -51,8 +56,8 @@
                             @Html.ActionLink("Табель", "DismissalList", "UserRequest")
                         }
                     </div>  
-                  }
-                @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer  | UserRole.DismissedEmployee)) == 0)
+                 }
+                @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer | UserRole.DismissedEmployee)) == 0)
                 {
                     
                     <div @if (Model.menuId == 1)
@@ -66,7 +71,7 @@
                     </div> 
                  }
                 
-                @if(UserDto.IsStaffDepartmentAvailable(dto))
+                @if (UserDto.IsStaffDepartmentAvailable(dto))
                 {
                     if ((dto.UserRole & UserRole.PersonnelManager) > 0)
                     {
@@ -203,7 +208,7 @@
             </div>
              
              <div style="text-align:center;font-size:larger;"> 
-                <img style="width: 181px; height: 49px;" src="@Url.Content("~/Content/logo-skb.jpg")"/>
+                <img @if(Request.Url.Port==8002){<text> style="width: 181px; height: 49px;"</text>} src="@(Request.Url.Port == 8002 ? Url.Content("~/Content/logo-skb.jpg") : Url.Content("~/Content/test2.png"))"/>
                 <div class="portala-name">Кадровый портал</div>
                 <div class="portala-support">
                    Техническая поддержка: info@ruscount.ru<br>

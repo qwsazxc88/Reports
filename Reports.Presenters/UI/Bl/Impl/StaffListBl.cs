@@ -1521,6 +1521,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             //находим действующую заявку и убираем у нее признак использования
+
+            if (entity.DepNext != null && entity.DepartmentAccessory.Id == 2)
+            {
+                if (string.IsNullOrEmpty(entity.DepNext.DepartmentTaxDetails[0].TaxAdminCode) || string.IsNullOrWhiteSpace(entity.DepNext.DepartmentTaxDetails[0].TaxAdminCode))
+                {
+                    error = "Выбранное подразделение с налоговыми реквизитами не имеет таковых!";
+                    return false;
+                }
+            }
+
             //int OldRequestId = StaffDepartmentRequestDao.GetCurrentRequestId(entity.Department != null ? entity.Department.Id : 0);
             StaffDepartmentRequest OldEntity = null;
 
@@ -1624,14 +1634,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //bool IsParentChange = false;
             //IList<Department> ChildDeps = null;
 
-            if (entity.DepNext != null && entity.DepartmentAccessory.Id == 2)
-            {
-                if (string.IsNullOrEmpty(entity.DepNext.DepartmentTaxDetails[0].TaxAdminCode) || string.IsNullOrWhiteSpace(entity.DepNext.DepartmentTaxDetails[0].TaxAdminCode))
-                {
-                    error = "Выбранное подразделение с налоговыми реквизитами не имеет таковых!";
-                    return false;
-                }
-            }
+            
 
             
             Department dep = entity.Department != null ? DepartmentDao.Get(entity.Department.Id) : new Department();

@@ -7,22 +7,27 @@ GO
 
 set nocount on
 
-update Department set Code1COld = Code1C, CodeOld = Code, ParentIdOld = ParentId, PathOld = Path
+--update Department set Code1COld = Code1C, CodeOld = Code, ParentIdOld = ParentId, PathOld = Path
 
-declare @id int, @code1c int
+declare @id int, @code1c int, @ParentPath nvarchar(250), @ParentId int
 select * into #tmp from Department order by ItemLevel
 
 while exists(select * from #tmp)
 begin
-	select top 1 @id = id, @code1c = Code1C from #tmp order by ItemLevel
+	select top 1 @id = id, @code1c = Code1C, @ParentId = ParentId from #tmp order by ItemLevel
+	SELECT @ParentPath = [Path] FROM Department WHERE Id = @ParentId
 
-	update Department set Code = cast(Id as varchar), Code1C = Id, Path = replace(Path, cast(@code1c as nvarchar), cast(id as nvarchar))
+	--эта строка перекодировала
+	--update Department set Code = cast(Id as varchar), Code1C = Id, Path = replace(Path, cast(@code1c as nvarchar), cast(id as nvarchar))
+	--эта строка восстанавливает путь
+	update Department set Path = isnull(@ParentPath, N'') + CAST(@id as nvarchar) + '.'
 	where Id = @id
-
+	/*
+	--это от перекодировки
 	update Department set ParentId = @id where ParentId = @code1c
 
 	update Department set Path = REPLACE(path, cast(@code1c as nvarchar), cast(@id as nvarchar)) where path like N'%' + cast(@code1c as nvarchar) + N'%'
-
+	*/
 	delete from #tmp where id = @id
 
 	print cast(@id as varchar)

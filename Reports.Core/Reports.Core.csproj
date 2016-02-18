@@ -93,6 +93,7 @@
     <Compile Include="Dao\IAnalyticalStatementDao.cs" />
     <Compile Include="Dao\IAssistansDao.cs" />
     <Compile Include="Dao\IAssistantPartialLinksDao.cs" />
+    <Compile Include="Dao\IBugReportDao.cs" />
     <Compile Include="Dao\IDeductionImportDao.cs" />
     <Compile Include="Dao\IDocumentApprovalDao.cs" />
     <Compile Include="Dao\IExtraChargesDao.cs" />
@@ -199,6 +200,7 @@
     <Compile Include="Dao\Impl\AssistansDao.cs" />
     <Compile Include="Dao\Impl\AssistantPartialLinksDao.cs" />
     <Compile Include="Dao\Impl\AttachmentDao.cs" />
+    <Compile Include="Dao\Impl\BugReportDao.cs" />
     <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationCommentDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationDao.cs" />
@@ -521,6 +523,7 @@
     <Compile Include="Domain\AbstractReferencyBookEntity.cs" />
     <Compile Include="Domain\Assistans.cs" />
     <Compile Include="Domain\AssistantPartialLinks.cs" />
+    <Compile Include="Domain\BugReport.cs" />
     <Compile Include="Domain\DirectorsRight.cs" />
     <Compile Include="Domain\DocumentApproval.cs" />
     <Compile Include="Domain\PartialTypes.cs" />
@@ -776,6 +779,7 @@
     <Compile Include="Dto\AnalyticalStatementDto.cs" />
     <Compile Include="Dto\AppointmentDto.cs" />
     <Compile Include="Dto\BeginEndDateDto.cs" />
+    <Compile Include="Dto\BugReportDto.cs" />
     <Compile Include="Dto\ClearanceChecklistApprovalDto.cs" />
     <Compile Include="Dto\ClearanceChecklistDto.cs" />
     <Compile Include="Dto\CostDto.cs" />
@@ -783,6 +787,7 @@
     <Compile Include="Dto\DeductionDto.cs" />
     <Compile Include="Dto\DepartmentChildrenDto.cs" />
     <Compile Include="Dto\DepartmentDto.cs" />
+    <Compile Include="Dto\DepartmentTreeDto.cs" />
     <Compile Include="Dto\Department_TerrapointDto.cs" />
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
@@ -1526,6 +1531,7 @@
     <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovementsRoleRecords.hbm.xml" />
     <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovements_DocTypes.hbm.xml" />
     <EmbeddedResource Include="Domain\DirectorsRight.hbm.xml" />
+    <EmbeddedResource Include="Domain\BugReport.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
   </ItemGroup>

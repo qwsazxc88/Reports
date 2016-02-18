@@ -38,7 +38,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region DAOs
-
+        protected IBugReportDao bugReportDao;
         protected IVacationReturnDao vacationReturnDao;
         protected IrefVacationReturnStatusDao refVacationReturnStatusDao;
         protected IrefVacationReturnTypesDao refVacationReturnTypesDao;
@@ -109,6 +109,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IDeductionImportDao deductionImportDao;
         protected ISurchargeNoteDao surcharcheNoteDao;
 
+        public IBugReportDao BugReportDao
+        {
+            get { return Validate.Dependency(bugReportDao); }
+            set {bugReportDao=value;}
+        }
         public IVacationReturnDao VacationReturnDao
         {
             get { return Validate.Dependency(vacationReturnDao); }
@@ -8168,7 +8173,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             user.AcceptRequests.Add(entity);
                             UserDao.Save(user);
                             //EmailDto emailDto = new EmailDto();
-                            EmailDto emailDto = SendEmailForManagerAcceptRequests(user, acceptDate);
+                            //EmailDto emailDto = SendEmailForManagerAcceptRequests(user, acceptDate);
                         }
                         else
                             Log.WarnFormat("Request already accepted for user {0} date {1} at {2}",
@@ -13391,6 +13396,59 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+        public void SendBugReport(BugReportModel model, string Guid)
+        {
+            BugReport entity = new BugReport();
+            entity.Browser = model.Browser;
+            entity.BrowserVersion = model.BrowserVersion;
+            entity.Summary = model.Summary;
+            entity.Description = model.Description;
+            entity.Guid = Guid;
+            entity.User = UserDao.Load(CurrentUser.Id);
+            entity.UserRole = (int)CurrentUser.UserRole;
+            BugReportDao.SaveAndFlush(entity);
+            try
+            {
+                SendEmail("administrator@ruscount.ru", "[Кадровый портал] Новое сообщение об ошибке", String.Format("<a href='https://ruscount.com:8002/Home/BugReportEdit/{0}'>{1}</a><br/>{2}",entity.Id,entity.Summary,entity.Description));
+            }
+            catch (Exception) { }
+        }
+        public BugReportEditModel GetBugEditModel(int id, string path)
+        {
+            var entity = BugReportDao.Load(id);
+            BugReportEditModel model = new BugReportEditModel();
+            model.Browser = entity.Browser;
+            model.BrowserVersion = entity.BrowserVersion;
+            model.Description = entity.Description;
+            model.Summary = entity.Summary;
+            model.UserName = entity.User.Name;
+            model.UserId = entity.User.Id;
+            model.UserEmail = entity.User.Email;
+            try
+            {
+                model.UserRole = ReportRoleConstants.Mapper[(UserRole)entity.UserRole];
+            }
+            catch (Exception) { }
+            model.Files = new List<string>();
+            path = path+ "\\Content\\BugReport\\"+ entity.Guid;
+            try
+            {
+                DirectoryInfo dir = new DirectoryInfo(path);
+                var files = dir.GetFiles();
+                foreach (var file in files)
+                {
+                    model.Files.Add(Path.Combine("\\Content\\BugReport", entity.Guid, Path.GetFileName(file.FullName)));
+                }
+            }
+            catch (Exception) { }
+            return model;
+        }
+        public BugReportListModel GetBugListModel()
+        {
+            BugReportListModel model = new BugReportListModel();
+            model.Documents = BugReportDao.GetDocuments();
+            return model;
+        }
         public MissionUserDeptsListModel GetMissionUserDeptsListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);

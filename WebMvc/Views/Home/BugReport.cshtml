@@ -1,0 +1,39 @@
+﻿@model Reports.Presenters.UI.ViewModel.BugReportModel
+@using WebMvc.Helpers
+@{
+    ViewBag.Title = "BugReport";
+}
+
+@using (Html.BeginForm("BugReport", "Home", FormMethod.Post, new { enctype="multipart/form-data" }))
+{
+    using (Html.BeginBlock("filter-wrap"))
+    {
+        @Html.ActionLink("Вернуться на главную", "Index", "Home")
+        @Html.CreateHeader("Сообщить об ошибке");
+        if (!string.IsNullOrEmpty(ViewBag.Message))
+        {
+            <h2 style="color:Green">@ViewBag.Message</h2>
+        }
+        @Html.CreateField(x => x.Browser)<br />
+        @Html.CreateField(x => x.BrowserVersion)<br />
+        
+        <div class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: 0 .7em; width:65%;">
+		    <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+		    <strong>Важно!</strong> Заполняя отчёт об ошибке, как можно подробнее опишите процесс получения ошибки. Для поиска и устранения ошибки важно знать каждое действие, как заполнены поля формы, какие файлы были вложены и т.д.</p>
+	    </div>
+        <div class="ui-state-error ui-corner-all" style="margin-top: 20px; padding: 0 .7em; width:65%;">
+		    <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+		    <strong>Важно!</strong> Форма предназначена для сообщениях об ошибках <u>программы</u> все остальные сообщения будут проигнорированны.</p>
+	    </div><br />
+        @Html.CreateField(x => x.Summary)<br />
+        @Html.LabelFor(x => x.Description)<br />
+        @Html.TextAreaFor(x => x.Description, new { style = "width:60%; height:200px;" })
+        <br />
+        <label>Снимки экрана:</label><br />
+        <input type="file" multiple="multiple" name="Sreenshots"/>
+        @Html.CreateButton(true, true, "Отправить")
+        <br />
+    
+        @Html.ActionLink("Вернуться на главную", "Index", "Home")
+    }
+}

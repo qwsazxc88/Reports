@@ -19,6 +19,10 @@
                         {
                             @Html.ActionLink("Табель", "UserList", "Admin")
                         }
+                        else if((dto.UserRole & UserRole.Accountant)>0)
+                        {
+                            @Html.ActionLink("Табель", "UserPersonnelDataList", "UserRequest")
+                        }
                         else if ((dto.UserRole & UserRole.Employee) > 0)
                         {
                             @Html.ActionLink("Табель", "SicklistList", "UserRequest")
@@ -39,8 +43,8 @@
                         }
                     </div> 
                 }
-                @if (!((dto.UserRole & UserRole.Security) > 0 
-                        ||( dto.UserRole & UserRole.Trainer)>0
+                @if (!((dto.UserRole & UserRole.Security) > 0
+                        || (dto.UserRole & UserRole.Trainer) > 0
                     ))
                 {
                 <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "SurchargeNoteList", "SurchargeNote", new { type = 1 }, null)
@@ -48,7 +52,7 @@
                 
                 }
                 
-                @if(UserDto.IsStaffDepartmentAvailable(dto))
+                @if (UserDto.IsStaffDepartmentAvailable(dto))
                 {
                     <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
                 }
