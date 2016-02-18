@@ -528,6 +528,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadUserData(model.User);
             var usertomove = UserDao.Load(model.User.Id);
             var userlinks=StaffEstablishedPostUserLinksDao.QueryExpression(x=>x.IsUsed && x.User.Id==model.User.Id);
+            if (userlinks == null || !userlinks.Any())
+                throw new Exception("Сотрудника нет в штатной расстановке.");
             var userlink = userlinks.First();
             model.RegionCoefficient = StaffMovementsDao.GetUserRegionCoeff(model.User.Id);
             model.TotalSalary = StaffMovementsDao.GetUserTotalSalary(model.User.Id);
@@ -545,14 +547,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.TargetDepartmentId = model.User.Dep7Id;
                     model.TargetDepartmentName = model.User.Dep7Name;
                     model.TargetPositionId = model.User.PositionId;
-                    model.TargetPositions = GetPositionsForDepartment(model.TargetDepartmentId);
-                    model.UserLinkId = userlinks.First().Id;
+                    //model.TargetPositions = GetPositionsForDepartment(model.TargetDepartmentId);
+                    //В случае если КП на изменение надбавок, нужно подгрузить текущий линк, в противном случае нельзя давать возможности выбрать ту же должность
                     model.UserLinks = GetPositionsForDepartment(model.TargetDepartmentId);
-                    if (!model.UserLinks.Any(x => x.Id == model.UserLinkId))
+                    model.TargetPositions = model.UserLinks;
+                    if (model.RequestType == 1)
                     {
-                        model.UserLinks.Add(new IdNameDto { Id = userlink.Id, Name = userlink.StaffEstablishedPost.Position.Name });
+                        model.UserLinkId = userlinks.First().Id;
+                        if (!model.UserLinks.Any(x => x.Id == model.UserLinkId))
+                        {
+                            model.UserLinks.Add(new IdNameDto { Id = userlink.Id, Name = userlink.StaffEstablishedPost.Position.Name });
+                        }
                     }
-                    GetMoneyForStaffEstablishedPostUserLinks(userlink, model);
+                    else if(model.UserLinks!=null && model.UserLinks.Any())
+                    {
+                        model.UserLinkId = model.UserLinks.First().Id;
+                    }
+                    if (model.UserLinkId > 0)
+                    {
+                        userlink = StaffEstablishedPostUserLinksDao.Load(model.UserLinkId);
+                        GetMoneyForStaffEstablishedPostUserLinks(userlink, model);
+                    }
                 }
                 model.Creator = new StandartUserDto();
                 model.Creator.Id = CurrentUser.Id;
@@ -607,7 +622,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             var positions = StaffEstablishedPostDao.GetStaffEstablishedArrangements(id);
             if (positions != null && positions.Any())
             {
-                return positions.Where(x => x.IsVacation).Select(x => new IdNameDto { Id = x.Id, Name = x.PositionName + " " + (x.IsSTD ? "- СТД " : " ") + (String.IsNullOrEmpty(x.ReplacedName)?"":"- ") + x.ReplacedName }).ToList();
+                return positions.Where(x => x.IsVacation).Select(x => new IdNameDto { Id = x.Id, Name = x.PositionName +" "+String.Format("(Уровень:{0} Ранг:{1})",x.PositionLevel,x.PositionRank)
+                    + " " + (x.IsSTD ? "- СТД " : " ") + (String.IsNullOrEmpty(x.ReplacedName)?"":"- ") + x.ReplacedName }).ToList();
             }
             else return new List<IdNameDto>();
             #region depricated

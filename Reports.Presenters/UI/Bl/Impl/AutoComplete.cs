@@ -36,9 +36,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public List<IdNameDto> SearchUsers(string name)
         {
-            var users = UserDao.Find(x => x.Name.Contains(name) && x.IsActive && (x.UserRole & UserRole.Employee) > 0 && x.Department != null && x.Position != null);
+            var users = UserDao.GetUsersByTerm(name); //UserDao.Find(x => x.Name.Contains(name) && x.IsActive && (x.UserRole & UserRole.Employee) > 0 && x.Department != null && x.Position != null);
             if (users != null && users.Any())
-                return users.Select(x => new IdNameDto { Id = x.Id, Name = string.Format("{0} ({1}) {2}", x.Name, x.Position.Name, x.Department.Name) }).ToList();
+                return users.ToList();// users.Select(x => new IdNameDto { Id = x.Id, Name = string.Format("{0} ({1}) {2}", x.Name, x.Position.Name, x.Department.Name) }).ToList();
             return new List<IdNameDto>();
         }
         /*public List<IDNameDictionary> SearchVendors(string name)

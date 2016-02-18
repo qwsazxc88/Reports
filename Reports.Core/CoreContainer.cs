@@ -102,6 +102,9 @@ namespace Reports.Core
             Register(Component.For<IStaffMovementsFactDao>().
                     ImplementedBy<StaffMovementsFactDao>().
                     LifeStyle.Is(type));
+            Register(Component.For<IBugReportDao>().
+                    ImplementedBy<BugReportDao>().
+                    LifeStyle.Is(type));
             Register(Component.For<IDocumentMovementsDao>().
                     ImplementedBy<DocumentMovementsDao>().
                     LifeStyle.Is(type));

@@ -234,31 +234,37 @@
         if(!result)
             return result;
         $("#Operation").val(1);
+        $('input[type="submit"]').hide();
         return true;
     }
     function BeginWork()
     {
         $("#Operation").val(2);
+        $('input[type="submit"]').hide();
         return true;
     }
     function EndWork()
     {
         $("#Operation").val(3);
+        $('input[type="submit"]').hide();
         return true;
     }
     function EndRequest()
     {
         $("#Operation").val(4);
+        $('input[type="submit"]').hide();
         return true;
     }
      function RejectRequest()
     {
         $("#Operation").val(5);
+        $('input[type="submit"]').hide();
         return true;
     }
     function NotEndWork()
     {
         $("#Operation").val(6);
+        $('input[type="submit"]').hide();
         return true;
     }
 

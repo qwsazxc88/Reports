@@ -16,5 +16,7 @@ namespace Reports.Presenters.UI.Bl
         string AddAlternativeMail(string Email);
         string AddAlternativeMail(int UserId, string Email);
         Result ConfirmMail(Guid key);
+        DepartmentTreeDto GetDepartmentTree();
     }
+
 }

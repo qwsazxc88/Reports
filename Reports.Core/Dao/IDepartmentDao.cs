@@ -6,6 +6,7 @@ namespace Reports.Core.Dao
     public interface IDepartmentDao : IDao<Department>
     {
         //IList<Department> LoadAllSorted();
+        DepartmentTreeDto GetDepartmentTreeDto();
         IList<User> GetDepartmentManagersByDepAndManualRole(int departmentId, int RoleId);
         IList<Department> SearchByName(string name);
         Department SearchByNameDistinct(string name);

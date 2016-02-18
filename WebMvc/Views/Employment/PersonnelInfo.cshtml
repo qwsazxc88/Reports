@@ -337,14 +337,20 @@
     function SendEmail(){
         var actionUrl="@Url.Action("PersonnelInfoSendEmail", "Employment")";
         //actionUrl += "?ToUserId="+$("#ToUserId").val() + "&Subject="
-        actionUrl += "?CandidateId=" + $("#CandidateId").val() + "&ToUserId=" + $("#ToUserId").val() + "&Subject=" + $("#Subject").val() + "&EmailMessage=" + $("#EmailMessage").val();
-        var dataToSend = $("#PersonnelInfoForm").serialize();
+        //actionUrl += "?CandidateId=" + $("#CandidateId").val() + "&ToUserId=" + $("#ToUserId").val() + "&Subject=" + $("#Subject").val() + "&EmailMessage=" + $("#EmailMessage").val();
+        //var dataToSend = $("#PersonnelInfoForm").serialize();
+        //Починил. Должно работать.
+        var dataToSend = {
+            CandidateId:$("#CandidateID").val(),
+            ToUserId:$("#ToUserId").val(),
+            Subject:$("#Subject").val(),
+            EmailMessage:$("#EmailMessage").val()
+        };
         ShowFlash(true);
 
         jQuery.ajax({
             url: actionUrl,
             type: 'POST',
-            dataType: 'json',
             data: dataToSend,
             async: true,
             success: function(data){

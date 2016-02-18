@@ -19,6 +19,10 @@
                         {
                             @Html.ActionLink("Табель", "UserList", "Admin")
                         }
+                        else if((dto.UserRole & UserRole.Accountant)>0)
+                        {
+                            @Html.ActionLink("Табель", "UserPersonnelDataList", "UserRequest")
+                        }
                         else if ((dto.UserRole & UserRole.Employee) > 0)
                         {
                             @Html.ActionLink("Табель", "SicklistList", "UserRequest")
@@ -45,14 +49,14 @@
                 <div id="liStaffMovements" class="mainMenuItem">@Html.ActionLink("Кадровые перемещения", "Index", "StaffMovements")
                 </div>
 
-                @if(UserDto.IsStaffDepartmentAvailable(dto))
+                @if (UserDto.IsStaffDepartmentAvailable(dto))
                 {
                     <div id="liStaffList" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "StaffList", "StaffList")</div>
                 }
 
                 
                 <div id="liDeduction" class="mainMenuItem">
-                    @if ((dto.UserRole & UserRole.Accountant) > 0 || 
+                    @if ((dto.UserRole & UserRole.Accountant) > 0 ||
                          (dto.UserRole & UserRole.OutsourcingManager) > 0
                         || (dto.UserRole & UserRole.Estimator) > 0)
                     {
@@ -92,15 +96,15 @@
                 </div>  *@
                     
                 @if ((dto.UserRole &
-                                    ( UserRole.OutsourcingManager|
+                                    (UserRole.OutsourcingManager |
                                     UserRole.ConsultantPersonnel |
-                                    UserRole.Estimator|
-                                    UserRole.Manager| 
-                                    UserRole.PersonnelManager|
-                                    UserRole.Candidate|
-                                    UserRole.Security| 
-                                    UserRole.Trainer|
-                                    UserRole.StaffManager|
+                                    UserRole.Estimator |
+                                    UserRole.Manager |
+                                    UserRole.PersonnelManager |
+                                    UserRole.Candidate |
+                                    UserRole.Security |
+                                    UserRole.Trainer |
+                                    UserRole.StaffManager |
                                     UserRole.ConsultantOutsourcing)) > 0)
                 {
                     <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
@@ -114,10 +118,10 @@
                  {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "ServiceQuestionsList", "Help")</div> 
                  }
-                else if (UserDto.IsHelpPersonnelBillingAvailable(dto))
-                {
+                 else if (UserDto.IsHelpPersonnelBillingAvailable(dto))
+                 {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "PersonnelBillingList", "Help")</div>
-                }
+                 }
                  else if (UserDto.IsHelpTemplateAvailable(dto))
                  {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "Template", "Help")</div> 
@@ -143,10 +147,10 @@
                  {
                     <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "Index", "GPD")</div>
                  }
-                  @if ((dto.UserRole & UserRole.Manager) > 0 )
-                 {
+                  @if ((dto.UserRole & UserRole.Manager) > 0)
+                  {
                     <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "GpdAnalyticalStatement", "GPD")</div>
-                 }
+                  }
         </div>  
          <div class="podmenu">   
            @* @if ((dto.UserRole & UserRole.Employee) > 0
