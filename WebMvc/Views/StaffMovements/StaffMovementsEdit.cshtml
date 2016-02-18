@@ -10,6 +10,10 @@
     DateTime NextDay = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
     var dto =  UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
 }
+<div id="DivErrorsDialog" style="display:none;">
+        <div>При сохранении заявки произошли ошибки.</div>
+        <div id="JSError2" style="color:Red;"></div>
+    </div>
 <div id="DivEmal" style="display:none;">
         <table>
             <tr>
@@ -754,7 +758,10 @@
     </tr> 
     </table>
 }
+@if (Model.Id > 0)
+{
 @Html.Partial("~/Views/Info/Comments.cshtml")
+}
 <style>
 label { font-size:1.1em; }
 .field-validation-error
@@ -792,12 +799,12 @@ label { font-size:1.1em; }
     }
     function ValidateForm()
     {
-        var enabledObjects = $('[type="submit"]:enabled');
-        enabledObjects.prop( "disabled", true );
+        
         var result =true;
           
         clearControlErrors($("#TargteDepartmentId"));
         clearControlErrors($("#JSError"));
+        clearControlErrors($("#JSError2"));
         $.ajax({
               type: 'POST',
               url: "/StaffMovements/CheckMovementDate",
@@ -805,7 +812,7 @@ label { font-size:1.1em; }
               success: function (data) {
                     console.log(data);
                     if(data != "Ok")
-                    { console.log(data.result);result=false; addControlError($("#JSError"),'На данную дату существуюет другая заявка.'); }                    
+                    { console.log(data.result);result=false; addControlError($("#JSError"),'На данную дату существуюет другая заявка.'); addControlError($("#JSError2"),'На данную дату существуюет другая заявка.');}                    
                 },
               async:false
             });  
@@ -817,6 +824,7 @@ label { font-size:1.1em; }
         {
            addControlError($("input[name=MovementNote]"),'Необходимо заявление о переводе.');
            addControlError($("#JSError"),'Необходимо заявление о переводе.');
+           addControlError($("#JSError2"),'Необходимо заявление о переводе.');
             result = false;
         }
          </text>
@@ -837,6 +845,7 @@ label { font-size:1.1em; }
         {
             addControlError($("#MovementDate"),'Необходимо выбрать дату перевода');
             addControlError($("#JSError"),'Необходимо выбрать дату перевода');
+            addControlError($("#JSError2"),'Необходимо выбрать дату перевода');
             result = false;
         }
         
@@ -850,6 +859,7 @@ label { font-size:1.1em; }
                 {
                     addControlError($("#MovementTempTo"),'Необходимо выбрать дату временного перевода');
                     addControlError($("#JSError"),'Необходимо выбрать дату временного перевода');
+                    addControlError($("#JSError2"),'Необходимо выбрать дату временного перевода');
                     result = false;
                 }   
             }
@@ -858,6 +868,7 @@ label { font-size:1.1em; }
             {
                 addControlError($("#PyrusLink"),'Необходимо создать задачу в Pyrus');
                 addControlError($("#JSError"),'Необходимо создать задачу в Pyrus');
+                addControlError($("#JSError2"),'Необходимо создать задачу в Pyrus');
                 result = false;
             }
             
@@ -866,6 +877,7 @@ label { font-size:1.1em; }
             {
                 addControlError($("#MovementCondition"),'Необходимо заполнить условие перевода');
                 addControlError($("#JSError"),'Необходимо заполнить условие перевода');
+                addControlError($("#JSError2"),'Необходимо заполнить условие перевода');
                 result = false;
             }          
            
@@ -878,6 +890,7 @@ label { font-size:1.1em; }
             {
                 addControlError($("#IsHourlyContainer"),'если ставка <1, то оклад  может быть  ТОЛЬКО  по  часам');
                 addControlError($("#JSError"),'если ставка <1, то оклад  может быть  ТОЛЬКО  по  часам');
+                addControlError($("#JSError2"),'если ставка <1, то оклад  может быть  ТОЛЬКО  по  часам');
                 result = false;
             }
         clearControlErrors($("#MovementTempTo"));
@@ -887,6 +900,7 @@ label { font-size:1.1em; }
                 {
                     addControlError($("#MovementTempTo"),'Необходимо выбрать дату временного перевода');
                     addControlError($("#JSError"),'Необходимо выбрать дату временного перевода');
+                    addControlError($("#JSError2"),'Необходимо выбрать дату временного перевода');
                     result = false;
                 }   
             }
@@ -895,6 +909,7 @@ label { font-size:1.1em; }
             {
                 addControlError($("#TargetSalaryCount"),'Необходимо заполнить ставку');
                 addControlError($("#JSError"),'Необходимо заполнить грейд');
+                addControlError($("#JSError2"),'Необходимо заполнить грейд');
                 result = false;
             }
                       
@@ -903,6 +918,7 @@ label { font-size:1.1em; }
             {
                 addControlError($("#Grade"),'Необходимо заполнить грейд');
                 addControlError($("#JSError"),'Необходимо заполнить грейд');
+                addControlError($("#JSError2"),'Необходимо заполнить грейд');
                 result = false;
             }
             clearControlErrors($("#HoursType"));
@@ -910,14 +926,13 @@ label { font-size:1.1em; }
             {
                 addControlError($("#HoursType"),'Необходимо заполнить график работы');
                 addControlError($("#JSError"),'Необходимо заполнить график работы');
+                addControlError($("#JSError2"),'Необходимо заполнить график работы');
                 result = false;
             }
         </text>
         }
-        if(!result)
-        {        
-        enabledObjects.prop( "disabled", false );
-        }
+        if(result==false)
+             $('#DivErrorsDialog').dialog("open");
         return result;
     }
     function ButtonPressed(name)
@@ -1028,7 +1043,12 @@ label { font-size:1.1em; }
     }
     function ConfigureFields()
     {
-           
+        $('#DivErrorsDialog').dialog({ // initialize dialog box
+            autoOpen: false,
+            modal: true,
+            width: "auto",                       
+            
+        });
         $(" #AdditionFrontTo, #AdditionQualityTo, #AdditionPositionTo, #AdditionPersonnelTo,  #MovementTempTo, #AdditionalAgreementDate, #OrderDate, #AgreementDate").datepicker({changeMonth: true, changeYear: true});
         $("#MovementDate").datepicker({
             showButtonPanel: true,

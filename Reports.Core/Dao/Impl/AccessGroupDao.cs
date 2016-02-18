@@ -207,11 +207,11 @@ namespace Reports.Core.Dao.Impl
                     orderBy = "ag.Manager4";
                     break;
                 case 11:
-                    orderBy = "SaldoPrimary";
+                    orderBy = "SaldoPrimary+SaldoAdditional";
                     break;
-                case 12:
+                /*case 12:
                     orderBy = "SaldoAdditional";
-                    break;
+                    break;*/
                 case 13:
                     orderBy = "u.DateAccept";
                     break;

@@ -29,10 +29,12 @@ namespace Reports.Core.Dao.Impl
             return result;
         }
 
-        public virtual IList<Department> LoadDepartmentsForUserId(int userId)
+        public virtual IList<Department> LoadDepartmentsForUserId(int userId, List<int> roleIds=null)
         {
+            //Добавил дополнительный параметр для ручных привязок, чтобы учитывались роли.
+            if (roleIds == null) roleIds = new List<int>() { 1 };
             return Session.Query<ManualRoleRecord>()
-                .Where(x => x.Role.Id == 1 && x.TargetDepartment != null && x.User.Id == userId && x.TargetDepartment.ItemLevel == 3)
+                .Where(x => roleIds.Contains(x.Role.Id) && x.TargetDepartment != null && x.User.Id == userId && x.TargetDepartment.ItemLevel == 3)
                 .Select(x => x.TargetDepartment).Distinct()
                 .ToList();
         }

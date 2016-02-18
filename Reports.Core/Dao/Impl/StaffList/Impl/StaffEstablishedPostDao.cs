@@ -71,6 +71,8 @@ namespace Reports.Core.Dao.Impl
                                               ,BasicUser
                                               ,TemporaryMovementUsers
                                               ,LongAbsencesUsers
+                                              ,PositionRank
+                                              ,PositionLevel
                                        FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId, 0, 0)");
 
             
@@ -113,6 +115,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("BasicUser", NHibernateUtil.String)
                 .AddScalar("TemporaryMovementUsers", NHibernateUtil.String)
                 .AddScalar("LongAbsencesUsers", NHibernateUtil.String)
+                .AddScalar("PositionRank",NHibernateUtil.Int32)
+                .AddScalar("PositionLevel",NHibernateUtil.Int32)
                 .SetInt32("DepartmentId", DepartmentId)
                 .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
                 List<StaffEstablishedPostDto>();

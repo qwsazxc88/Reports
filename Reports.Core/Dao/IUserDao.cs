@@ -10,6 +10,7 @@ namespace Reports.Core.Dao
     {
         User FindByLogin(string login);
         void UpdateUserInn(int persid, string inn);
+        IList<IdNameDto> GetUsersByTerm(string term);
         string GetUserInn(int persId);
         IList<UserAllRolesDto> GetAllUserRoles(int userId);
         IList<User> GetUsersWhoMailNeeded();

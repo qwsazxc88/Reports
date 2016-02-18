@@ -13,6 +13,9 @@ namespace Reports.Presenters.UI.Bl
         UsersPersonnelDataViewModel GetUsersPersonnelDataListModel();
         UsersPersonnelDataViewModel SetDocuments(UsersPersonnelDataViewModel model);
         string GetUserInn(int persid);
+        void SendBugReport(BugReportModel model, string Guid);
+        BugReportListModel GetBugListModel();
+        BugReportEditModel GetBugEditModel(int id, string path);
         string SetUserInn(int persid, string inn);
         CreateRequestModel GetCreateRequestModel(int? userId);
         DepartmentChildrenDto GetUsersForDepartment(int departmentId);
