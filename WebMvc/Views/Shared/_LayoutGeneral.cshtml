@@ -49,81 +49,84 @@
 	</script>
 	
 	<body>
-		<div class="header" width=100%><img style="width: 250px; height: 50px;" alt="" src="@(Request.Url.Port == 8002 ? Url.Content("~/Content/logo.gif") : Url.Content("~/Content/testlogo.png"))"/></div>
-			<div class="page">
-			<div id="header">
-				<div id="logindisplay">
-					@Html.Partial("_LogOnPartial")
-				</div>
+		<div class="header" width=100%>
+			<img style="width: 250px; height: 50px;" alt="" src="@(Request.Url.Port == 8002 ? Url.Content("~/Content/logo.gif") : Url.Content("~/Content/testlogo.png"))"/>
+		</div>
+		
+		<div id="header">
+			<div id="logindisplay">
+				@Html.Partial("_LogOnPartial")
 			</div>
-			@*        <div id="main">*@
-				<table style="width:100%">
-					<tr>
-						<td style="vertical-align:top">
-							@*				@if (Request.IsAuthenticated){*@
-							<input type="hidden" id="ActiveMenuItem" name="ActiveMenuItem" value="" />
-							<div class="menu-wrap">
-								<div class="menu">
-									@Html.Partial("_MenuGeneral")
-								</div>
-								<div class="podmenu">
-								@{
-									var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
-									switch (controllerName) {
-									case "Appointment": @Html.Partial("_SubMenuAppointment");
-									break;
-									case "Deduction": @Html.Partial("_SubMenuDeduction");
-									break;
-									case "Employment": @Html.Partial("_SubMenuEmployment");
-									break;
-									case "GPD": @Html.Partial("_SubMenuGPD");
-									break;
-									case "Graphics": @Html.Partial("_SubMenuGraphics");
-									break;
-									case "Help": @Html.Partial("_SubMenuHelp");
-									break;
-									@* Где испльзуется? *@
-									case "Info": @Html.Partial("_SubMenuInfo");
-									break;
-									case "MissionOrder": @Html.Partial("_SubMenuMissionOrder");
-									break;
-									case "StaffList": @Html.Partial("_SubMenuStaffList");
-									break;
-									case "StaffMovements": @Html.Partial("_SubMenuStaffMovements");
-									break;
-									case "Surcharge": @Html.Partial("_SubMenuMissionOrder");
-									break;
-									case "SurchargeNote": @Html.Partial("_SubMenuSurchargeNote");
-									break;
-									case "Account": @Html.Partial("_SubMenuTable");
-									break;									
-									case "Admin": @Html.Partial("_SubMenuTable");
-									break;
-									case "Employee": @Html.Partial("_SubMenuTable");
-									break;
-									case "DocumentMovements": @Html.Partial("_SubMenuTable");
-									break;
-									case "UserRequest": @Html.Partial("_SubMenuTable");
-									break;
-									@*case "Home": @Html.Partial("");
-									break;*@
-									// TODO DO SOMETHING 
-									//Layouts to merge: _LayoutModern _SimpleLayout _SimpleLayoutJquery _PrintLayout _LayoutWithoutMenu
-									//Controllers without menu (seems ok): AutoComplete Base Error MailList Shortcode Template 
-									};
-								}
-									<div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
-								</div>
+		</div>
+		<div class="page">
+			@if (Request.IsAuthenticated){
+			<table style="width:100%">
+				<tr>
+					<td style="vertical-align:top">
+						
+						<input type="hidden" id="ActiveMenuItem" name="ActiveMenuItem" value="@* @Model.menuId *@" />
+						<div class="menu-wrap">
+							<div class="menu">
+								@Html.Partial("_MenuGeneral")
 							</div>
-						</td>
-					</tr>
-					<tr>
-						<td style="padding-top:10px;vertical-align:top">
-							@RenderBody()
-						</td>
-					</tr>
-				</table>    
-			@*        </div>*@
+							<div class="podmenu">
+								@{
+								var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+								switch (controllerName) {
+								case "Appointment": @Html.Partial("_SubMenuAppointment");
+								break;
+								case "Deduction": @Html.Partial("_SubMenuDeduction");
+								break;
+								case "Employment": @Html.Partial("_SubMenuEmployment");
+								break;
+								case "GPD": @Html.Partial("_SubMenuGPD");
+								break;
+								case "Graphics": @Html.Partial("_SubMenuGraphics");
+								break;
+								case "Help": @Html.Partial("_SubMenuHelp");
+								break;
+								@* Где испльзуется? *@
+								case "Info": @Html.Partial("_SubMenuInfo");
+								break;
+								case "MissionOrder": @Html.Partial("_SubMenuMissionOrder");
+								break;
+								case "StaffList": @Html.Partial("_SubMenuStaffList");
+								break;
+								case "StaffMovements": @Html.Partial("_SubMenuStaffMovements");
+								break;
+								case "Surcharge": @Html.Partial("_SubMenuMissionOrder");
+								break;
+								case "SurchargeNote": @Html.Partial("_SubMenuSurchargeNote");
+								break;
+								case "Account": @Html.Partial("_SubMenuTable");
+								break;									
+								case "Admin": @Html.Partial("_SubMenuTable");
+								break;
+								case "Employee": @Html.Partial("_SubMenuTable");
+								break;
+								case "DocumentMovements": @Html.Partial("_SubMenuTable");
+								break;
+								case "UserRequest": @Html.Partial("_SubMenuTable");
+								break;
+								@* case "Home": @Html.Partial("");
+								break;
+								// TODO DO SOMETHING 
+								//Layouts to merge: _LayoutModern _SimpleLayout _SimpleLayoutJquery _PrintLayout _LayoutWithoutMenu
+								//Controllers without menu (seems ok): AutoComplete Base Error MailList Shortcode Template *@
+								};
+								}
+								<div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="padding-top:10px;vertical-align:top">
+						@RenderBody()
+					</td>
+				</tr>
+			</table>
+			}
 		</div>
 	</body>
 </html>
