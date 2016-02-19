@@ -40,7 +40,9 @@ DECLARE
 SET NOCOUNT ON
 
 SET @IsOff = 1	--ВЫКЛЮЧАЕМ РЯД ПРОВЕРОК ПОСЛЕ ВЫЯСНЕНИЯ
-SET @DepartmentId = 4189	--Дирекция ДАЛЬНЕВОСТОЧНАЯ
+--SET @DepartmentId = 4189	--Дирекция ДАЛЬНЕВОСТОЧНАЯ
+--SET @DepartmentId = 9544 --Объединенный департамент №1
+SET @DepartmentId = 8649 --Дирекция ПРИВОЛЖСКАЯ
 
 
 SELECT IDENTITY(INT, 1, 1) as Id, CAST(0 as bit) as IsComplete, * 
@@ -52,7 +54,7 @@ SELECT IDENTITY(INT, 1, 1) as Id, CAST(0 as bit) as IsComplete, *
 							when UserCode <> RegularCode and PregCode is null and RegularCode = MoveCode and AbsentCode is null then 6	--основной сотрудник в КП - на место был перевод или прием по СТД
 							when UserCode <> RegularCode and PregCode is null and MoveCode is null and RegularCode = AbsentCode then 7	--основной сотрудник в ДО - на место был перевод или прием по СТД
 							when UserCode <> RegularCode and UserCode = PregCode and MoveCode is null and AbsentCode is null then 8	--фактический сотрудник в ОЖ 
-							when UserCode <> RegularCode and PregCode is not null and MoveCode is null and UserCode = AbsentCode then 9	--фактический сотрудник в ДО
+							when UserCode <> RegularCode and PregCode is null and MoveCode is null and UserCode = AbsentCode then 9	--фактический сотрудник в ДО
 							when UserCode <> RegularCode and PregCode is null and MoveCode is null and AbsentCode is null then 10	--фактический сотрудник работает на месте основной в текущий момент времени
 							else 99 end as OrderId
 ,CAST(null as int) as UserLink	--временное
@@ -67,26 +69,27 @@ ORDER BY --RegularSurname,
 							when UserCode <> RegularCode and PregCode is null and RegularCode = MoveCode and AbsentCode is null then 6	--основной сотрудник в КП - на место был перевод или прием по СТД
 							when UserCode <> RegularCode and PregCode is null and MoveCode is null and RegularCode = AbsentCode then 7	--основной сотрудник в ДО - на место был перевод или прием по СТД
 							when UserCode <> RegularCode and UserCode = PregCode and MoveCode is null and AbsentCode is null then 8	--фактический сотрудник в ОЖ 
-							when UserCode <> RegularCode and PregCode is not null and MoveCode is null and UserCode = AbsentCode then 9	--фактический сотрудник в ДО
+							when UserCode <> RegularCode and PregCode is null and MoveCode is null and UserCode = AbsentCode then 9	--фактический сотрудник в ДО
 							when UserCode <> RegularCode and PregCode is null and MoveCode is null and AbsentCode is null then 10	--фактический сотрудник работает на месте основной в текущий момент времени
 							else 99 end
 --НЕСКОЛЬКО ПРОВЕРОК
 
 
 --если есть записи с пустыми основами, выдать сообщение (ВЫЯВЛЕННЫЕ ЗАПИСИ УТОЧНИТЬ У КАДРОВИКОВ (ВОЗМОЖНО НУЖНО СОЗДАТЬ ШТАТНУЮ ЕДИНИЦУ), ПОСЛЕ ВЫЯСНЕНИЯ ЗАКОММЕНТАРИТЬ ПРОВЕРКУ И ЗАПУСТИТЬ ОБРАБОТКУ)
-IF @IsOff = 0
-BEGIN
+--IF @IsOff = 0
+--BEGIN
 	IF EXISTS(SELECT * FROM PersonnelArrangements WHERE len(isnull(RegularCode, '')) = 0 or len(isnull(RegularSurname, '')) = 0 or len(isnull(UserCode, '')) = 0 or len(isnull(Surname, '')) = 0)
 	BEGIN
 		PRINT N'№1 Обнаружены записи, где не указан основной сотрудник!'
 		DROP TABLE #PA
 		RETURN
 	END
-END
+--END
 
 --select UserCode, COUNT(UserCode) from PersonnelArrangements where UserCode <> RegularCode group by UserCode having COUNT(UserCode) > 1
 IF EXISTS (SELECT * FROM #PA WHERE MoveCode is not null and RegularCode <> MoveCode)
 BEGIN
+	SELECT * FROM #PA WHERE MoveCode is not null and RegularCode <> MoveCode
 	PRINT N'№2 Обнаружены записи, где некорректно внесены данные по временному переводу!'
 	DROP TABLE #PA
 	RETURN
@@ -118,8 +121,8 @@ BEGIN
 END
 
 --сопоставляем коды с фамилиями
-IF @IsOff = 0
-BEGIN
+--IF @IsOff = 0
+--BEGIN
 	IF EXISTS(SELECT * FROM PersonnelArrangements as A
 						INNER JOIN Users as B ON B.Code = A.UserCode and B.IsActive = 1 and B.RoleId & 2 > 0
 						WHERE B.Name <> A.Surname)
@@ -138,7 +141,7 @@ BEGIN
 		DROP TABLE #PA
 		RETURN
 	END
-END
+--END
 
 IF EXISTS(SELECT * FROM PersonnelArrangements as A
 					INNER JOIN Users as B ON B.Code = A.UserCode
@@ -167,8 +170,8 @@ BEGIN
 	RETURN
 END
 
-IF @IsOff = 0
-BEGIN
+--IF @IsOff = 0
+--BEGIN
 	IF EXISTS (SELECT C.* FROM Department as A
 						 INNER JOIN Department as B ON B.Path like A.Path + '%' and B.ItemLevel = 7
 						 INNER JOIN Users as C ON C.DepartmentId = B.Id and C.IsActive = 1 and (C.RoleId & 2 > 0 or C.RoleId & 16384 > 0)
@@ -184,7 +187,7 @@ BEGIN
 		DROP TABLE #PA
 		RETURN
 	END
-END
+--END
 
 
 
@@ -242,8 +245,8 @@ BEGIN
 END
 
 
-IF @IsOff = 0
-BEGIN
+--IF @IsOff = 0
+--BEGIN
 	IF EXISTS (SELECT * FROM #PA as A
 						 INNER JOIN (SELECT RegularCode, count(RegularCode) as cnt FROM #PA 
 												 WHERE RegularCode in (SELECT RegularCode FROM #PA WHERE RegularCode = MoveCode)
@@ -258,7 +261,7 @@ BEGIN
 		DROP TABLE #PA
 		RETURN
 	END
-END
+--END
 --==========================================================================
 SELECT @CountRow = COUNT(*) FROM #PA WHERE IsComplete = 0
 PRINT N'Нужно обработать ' + cast(@CountRow as nvarchar) + N' записей'
@@ -328,7 +331,7 @@ BEGIN
 	END
 	
 
-	IF @RegUserName is not null and NOT EXISTS (SELECT * FROM Users WHERE Id = isnull(@RegUserId, 0) and IsActive = 1 and RoleId & 2 > 0)
+	IF @RegUserName is not null and NOT EXISTS (SELECT * FROM Users WHERE Id = isnull(@RegUserId, 0) and IsActive = 1 and (RoleId & 2 > 0 or RoleId & 16384 > 0))
 	BEGIN
 		PRINT N'№3 Учетная запись основного сотрудника ' + @RegUserName + N' не является активной (Id = ' + cast(@RegUserId as nvarchar) + N')'
 		ROLLBACK TRANSACTION
@@ -375,6 +378,20 @@ BEGIN
 	--основного сотрудника ставим в расстановку и проставляем у него основное место работы
 	IF @OrderId in (2, 3, 4, 5)
 	BEGIN
+		--если ДО и нет в базе
+		IF @OrderId = 4 and NOT EXISTS (SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE ReplacedId = @RegUserId)
+		BEGIN
+			INSERT INTO StaffTemporaryReleaseVacancyRequest(Version, UserLinkId, ReplacedId, DateBegin, DateEnd, AbsencesTypeId, IsUsed, Note)
+			VALUES(1, @UserLinkId, @RegUserId, @AbsentBeginDate, null, 3, 1, N'Автоматическая обработка данных: в обрабатываемых данных кадровиками было указано длительное отсутствие.')
+		END
+
+		--для временных переводов, если нет КП в базе, то делаем ДО
+		IF @OrderId = 5 and NOT EXISTS (SELECT * FROM #PA WHERE Id <> @Id and RegularCode = @RegularCode and UserCode <> @RegularCode)
+			 and NOT EXISTS (SELECT * FROM StaffMovements WHERE UserId = @RegUserId and IsTempMoving = 1 and Type in (2, 3) and Status = 12 and GETDATE() between MovementDate and MovementTempTo)
+		BEGIN
+			INSERT INTO StaffTemporaryReleaseVacancyRequest(Version, UserLinkId, ReplacedId, DateBegin, DateEnd, AbsencesTypeId, IsUsed, Note)
+			VALUES(1, @UserLinkId, @RegUserId, @MoveBeginDate, null, 4, 1, N'Автоматическая обработка данных: в обрабатываемых данных кадровиками был указан временный перевод.')
+		END
 		--ставим в расстановку
 		UPDATE StaffEstablishedPostUserLinks SET UserId = @UserId WHERE Id = @UserLinkId
 		--просто ставим временное место работы
@@ -422,9 +439,15 @@ BEGIN
 			INSERT INTO StaffPostReplacement (UserLinkId, UserId, ReplacedId, IsUsed, ReasonId)
 			VALUES (@FactUserLinkId, @UserId, @TempUserId, 1, @ReasonId)
 
-			--INSERT INTO StaffTemporaryReleaseVacancyRequest(Version, UserLinkId, ReplacedId, DateBegin, DateEnd, AbsencesTypeId, IsUsed, Note)
-			--VALUES(1, @UserLinkId, @RegUserId, @PregBeginDate, @PregEndDate, 3, 1, N'Автоматическая обработка данных: в обрабатываемых данных кадровиками было указано длительное отсутствие.')
+			
 		END
+
+		IF @OrderId = 9 and NOT EXISTS (SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE ReplacedId = @UserId)
+		BEGIN
+			INSERT INTO StaffTemporaryReleaseVacancyRequest(Version, UserLinkId, ReplacedId, DateBegin, DateEnd, AbsencesTypeId, IsUsed, Note)
+			VALUES(1, @FactUserLinkId, @UserId, @AbsentBeginDate, null, 3, 1, N'Автоматическая обработка данных: в обрабатываемых данных кадровиками было указано длительное отсутствие.')
+		END
+
 		--ставим в расстановку
 		UPDATE StaffEstablishedPostUserLinks SET UserId = @UserId WHERE Id = @FactUserLinkId
 		--ставим временное место работы основы
@@ -541,4 +564,21 @@ update Users SET RegularUserLinkId = 749 WHERE Id = 6558
 --Горбач Анастасия Федоровна 0000016008
 update StaffEstablishedPostUserLinks set UserId = 4636 WHERE Id = 1759
 update Users SET RegularUserLinkId = 1759 WHERE Id = 4636
+
+
+--Дирекция ПРИВОЛЖСКАЯ
+	--До выгрузки
+		--создать Ш.Е. и расстановку для Багаутдинова Галина Вячеславовна - 0000034559
+		UPDATE StaffEstablishedPostUserLinks SET UserId = null WHERE iD = 10655
+		--Афонина Татьяна Сергеевна	0000038005
+		UPDATE StaffEstablishedPostUserLinks SET UserId = 26545 WHERE iD = 9118
+
+	--ПОСЛЕ ВЫГРУЗКИ 
+		--Багаутдинова Галина Вячеславовна - 0000034559
+		update StaffEstablishedPostUserLinks set UserId = 20285 WHERE Id = 10655
+		update Users SET RegularUserLinkId = 10655 WHERE Id = 20285
+		--была фиктивна создана ШЕ, переносим на нее ДО про КП
+		update StaffTemporaryReleaseVacancyRequest set UserLinkId = 10655 where ReplacedId = 20285
+		--замену Дергуновой / Архиповой цепляем по одному адресу с заменой Архипова / Басова
+		update StaffPostReplacement set UserLinkId = 5683 where Id = 115
 */

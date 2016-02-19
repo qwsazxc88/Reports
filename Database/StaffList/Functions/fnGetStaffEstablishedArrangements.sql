@@ -129,7 +129,8 @@ DECLARE
 							else E.Name end as Surname,
 												 
 				 case when isnull(E.IsPregnant, 0) = 1 or L.UserId is not null then E.Id else G.ReplacedId end as ReplacedId
-				 ,case when E.IsPregnant = 1 or L.UserId is not null then isnull(dbo.fnGetReplacedName(null, E.Id, 1), N'(' + E.Name + N')')  else isnull(dbo.fnGetReplacedName(F.Id, null, 1), N'(' + H.Name + N')') end as ReplacedName
+				 --,case when E.IsPregnant = 1 or L.UserId is not null then isnull(dbo.fnGetReplacedName(null, E.Id, 1), N'(' + E.Name + N')')  else isnull(dbo.fnGetReplacedName(F.Id, null, 1), N'(' + H.Name + N')') end as ReplacedName
+				 ,dbo.fnGetReplacedName(F.Id, null, 1) as ReplacedName
 				 ,F.ReserveType
 				 ,case when F.ReserveType = 1 then N'Перемещение' 
 							 when F.ReserveType = 2 then N'Прием'
@@ -227,7 +228,7 @@ DECLARE
 	ORDER BY A.Priority
 
 		
---select * from dbo.fnGetStaffEstablishedArrangements(6499, 0, 0) 
+--select * from dbo.fnGetStaffEstablishedArrangements(12290, 0, 0) 
 
 	RETURN 
 END
