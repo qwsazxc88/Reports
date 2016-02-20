@@ -1,11 +1,11 @@
 --нужно указать подразделение и должность
 declare @SEPId int, @UserId int
-SELECT @UserId = Id FROM Users WHERE Code = '0000034559'
---select * from Department where Code1COld = 9909503
---select * from Position where Code = '000000462'
+SELECT @UserId = Id FROM Users WHERE Code = '0000025105'
+--select * from Department where Code1COld = 9900556
+--select * from Position where Code = '000000305'
 --ше
 INSERT INTO StaffEstablishedPost([Version], PositionId, DepartmentId, Quantity, Salary, IsUsed, BeginAccountDate)
-VALUES(1, 464, 8907, 1, 37000, 1, '20151224')
+VALUES(1, 472, 9246, 1, 17000, 1, '20151224')
 
 set @SEPId = @@IDENTITY
 

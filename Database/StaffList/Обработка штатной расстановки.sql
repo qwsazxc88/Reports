@@ -42,7 +42,8 @@ SET NOCOUNT ON
 SET @IsOff = 1	--ВЫКЛЮЧАЕМ РЯД ПРОВЕРОК ПОСЛЕ ВЫЯСНЕНИЯ
 --SET @DepartmentId = 4189	--Дирекция ДАЛЬНЕВОСТОЧНАЯ
 --SET @DepartmentId = 9544 --Объединенный департамент №1
-SET @DepartmentId = 8649 --Дирекция ПРИВОЛЖСКАЯ
+--SET @DepartmentId = 8649 --Дирекция ПРИВОЛЖСКАЯ
+SET @DepartmentId = 9545 --Объединенный департамент №2
 
 
 SELECT IDENTITY(INT, 1, 1) as Id, CAST(0 as bit) as IsComplete, * 
@@ -112,6 +113,8 @@ BEGIN
 	RETURN
 END
 
+
+
 IF EXISTS(SELECT * FROM PersonnelArrangements as A
 					INNER JOIN Users as B ON B.Code = A.UserCode and (B.IsActive = 0 or B.RoleId & 2097152 > 0))
 BEGIN
@@ -119,6 +122,41 @@ BEGIN
 	DROP TABLE #PA
 	RETURN
 END
+
+
+IF EXISTS(SELECT * FROM PersonnelArrangements WHERE RegularCode <> UserCode and (RegularCode = PregCode or RegularCode = MoveCode or RegularCode = AbsentCode))
+BEGIN
+	SELECT * FROM PersonnelArrangements WHERE RegularCode <> UserCode and (RegularCode = PregCode or RegularCode = MoveCode or RegularCode = AbsentCode)
+	PRINT N'№3.3 Обнаружены некорректно заведенные данные по ОЖ, КП и ДО для основных сотрудников!'
+	DROP TABLE #PA
+	RETURN
+END
+
+IF EXISTS(SELECT * FROM PersonnelArrangements WHERE RegularCode <> UserCode and PregCode is not null and PregCode <> RegularCode and PregCode <> UserCode)
+BEGIN
+	SELECT * FROM PersonnelArrangements WHERE RegularCode <> UserCode and PregCode is not null and PregCode <> RegularCode and PregCode <> UserCode
+	PRINT N'№3.4 Обнаружены некорректно заведенные данные по ОЖ!'
+	DROP TABLE #PA
+	RETURN
+END
+
+IF EXISTS(SELECT * FROM PersonnelArrangements WHERE RegularCode <> UserCode and MoveCode is not null and MoveCode <> RegularCode and MoveCode <> UserCode)
+BEGIN
+	SELECT * FROM PersonnelArrangements WHERE RegularCode <> UserCode and MoveCode is not null and MoveCode <> RegularCode and MoveCode <> UserCode
+	PRINT N'№3.5 Обнаружены некорректно заведенные данные по КП!'
+	DROP TABLE #PA
+	RETURN
+END
+
+
+IF EXISTS(SELECT * FROM PersonnelArrangements WHERE RegularCode <> UserCode and AbsentCode is not null and AbsentCode <> RegularCode and AbsentCode <> UserCode)
+BEGIN
+	SELECT * FROM PersonnelArrangements WHERE RegularCode <> UserCode and AbsentCode is not null and AbsentCode <> RegularCode and AbsentCode <> UserCode
+	PRINT N'№3.5 Обнаружены некорректно заведенные данные по ДО!'
+	DROP TABLE #PA
+	RETURN
+END
+
 
 --сопоставляем коды с фамилиями
 --IF @IsOff = 0
@@ -494,7 +532,7 @@ SELECT IDENTITY(INT, 1, 1) as Id, CAST(0 as bit) as IsComplete, *
 							when UserCode <> RegularCode and PregCode is null and RegularCode = MoveCode and AbsentCode is null then 6	--основной сотрудник в КП - на место был перевод или прием по СТД
 							when UserCode <> RegularCode and PregCode is null and MoveCode is null and RegularCode = AbsentCode then 7	--основной сотрудник в ДО - на место был перевод или прием по СТД
 							when UserCode <> RegularCode and UserCode = PregCode and MoveCode is null and AbsentCode is null then 8	--фактический сотрудник в ОЖ 
-							when UserCode <> RegularCode and PregCode is not null and MoveCode is null and UserCode = AbsentCode then 9	--фактический сотрудник в ДО
+							when UserCode <> RegularCode and PregCode is null and MoveCode is null and UserCode = AbsentCode then 9	--фактический сотрудник в ДО
 							when UserCode <> RegularCode and PregCode is null and MoveCode is null and AbsentCode is null then 10	--фактический сотрудник работает на месте основной в текущий момент времени
 							else 99 end as orderid
 INTO #PA FROM PersonnelArrangements
@@ -507,7 +545,7 @@ ORDER BY --RegularSurname,
 							when UserCode <> RegularCode and PregCode is null and RegularCode = MoveCode and AbsentCode is null then 6	--основной сотрудник в КП - на место был перевод или прием по СТД
 							when UserCode <> RegularCode and PregCode is null and MoveCode is null and RegularCode = AbsentCode then 7	--основной сотрудник в ДО - на место был перевод или прием по СТД
 							when UserCode <> RegularCode and UserCode = PregCode and MoveCode is null and AbsentCode is null then 8	--фактический сотрудник в ОЖ 
-							when UserCode <> RegularCode and PregCode is not null and MoveCode is null and UserCode = AbsentCode then 9	--фактический сотрудник в ДО
+							when UserCode <> RegularCode and PregCode is null and MoveCode is null and UserCode = AbsentCode then 9	--фактический сотрудник в ДО
 							when UserCode <> RegularCode and PregCode is null and MoveCode is null and AbsentCode is null then 10	--фактический сотрудник работает на месте основной в текущий момент времени
 							else 99 end
 
@@ -581,4 +619,75 @@ update Users SET RegularUserLinkId = 1759 WHERE Id = 4636
 		update StaffTemporaryReleaseVacancyRequest set UserLinkId = 10655 where ReplacedId = 20285
 		--замену Дергуновой / Архиповой цепляем по одному адресу с заменой Архипова / Басова
 		update StaffPostReplacement set UserLinkId = 5683 where Id = 115
+
+
+--Объединенный департамент №2
+	--ДО ВЫГРУЗКИ
+		--потеряшки
+		--Шафикова Альбина Рашитовна - 0000038015
+		update StaffEstablishedPostUserLinks set UserId = 26640 WHERE Id = 2947
+		update Users SET RegularUserLinkId = 2947 WHERE Id = 26640
+		--создание ШЕ
+			--5 Гарифуллин Рустем Робертович - 0000038016, VALUES(1, 356, 9522, 1, 12000, 1, '20151224')
+			--update StaffEstablishedPostUserLinks set UserId = 26642 WHERE Id = 10674
+			--update Users SET RegularUserLinkId = 10674 WHERE Id = 26642
+			--6 Гущин Руслан Викторович - 0000038031, VALUES(1, 356, 10366, 1, 12000, 1, '20151224')
+			--update StaffEstablishedPostUserLinks set UserId = 26603 WHERE Id = 10675
+			--update Users SET RegularUserLinkId = 10675 WHERE Id = 26603
+			--7 Малахова Анна Алексеевна - 0000038001, VALUES(1, 399, 12160, 1, 11500, 1, '20151224')
+			--update StaffEstablishedPostUserLinks set UserId = 26427 WHERE Id = 10676
+			--update Users SET RegularUserLinkId = 10676 WHERE Id = 26427
+			--8 Шленский Евгений Борисович - 0000037900,VALUES(1, 356, 12274, 1, 7000, 1, '20151224')
+			--update StaffEstablishedPostUserLinks set UserId = 26327 WHERE Id = 10677
+			--update Users SET RegularUserLinkId = 10677 WHERE Id = 26327
+	--ПОСЛЕ ВЫГРУЗКИ
+		--временные вакансии когда основа в КП
+		--Касаткин Кирилл Валерьевич - 0000017261
+		update StaffEstablishedPostUserLinks set UserId = 7419 WHERE Id = 3064
+		update Users SET RegularUserLinkId = 3064 WHERE Id = 7419
+		--Леонтьева Татьяна Владимировна - 0000025570
+		update StaffEstablishedPostUserLinks set UserId = 14574 WHERE Id = 3239
+		update Users SET RegularUserLinkId = 3239 WHERE Id = 14574
+		--Каличенко Ирина Александровна - 0000019816
+		update StaffEstablishedPostUserLinks set UserId = 9186 WHERE Id = 3180
+		update Users SET RegularUserLinkId = 3180 WHERE Id = 9186
+		--Аблесимова Юлия Александровна - 0000029906
+		--1 создание новой штатной единицы - '0000029906', VALUES(1, 356, 9243, 1, 12000, 1, '20151224')
+		update StaffEstablishedPostUserLinks set UserId = 17195 WHERE Id = 10670
+		update Users SET RegularUserLinkId = 10670 WHERE Id = 17195
+		--2 Юнусов Руслан Габдельнурович - 0000025599, VALUES(1, 356, 9522, 1, 12000, 1, '20151224')
+		update StaffEstablishedPostUserLinks set UserId = 14519 WHERE Id = 10671
+		update Users SET RegularUserLinkId = 10671 WHERE Id = 14519
+		--3 Гарипова Регина Раилевна - 0000025537, VALUES(1, 32, 9243, 1, 14000, 1, '20151224')
+		update StaffEstablishedPostUserLinks set UserId = 14543 WHERE Id = 10672
+		update Users SET RegularUserLinkId = 10672 WHERE Id = 14543
+		--Косова Наталья Андреевна - 0000032097
+		update StaffEstablishedPostUserLinks set UserId = 18475 WHERE Id = 8478
+		update Users SET RegularUserLinkId = 8478 WHERE Id = 18475
+		--Шарифуллина Лейсан Равилевна - 0000025574
+		update StaffEstablishedPostUserLinks set UserId = 14568 WHERE Id = 8481
+		update Users SET RegularUserLinkId = 8481 WHERE Id = 14568
+		--4 Мачехин Антон Владимирович - 0000005139, VALUES(1, 317, 438, 1, 300000, 1, '20151224')
+		update StaffEstablishedPostUserLinks set UserId = 3825 WHERE Id = 10673
+		update Users SET RegularUserLinkId = 10673 WHERE Id = 3825
+		--9 Платонов Руслан Александрович -	0000025105, VALUES(1, 472, 9246, 1, 17000, 1, '20151224')
+		update StaffEstablishedPostUserLinks set UserId = 14231 WHERE Id = 10678
+		update Users SET RegularUserLinkId = 10678 WHERE Id = 14231
+
+		--была фиктивна создана ШЕ для сотрудников, которые в КП, но их места не заняты, переносим на нее ДО про КП
+		update StaffTemporaryReleaseVacancyRequest set UserLinkId = 10671 where ReplacedId = 14519
+		update StaffTemporaryReleaseVacancyRequest set UserLinkId = 3064 where ReplacedId = 7419
+		update StaffTemporaryReleaseVacancyRequest set UserLinkId = 3239 where ReplacedId = 14574
+		update StaffTemporaryReleaseVacancyRequest set UserLinkId = 3180 where ReplacedId = 9186
+		update StaffTemporaryReleaseVacancyRequest set UserLinkId = 10670 where ReplacedId = 17195
+		update StaffTemporaryReleaseVacancyRequest set UserLinkId = 10672 where ReplacedId = 14543
+		update StaffTemporaryReleaseVacancyRequest set UserLinkId = 8478 where ReplacedId = 18475
+		update StaffTemporaryReleaseVacancyRequest set UserLinkId = 8481 where ReplacedId = 14568
+		update StaffTemporaryReleaseVacancyRequest set UserLinkId = 10673 where ReplacedId = 3825
+		update StaffTemporaryReleaseVacancyRequest set UserLinkId = 10678 where ReplacedId = 14231
+
+		--мусор
+		delete from StaffPostReplacement where Id = 41
+		update Users set RegularUserLinkId = null where Code = '0000037759'
+		
 */
