@@ -84,7 +84,7 @@ DECLARE
 					--замены старые, которых в заявках нет
 					SELECT A.Name, null as  MovementDate, null as MovementTempTo
 					FROM Users as A
-					INNER JOIN StaffPostReplacement as B ON B.UserId = A.Id and B.IsUsed = 1 and B.ReasonId = 2
+					INNER JOIN StaffPostReplacement as B ON B.ReplacedId = A.Id and B.IsUsed = 1 and B.ReasonId = 2
 					WHERE A.RegularUserLinkId = @LinkId) as A
 
 		/*
@@ -135,7 +135,7 @@ DECLARE
 	END
 	
 	RETURN @ReplacedName
---SELECT dbo.fnGetReplacedName(5572, NULL, 2)
+--SELECT dbo.fnGetReplacedName(5554, NULL, 2)
 --SELECT dbo.fnGetReplacedName(5664, 17488, 1)
 
 
