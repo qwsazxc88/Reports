@@ -43,7 +43,8 @@ SET @IsOff = 1	--ВЫКЛЮЧАЕМ РЯД ПРОВЕРОК ПОСЛЕ ВЫЯСНЕНИЯ
 --SET @DepartmentId = 4189	--Дирекция ДАЛЬНЕВОСТОЧНАЯ
 --SET @DepartmentId = 9544 --Объединенный департамент №1
 --SET @DepartmentId = 8649 --Дирекция ПРИВОЛЖСКАЯ
-SET @DepartmentId = 9545 --Объединенный департамент №2
+--SET @DepartmentId = 9545 --Объединенный департамент №2
+SET @DepartmentId = 4188 --Дирекция ВОСТОЧНО-СИБИРСКАЯ
 
 
 SELECT IDENTITY(INT, 1, 1) as Id, CAST(0 as bit) as IsComplete, * 
@@ -116,7 +117,7 @@ END
 
 
 IF EXISTS(SELECT * FROM PersonnelArrangements as A
-					INNER JOIN Users as B ON B.Code = A.UserCode and (B.IsActive = 0 or B.RoleId & 2097152 > 0))
+					INNER JOIN Users as B ON B.Code = A.UserCode and A.UserCode <> A.RegularCode and (B.IsActive = 0 or B.RoleId & 2097152 > 0))
 BEGIN
 	PRINT N'№3.2 Обнаружены уволенные сотрудники, которые в обрабатываемых данных являются фактическими!'
 	DROP TABLE #PA
@@ -124,9 +125,9 @@ BEGIN
 END
 
 
-IF EXISTS(SELECT * FROM PersonnelArrangements WHERE RegularCode <> UserCode and (RegularCode = PregCode or RegularCode = MoveCode or RegularCode = AbsentCode))
+IF EXISTS(SELECT * FROM PersonnelArrangements WHERE RegularCode <> UserCode and (RegularCode = PregCode /*or RegularCode = MoveCode*/ or RegularCode = AbsentCode))
 BEGIN
-	SELECT * FROM PersonnelArrangements WHERE RegularCode <> UserCode and (RegularCode = PregCode or RegularCode = MoveCode or RegularCode = AbsentCode)
+	SELECT * FROM PersonnelArrangements WHERE RegularCode <> UserCode and (RegularCode = PregCode /*or RegularCode = MoveCode*/ or RegularCode = AbsentCode)
 	PRINT N'№3.3 Обнаружены некорректно заведенные данные по ОЖ, КП и ДО для основных сотрудников!'
 	DROP TABLE #PA
 	RETURN

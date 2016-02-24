@@ -78,7 +78,7 @@ DECLARE
 					SELECT B.Name, C.MovementDate, C.MovementTempTo
 					FROM StaffPostReplacement as A
 					INNER JOIN Users as B ON B.Id = A.ReplacedId and B.IsActive = 1 and B.RoleId & 2 > 0
-					LEFT JOIN StaffMovements as C ON C.UserId = A.UserId and C.IsTempMoving = 1 and C.Type in (2, 3) and C.Status = 12
+					INNER JOIN StaffMovements as C ON C.UserId = A.UserId and C.IsTempMoving = 1 and C.Type in (2, 3) and C.Status = 12
 					WHERE A.UserLinkId = @LinkId and A.ReasonId = 2 and A.IsUsed = 1
 					UNION ALL
 					--замены старые, которых в заявках нет
@@ -135,7 +135,7 @@ DECLARE
 	END
 	
 	RETURN @ReplacedName
---SELECT dbo.fnGetReplacedName(5664, NULL, 1)
+--SELECT dbo.fnGetReplacedName(5572, NULL, 2)
 --SELECT dbo.fnGetReplacedName(5664, 17488, 1)
 
 
