@@ -8173,7 +8173,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             user.AcceptRequests.Add(entity);
                             UserDao.Save(user);
                             //EmailDto emailDto = new EmailDto();
-                            EmailDto emailDto = SendEmailForManagerAcceptRequests(user, acceptDate);
+                            //EmailDto emailDto = SendEmailForManagerAcceptRequests(user, acceptDate);
                         }
                         else
                             Log.WarnFormat("Request already accepted for user {0} date {1} at {2}",
@@ -13423,6 +13423,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Summary = entity.Summary;
             model.UserName = entity.User.Name;
             model.UserId = entity.User.Id;
+            model.UserEmail = entity.User.Email;
             try
             {
                 model.UserRole = ReportRoleConstants.Mapper[(UserRole)entity.UserRole];
@@ -13430,12 +13431,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             catch (Exception) { }
             model.Files = new List<string>();
             path = path+ "\\Content\\BugReport\\"+ entity.Guid;
-            DirectoryInfo dir = new DirectoryInfo(path);
-            var files = dir.GetFiles();
-            foreach (var file in files)
+            try
             {
-                model.Files.Add(Path.Combine("\\Content\\BugReport", entity.Guid, Path.GetFileName(file.FullName)));
+                DirectoryInfo dir = new DirectoryInfo(path);
+                var files = dir.GetFiles();
+                foreach (var file in files)
+                {
+                    model.Files.Add(Path.Combine("\\Content\\BugReport", entity.Guid, Path.GetFileName(file.FullName)));
+                }
             }
+            catch (Exception) { }
             return model;
         }
         public BugReportListModel GetBugListModel()

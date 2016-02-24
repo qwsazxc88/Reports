@@ -129,11 +129,8 @@
                             <div id="sort1"><a href="#"  onclick = "SortChanged(1);">Ф.И.О.</a></div>
                         </th>
                         <th>
-                            <div id="sort11"><a href="#"  onclick = "SortChanged(11);">Остаток дней<br /> основого отпуска<br />на 1 число тек. мес.</a></div>
-                        </th>
-                        <th>
-                            <div id="sort12"><a href="#"  onclick = "SortChanged(12);">Остаток дней<br /> дополнительного отпуска<br />на 1 число тек. мес.</a></div>
-                        </th>
+                            <div id="sort11"><a href="#"  onclick = "SortChanged(11);">Остаток дней<br /> отпуска<br />на 1 число тек. мес.</a></div>
+                        </th>                        
                         <th>
                             <div id="sort7"><a href="#"  onclick = "SortChanged(7);">В декрете<br />(конец отпуска)</a></div>
                         </th>
@@ -179,8 +176,7 @@
                                         @i
                                     </td>
                                     <td>@doc.UserName</td>
-                                    <td>@doc.SaldoPrimary</td>
-                                    <td>@doc.SaldoAdditional</td>
+                                    <td>@((doc.SaldoPrimary + doc.SaldoAdditional) > 42 ? 42 : (doc.SaldoPrimary + doc.SaldoAdditional))</td>                                    
                                     <td>@(doc.EndDate.HasValue ? doc.EndDate.Value.ToShortDateString() : string.Empty)</td>
                                     <td>@(doc.DateAccept.HasValue? doc.DateAccept.Value.ToShortDateString(): string.Empty )</td>
                                     <td>@doc.PositionName</td>

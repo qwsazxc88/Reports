@@ -282,8 +282,9 @@ namespace Reports.Core.Dao.Impl
                     case 4:
                     case 5:
                         // руководители уровней ниже 3 согласуют кандидатов созданных руководителями уровнем ниже
-                        sqlQueryPart += @" or (appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' and appointmentCreator.Level > " + currentUser.Level.ToString() + @")
-                            ";
+                        //sqlQueryPart += @" or (appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' and appointmentCreator.Level > " + currentUser.Level.ToString() + @")";
+                        //поправил, чтобы руководители видели заявки, которые создали бывшие руководители
+                        sqlQueryPart += @" or (department.Path like currentDepartment.Path + N'%' and appointmentCreator.Level >= " + currentUser.Level.ToString() + @")";
                         break;
                     default:
                         break;

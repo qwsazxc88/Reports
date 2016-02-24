@@ -180,7 +180,9 @@ namespace Reports.Core.Dao.Impl
                   .List<User>().ToList();//—начала получаем пользователей с таким логином
             IList<User> users;
             if (tmp != null && tmp.Any())//≈сли нашли - получаем все учЄтки дл€ его почты
-                users = Session.CreateCriteria<User>().Add(Restrictions.Eq("Email", tmp.First().Email)).List<User>().ToList();
+                //–аньше находили по почте, но в силу дибильной раздачи своей почты сотрудникам теперь будем искать по физлицу, надо проверить что всЄ норм
+                //users = Session.CreateCriteria<User>().Add(Restrictions.Eq("Email", tmp.First().Email)).List<User>().ToList();
+                users = Session.CreateCriteria<User>().Add(Restrictions.Eq("CodePeople",tmp.First().CodePeople)).List<User>().ToList();
             else return null;
             var managers= users.Where(x => (x.UserRole & UserRole.Manager) > 0 && x.IsActive==true);//»щем активную учЄтку руководител€
             if (managers != null && managers.Any())
@@ -359,7 +361,13 @@ namespace Reports.Core.Dao.Impl
                             .SetProjection(Projections.RowCount())
                             .UniqueResult();
         }
-
+        public IList<IdNameDto> GetUsersByTerm(string term)
+        {
+            string sql = String.Format("SELECT u.Id,u.Name+' ('+p.Name+') '+d.Name  as Name FROM USers u inner join Department d ON U.departmentid=d.id inner join position p on u.positionid=p.id where u.IsActive=1 and u.RoleId&2>0 and u.Name like '{0}%'",term);
+            var query= Session.CreateSQLQuery(sql).AddScalar("Id",NHibernateUtil.Int32).AddScalar("Name",NHibernateUtil.String);
+            var res = query.SetResultTransformer(Transformers.AliasToBean<IdNameDto>()).List<IdNameDto>();
+            return res;
+        }
         public IList<IdNameDtoWithDates> GetUsersForManagerWithDatePaged(int managerId, UserRole managerRole,
             DateTime beginDate,DateTime endDate,int departmentId, string userName)
         {

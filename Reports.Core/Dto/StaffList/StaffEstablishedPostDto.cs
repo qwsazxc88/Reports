@@ -48,6 +48,8 @@ namespace Reports.Core.Dto
         public string BasicUser { get; set; }   //ФИО постоянного сотрудника
         public string TemporaryMovementUsers { get; set; }   //ФИО временно перемещенных
         public string LongAbsencesUsers { get; set; }   //ФИО длительно отсутствующих
+        public int PositionRank { get; set; }
+        public int PositionLevel { get; set; }
     }
 
     public class StaffUserLinkDto

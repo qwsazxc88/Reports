@@ -13,7 +13,7 @@ namespace Reports.Presenters.UI.Bl
 
         CreateHelpServiceRequestModel GetCreateHelpServiceRequestModel();
         HelpServiceRequestEditModel GetServiceRequestEditModel(int id, int? userId);
-        IList<IdNameDto> GetPersonAutocomplete(string Name);
+        IList<IdNameDto> GetPersonAutocomplete(string Name,List<int> roleIds=null);
         void GetDictionariesStates(int typeId, HelpServiceDictionariesStatesModel model);
         void ReloadDictionariesToModel(HelpServiceRequestEditModel model);
         bool SaveServiceRequestEditModel(HelpServiceRequestEditModel model, UploadFileDto fileDto, out string error);

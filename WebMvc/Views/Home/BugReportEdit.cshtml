@@ -7,16 +7,19 @@
     @using (Html.BeginBlock("filter-wrap"))
     {
         @Html.ActionLink("Вернуться на главную", "Index", "Home")
-        @Html.CreateHeader("Сообщить об ошибке");
+        @Html.CreateHeader("Сообщение об ошибке");
+        <label>ФИО:</label> @Model.UserName <br /> 
+        <label>Роль:</label> @Model.UserRole <br />
+        <label>Email:</label> <a href="mailto:@Model.UserEmail">@Model.UserEmail</a>   <br />                                     
         @Html.CreateField(x => x.Browser)<br />
         @Html.CreateField(x => x.BrowserVersion)<br />
         @Html.CreateField(x => x.Summary)<br />
         @Html.LabelFor(x => x.Description)<br />
-        @Html.TextAreaFor(x => x.Description)
+        @Html.TextAreaFor(x => x.Description, new { style = "width:60%; height:200px;" })
         
         <br />
         
-        foreach(var file in Model.Files)
+                                                 foreach (var file in Model.Files)
         {
             <a href="@file">@(System.IO.Path.GetFileName(file))</a><br />
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
@@ -124,6 +125,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.FullName = user.FullName;
             return user;
         }
+        public DepartmentTreeDto GetDepartmentTree()
+        {
+
+            DepartmentTreeDto result = DepartmentDao.GetDepartmentTreeDto();
+            /*var childs = DepartmentDao.SearchByParentId(department.Id);
+            if (childs != null && childs.Any())
+            {
+                result.children = new List<DepartmentTreeDto>();
+                foreach (var child in childs)
+                {
+                    result.children.Add(GetDepartmentTree(child.Id));
+                }
+            }*/
+            return result;
+        }
         public Result ConfirmMail(Guid key)
         {
             var confirm = MailConfirmDao.Load(key);
@@ -149,13 +165,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             SendEmail(Email, "Подтверждение адреса почты", confirmation);
             return String.Format("https://ruscount.com:8002/Account/Confirm?key={0}",confirm.Id.ToString());
         }
+        /// <summary>
+        /// DEPRECATED. Отключено.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="acceptDate"></param>
+        /// <returns></returns>
         protected EmailDto SendEmailForManagerAcceptRequests(User user,DateTime acceptDate)
         {
             string to = null;
             switch (user.UserRole)
             {
                 case UserRole.Manager:
-                    foreach (User u in user.Personnels)
+                    /*foreach (User u in user.Personnels)
                     {
                         if (string.IsNullOrEmpty(u.Email))
                             Log.ErrorFormat("Cannot send request accept e-mail  from manager {0} to personnel manager {1} - empty email",  user.Id, u.FullName);
@@ -166,7 +188,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             else
                                 to += ";" + u.Email;
                         }
-                    }
+                    }*/
+                    //Мыло отключено для кадровиков
                     break;
                 default:
                     throw new ArgumentException(string.Format("SendEmailForManagerAcceptRequests - ivalid user {0} role",user.Id));
@@ -369,7 +392,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     to = user.Manager.Email;
                     break;
                 case UserRole.Manager:
-                    foreach (User u in user.Personnels)
+                    //Мыло отключено для кадровиков, т.к. оно им не надо оказалось.
+                    /*foreach (User u in user.Personnels)
                     {
                         if (string.IsNullOrEmpty(u.Email))
                             Log.ErrorFormat("Cannot send e-mail (request {0},requestType {1}) from manager {2} to personnel manager {3} - empty email", requestId, requestType, current.Id, u.FullName);
@@ -380,7 +404,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             else
                                 to += ";" + u.Email;
                         }
-                    }
+                    }*/
                     if ((creator.UserRole & UserRole.Manager) > 0)
                     {
                         if (string.IsNullOrEmpty(user.Email))
@@ -472,7 +496,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         protected EmailDto SendEmail(string to, string subject, string body)
-        {
+        {            
             EmailDto dto = GetEmailDto(null, to, subject, body);
             if (!string.IsNullOrEmpty(dto.Error))
                 return dto;

@@ -43,6 +43,9 @@ BEGIN TRANSACTION
 	END
 
 
+	--убираем место работы
+	UPDATE Users SET RegularUserLinkId = null, TempUserLinkId = null WHERE Id = @UserId
+
 	--если сотрудник был в зявках на создание временной вакансии при длительном отсутствии
 	IF EXISTS (SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE ReplacedId = @UserId and IsUsed = 1)
 	BEGIN
