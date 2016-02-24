@@ -117,7 +117,7 @@ END
 
 
 IF EXISTS(SELECT * FROM PersonnelArrangements as A
-					INNER JOIN Users as B ON B.Code = A.UserCode and A.UserCode <> A.RegularCode and (B.IsActive = 0 or B.RoleId & 2097152 > 0))
+					INNER JOIN Users as B ON B.Code = A.UserCode and A.UserCode <> isnull(A.RegularCode, '') and (B.IsActive = 0 or B.RoleId & 2097152 > 0))
 BEGIN
 	PRINT N'є3.2 ќбнаружены уволенные сотрудники, которые в обрабатываемых данных €вл€ютс€ фактическими!'
 	DROP TABLE #PA
