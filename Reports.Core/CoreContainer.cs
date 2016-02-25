@@ -99,6 +99,12 @@ namespace Reports.Core
 
         public virtual void AddComponents()
         {
+            Register(Component.For<IDocumentPlaceDao>().
+                    ImplementedBy<DocumentPlaceDao>().
+                    LifeStyle.Is(type));
+            Register(Component.For<IPersonnelFileDao>().
+                    ImplementedBy<PersonnelFileDao>().
+                    LifeStyle.Is(type));
             Register(Component.For<IStaffMovementsFactDao>().
                     ImplementedBy<StaffMovementsFactDao>().
                     LifeStyle.Is(type));

@@ -103,7 +103,7 @@ namespace Reports.Core.Domain
 
         public virtual string Code { get; set; }
         public virtual int? ContractType { get; set; }
-
+        public virtual IList<DocumentPlace> Places { get; set; }
         public virtual string Password
         {
             get { return _password; }

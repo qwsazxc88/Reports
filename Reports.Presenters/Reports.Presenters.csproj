@@ -277,6 +277,7 @@
     <Compile Include="UI\ViewModel\MissionReportsListModel.cs" />
     <Compile Include="UI\ViewModel\MissionUserDeptsListModel.cs" />
     <Compile Include="UI\ViewModel\NoteModel.cs" />
+    <Compile Include="UI\ViewModel\PersonnelFileViewModel.cs" />
     <Compile Include="UI\ViewModel\PrintArchivistAddressModel.cs" />
     <Compile Include="UI\ViewModel\PrintLoginFormModel.cs" />
     <Compile Include="UI\ViewModel\PrintMissionOrderViewModel.cs" />

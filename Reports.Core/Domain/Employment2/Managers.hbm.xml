@@ -14,7 +14,7 @@
     <property name="IsExternalPTWorker" not-null="true"/>
     <property name="ProbationaryPeriod" length="3" not-null="false"/>
     <property name="SalaryBasis" precision="15" scale="2" not-null="false"/>
-    <property name="SalaryMultiplier" precision="3" scale="2" not-null="false"/>
+    <property name="SalaryMultiplier" precision="4" scale="3" not-null="false"/>
     <property name="WorkCity" length="100" not-null="false"/>
     <property name="IsFront" not-null="true"/>
     <property name="Bonus" precision="19" scale="2" not-null="false"/>
