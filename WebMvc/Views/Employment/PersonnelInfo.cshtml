@@ -382,6 +382,8 @@
         $("#IsSP").val(IsSP);
         var url = "@Url.Action("GetStaffEstablishmentPostDetails", "Employment")";
         var dataToSend = $("#ManagerForm").serialize();
+        //Определяем язык
+        var language = window.navigator.userLanguage || window.navigator.language;
         ShowFlash(true);    //это диалоговое окно находится на родительской странице
         $.post(url, dataToSend, function(data){
             if (data.ok == true){
@@ -390,8 +392,8 @@
                     //$("#UserLinkId").val(data.UserLinkId);
                 }
                 else{
-                    $("#SalaryBasis").val(data.SalaryBasis);
-                    $("#AreaMultiplier").val(data.AreaMultiplier);
+                    $("#SalaryBasis").val(data.SalaryBasis.toLocaleString(language,{style:'decimal',useGrouping:false}));
+                    $("#AreaMultiplier").val(data.AreaMultiplier.toLocaleString(language,{style:'decimal',useGrouping:false}));
                 }
                 
                 ShowFlash(false);

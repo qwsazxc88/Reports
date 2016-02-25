@@ -1,0 +1,23 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="PersonnelFile">
+
+    <id name="Id">
+      <generator class="native" />
+    </id>
+   
+   
+    <property name="SendDate" not-null="false"/>
+    <property name="ReceiveDate" not-null="false"/>
+    <property name="CancelDate" not-null="false"/>
+    <property name="ArchiveDate" not-null="false"/>
+    
+    <property name="IsArchive" not-null="false"/>
+    
+    <many-to-one name="User" class="User" column="UserId" foreign-key="FK_PersonnelFile_User" not-null="false"/>
+    <many-to-one name="Sender" class="User" column="SenderId" foreign-key="FK_PersonnelFile_Sender" not-null="false"/>
+    <many-to-one name="Receiver" class="User" column="ReceiverId" foreign-key="FK_PersonnelFile_Receiver" not-null="false"/>
+
+    <many-to-one name="Place" class="DocumentPlace" column="PlaceId" foreign-key="FK_PersonnelFile_Place" not-null="false"/>
+    
+  </class>
+</hibernate-mapping>
