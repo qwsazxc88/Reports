@@ -2898,6 +2898,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
 
+                    if (entity.RequestType.Id == 3 && entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.ReserveType.HasValue && x.ReserveType.Value != 0 && x.ReserveType.Value != 3).Count() != 0)
+                    {
+                        error = "Нельзя сократить штатную единицу, так как она еще содержит забронированные позиции!";
+                        return false;
+                    }
+
                     //if (entity.Quantity < StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0))
                     //{
                     //    error = "Нельзя сократить штатную единицу, так как она еще содержит работающих сотрудников больше, чем указанное количество в заявке!";
@@ -2936,6 +2942,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (model.Personnels.Where(x => x.Id == ul.Id && x.IsDismissal != ul.IsDismissal).Count() != 0)
                     {
                         StaffUserLinkDto item = model.Personnels.Where(x => x.Id == ul.Id && x.IsDismissal != ul.IsDismissal).FirstOrDefault();
+
+                        if (entity.RequestType.Id == 3 && (item.ReserveType == 1 || item.ReserveType == 2) && item.IsDismissal)
+                        {
+                            error = "Помечена к сокращению забронированная позиция! Выполнение операции прервано!";
+                            return false;
+                        }
+
                         ul.IsDismissal = item.IsDismissal;
                         ul.DateDistribNote = item.DateDistribNote;
                         ul.DateReceivNote = item.DateReceivNote;
@@ -3528,7 +3541,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //для новых/автоматически сформированных заявок
             if (DocApproval == null || DocApproval.Count == 0)
             {
-                model.IsInitiatorApproveAvailable = entity.IsUsed ? false : (model.Initiators.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.Initiators.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false);
+                model.IsInitiatorApproveAvailable = entity.IsUsed ? false : (model.Initiators.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || (model.Initiators != null && model.Initiators.Where(x => x.Id == curUser.Id).Count() != 0)) ? true : false);
                 model.IsTopManagerApproveAvailable = false;
                 model.IsBoardMemberApproveAvailable = false;
                 model.IsAgreeButtonAvailable = model.IsInitiatorApproveAvailable;

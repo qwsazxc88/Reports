@@ -24,6 +24,26 @@ DECLARE
 
 	IF @Switch = 1
 	BEGIN
+		SELECT @ReplacedName += case when len(isnull(@ReplacedName, N'')) = 0 then N'' else N'; ' end +
+															N'(' + Name + case when BeginDate is null then N'' else N' ' + convert(nvarchar, BeginDate, 103) + N' - ' + convert(nvarchar, EndDate, 103) end + ')'
+			FROM (--замены ОЖ
+						SELECT B.Name, isnull(C.BeginDate, D.BeginDate) as BeginDate, isnull(C.EndDate, D.EndDate) as EndDate
+						FROM StaffPostReplacement as A
+						INNER JOIN Users as B ON B.Id = A.ReplacedId and B.IsActive = 1 and B.RoleId & 2 > 0 and isnull(B.IsPregnant, 0) = 1
+						--цепляемся отпускам по уходу за ребенком
+						LEFT JOIN ChildVacation as C ON C.UserId = B.Id and C.SendTo1C is not null and C.DeleteDate is null and getdate() between C.BeginDate and C.EndDate 
+						LEFT JOIN Sicklist as D ON D.UserId = B.Id and D.TypeId = 12 and D.SendTo1C is not null and D.DeleteDate is null and getdate() between D.BeginDate and D.EndDate 
+						WHERE A.UserLinkId = @LinkId and A.IsUsed = 1
+						UNION ALL
+						--ОЖ в расстановке, но еще не замещенная
+						SELECT B.Name, isnull(C.BeginDate, D.BeginDate) as BeginDate, isnull(C.EndDate, D.EndDate) as EndDate
+						FROM StaffEstablishedPostUserLinks as A
+						INNER JOIN Users as B ON B.Id = A.UserId and B.IsActive = 1 and B.RoleId & 2 > 0 and isnull(B.IsPregnant, 0) = 1
+						--цепляемся отпускам по уходу за ребенком
+						LEFT JOIN ChildVacation as C ON C.UserId = B.Id and C.SendTo1C is not null and C.DeleteDate is null and getdate() between C.BeginDate and C.EndDate 
+						LEFT JOIN Sicklist as D ON D.UserId = B.Id and D.TypeId = 12 and D.SendTo1C is not null and D.DeleteDate is null and getdate() between D.BeginDate and D.EndDate 
+						WHERE A.Id = @LinkId and A.IsUsed = 1) as A
+		/*
 		--определяем кого замещает сотрудник
 		IF @ReplacedId is null	
 		BEGIN
@@ -45,7 +65,7 @@ DECLARE
 			LEFT JOIN ChildVacation as B ON B.UserId = A.Id and B.SendTo1C is not null and B.DeleteDate is null and getdate() between B.BeginDate and B.EndDate 
 			LEFT JOIN Sicklist as C ON C.UserId = A.Id and C.TypeId = 12 and C.SendTo1C is not null and C.DeleteDate is null and getdate() between C.BeginDate and C.EndDate 
 			WHERE A.Id = @ReplacedId and A.IsActive = 1 and A.RoleId & 2 > 0
-
+			*/
 	END
 	
 
@@ -58,13 +78,13 @@ DECLARE
 					SELECT B.Name, C.MovementDate, C.MovementTempTo
 					FROM StaffPostReplacement as A
 					INNER JOIN Users as B ON B.Id = A.ReplacedId and B.IsActive = 1 and B.RoleId & 2 > 0
-					LEFT JOIN StaffMovements as C ON C.UserId = A.UserId and C.IsTempMoving = 1 and C.Type in (2, 3) and C.Status = 12
+					INNER JOIN StaffMovements as C ON C.UserId = A.UserId and C.IsTempMoving = 1 and C.Type in (2, 3) and C.Status = 12
 					WHERE A.UserLinkId = @LinkId and A.ReasonId = 2 and A.IsUsed = 1
 					UNION ALL
 					--замены старые, которых в заявках нет
 					SELECT A.Name, null as  MovementDate, null as MovementTempTo
 					FROM Users as A
-					INNER JOIN StaffPostReplacement as B ON B.UserId = A.Id and B.IsUsed = 1 and B.ReasonId = 2
+					INNER JOIN StaffPostReplacement as B ON B.ReplacedId = A.Id and B.IsUsed = 1 and B.ReasonId = 2
 					WHERE A.RegularUserLinkId = @LinkId) as A
 
 		/*
@@ -115,8 +135,8 @@ DECLARE
 	END
 	
 	RETURN @ReplacedName
---SELECT dbo.fnGetReplacedName(6227, NULL, 1)
---SELECT dbo.fnGetReplacedName(6902, 4670, 1)
+--SELECT dbo.fnGetReplacedName(5554, NULL, 2)
+--SELECT dbo.fnGetReplacedName(5664, 17488, 1)
 
 
 END
