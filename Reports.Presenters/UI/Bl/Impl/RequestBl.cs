@@ -9551,21 +9551,30 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             CreateMissionOrderModel model = new CreateMissionOrderModel();
             User currentUser = UserDao.Load(CurrentUser.Id);
+            List<int> Departments = new List<int>();
+                       
             if (currentUser == null)
                 throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
                     CurrentUser.Id));
-            IList<IdNameDto> list;
-            switch (currentUser.Level)
+            if(currentUser.Department!=null) Departments.Add(currentUser.Department.Id);
+            if (currentUser.ManualRoleRecords != null)
+            {
+                var manualdep = currentUser.ManualRoleRecords.Where(x => x.TargetDepartment != null).Select(x => x.TargetDepartment.Id);
+                if (manualdep != null && manualdep.Any()) Departments.AddRange(manualdep);
+            }
+            IList<IdNameDto> list = UserDao.GetEmployeesForCreateHelpServiceRequest(Departments,String.Empty);
+            /*switch (currentUser.Level)
             {
                 case 2:
                 case 3:
                 case 4:
                 case 5:
-                case 6:
+                case 6: 
                     list = UserDao.GetManagersAndEmployeesForCreateMissionOrder(currentUser.Department.Path, currentUser.Level.Value);
                     model.Users = list;
                     break;
-            }
+            }*/
+            model.Users = list;
             return model;
         }
         public MissionOrderListModel GetMissionOrderListModel()
