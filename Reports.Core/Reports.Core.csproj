@@ -423,6 +423,10 @@
     <Compile Include="Dao\Impl\TimesheetDayDao.cs" />
     <Compile Include="Dao\Impl\TimesheetStatusDao.cs" />
     <Compile Include="Dao\Impl\UserLoginDao.cs" />
+    <Compile Include="Dao\Impl\UserRequest\DocumentPlaceDao.cs" />
+    <Compile Include="Dao\Impl\UserRequest\IDocumentPlaceDao.cs" />
+    <Compile Include="Dao\Impl\UserRequest\IPersonnelFileDao.cs" />
+    <Compile Include="Dao\Impl\UserRequest\PersonnelFileDao.cs" />
     <Compile Include="Dao\Impl\UserRequest\refVacationReturnStatusDao.cs" />
     <Compile Include="Dao\Impl\UserRequest\refVacationReturnTypesDao.cs" />
     <Compile Include="Dao\Impl\UserRequest\VacationReturnDao.cs" />
@@ -750,6 +754,9 @@
     <Compile Include="Domain\TimesheetStatus.cs" />
     <Compile Include="Domain\User.cs" />
     <Compile Include="Domain\UserLogin.cs" />
+    <Compile Include="Domain\UserRequest\DocumentPlace.cs" />
+    <Compile Include="Domain\UserRequest\PersonnelFile.cs" />
+    <Compile Include="Domain\UserRequest\PersonnelManagerPlace.cs" />
     <Compile Include="Domain\UserRequest\refVacationReturnStatus.cs" />
     <Compile Include="Domain\UserRequest\refVacationReturnTypes.cs" />
     <Compile Include="Domain\UserRequest\VacationReturn.cs" />
@@ -881,6 +888,7 @@
     <Compile Include="Dto\UserPersonnelDataDto.cs" />
     <Compile Include="Dto\UserProfile\UserDocsDto.cs" />
     <Compile Include="Dto\UserProfile\UserSettingsDto.cs" />
+    <Compile Include="Dto\UserRequest\PersonnelFileDto.cs" />
     <Compile Include="Dto\UserRequest\VacationReturnDto.cs" />
     <Compile Include="Dto\UserRolesDto.cs" />
     <Compile Include="Dto\UsersListItemDto.cs" />
@@ -1448,6 +1456,9 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\UserRequest\PersonnelManagerPlace.hbm.xml" />
+    <EmbeddedResource Include="Domain\UserRequest\DocumentPlace.hbm.xml" />
+    <EmbeddedResource Include="Domain\UserRequest\PersonnelFile.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffTemporaryReleaseVacancyRequest.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffLongAbsencesTypes.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffReplacementReasons.hbm.xml" />
