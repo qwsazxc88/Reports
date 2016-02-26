@@ -1232,7 +1232,20 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError("MessageStr", "В действующей заявке нельзя изменить текущую причину внесения в справочник!");
                 }
             }
-            
+
+
+            if (!string.IsNullOrEmpty(model.PyrusNumber))
+            {
+                try
+                {
+                    Convert.ToInt32(model.PyrusNumber);
+                }
+                catch
+                {
+                    ModelState.AddModelError("PyrusNumber", "Номер задачи в системе Пайрус должен состоять из цифр!");
+                    ModelState.AddModelError("MessageStr", "Номер задачи в системе Пайрус должен состоять из цифр!");
+                }
+            }
 
             return ModelState.IsValid;
         }
@@ -1299,6 +1312,19 @@ namespace WebMvc.Controllers
                             i += 1;
                         }
                     }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(model.PyrusNumber))
+            {
+                try
+                {
+                    Convert.ToInt32(model.PyrusNumber);
+                }
+                catch
+                {
+                    ModelState.AddModelError("PyrusNumber", "Номер задачи в системе Пайрус должен состоять из цифр!");
+                    ModelState.AddModelError("MessageStr", "Номер задачи в системе Пайрус должен состоять из цифр!");
                 }
             }
 
