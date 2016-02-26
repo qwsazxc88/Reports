@@ -115,16 +115,16 @@ DECLARE
 				 case when ((E.IsPregnant = 1 or L.UserId is not null) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1)) or
 									 --если текущего перевели и на это место никто не приходил
 									 (exists (SELECT * FROM StaffPostReplacement WHERE UserLinkId <> F.Id and UserId = F.UserId and IsUsed = 1) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1)) or
-									 --если в ƒќ и место никто не занимал
-									 (exists (SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and ReplacedId = F.UserId and IsUsed = 1) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1))
+									 --если в ƒќ и место никто не занимал (в за€вках на ƒќ обращаем внимание на заполнение пол€ CreatorId, автоматическое формирование данных при обработке не проставл€ет это поле)
+									 (exists (SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and ReplacedId = F.UserId and IsUsed = 1 and CreatorId is not null) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1))
 							then null else E.Id end as UserId, 
 
 				 case when F.UserId is null then N'¬аканси€'
 							when ((E.IsPregnant = 1 or L.UserId is not null) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1)) or
 									 --если текущего перевели и на это место никто не приходил
 									 (exists (SELECT * FROM StaffPostReplacement WHERE UserLinkId <> F.Id and UserId = F.UserId and IsUsed = 1) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1)) or
-									 --если в ƒќ и место никто не занимал
-									 (exists (SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and ReplacedId = F.UserId and IsUsed = 1) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1))
+									 --если в ƒќ и место никто не занимал (в за€вках на ƒќ обращаем внимание на заполнение пол€ CreatorId, автоматическое формирование данных при обработке не проставл€ет это поле)
+									 (exists (SELECT * FROM StaffTemporaryReleaseVacancyRequest WHERE UserLinkId = F.Id and ReplacedId = F.UserId and IsUsed = 1 and CreatorId is not null) and not exists(SELECT * FROM StaffPostReplacement WHERE UserLinkId = F.Id and UserId <> F.UserId and IsUsed = 1))
 							then N'¬ременна€ ваканси€'
 							else E.Name end as Surname,
 												 
@@ -228,7 +228,7 @@ DECLARE
 	ORDER BY A.Priority
 
 		
---select * from dbo.fnGetStaffEstablishedArrangements(12290, 0, 0) 
+--select * from dbo.fnGetStaffEstablishedArrangements(1761, 0, 0) 
 
 	RETURN 
 END
