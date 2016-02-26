@@ -1,17 +1,19 @@
-IF OBJECT_ID ('vwEmploymentPersonnels', 'V') IS NOT NULL
-	DROP VIEW [dbo].[vwEmploymentPersonnels]
+IF OBJECT_ID ('vwDepartmentToPersonnels', 'V') IS NOT NULL
+	DROP VIEW [dbo].[vwDepartmentToPersonnels]
 GO
 
 
 
 --опредялем доступ кадровиков по ID одного из них
-CREATE VIEW [dbo].[vwEmploymentPersonnels]
+CREATE VIEW [dbo].[vwDepartmentToPersonnels]
 AS
-SELECT A.Id as UserId, D.Id as PersonnelId
-FROM Users as A
-INNER JOIN UserAccessGroup as B ON B.UserCode = A.Code
-INNER JOIN UserAccessGroup as C ON C.AccessGroupCode = B.AccessGroupCode
-INNER JOIN Users as D ON D.Code = C.UserCode
+SELECT     D.Id AS DepartmentId, A.PersonnelId
+FROM         dbo.UserToPersonnel AS A INNER JOIN
+                      dbo.Users AS B ON B.Id = A.UserId INNER JOIN
+                      dbo.Department AS C ON C.Id = B.DepartmentId INNER JOIN
+                      dbo.Department AS D ON C.Path LIKE D.Path + N'%'
+WHERE     (B.IsActive = 1)
+GROUP BY D.Id, A.PersonnelId
 
 
 
