@@ -938,7 +938,8 @@ label { font-size:1.1em; }
     function ButtonPressed(name)
     {        
         var validateResult = ValidateForm();
-        if(!validateResult) return false;
+        if(!(name == "Reject" || name =="Cancel"))
+           if(!validateResult) return false;
         $('#Is'+name+'ButtonPressed').val(true);
         return true;
     }

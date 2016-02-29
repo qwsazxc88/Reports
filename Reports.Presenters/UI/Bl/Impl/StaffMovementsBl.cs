@@ -916,6 +916,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsManagerEditable = true;
                     model.IsSourceManagerAcceptAvailable = true;
                     model.IsTargetManagerAcceptAvailable = model.IsTargetManagerAcceptAvailable && true;
+                    model.ISRejectAvailable = true;
                     model.IsUserAcceptAvailable = true;
                     model.IsDocsAddAvailable = true;
                     break;
