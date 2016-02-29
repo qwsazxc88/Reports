@@ -9574,7 +9574,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.Users = list;
                     break;
             }*/
-            model.Users = list;
+            model.Users = list.Distinct(new IdEqualityComparer()).ToList();
             return model;
         }
         public MissionOrderListModel GetMissionOrderListModel()
