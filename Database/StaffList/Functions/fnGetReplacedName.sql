@@ -29,20 +29,20 @@ DECLARE
 			FROM (--замены ОЖ
 						SELECT B.Name, isnull(C.BeginDate, D.BeginDate) as BeginDate, isnull(C.EndDate, D.EndDate) as EndDate
 						FROM StaffPostReplacement as A
-						INNER JOIN Users as B ON B.Id = A.ReplacedId and B.IsActive = 1 and B.RoleId & 2 > 0 and isnull(B.IsPregnant, 0) = 1
+						INNER JOIN Users as B ON B.Id = A.ReplacedId and B.IsActive = 1 and B.RoleId & 2 > 0
 						--цепляемся отпускам по уходу за ребенком
 						LEFT JOIN ChildVacation as C ON C.UserId = B.Id and C.SendTo1C is not null and C.DeleteDate is null and getdate() between C.BeginDate and C.EndDate 
 						LEFT JOIN Sicklist as D ON D.UserId = B.Id and D.TypeId = 12 and D.SendTo1C is not null and D.DeleteDate is null and getdate() between D.BeginDate and D.EndDate 
-						WHERE A.UserLinkId = @LinkId and A.IsUsed = 1
+						WHERE A.UserLinkId = @LinkId and A.IsUsed = 1 and (isnull(B.IsPregnant, 0) = 1 or isnull(C.BeginDate, D.BeginDate) is not null)
 						UNION ALL
 						--ОЖ в расстановке, но еще не замещенная
 						SELECT B.Name, isnull(C.BeginDate, D.BeginDate) as BeginDate, isnull(C.EndDate, D.EndDate) as EndDate
 						FROM StaffEstablishedPostUserLinks as A
-						INNER JOIN Users as B ON B.Id = A.UserId and B.IsActive = 1 and B.RoleId & 2 > 0 and isnull(B.IsPregnant, 0) = 1
+						INNER JOIN Users as B ON B.Id = A.UserId and B.IsActive = 1 and B.RoleId & 2 > 0 
 						--цепляемся отпускам по уходу за ребенком
 						LEFT JOIN ChildVacation as C ON C.UserId = B.Id and C.SendTo1C is not null and C.DeleteDate is null and getdate() between C.BeginDate and C.EndDate 
 						LEFT JOIN Sicklist as D ON D.UserId = B.Id and D.TypeId = 12 and D.SendTo1C is not null and D.DeleteDate is null and getdate() between D.BeginDate and D.EndDate 
-						WHERE A.Id = @LinkId and A.IsUsed = 1) as A
+						WHERE A.Id = @LinkId and A.IsUsed = 1 and (isnull(B.IsPregnant, 0) = 1 or isnull(C.BeginDate, D.BeginDate) is not null)) as A
 		/*
 		--определяем кого замещает сотрудник
 		IF @ReplacedId is null	
@@ -79,13 +79,13 @@ DECLARE
 					FROM StaffPostReplacement as A
 					INNER JOIN Users as B ON B.Id = A.ReplacedId and B.IsActive = 1 and B.RoleId & 2 > 0
 					INNER JOIN StaffMovements as C ON C.UserId = A.UserId and C.IsTempMoving = 1 and C.Type in (2, 3) and C.Status = 12
-					WHERE A.UserLinkId = @LinkId and A.ReasonId = 2 and A.IsUsed = 1
+					WHERE A.UserLinkId = @LinkId and A.ReasonId = 2 and A.IsUsed = 1 and exists(SELECT * FROM StaffEstablishedPostUserLinks WHERE UserId = A.ReplacedId and Id <> @LinkId)
 					UNION ALL
 					--замены старые, которых в заявках нет
 					SELECT A.Name, null as  MovementDate, null as MovementTempTo
 					FROM Users as A
 					INNER JOIN StaffPostReplacement as B ON B.ReplacedId = A.Id and B.IsUsed = 1 and B.ReasonId = 2
-					WHERE A.RegularUserLinkId = @LinkId) as A
+					WHERE A.RegularUserLinkId = @LinkId and exists(SELECT * FROM StaffEstablishedPostUserLinks WHERE UserId = B.ReplacedId and Id <> @LinkId)) as A
 
 		/*
 		--старый вариант
@@ -135,7 +135,7 @@ DECLARE
 	END
 	
 	RETURN @ReplacedName
---SELECT dbo.fnGetReplacedName(5554, NULL, 2)
+--SELECT dbo.fnGetReplacedName(780, NULL, 2)
 --SELECT dbo.fnGetReplacedName(5664, 17488, 1)
 
 
