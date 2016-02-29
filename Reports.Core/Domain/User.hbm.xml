@@ -42,6 +42,10 @@
       <one-to-many class="ManualRoleRecord" />
     </bag>
     
+    <bag name="Places" lazy="true" table="PersonnelManagerPlace" cascade="all">
+      <key column="UserId" foreign-key="FK_PersonnelManagerPlace_Users"/>
+      <many-to-many class="DocumentPlace" column="PlaceId" foreign-key="FK_PersonnelManagerPlace_Users"/>
+    </bag>
     <property name="LoginAd" length="32" not-null="false" />
     <property name="Rate" not-null="false" />
     <property name="GivesCredit" not-null="true" />

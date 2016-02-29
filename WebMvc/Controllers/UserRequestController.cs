@@ -37,6 +37,15 @@ namespace WebMvc.Controllers
                 return Validate.Dependency(requestBl);
             }
         }
+        protected IUserProfile userProfileBl;
+        protected IUserProfile UserProfileBl
+        {
+            get
+            {
+                userProfileBl = Ioc.Resolve<IUserProfile>();
+                return Validate.Dependency(userProfileBl);
+            }
+        }
         //
         // GET: /UserRequestController/
          #region CreateRequest
@@ -806,9 +815,36 @@ namespace WebMvc.Controllers
          #endregion
 
          #region UserPersonnelData
+         public EmptyResult SendDocsTo(int PlaceId, int[] UserIds)
+         {
+             UserProfileBl.SendDocsTo(PlaceId, UserIds);
+             return new EmptyResult();
+         }
+         public EmptyResult CancelDocs(int[] UserIds)
+         {
+             UserProfileBl.CancelSend(UserIds);
+             return new EmptyResult();
+         }
+         public EmptyResult ReceiveDocs(int[] UserIds)
+         {
+             UserProfileBl.ReceiveDocs(UserIds);
+             return new EmptyResult();
+         }
+         public ContentResult GetPersonnelFilesList(int Id)
+         {
+             var docs = UserProfileBl.GetPersonnelFileDocuments(Id);
+             return Content(Newtonsoft.Json.JsonConvert.SerializeObject(docs));
+         }
+         public ContentResult GetPersonnelFilesByName(string name)
+         {
+             var docs = UserProfileBl.GetPersonnelFileDocuments(name);
+             return Content(Newtonsoft.Json.JsonConvert.SerializeObject(docs));
+         }
+        
          public ActionResult PersonnelFileList()
          {
-             return View();
+             var model = UserProfileBl.GetListModel();
+             return View(model);
          }
          [HttpGet]
          [ReportAuthorize((UserRole.ConsultantPersonnel | UserRole.ConsultantOutsourcing | UserRole.OutsourcingManager | UserRole.TaxCollector | UserRole.Accountant | UserRole.Manager | UserRole.PersonnelManager | UserRole.Employee))]
