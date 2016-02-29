@@ -163,7 +163,7 @@ namespace Reports.Core.Dao.Impl
                                         INNER JOIN Department as C ON C.Path like B.Path + N'%' --and C.ItemLevel <> B.ItemLevel
                                         INNER JOIN ManualRole as D ON D.Id = A.RoleId and D.Id in (5, 6, 7)
 						                WHERE A.UserId = :userId
-                                              and (isnull(C.BFGId, 0) = isnull(case when A.RoleId = 5 then 1 when A.RoleId = 6 then 2 when A.RoleId = 7 then 6 else null end, 0) or C.BFGId is null)
+                                              and ((isnull(C.BFGId, 0) = isnull(case when A.RoleId = 5 then 1 when A.RoleId = 6 then 2 when A.RoleId = 7 then 6 else null end, 0) and C.ItemLevel = 7) or (C.BFGId is null and C.ItemLevel <> 7))
                                                 ) as A ) as F ON F.Id = isnull(A.DepartmentId, A.ParentId) and isnull(F.BFGId, 0) = isnull(B.BFGId, 0) ";
                     break;
                 case UserRole.Inspector:

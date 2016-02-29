@@ -1271,6 +1271,9 @@ namespace WebMvc.Controllers
             }
             else
             {
+                if(model.PositionId == 0)
+                    ModelState.AddModelError("PositionId", "Выберите должность!");
+
                 if (!model.BeginAccountDate.HasValue)
                     ModelState.AddModelError("BeginAccountDate", "Укажите дату начала учета в системе!");
 
@@ -1314,6 +1317,8 @@ namespace WebMvc.Controllers
                     }
                 }
             }
+
+
 
             if (!string.IsNullOrEmpty(model.PyrusNumber))
             {
