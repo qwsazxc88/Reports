@@ -916,6 +916,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsManagerEditable = true;
                     model.IsSourceManagerAcceptAvailable = true;
                     model.IsTargetManagerAcceptAvailable = model.IsTargetManagerAcceptAvailable && true;
+                    model.ISRejectAvailable = true;
                     model.IsUserAcceptAvailable = true;
                     model.IsDocsAddAvailable = true;
                     break;
@@ -1692,11 +1693,20 @@ namespace Reports.Presenters.UI.Bl.Impl
         private void GetMoneyForStaffEstablishedPostUserLinks(StaffEstablishedPostUserLinks request, StaffMovementsEditModel model)
         {
             model.TargetCasing = request.StaffEstablishedPost.Salary;
-            var charges = request.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges != null && x.ExtraCharges.Id == 6).ToList();
-            if (charges != null && charges.Any())
+            //var charges = request.StaffEstablishedPost.PostChargeLinks.Where(x => x.ExtraCharges != null && x.ExtraCharges.Id == 6).ToList();
+            var postReq = request.StaffEstablishedPost.EstablishedPostRequest.Where(x => x.IsUsed && x.PostChargeLinks!=null);
+            if (postReq != null && postReq.Any())
             {
-                var charge = charges.First();
-                model.TargetRegion = charge.Amount.HasValue? charge.Amount.Value:0;
+                var charges = postReq.First().PostChargeLinks.Where(x => x.ExtraCharges != null && x.ExtraCharges.Id == 6).ToList();
+                if (charges != null && charges.Any())
+                {
+                    var charge = charges.First();
+                    model.TargetRegion = charge.Amount.HasValue ? charge.Amount.Value : 0;
+                }
+            }
+            else
+            {
+                model.TargetRegion = 0;
             }
         }
         #endregion
