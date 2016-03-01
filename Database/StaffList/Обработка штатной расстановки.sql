@@ -44,7 +44,8 @@ SET @IsOff = 1	--ВЫКЛЮЧАЕМ РЯД ПРОВЕРОК ПОСЛЕ ВЫЯСНЕНИЯ
 --SET @DepartmentId = 9544 --Объединенный департамент №1
 --SET @DepartmentId = 8649 --Дирекция ПРИВОЛЖСКАЯ
 --SET @DepartmentId = 9545 --Объединенный департамент №2
-SET @DepartmentId = 4188 --Дирекция ВОСТОЧНО-СИБИРСКАЯ
+--SET @DepartmentId = 4188 --Дирекция ВОСТОЧНО-СИБИРСКАЯ
+SET @DepartmentId = 8581 --Дирекция УРАЛЬСКАЯ
 
 
 SELECT IDENTITY(INT, 1, 1) as Id, CAST(0 as bit) as IsComplete, * 
@@ -58,8 +59,8 @@ SELECT IDENTITY(INT, 1, 1) as Id, CAST(0 as bit) as IsComplete, *
 							when UserCode <> RegularCode and UserCode = PregCode and MoveCode is null and AbsentCode is null then 8	--фактический сотрудник в ОЖ 
 							when UserCode <> RegularCode and PregCode is null and MoveCode is null and UserCode = AbsentCode then 9	--фактический сотрудник в ДО
 							when UserCode <> RegularCode and PregCode is null and MoveCode is null and AbsentCode is null then 10	--фактический сотрудник работает на месте основной в текущий момент времени
-							--when UserCode <> RegularCode and UserCode = PregCode and RegularCode = MoveCode and AbsentCode is null then 11	--основной сотрудник в КП - на место был перевод или прием по СТД и факт в ОЖ
-							--when UserCode <> RegularCode and PregCode is null and RegularCode = MoveCode and UserCode = AbsentCode then 12	--основной сотрудник в КП - на место был перевод или прием по СТД и факт в ОД
+							when UserCode <> RegularCode and UserCode = PregCode and RegularCode = MoveCode and AbsentCode is null then 11	--основной сотрудник в КП - на место был перевод или прием по СТД и факт в ОЖ
+							when UserCode <> RegularCode and PregCode is null and RegularCode = MoveCode and UserCode = AbsentCode then 12	--основной сотрудник в КП - на место был перевод или прием по СТД и факт в ОД
 							else 99 end as OrderId
 ,CAST(null as int) as UserLink	--временное
 ,CAST(null as int) as RegLink		--основное
@@ -75,8 +76,8 @@ ORDER BY --RegularSurname,
 							when UserCode <> RegularCode and UserCode = PregCode and MoveCode is null and AbsentCode is null then 8	--фактический сотрудник в ОЖ 
 							when UserCode <> RegularCode and PregCode is null and MoveCode is null and UserCode = AbsentCode then 9	--фактический сотрудник в ДО
 							when UserCode <> RegularCode and PregCode is null and MoveCode is null and AbsentCode is null then 10	--фактический сотрудник работает на месте основной в текущий момент времени
-							--when UserCode <> RegularCode and UserCode = PregCode and RegularCode = MoveCode and AbsentCode is null then 11	--основной сотрудник в КП - на место был перевод или прием по СТД и факт в ОЖ
-							--when UserCode <> RegularCode and PregCode is null and RegularCode = MoveCode and UserCode = AbsentCode then 12	--основной сотрудник в КП - на место был перевод или прием по СТД и факт в ОД
+							when UserCode <> RegularCode and UserCode = PregCode and RegularCode = MoveCode and AbsentCode is null then 11	--основной сотрудник в КП - на место был перевод или прием по СТД и факт в ОЖ
+							when UserCode <> RegularCode and PregCode is null and RegularCode = MoveCode and UserCode = AbsentCode then 12	--основной сотрудник в КП - на место был перевод или прием по СТД и факт в ОД
 							else 99 end
 --НЕСКОЛЬКО ПРОВЕРОК
 
@@ -786,4 +787,28 @@ update Users SET RegularUserLinkId = 1759 WHERE Id = 4636
 		update StaffPostReplacement set UserLinkId = 211 where Id = 1658
 
 
+
+--Дирекция УРАЛЬСКАЯ
+	--ДО ОБРАБОТКИ
+	--ПОСЛЕ ОБРАБОТКИ
+	--Титова Юлия Игоревна 0000013386 - VALUES(1, 463, 8754, 1, 25000, 1, '20151224')
+	update StaffEstablishedPostUserLinks set UserId = 1854 where Id = 10757
+	update Users set RegularUserLinkId = 10757 where Id = 1854
+	update StaffTemporaryReleaseVacancyRequest set UserLinkId = 10757 where ReplacedId = 1854
+	--Валеева Юлия Иршатовна 0000026815
+	update StaffEstablishedPostUserLinks set UserId = 15505 where Id = 7455
+	update Users set RegularUserLinkId = 7455 where Id = 15505
+	update StaffTemporaryReleaseVacancyRequest set UserLinkId = 7455 where ReplacedId = 15505
+	--Хомич Ирина Николаевна 0000027629
+	update StaffEstablishedPostUserLinks set UserId = 16053 where Id = 6761
+	update Users set RegularUserLinkId = 6761 where Id = 16053
+	update StaffTemporaryReleaseVacancyRequest set UserLinkId = 6761 where ReplacedId = 16053
+
+
+	--перестановка Григорьева Лидия Александровна 2973, Мякишева Наталья Николаевна 9221 и Петухова Полина Александровна 19308
+	select * from StaffEstablishedPostUserLinks where Id = 6606
+	select * from StaffPostReplacement where UserLinkId = 6606
+	update StaffPostReplacement set userId = 9221 where Id = 1907
+	update StaffPostReplacement set userid = 19308, ReplacedId = 9221 where Id = 1908
+	update StaffEstablishedPostUserLinks set UserId = 19308 where Id = 6606
 */

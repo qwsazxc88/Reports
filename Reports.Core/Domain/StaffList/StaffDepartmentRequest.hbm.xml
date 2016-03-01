@@ -29,6 +29,7 @@
     <property name="BeginAccountDate" not-null="false"/>
     <property name="DateState" not-null="false"/>
     <property name="DeleteDate" not-null="false"/>
+    <many-to-one name="RejectUser" class="User" column="RejectId" foreign-key="FK_StaffDepartmentRequest_RejectUser" index="StaffDepartmentRequest_RejectUser" not-null="false"/>
     <many-to-one name="Creator" class="User" column="CreatorID" foreign-key="FK_StaffDepartmentRequest_CreatorUser" index="StaffDepartmentRequest_CreatorUser" not-null="false"/>
     <property name="CreateDate" not-null="false"/>
     <many-to-one name="Editor" class="User" column="EditorID" foreign-key="FK_StaffDepartmentRequest_EditorUser" index="StaffDepartmentRequest_EditorUser" not-null="false"/>

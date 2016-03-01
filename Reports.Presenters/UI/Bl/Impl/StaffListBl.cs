@@ -2017,6 +2017,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.IsUsed = false;
                 entity.DeleteDate = DateTime.Now;
+                entity.RejectUser = curUser;
+
                 error = "Заявка отклонена!";
 
                 if (model.Id != 0)
@@ -2575,6 +2577,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                 {
                     model.Initiators = Initiators.Where(x => x.Level >= 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+                    //если не определился инициатор, то используем тяжелую артеллерию
+                    if (model.Initiators == null || model.Initiators.Count == 0)
+                        model.Initiators = Initiators.Where(x => x.Level >= 2).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
                     //если создатель заявки руководитель, то позиционируемся на нем
                     if (entity.Creator.UserRole == UserRole.Manager)
                         model.InitiatorId = entity.Creator.Id;
@@ -3434,6 +3439,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.IsUsed = false;
                 entity.DeleteDate = DateTime.Now;
+                entity.RejectUser = curUser;
 
                 //если отклоняется заявка на сокращение, то в расстановке убираем все резервы и отметки
                 if (entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.IsUsed && x.IsDismissal).Count() != 0)
