@@ -30,6 +30,7 @@
     <property name="DeleteDate" not-null="false"/>
     <property name="DeleteAfterSendTo1C" not-null="true"/>
     <property name="IsOriginalReceived" not-null="true"/>
+    <property name="IsOriginalRequestReceived" not-null="true"/>
     <property name="IsPersonnelFileSentToArchive" not-null="true"/>
 
     <many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_Dismissal_TimesheetStatus" index="Dismissal_TimesheetStatus"  not-null="false"/>

@@ -261,6 +261,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("RequestType", NHibernateUtil.String).
                 AddScalar("RequestStatus", NHibernateUtil.String).
                 AddScalar("IsOriginalReceived", NHibernateUtil.Boolean).
+                AddScalar("IsOriginalRequestReceived", NHibernateUtil.Boolean).
                 AddScalar("Dep7Name",NHibernateUtil.String).
                 AddScalar("Dep3Name",NHibernateUtil.String).
                 AddScalar("Position",NHibernateUtil.String).

@@ -25,6 +25,7 @@ namespace Reports.Core.Domain
         public virtual VacationType Type { get; set; }
         public virtual AdditionalVacationType AdditionalVacationType { get; set; }
         public virtual bool IsOriginalReceived { get; set; }
+        public virtual bool IsOriginalRequestReceived { get; set; }
         //public virtual RequestStatus Status { get; set; }
 
         public virtual decimal? PrincipalVacationDaysLeft { get; set; }
