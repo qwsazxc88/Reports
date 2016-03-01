@@ -2017,6 +2017,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.IsUsed = false;
                 entity.DeleteDate = DateTime.Now;
+                entity.RejectUser = curUser;
+
                 error = "Заявка отклонена!";
 
                 if (model.Id != 0)
@@ -3437,6 +3439,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.IsUsed = false;
                 entity.DeleteDate = DateTime.Now;
+                entity.RejectUser = curUser;
 
                 //если отклоняется заявка на сокращение, то в расстановке убираем все резервы и отметки
                 if (entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.IsUsed && x.IsDismissal).Count() != 0)
