@@ -1859,7 +1859,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         model.IsOriginalReceivedModified = false;
                         List<int> idsToApplyReceivedOriginals = model.Documents.Where(x => x.IsOriginalReceived).Select(x => x.Id).ToList();
+                        List<int> idsToApplyReceivedRequestOriginals = model.Documents.Where(x => x.IsOriginalRequestReceived).Select(x => x.Id).ToList();
                         ApplyReceivedOriginals(model, idsToApplyReceivedOriginals);
+                        ApplyReceivedRequestOriginals(model, idsToApplyReceivedRequestOriginals);
                     }
                     if (model.IsPersonnelFileSentToArchiveModified)
                     {
@@ -1882,7 +1884,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 DismissalDao.SaveAndFlush(entity);
             }
         }
-
+        protected void ApplyReceivedRequestOriginals(DismissalListModel model, List<int> idsToApplyReceivedOriginals)
+        {
+            List<Dismissal> entities = DismissalDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
+            foreach (Dismissal entity in entities)
+            {
+                entity.IsOriginalRequestReceived = true;
+                DismissalDao.SaveAndFlush(entity);
+            }
+        }
         protected void ApplyPersonnelFileSentToArchive(DismissalListModel model, List<int> idsToApplyPersonnelFileSentToArchive)
         {
             List<Dismissal> entities = DismissalDao.LoadForIdsList(idsToApplyPersonnelFileSentToArchive).ToList();
@@ -5241,7 +5251,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.IsOriginalReceivedModified = false;
                     List<int> idsToApplyReceivedOriginals = model.Documents.Where(x => x.IsOriginalReceived).Select(x => x.Id).ToList();
+                    List<int> idsToApplyReceivedRequestOrigionals = model.Documents.Where(x => x.IsOriginalRequestReceived).Select(x => x.Id).ToList();
                     ApplyReceivedOriginals(model, idsToApplyReceivedOriginals);
+                    ApplyRequestOriginals(model, idsToApplyReceivedRequestOrigionals);
                 }
                 SetDocumentsToModel(model, user);
             }
@@ -5257,7 +5269,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 VacationDao.SaveAndFlush(entity);
             }
         }
-
+        protected void ApplyRequestOriginals(VacationListModel model, List<int> idsToApplyReceivedOriginals)
+        {
+            List<Vacation> entities = VacationDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
+            foreach (Vacation entity in entities)
+            {
+                entity.IsOriginalRequestReceived = true;
+                VacationDao.SaveAndFlush(entity);
+            }
+        }
+        
         protected void SetFlagsState(User user, VacationListModel model)
         {
             if ((user.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager)
@@ -6653,7 +6674,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.IsOriginalReceivedModified = false;
                     List<int> idsToApplyReceivedOriginals = model.Documents.Where(x => x.IsOriginalReceived).Select(x => x.Id).ToList();
+                    List<int> idsToApplyReceivedRequestOriginals = model.Documents.Where(x => x.IsOriginalRequestReceived).Select(x => x.Id).ToList();
+
                     ApplyReceivedOriginals(model, idsToApplyReceivedOriginals);
+                    ApplyReceivedRequestOriginals(model, idsToApplyReceivedRequestOriginals);
                 }
 
                 SetDocumentsToModel(model, user);
@@ -6670,7 +6694,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 ChildVacationDao.SaveAndFlush(entity);
             }
         }
-
+        protected void ApplyReceivedRequestOriginals(ChildVacationListModel model, List<int> idsToApplyReceivedOriginals)
+        {
+            List<ChildVacation> entities = ChildVacationDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
+            foreach (ChildVacation entity in entities)
+            {
+                entity.IsOriginalRequestReceived = true;
+                ChildVacationDao.SaveAndFlush(entity);
+            }
+        }
         protected void SetFlagsState(User user, ChildVacationListModel model)
         {
             if ((user.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager)

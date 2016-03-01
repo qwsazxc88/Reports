@@ -32,7 +32,9 @@
   <property name="DeleteDate" not-null="false"/>
   <property name="DeleteAfterSendTo1C" not-null="true"/>
   <property name="IsOriginalReceived" not-null="true"/>
-	  <!--<property name="ManagerFullNameForPrint"  length="512" not-null="false"/>
+  <property name="IsOriginalRequestReceived" not-null="true"/>
+    
+    <!--<property name="ManagerFullNameForPrint"  length="512" not-null="false"/>
 	  <property name="ManagerPositionForPrint"  length="128" not-null="false"/>
 	  <property name="UserFullNameForPrint" length="512" not-null="false"/>-->
 

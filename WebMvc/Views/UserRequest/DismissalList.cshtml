@@ -224,7 +224,13 @@
                             <input type="checkbox" id="setAll1" />
                         }
                     </th>
-                    
+                    <th>
+                        <div id="sort17"><a href="#" onclick="SortChanged(17);">Оригиналы<br />заявлений<br />получены</a></div><br />
+                        @if (Model.IsOriginalReceivedEditable)
+                        {
+                            <input type="checkbox" id="setAllRequest" />
+                        }
+                    </th>
                     <th>
                         <div id="sort11"><a href="#" onclick="SortChanged(11);">Личное дело<br />передано<br />в архив</a></div><br />
                         @if (Model.IsPersonnelFileSentToArchiveEditable)
@@ -269,7 +275,16 @@
                                     @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck1", disabled = "disabled" })
                                 }
                             </td>
-
+                            <td style="text-align: center">
+                                @if(Model.IsOriginalReceivedEditable)
+                                {
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalRequestReceived, new { @class = "selcheckRequest" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalRequestReceived, new { @class = "selcheckRequest", disabled = "disabled" })
+                                }
+                            </td>
                             <td style="text-align: center">
                                 @if (Model.IsPersonnelFileSentToArchiveEditable)
                                 {
@@ -320,7 +335,16 @@
                 $(".selcheck1").removeAttr('checked');
             }
          });
-
+         $("#setAllRequest").click(function(){
+            if ($(this).is(':checked'))
+            {
+                $(".selcheckRequest").attr('checked','checked');
+            }
+            else
+            {
+                $(".selcheckRequest").removeAttr('checked');
+            }
+         });
          $("#setAll2").click(function(){
             if ($(this).is(':checked'))
             {
