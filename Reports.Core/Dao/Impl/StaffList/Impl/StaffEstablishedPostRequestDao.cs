@@ -340,9 +340,12 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public StaffEstablishedPostRequest GetPrevEstablishedPostRequest(int SEPId, int Id)
         {
-            return Session.Query<StaffEstablishedPostRequest>()
-                .Where(x => x.StaffEstablishedPost.Id == SEPId && /*x.Id != Id &&*/ x.DateAccept.HasValue).ToList()
-                .OrderByDescending(x => x.DateAccept).FirstOrDefault();
+            if (Session.Query<StaffEstablishedPostRequest>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.Id != Id && x.DateAccept.HasValue).Count() == 0)
+                return new StaffEstablishedPostRequest() { Salary = 0 };
+            else
+                return Session.Query<StaffEstablishedPostRequest>()
+                    .Where(x => x.StaffEstablishedPost.Id == SEPId && x.Id != Id && x.DateAccept.HasValue).ToList()
+                    .OrderByDescending(x => x.DateAccept).FirstOrDefault();
         }
     }
 }
