@@ -346,15 +346,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (string.IsNullOrEmpty(DepId)) return model;
 
             Department dep = DepartmentDao.GetByCode(DepId);
+            User curUser = UserDao.Get(AuthenticationService.CurrentUser.Id);
             int DepartmentId = dep.Id;
             int itemLevel = dep.ItemLevel.Value;
             bool IsSalaryEnable = AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector ? false : true;
-            
+
+            int PersonnelId = AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager ? AuthenticationService.CurrentUser.Id : 0;
+            //для замов нужно скрывать оклад руководителя
+            int ManagerId = AuthenticationService.CurrentUser.UserRole == UserRole.Manager ? AuthenticationService.CurrentUser.Id : 0;
+
+            //для Месяц, под учеткой члена правления нужно показать деньги только для фронтов
+            if (AuthenticationService.CurrentUser.Id == 12327)
+                ManagerId = 12327;
+
+
             //достаем уровень подразделений и штатных единиц к ним
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
             if (itemLevel != 7)
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, IsSalaryEnable);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, IsSalaryEnable, PersonnelId, ManagerId);
                 //уровень подразделений
                 model.Departments = GetDepartmentListByParent(DepId, false, IsBegin)
                     .OrderBy(x => x.Priority)
@@ -363,7 +373,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, IsSalaryEnable);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, IsSalaryEnable, PersonnelId, ManagerId);
             }
 
             return model;
@@ -2017,6 +2027,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.IsUsed = false;
                 entity.DeleteDate = DateTime.Now;
+                entity.RejectUser = curUser;
+
                 error = "Заявка отклонена!";
 
                 if (model.Id != 0)
@@ -2353,7 +2365,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffDepartmentRequest);
 
             //для новых/автоматически сформированных заявок
-            if (DocApproval == null || DocApproval.Count == 0)
+            if (DocApproval == null || DocApproval.Where(x => x.IsImportance).Count() == 0)
             {
                 model.IsInitiatorApproveAvailable = entity.IsUsed ? false : (model.Initiators.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.Initiators.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false);
                 model.IsTopManagerApproveAvailable = false;
@@ -2575,6 +2587,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                 {
                     model.Initiators = Initiators.Where(x => x.Level >= 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
+                    //если не определился инициатор, то используем тяжелую артеллерию
+                    if (model.Initiators == null || model.Initiators.Count == 0)
+                        model.Initiators = Initiators.Where(x => x.Level >= 2).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + " - " + x.Position.Name });
                     //если создатель заявки руководитель, то позиционируемся на нем
                     if (entity.Creator.UserRole == UserRole.Manager)
                         model.InitiatorId = entity.Creator.Id;
@@ -3434,6 +3449,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.IsUsed = false;
                 entity.DeleteDate = DateTime.Now;
+                entity.RejectUser = curUser;
 
                 //если отклоняется заявка на сокращение, то в расстановке убираем все резервы и отметки
                 if (entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.IsUsed && x.IsDismissal).Count() != 0)
@@ -5501,6 +5517,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             //для замов нужно скрывать оклад руководителя
             int ManagerId = AuthenticationService.CurrentUser.UserRole == UserRole.Manager ? AuthenticationService.CurrentUser.Id : 0;
             
+            //для Месяц, под учеткой члена правления нужно показать деньги только для фронтов
+            if (AuthenticationService.CurrentUser.Id == 12327)
+                ManagerId = 12327;
 
             //достаем уровень подразделений и сотрудников с должностями к ним
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников

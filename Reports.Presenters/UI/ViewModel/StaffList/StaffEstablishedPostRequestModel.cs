@@ -49,10 +49,10 @@ namespace Reports.Presenters.UI.ViewModel.StaffList
         [Display(Name = "Юридический адрес")]
         public string LegalAddress { get; set; }
 
-        [Display(Name = "Признак постановки на учет в ИФНС")]
+        [Display(Name = "Требуется постановка на учет в ИФНС")]
         public bool IsTaxAdminAccount { get; set; }
 
-        [Display(Name = "Признак наличия персонала в подразделении")]
+        [Display(Name = "Осуществлять прием сотрудников в подразделение")]
         public bool IsEmployeAvailable { get; set; }
 
         [Display(Name = "Должность")]

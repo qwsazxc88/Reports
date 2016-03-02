@@ -24,15 +24,21 @@ namespace Reports.Core.Dao.Impl
         /// </summary>
         /// <param name="DepartmentId">Id подразделения</param>
         /// <param name="IsSalaryEnable">Признак показа окладов.</param>
+        /// <param name="PersonnelId">Id кадровика РК</param>
+        /// <param name="ManagerId">Id руководителя</param>
         /// <returns></returns>
-        public IList<StaffEstablishedPostDto> GetStaffEstablishedPosts(int DepartmentId, bool IsSalaryEnable)
+        public IList<StaffEstablishedPostDto> GetStaffEstablishedPosts(int DepartmentId, bool IsSalaryEnable, int PersonnelId, int ManagerId)
         {
-            string sqlQuery = (@"SELECT A.Id, A.PositionId, B.Name as PositionName, A.DepartmentId, A.Quantity, " + (!IsSalaryEnable ? "0 as Salary" : "A.Salary") + @", C.Path, D.Id as RequestId
-                                       FROM StaffEstablishedPost as A
-                                       INNER JOIN Position as B ON B.Id = A.PositionId
-                                       INNER JOIN Department as C ON C.Id = A.DepartmentId
-                                       LEFT JOIN StaffEstablishedPostRequest as D ON D.SEPId = A.Id and D.IsUsed = 1
-                                       WHERE A.DepartmentId = :DepartmentId and A.IsUsed = 1 ORDER BY A.Priority");
+
+//            string sqlQuery = (@"SELECT A.Id, A.PositionId, B.Name as PositionName, A.DepartmentId, A.Quantity, " + (!IsSalaryEnable ? "0 as Salary" : "A.Salary") + @", C.Path, D.Id as RequestId
+//                                       FROM StaffEstablishedPost as A
+//                                       INNER JOIN Position as B ON B.Id = A.PositionId
+//                                       INNER JOIN Department as C ON C.Id = A.DepartmentId
+//                                       LEFT JOIN StaffEstablishedPostRequest as D ON D.SEPId = A.Id and D.IsUsed = 1
+//                                       WHERE A.DepartmentId = :DepartmentId and A.IsUsed = 1 ORDER BY A.Priority");
+            string sqlQuery = (@"SELECT SEPId as Id, PositionId, PositionName, DepartmentId, sum(Quantity) as Quantity, " + (!IsSalaryEnable ? "0 as Salary" : "Salary") + @", Path, RequestId 
+                                 FROM dbo.fnGetStaffEstablishedArrangements(:DepartmentId, :PersonnelId, :ManagerId) 
+								 GROUP BY SEPId, PositionId, PositionName, DepartmentId, Salary, Path, RequestId");
             return Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("PositionId", NHibernateUtil.Int32)
@@ -43,6 +49,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Path", NHibernateUtil.String)
                 .AddScalar("RequestId", NHibernateUtil.Int32)
                 .SetInt32("DepartmentId", DepartmentId)
+                .SetInt32("PersonnelId", PersonnelId)
+                .SetInt32("ManagerId", ManagerId)
                 .SetResultTransformer(Transformers.AliasToBean(typeof(StaffEstablishedPostDto))).
                 List<StaffEstablishedPostDto>();
         }
