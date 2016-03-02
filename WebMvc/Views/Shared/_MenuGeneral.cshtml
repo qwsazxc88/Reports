@@ -1,5 +1,6 @@
 ﻿@{
 	var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+	// SELECT Menu.Name , Menu.LinkController , Menu.LinkAction , Menu.Parent from MenuForRole JOIN Menu ON MenuForRole.MenuId=Menu.id where (RoleId=1 AND Menu.IsVisible=1 AND MenuForRole.NotAllow=0);
 }
 @using Reports.Presenters.Services.Impl
 @using Reports.Core
