@@ -24,8 +24,9 @@ namespace Reports.Core.Dao
         /// <param name="SortBy">Номер колонки для сортировки</param>
         /// <param name="SortDescending">Признак направления сортировки.</param>
         /// <param name="RequestTypeId">Id вида заявки</param>
+        /// <param name="BFGId">Id принадлежности подразделения</param>
         /// <returns></returns>
-        IList<DepartmentRequestListDto> GetDepartmentRequestList(User curUser, UserRole role, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending, int RequestTypeId);
+        IList<DepartmentRequestListDto> GetDepartmentRequestList(User curUser, UserRole role, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending, int RequestTypeId, int BFGId);
         /// <summary>
         /// Достаем Id действующей заявки для данного подразделения.
         /// </summary>
