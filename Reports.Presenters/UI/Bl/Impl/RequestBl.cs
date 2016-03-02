@@ -3820,7 +3820,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.IsOriginalReceivedModified = false;
                     List<int> idsToApplyReceivedOriginals = model.Documents.Where(x => x.IsOriginalReceived).Select(x => x.Id).ToList();
+                    List<int> idsToApplySendedOriginals = model.Documents.Where(x => x.IsOriginalSended).Select(x => x.Id).ToList();
                     ApplyReceivedOriginals(model, idsToApplyReceivedOriginals);
+                    ApplySendedOriginals(model, idsToApplySendedOriginals);
                 }
                 SetDocumentsToModel(model, user);
             }
@@ -3832,6 +3834,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             foreach (Sicklist entity in entities)
             {
                 entity.IsOriginalReceived = true;
+                SicklistDao.SaveAndFlush(entity);
+            }
+        }
+        protected void ApplySendedOriginals(SicklistListModel model, List<int> idsToApplyReceivedOriginals)
+        {
+            List<Sicklist> entities = SicklistDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
+            foreach (Sicklist entity in entities)
+            {
+                entity.IsOriginalSended = true;
                 SicklistDao.SaveAndFlush(entity);
             }
         }

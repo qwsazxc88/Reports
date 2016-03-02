@@ -38,7 +38,7 @@ namespace Reports.Core.Domain
         public virtual bool Is2010Calculate { get; set; }
         public virtual bool IsAddToFullPayment { get; set; }
         public virtual bool IsOriginalReceived { get; set; }
-
+        public virtual bool IsOriginalSended { get; set; }
        
 
       
