@@ -480,7 +480,7 @@
                     <span class="fakeFormField">@Model.PrevApproverName</span>
                     if (Model.PrevApprovalDate.HasValue)
                     {
-                        <span class="fakeFormField">@Model.PrevApprovalDate.Value.ToShortDateString()</span>
+                        <span class="fakeFormField">@Model.PrevApprovalDate.Value.ToShortDateString() - @Model.PrevApprovalDate.Value.ToShortTimeString()</span>
                     }
                 }
                 @if (Model.IsPrevApproveBySecurityAvailable)
