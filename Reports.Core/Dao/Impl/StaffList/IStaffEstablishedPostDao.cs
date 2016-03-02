@@ -14,8 +14,10 @@ namespace Reports.Core.Dao
         /// </summary>
         /// <param name="DepartmentId">Id подразделения</param>
         /// <param name="IsSalaryEnable">Признак показа окладов.</param>
+        /// <param name="PersonnelId">Id кадровика РК</param>
+        /// <param name="ManagerId">Id руководителя</param>
         /// <returns></returns>
-        IList<StaffEstablishedPostDto> GetStaffEstablishedPosts(int DepartmentId, bool IsSalaryEnable);
+        IList<StaffEstablishedPostDto> GetStaffEstablishedPosts(int DepartmentId, bool IsSalaryEnable, int PersonnelId, int ManagerId);
         /// <summary>
         /// Список сотрудников с должностями к подразделению.
         /// </summary>

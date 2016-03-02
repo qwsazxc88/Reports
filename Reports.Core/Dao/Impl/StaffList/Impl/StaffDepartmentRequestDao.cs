@@ -170,6 +170,10 @@ namespace Reports.Core.Dao.Impl
                     //кураторам показываем фронты и бэкфронты
                     sqlWhere = @" INNER JOIN Department as F ON F.Id = isnull(A.DepartmentId, A.ParentId) and isnull(F.BFGId, 2) in (2, 6)";
                     break;
+                case UserRole.Director:
+                    //членам правления 
+                    sqlWhere = @" INNER JOIN DirectorsRight as F ON F.UserId = " + curUser.Id.ToString() + " and F.DepartmentAccessoryId = isnull(A.BFGId, F.DepartmentAccessoryId)";
+                    break;
             }
             return sqlWhere;
         }

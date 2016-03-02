@@ -280,11 +280,12 @@ namespace Reports.Core.Dao.Impl
                                 sqlPositionStandartSelector+
                                 RequestStatusStandardSelector + @",
                                 u.ExperienceIn1C as UserExperienceIn1C,
+                                v.IsOriginalSended as IsOriginalSended,
                                 v.IsOriginalReceived as IsOriginalReceived
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
-                                " 
+                                "
                                 + sqlDepartamentJoin
                                 +sqlPositionJoin
                                 + sqlUManagerAccountJoin + @"

@@ -1307,9 +1307,9 @@ GO
 CREATE VIEW [dbo].[vwGpdRefPersons]
 AS
 SELECT A.Id as Id, isnull(A.LastName, '') + ' ' + isnull(A.FirstName, '') + ' ' + isnull(A.SecondName, '') /*+ ' - ' + SNILS*/ as Name, A.SNILS, A.DepCode, A.IsDeleted,
-			 isnull(A.LastName, '') + ' ' + isnull(A.FirstName, '') + ' ' + isnull(A.SecondName, '') + ' (' + isnull(B.Name, 'нет подразделения') + ')' as LongName
+			 isnull(A.LastName, '') + ' ' + isnull(A.FirstName, '') + ' ' + isnull(A.SecondName, '') + ' (' + isnull(B.Name, A.SNILS) + ')' as LongName
 FROM RefPeople as A
-LEFT JOIN dbo.Department as B ON B.Code = A.DepCode
+LEFT JOIN dbo.Department as B ON B.CodeOld = A.DepCode
 --ORDER BY LastName + ' ' + FirstName + ' ' + SecondName + ' - ' + SNILS
 GO
 
