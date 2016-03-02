@@ -76,15 +76,32 @@ DECLARE
 
 	IF @ManagerId <> 0
 	BEGIN
-		--определяем руководителя/зама
-		SELECT @IsMainManager = A.IsMainManager
-					,@Rank = B.[Rank], @Itemlevel = B.Itemlevel, @Login = A.[Login]
-		FROM Users as A
-		INNER JOIN Position as B ON B.Id = A.PositionId
-		INNER JOIN Department as C ON C.Id = A.DepartmentId
-		WHERE A.Id = @ManagerId
+		IF @ManagerId = 12327
+		BEGIN
+			IF EXISTS (SELECT * FROM Department as A
+								 INNER JOIN DirectorsRight as B ON B.DepartmentAccessoryId = A.BFGId and B.UserId = @ManagerId
+								 WHERE A.Id = @DepartmentId)
+			BEGIN
+				SET @IsSalaryEnable = 1
+			END
+			ELSE
+				SET @IsSalaryEnable = 0
+			
+			SET @ManagerId = 0
+		END
+		ELSE
+		BEGIN
+			--определяем руководителя/зама
+			SELECT @IsMainManager = A.IsMainManager
+						,@Rank = B.[Rank], @Itemlevel = B.Itemlevel, @Login = A.[Login]
+			FROM Users as A
+			INNER JOIN Position as B ON B.Id = A.PositionId
+			INNER JOIN Department as C ON C.Id = A.DepartmentId
+			WHERE A.Id = @ManagerId
 
-		SELECT @UserId = Id FROM Users WHERE RoleId & 2 > 0 and [Login] = substring(@Login, 1, LEN(@Login) - 1)
+			SELECT @UserId = Id FROM Users WHERE RoleId & 2 > 0 and [Login] = substring(@Login, 1, LEN(@Login) - 1)
+		END
+		
 	END
 
 
@@ -228,7 +245,7 @@ DECLARE
 	ORDER BY A.Priority
 
 		
---select * from dbo.fnGetStaffEstablishedArrangements(1382, 0, 0) 
+--select * from dbo.fnGetStaffEstablishedArrangements(11395, 0, 12327) 
 
 	RETURN 
 END
