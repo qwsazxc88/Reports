@@ -25,7 +25,7 @@ BEGIN
 		SELECT @SEPCount = isnull(sum(C.Quantity), 0) 
 		FROM Department as A
 		INNER JOIN Department as B ON B.Path like A.Path + N'%'
-		INNER JOIN StaffEstablishedPost as C ON C.DepartmentId = B.Id and C.IsUsed = 1
+		INNER JOIN StaffEstablishedPost as C ON C.DepartmentId = B.Id and C.IsUsed = 1 and C.PositionId is not null
 		WHERE A.Id = @DepartmentId 
 /*
 	--если есть подчиненные подразделения, то считаем и там
@@ -56,6 +56,7 @@ BEGIN
 --SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4132) as SEPCount
 --SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(4205) as SEPCount
 --SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(8010) as SEPCount
+--SELECT dbo.fnGetStaffEstablishedPostCountByDepartment(8171) as SEPCount
 END
 GO
 
