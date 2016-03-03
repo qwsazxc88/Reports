@@ -40,6 +40,14 @@
             </tr>
             <tr>
                 <td style="width:220px">
+                    @Html.LabelFor(m => m.BFGId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.BFGId, new SelectList(Model.DepartmentAccessoryes, "Id", "Name")) 
+                </td>
+            </tr>
+            <tr>
+                <td style="width:220px">
                     @Html.LabelFor(m => m.RequestTypeId):
                 </td>
                 <td>
@@ -179,6 +187,8 @@
         $("#Creator").val('');
         $("#Id").val('');
         $("#StatusId").val('0');
+        $("#BFGId").val('0');
+        $("#RequestTypeId").val('0');
     }
 
     function GetFindRows()

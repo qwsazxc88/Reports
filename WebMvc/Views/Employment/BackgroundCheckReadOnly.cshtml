@@ -343,7 +343,7 @@
                 <span class="fakeFormField">@Model.ApproverName</span>
                 if (Model.ApprovalDate.HasValue)
                 {
-                    <span class="fakeFormField">@Model.ApprovalDate.Value.ToShortDateString()</span>
+                    <span class="fakeFormField">@Model.ApprovalDate.Value.ToShortDateString() @Model.ApprovalDate.Value.ToShortTimeString()</span>
                 }
             }
             @if (Model.IsApproveBySecurityAvailable)

@@ -84,7 +84,7 @@ DECLARE
 					--замены старые, которых в заявках нет
 					SELECT A.Name, null as  MovementDate, null as MovementTempTo
 					FROM Users as A
-					INNER JOIN StaffPostReplacement as B ON B.ReplacedId = A.Id and B.IsUsed = 1 and B.ReasonId = 2
+					INNER JOIN StaffPostReplacement as B ON (B.ReplacedId = A.Id or B.UserId = A.Id) and B.IsUsed = 1 and B.ReasonId = 2
 					WHERE A.RegularUserLinkId = @LinkId and exists(SELECT * FROM StaffEstablishedPostUserLinks WHERE UserId = B.ReplacedId and Id <> @LinkId)) as A
 
 		/*

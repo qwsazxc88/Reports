@@ -346,15 +346,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (string.IsNullOrEmpty(DepId)) return model;
 
             Department dep = DepartmentDao.GetByCode(DepId);
+            User curUser = UserDao.Get(AuthenticationService.CurrentUser.Id);
             int DepartmentId = dep.Id;
             int itemLevel = dep.ItemLevel.Value;
             bool IsSalaryEnable = AuthenticationService.CurrentUser.UserRole == UserRole.TaxCollector ? false : true;
-            
+
+            int PersonnelId = AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager ? AuthenticationService.CurrentUser.Id : 0;
+            //для замов нужно скрывать оклад руководителя
+            int ManagerId = AuthenticationService.CurrentUser.UserRole == UserRole.Manager ? AuthenticationService.CurrentUser.Id : 0;
+
+            //для Месяц, под учеткой члена правления нужно показать деньги только для фронтов
+            if (AuthenticationService.CurrentUser.Id == 12327)
+                ManagerId = 12327;
+
+
             //достаем уровень подразделений и штатных единиц к ним
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
             if (itemLevel != 7)
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, IsSalaryEnable);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, IsSalaryEnable, PersonnelId, ManagerId);
                 //уровень подразделений
                 model.Departments = GetDepartmentListByParent(DepId, false, IsBegin)
                     .OrderBy(x => x.Priority)
@@ -363,7 +373,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, IsSalaryEnable);
+                model.EstablishedPosts = StaffEstablishedPostDao.GetStaffEstablishedPosts(DepartmentId, IsSalaryEnable, PersonnelId, ManagerId);
             }
 
             return model;
@@ -429,7 +439,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             DateTime today = DateTime.Today;
             model.DateBegin = new DateTime(today.Year, today.Month, 1);
             model.DateEnd = today;
-            model.Statuses = GetDepRequestStatuses();
+            model.DepartmentAccessoryes = GetDepartmentAccessoryes();
+            model.Statuses = GetRequestStatuses();
             model.RequestTypes = StaffDepartmentRequestTypesDao.LoadAll();
             model.RequestTypes.Insert(0, new StaffDepartmentRequestTypes() { Id = 0, Name = "Все" });
 
@@ -452,9 +463,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.StatusId,
                 model.SortBy, 
                 model.SortDescending,
-                model.RequestTypeId);
+                model.RequestTypeId,
+                model.BFGId);
 
-            model.Statuses = GetDepRequestStatuses();
+            model.Statuses = GetRequestStatuses();
+            model.DepartmentAccessoryes = GetDepartmentAccessoryes();
             model.RequestTypes = StaffDepartmentRequestTypesDao.LoadAll();
             model.RequestTypes.Insert(0, new StaffDepartmentRequestTypes() { Id = 0, Name = "Все" });
 
@@ -2355,7 +2368,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<DocumentApproval> DocApproval = DocumentApprovalDao.GetDocumentApproval(entity.Id, (int)ApprovalTypeEnum.StaffDepartmentRequest);
 
             //для новых/автоматически сформированных заявок
-            if (DocApproval == null || DocApproval.Count == 0)
+            if (DocApproval == null || DocApproval.Where(x => x.IsImportance).Count() == 0)
             {
                 model.IsInitiatorApproveAvailable = entity.IsUsed ? false : (model.Initiators.Count != 0 && (model.IsCurator || model.IsPersonnelBank || model.IsConsultant || model.Initiators.Where(x => x.Id == curUser.Id).Count() != 0) ? true : false);
                 model.IsTopManagerApproveAvailable = false;
@@ -2610,7 +2623,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             DateTime today = DateTime.Today;
             model.DateBegin = new DateTime(today.Year, today.Month, 1);
             model.DateEnd = today;
-            model.Statuses = GetSERequestStatuses();
+            model.Statuses = GetRequestStatuses();
             model.DepartmentAccessoryes = GetDepartmentAccessoryes();
             model.RequestTypes = StaffEstablishedPostRequestTypesDao.LoadAll();
             model.RequestTypes.Insert(0, new StaffEstablishedPostRequestTypes() { Id = 0, Name = "Все" });
@@ -2638,7 +2651,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.RequestTypeId,
                 model.BFGId);
 
-            model.Statuses = GetSERequestStatuses();
+            model.Statuses = GetRequestStatuses();
             model.DepartmentAccessoryes = GetDepartmentAccessoryes();
             model.RequestTypes = StaffEstablishedPostRequestTypesDao.LoadAll();
             model.RequestTypes.Insert(0, new StaffEstablishedPostRequestTypes() { Id = 0, Name = "Все" });
@@ -2903,11 +2916,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
 
-                    if (entity.RequestType.Id == 3 && entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.ReserveType.HasValue && x.ReserveType.Value != 0 && x.ReserveType.Value != 3).Count() != 0)
-                    {
-                        error = "Нельзя сократить штатную единицу, так как она еще содержит забронированные позиции!";
-                        return false;
-                    }
+                    //if (entity.RequestType.Id == 3 && entity.StaffEstablishedPost.EstablishedPostUserLinks.Where(x => x.ReserveType.HasValue && x.ReserveType.Value != 0 && x.ReserveType.Value != 3).Count() != 0)
+                    //{
+                    //    error = "Нельзя сократить штатную единицу, так как она еще содержит забронированные позиции!";
+                    //    return false;
+                    //}
 
                     //if (entity.Quantity < StaffEstablishedPostDao.GetEstablishedPostUsed(entity.StaffEstablishedPost != null ? entity.StaffEstablishedPost.Id : 0))
                     //{
@@ -5507,6 +5520,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             //для замов нужно скрывать оклад руководителя
             int ManagerId = AuthenticationService.CurrentUser.UserRole == UserRole.Manager ? AuthenticationService.CurrentUser.Id : 0;
             
+            //для Месяц, под учеткой члена правления нужно показать деньги только для фронтов
+            if (AuthenticationService.CurrentUser.Id == 12327)
+                ManagerId = 12327;
 
             //достаем уровень подразделений и сотрудников с должностями к ним
             //если на входе код подразделения 7 уровня, то надо достать должности и сотрудников
@@ -5747,25 +5763,10 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         }
         /// <summary>
-        /// Заполняем список статусов заявок для штатных единиц.
+        /// Заполняем список статусов заявок для штатных единиц и подразделений.
         /// </summary>
         /// <returns></returns>
-        public IList<IdNameDto> GetDepRequestStatuses()
-        {
-            IList<IdNameDto> dto = new List<IdNameDto>();
-            dto.Add(new IdNameDto { Id = 0, Name = "Все" });
-            dto.Add(new IdNameDto { Id = 1, Name = "Черновик" });
-            dto.Add(new IdNameDto { Id = 2, Name = "На согласовании" });
-            dto.Add(new IdNameDto { Id = 3, Name = "Утверждено" });
-            dto.Add(new IdNameDto { Id = 4, Name = "Отклонено" });
-
-            return dto;
-        }
-        /// <summary>
-        /// Заполняем список статусов заявок для штатных единиц.
-        /// </summary>
-        /// <returns></returns>
-        public IList<IdNameDto> GetSERequestStatuses()
+        public IList<IdNameDto> GetRequestStatuses()
         {
             IList<IdNameDto> dto = new List<IdNameDto>();
             dto.Add(new IdNameDto { Id = 0, Name = "Все" });
@@ -5789,7 +5790,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             dto.Add(new IdNameDto { Id = 0, Name = "Все" });
             dto.Add(new IdNameDto { Id = 1, Name = "Бэк" });
             dto.Add(new IdNameDto { Id = 2, Name = "Фронт" });
-            dto.Add(new IdNameDto { Id = 3, Name = "БэкФронт" });
+            dto.Add(new IdNameDto { Id = 6, Name = "БэкФронт" });
 
             return dto;
         }

@@ -220,6 +220,7 @@ namespace Reports.Core.Dao.Impl
             Department department = Get(departmentId);
 
             int BFGID = department.DepartmentAccessory == null ? 0 : department.DepartmentAccessory.Id;
+            int RoleId = BFGID == 1 ? 5 : (BFGID == 2 ? 6 : (BFGID == 6 ? 7 : 0));
 
             if (department == null)
             {
@@ -234,7 +235,7 @@ namespace Reports.Core.Dao.Impl
 
             //ручные привязки с учетом принадлежности подразделения (бэк/фронт)
             IList<User> ManualManagers = Session.Query<ManualRoleRecord>()
-                .Where(x => x.Role.Id == (BFGID != 0 && BFGID != 6 ? BFGID : x.Role.Id) && x.TargetDepartment != null && department.Path.StartsWith(x.TargetDepartment.Path))
+                .Where(x => x.Role.Id == (RoleId == 0 ? x.Role.Id : RoleId) && x.TargetDepartment != null && department.Path.StartsWith(x.TargetDepartment.Path))
                 .Select(x => x.User)
                 .OrderByDescending(x => x.Level).Distinct()
                 .ToList();

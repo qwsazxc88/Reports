@@ -9,6 +9,7 @@ using NHibernate.Criterion;
 using System.Linq;
 using NHibernate.Linq;
 
+
 namespace Reports.Core.Dao.Impl
 {
     /// <summary>
@@ -193,6 +194,10 @@ namespace Reports.Core.Dao.Impl
                     //кураторам показываем фронты и бэкфронты
                     sqlWhere = @" INNER JOIN Department as F ON F.Id = isnull(A.DepartmentId, B.ParentId) and isnull(F.BFGId, 2) in (2, 6)";
                     break;
+                case UserRole.Director:
+                    //членам правления 
+                    sqlWhere = @" INNER JOIN DirectorsRight as F ON F.UserId = " + curUser.Id.ToString() + " and F.DepartmentAccessoryId = isnull(B.BFGId, F.DepartmentAccessoryId)";
+                    break;
             }
             return sqlWhere;
         }
@@ -340,9 +345,12 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public StaffEstablishedPostRequest GetPrevEstablishedPostRequest(int SEPId, int Id)
         {
-            return Session.Query<StaffEstablishedPostRequest>()
-                .Where(x => x.StaffEstablishedPost.Id == SEPId && /*x.Id != Id &&*/ x.DateAccept.HasValue).ToList()
-                .OrderByDescending(x => x.DateAccept).FirstOrDefault();
+            if (Session.Query<StaffEstablishedPostRequest>().Where(x => x.StaffEstablishedPost.Id == SEPId && x.Id != Id && x.DateAccept.HasValue).Count() == 0)
+                return new StaffEstablishedPostRequest() { Salary = 0 };
+            else
+                return Session.Query<StaffEstablishedPostRequest>()
+                    .Where(x => x.StaffEstablishedPost.Id == SEPId && x.Id != Id && x.DateAccept.HasValue).ToList()
+                    .OrderByDescending(x => x.DateAccept).FirstOrDefault();
         }
     }
 }

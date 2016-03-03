@@ -494,7 +494,7 @@ namespace Reports.Presenters.UI.Bl
         /// Заполняем список видов заявок для подразделений.
         /// </summary>
         /// <returns></returns>
-        IList<IdNameDto> GetDepRequestStatuses();
+        IList<IdNameDto> GetRequestStatuses();
         /// <summary>
         /// Достаем для автозаполнения список должностей.
         /// </summary>
