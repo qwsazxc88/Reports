@@ -280,11 +280,12 @@ namespace Reports.Core.Dao.Impl
                                 sqlPositionStandartSelector+
                                 RequestStatusStandardSelector + @",
                                 u.ExperienceIn1C as UserExperienceIn1C,
+                                v.IsOriginalSended as IsOriginalSended,
                                 v.IsOriginalReceived as IsOriginalReceived
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
-                                " 
+                                "
                                 + sqlDepartamentJoin
                                 +sqlPositionJoin
                                 + sqlUManagerAccountJoin + @"
@@ -328,11 +329,12 @@ namespace Reports.Core.Dao.Impl
                                 sqlPositionStandartSelector+
                                 sqlDepartamentStandartSelector+
                                 RequestStatusStandardSelector + @",
-                                v.IsOriginalReceived as IsOriginalReceived
+                                v.IsOriginalReceived as IsOriginalReceived,
+                                v.IsOriginalRequestReceived as IsOriginalRequestReceived
                                 from {4} v
                                 -- left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
-                                " 
+                                "
                                 + sqlDepartamentJoin
                                 + sqlPositionJoin
                                 + sqlUManagerAccountJoin + @"
@@ -361,12 +363,13 @@ namespace Reports.Core.Dao.Impl
                                 sqlPositionStandartSelector+
                                 sqlDepartamentStandartSelector+
                                 RequestStatusStandardSelector + @",
-                                v.IsOriginalReceived as IsOriginalReceived
+                                v.IsOriginalReceived as IsOriginalReceived,
+                                v.IsOriginalRequestReceived as IsOriginalRequestReceived
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
-                                " 
-                                +sqlDepartamentJoin
+                                "
+                                + sqlDepartamentJoin
                                 +sqlPositionJoin
                                 + sqlUManagerAccountJoin + @"
                                 " + sqlCurrentUserJoin + @"
@@ -385,11 +388,12 @@ namespace Reports.Core.Dao.Impl
                                 sqlDepartamentStandartSelector+
                                 RequestStatusStandardSelector + @",
                                 v.IsOriginalReceived as IsOriginalReceived,
+                                v.IsOriginalRequestReceived as IsOriginalRequestReceived,
                                 v.IsPersonnelFileSentToArchive as IsPersonnelFileSentToArchive
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
-                                " 
+                                "
                                 + sqlDepartamentJoin
                                 +sqlPositionJoin
                                 + sqlUManagerAccountJoin + @"
@@ -985,6 +989,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 16:
                     sqlQuery += @" order by ManagerName ";
+                    break;
+                case 17:
+                    sqlQuery += @" order by IsOriginalRequestReceived";
                     break;
             }
             if (sortDescending.Value)

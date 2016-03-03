@@ -194,8 +194,12 @@
                     @if (Model.IsOriginalReceivedEditable)
                     {
                         <th>
-                            <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Оригинал<br />получен</a></div><br />
+                            <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Оригинал<br />приказа получен</a></div><br />
                             <input type="checkbox" id="setAll" />
+                        </th>
+                        <th>
+                            <div id="sort17"><a href="#"  onclick = "SortChanged(17);">Оригинал<br />заявления получен</a></div><br />
+                            <input type="checkbox" id="setAllRequest" />
                         </th>
                     }
                     @*<th>
@@ -228,9 +232,12 @@
                                     @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck" })
                                     <input type="hidden" id="Documents[@(i - 1)].Id" name="Documents[@(i - 1)].Id" value="@doc.Id" />
                                 </td>
+                                <td style="text-align: center">
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalRequestReceived, new { @class = "selcheckRequest" })
+                                </td>
                             }
                         </tr>
-                        i++;
+                            i++;
                     }
                 }
             </table>
@@ -261,6 +268,16 @@
             else
             {
                 $(".selcheck").removeAttr('checked');
+            }
+         });
+          $("#setAllRequest").click(function(){
+            if ($(this).is(':checked'))
+            {
+                $(".selcheckRequest").attr('checked','checked');
+            }
+            else
+            {
+                $(".selcheckRequest").removeAttr('checked');
             }
          });
     });

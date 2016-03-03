@@ -86,6 +86,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("RequestStatus", NHibernateUtil.String).
                 AddScalar("UserExperienceIn1C", NHibernateUtil.Boolean).
                 AddScalar("IsOriginalReceived", NHibernateUtil.Boolean).
+                AddScalar("IsOriginalSended", NHibernateUtil.Boolean).
                 AddScalar("SicklistNumber", NHibernateUtil.String).
                 AddScalar("Dep7Name",NHibernateUtil.String).
                 AddScalar("Dep3Name",NHibernateUtil.String).

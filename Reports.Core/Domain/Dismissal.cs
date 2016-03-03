@@ -36,6 +36,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? DeleteDate { get; set; }
         public virtual bool DeleteAfterSendTo1C { get; set; }
         public virtual bool IsOriginalReceived { get; set; }
+        public virtual bool IsOriginalRequestReceived { get; set; }
         public virtual bool IsPersonnelFileSentToArchive { get; set; }
 
         public virtual IList<DismissalComment> Comments { get; set; }

@@ -224,8 +224,12 @@
                     @if (Model.IsOriginalReceivedEditable)
                     {
                         <th>
-                            <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Оригинал<br />получен</a></div><br />
+                            <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Оригинал<br />заполнен</a></div><br />
                             <input type="checkbox" id="setAll" />
+                        </th>
+                        <th>
+                            <div id="sort17"><a href="#"  onclick = "SortChanged(17);">Оригинал<br />отправлен</a></div><br />
+                            <input type="checkbox" id="setAllSended" />
                         </th>
                     }
                  @*   <th>
@@ -260,6 +264,9 @@
                                 <td style="text-align: center">
                                     @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck" })
                                     <input type="hidden" id="Documents[@(i - 1)].Id" name="Documents[@(i - 1)].Id" value="@doc.Id" />
+                                </td>
+                                <td style="text-align: center">
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalSended, new { @class = "selcheckSended" })
                                 </td>
                             }
                             @*<td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
@@ -297,6 +304,16 @@
             else
             {
                 $(".selcheck").removeAttr('checked');
+            }
+         });
+         $("#setAllSended").click(function(){
+            if ($(this).is(':checked'))
+            {
+                $(".selcheckSended").attr('checked','checked');
+            }
+            else
+            {
+                $(".selcheckSended").removeAttr('checked');
             }
          });
     });
