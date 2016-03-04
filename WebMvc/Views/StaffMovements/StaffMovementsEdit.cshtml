@@ -829,6 +829,14 @@ label { font-size:1.1em; }
         }
          </text>
         }
+        clearControlErrors($("#TargetCasing"));
+        if(( parseFloat($("#TargetCasing").val().replace(',','.'))<1))
+        {
+            addControlError($("#TargetCasing"),'Невозможно создать заявку с нулевым окладом');
+            addControlError($("#JSError"),'Невозможно создать заявку с нулевым окладом');
+            addControlError($("#JSError2"),'Невозможно создать заявку с нулевым окладом');
+            result = false;
+        }
         if($("#TargteDepartmentId").val() == 0)
         {
             addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
@@ -957,31 +965,15 @@ label { font-size:1.1em; }
     }
     function ShowFlash(IsShow)  //показываем индикатор загрузки
     {
+        var ind = $("#LoadingIndicator2");
+        if (ind == undefined) return;
         if (!IsShow) {
             $("#LoadingIndicator2").removeClass("loading2");
-            $("#DivIndicator").dialog("close");
-            $("#DivIndicator").hide();
+            $("#DivIndicator").dialog("close");            
         }
         else {
             $("#LoadingIndicator2").addClass("loading2");
-            $("#DivIndicator").show();
-            $("#DivIndicator").dialog(
-            { // initialize dialog box
-                autoOpen: true,
-                modal: true,
-                // fix IE6  
-                bgiframe: true,
-                draggable: false,
-                resizable: false,
-                width: 300,
-                height: 100,
-                closeOnEscape: false,
-                close: function (event, ui) {
-                    //$(this).dialog("destroy").remove();
-                }
-            });
-            $(".ui-dialog-titlebar").hide();
-            $(".ui-dialog-titlebar-close").hide();
+            $("#DivIndicator").dialog("open");            
         }
     }
     function ShowEmailDiv()  
@@ -1044,6 +1036,23 @@ label { font-size:1.1em; }
     }
     function ConfigureFields()
     {
+        $("#DivIndicator").dialog(
+                { // initialize dialog box
+                    autoOpen: false,
+                    modal: true,
+                    // fix IE6  
+                    bgiframe: true,
+                    draggable: false,
+                    resizable: false,
+                    width: 300,
+                    height: 100,
+                    closeOnEscape: false,
+                    close: function (event, ui) {
+                        //$(this).dialog("destroy").remove();
+                    }
+                });
+        $(".ui-dialog-titlebar").hide();
+        $(".ui-dialog-titlebar-close").hide();
         $('#DivErrorsDialog').dialog({ // initialize dialog box
             autoOpen: false,
             modal: true,
