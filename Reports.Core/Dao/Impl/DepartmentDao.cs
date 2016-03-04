@@ -98,11 +98,12 @@ namespace Reports.Core.Dao.Impl
         public DepartmentTreeDto GetDepartmentTreeDto()
         {
             System.Collections.Hashtable table = new System.Collections.Hashtable();
-            string sql = @"SELECT id,ParentId,Name as text FROM Department
+            string sql = @"SELECT id,ParentId,Name as text,IsUsed FROM Department
                             order by ItemLevel,Id";
             var result = Session.CreateSQLQuery(sql)
                 .AddScalar("id", NHibernateUtil.Int32)
                 .AddScalar("ParentId", NHibernateUtil.Int32)
+                .AddScalar("IsUsed",NHibernateUtil.Boolean)
                 .AddScalar("text", NHibernateUtil.String)
                 .SetResultTransformer(Transformers.AliasToBean<DepartmentTreeDto>()).List<DepartmentTreeDto>();
             var first = result.First();
@@ -112,7 +113,7 @@ namespace Reports.Core.Dao.Impl
             }
             foreach (var el in result)
             {
-                if (el.ParentId > 0)
+                if (el.ParentId > 0 && el.IsUsed)
                 {
                     ((DepartmentTreeDto)table[el.ParentId]).children.Add(el);
                 }
