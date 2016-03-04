@@ -274,6 +274,7 @@
                                 {
                                     @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck1", disabled = "disabled" })
                                 }
+                                @Html.DisplayFor(m=>m.Documents[i-1].OriginalReceivedDate)
                             </td>
                             <td style="text-align: center">
                                 @if(Model.IsOriginalReceivedEditable)
@@ -284,6 +285,7 @@
                                 {
                                     @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalRequestReceived, new { @class = "selcheckRequest", disabled = "disabled" })
                                 }
+                                @Html.DisplayFor(m=>m.Documents[i-1].OriginalRequestReceivedDate)
                             </td>
                             <td style="text-align: center">
                                 @if (Model.IsPersonnelFileSentToArchiveEditable)
@@ -294,6 +296,7 @@
                                 {
                                     @Html.CheckBoxFor(m => m.Documents[i - 1].IsPersonnelFileSentToArchive, new { @class = "selcheck2", disabled = "disabled" })
                                 }
+                                @Html.DisplayFor(m=>m.Documents[i-1].PersonnelFileArchiveDate)
                             </td>
                             
                             @* <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>

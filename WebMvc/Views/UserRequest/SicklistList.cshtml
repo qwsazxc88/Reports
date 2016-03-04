@@ -125,7 +125,42 @@
                         @Html.EditorFor(model => model.EndDate) 
                      </td>
                 </tr>
-                
+                @if(Model.IsOriginalReceivedEditable)
+                {
+                <tr>
+                    <td colspan="2">
+                    <fieldset>
+                    <legend>Оригинал от сотрудника получен</legend>
+                        @Html.LabelFor(m => m.Receive.BeginDate):
+                        @Html.EditorFor(model => model.Receive.BeginDate) 
+                        @Html.LabelFor(m => m.Receive.EndDate):
+                        @Html.EditorFor(model => model.Receive.EndDate) 
+                    </fieldset>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                    <fieldset>
+                    <legend>Оригинал передан на заполнение</legend>
+                        @Html.LabelFor(m => m.Send.BeginDate):
+                        @Html.EditorFor(model => model.Send.BeginDate) 
+                        @Html.LabelFor(m => m.Send.EndDate):
+                        @Html.EditorFor(model => model.Send.EndDate) 
+                    </fieldset>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                    <fieldset>
+                    <legend>Оригинал заполнен</legend>
+                        @Html.LabelFor(m => m.Filled.BeginDate):
+                        @Html.EditorFor(model => model.Filled.BeginDate) 
+                        @Html.LabelFor(m => m.Filled.EndDate):
+                        @Html.EditorFor(model => model.Filled.EndDate) 
+                    </fieldset>
+                    </td>
+                </tr>
+                }
                 <tr>
                   <td colspan="2">
                     <input type="submit" value="Выбрать"/>
@@ -224,12 +259,25 @@
                     @if (Model.IsOriginalReceivedEditable)
                     {
                         <th>
-                            <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Оригинал<br />заполнен</a></div><br />
+                            <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Оригинал<br />от сотрудника<br />получен</a></div><br />
                             <input type="checkbox" id="setAll" />
                         </th>
                         <th>
-                            <div id="sort17"><a href="#"  onclick = "SortChanged(17);">Оригинал<br />отправлен</a></div><br />
+                            <div id="sort20"><a href="#"  onclick = "SortChanged(20);">Дата<br />получения</a></div><br />                            
+                        </th>
+                        <th>
+                            <div id="sort18"><a href="#"  onclick = "SortChanged(18);">Оригинал<br />передан на<br />заполнение</a></div><br />
                             <input type="checkbox" id="setAllSended" />
+                        </th>
+                        <th>
+                            <div id="sort21"><a href="#"  onclick = "SortChanged(21);">Дата<br />передачи на<br />заполнение</a></div><br />
+                        </th>
+                        <th>
+                            <div id="sort19"><a href="#"  onclick = "SortChanged(19);">Оригинал<br />заполнен</a></div><br />
+                            <input type="checkbox" id="setAllFilled" />
+                        </th>
+                        <th>
+                            <div id="sort22"><a href="#"  onclick = "SortChanged(22);">Дата<br />заполнения</a></div><br />
                         </th>
                     }
                  @*   <th>
@@ -266,7 +314,19 @@
                                     <input type="hidden" id="Documents[@(i - 1)].Id" name="Documents[@(i - 1)].Id" value="@doc.Id" />
                                 </td>
                                 <td style="text-align: center">
+                                    @Html.DisplayFor(m=>m.Documents[i-1].OriginalReceivedDate)
+                                </td>
+                                <td style="text-align: center">
                                     @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalSended, new { @class = "selcheckSended" })
+                                </td>
+                                <td style="text-align: center">
+                                    @Html.DisplayFor(m => m.Documents[i - 1].OriginalSendDate)
+                                </td>
+                                <td style="text-align: center">
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalFilled, new { @class = "selcheckFilled" })
+                                </td>
+                                <td style="text-align: center">
+                                    @Html.DisplayFor(m => m.Documents[i - 1].OriginalFilledDate)
                                 </td>
                             }
                             @*<td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
@@ -314,6 +374,16 @@
             else
             {
                 $(".selcheckSended").removeAttr('checked');
+            }
+         });
+         $("#setAllFilled").click(function(){
+            if ($(this).is(':checked'))
+            {
+                $(".selcheckFilled").attr('checked','checked');
+            }
+            else
+            {
+                $(".selcheckFilled").removeAttr('checked');
             }
          });
     });

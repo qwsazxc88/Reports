@@ -36,10 +36,14 @@
   <property name="DeleteDate" not-null="false"/>
   <property name="DeleteAfterSendTo1C" not-null="true"/>
   <property name="IsContinued" not-null="true"/>
-    <property name="IsOriginalReceived" not-null="true"/>
-    <property name="IsOriginalSended" not-null="true"/>
-
-
+  <property name="IsOriginalReceived" not-null="true"/>
+  <property name="IsOriginalSended" not-null="true"/>
+  <property name="IsOriginalFilled" not-null="true"/>
+    
+  <property name="OriginalFilledDate" not-null="false"/>
+  <property name="OriginalReceivedDate" not-null="false"/>
+  <property name="OriginalSendDate" not-null="false"/>
+    
     <many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_Sicklist_TimesheetStatus" index="Sicklist_TimesheetStatus"  not-null="false"/>
 
   <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">

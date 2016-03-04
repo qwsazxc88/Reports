@@ -20,6 +20,9 @@ namespace Reports.Core.Dto
         public bool IsOriginalReceived { get; set; }
         public bool IsOriginalRequestReceived { get; set; }
         public bool IsPersonnelFileSentToArchive { get; set; }
+        public DateTime? OriginalReceivedDate { get; set; }
+        public DateTime? OriginalRequestReceivedDate { get; set; }
+        public DateTime? PersonnelFileArchiveDate { get; set; }
         public string ManagerName { get; set; }
     }
     public class MissionDto : VacationDto

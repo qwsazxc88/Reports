@@ -27,6 +27,12 @@ namespace Reports.Core.Dao.Impl
                int paymentPercentTypeId,
                DateTime? beginDate,
                DateTime? endDate,
+                DateTime? ReceiveBeginDate,
+               DateTime? ReceiveEndDate,
+                DateTime? SendBeginDate,
+               DateTime? SendEndDate,
+               DateTime? FilledBeginDate,
+               DateTime? FilledEndDate,
                string userName, 
                string SicklistNumber,
                int sortedBy,
@@ -49,6 +55,9 @@ namespace Reports.Core.Dao.Impl
             whereString = GetTypeWhere(whereString, typeId);
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
+            whereString = GetDatesWhere(whereString, "OriginalReceivedDate", ReceiveBeginDate, ReceiveEndDate);
+            whereString = GetDatesWhere(whereString, "OriginalFilledDate", FilledBeginDate, FilledEndDate);
+            whereString = GetDatesWhere(whereString, "OriginalSendDate", SendBeginDate, SendEndDate);
             whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
@@ -67,7 +76,9 @@ namespace Reports.Core.Dao.Impl
             IQuery query = CreateQuery(sqlQuery);
             query.SetInt32("userId", userId);
             AddDatesToQuery(query, beginDate, endDate, userName);
-
+            AddDatesToQuery(query, "OriginalReceivedDate", ReceiveBeginDate, ReceiveEndDate);
+            AddDatesToQuery(query, "OriginalFilledDate", FilledBeginDate, FilledEndDate);
+            AddDatesToQuery(query, "OriginalSendDate", SendBeginDate, SendEndDate);
             return query.SetResultTransformer(Transformers.AliasToBean<SicklistDto>()).List<SicklistDto>();
         }
 
@@ -87,6 +98,10 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("UserExperienceIn1C", NHibernateUtil.Boolean).
                 AddScalar("IsOriginalReceived", NHibernateUtil.Boolean).
                 AddScalar("IsOriginalSended", NHibernateUtil.Boolean).
+                AddScalar("IsOriginalFilled", NHibernateUtil.Boolean).
+                AddScalar("OriginalFilledDate", NHibernateUtil.DateTime).
+                AddScalar("OriginalReceivedDate", NHibernateUtil.DateTime).
+                AddScalar("OriginalSendDate", NHibernateUtil.DateTime).
                 AddScalar("SicklistNumber", NHibernateUtil.String).
                 AddScalar("Dep7Name",NHibernateUtil.String).
                 AddScalar("Dep3Name",NHibernateUtil.String).
