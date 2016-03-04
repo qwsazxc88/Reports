@@ -11,6 +11,7 @@ namespace Reports.Core.Dto
         public int id { get; set; }
         public string text { get; set; }
         public int ParentId { get; set; }
+        public bool IsUsed { get; set; }
         public IList<DepartmentTreeDto> children { get; set; }
     }
 }
