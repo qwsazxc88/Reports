@@ -162,7 +162,10 @@
                             <div id="sort6"><a href="#"  onclick = "SortChanged(6);">Электронная<br />почта<br />сотрудника</a></div>
                         </th>
                         <th>
-                            <div id="sort14"><a href="#"  onclick = "SortChanged(6);">Дополнительная<br />электронная<br />почта</a></div>
+                            <div id="sort14"><a href="#"  onclick = "SortChanged(14);">Дополнительная<br />электронная<br />почта</a></div>
+                        </th>
+                        <th>
+                            <div id="sort15"><a href="#"  onclick = "SortChanged(15);">Телефон</a></div>
                         </th>
                     </tr>
                     <tbody id="AGList">
@@ -187,7 +190,18 @@
                                     <td>@doc.Manager4</td>
                                     <td>@doc.AccessGroupName</td>
                                     <td>@doc.Email</td>
-                                    <td>@doc.AlternativeMail</td>
+                                    <td><span id="@(doc.UserId+"Mail")">@doc.AlternativeMail</span>
+                                    @if(Model.IsAlternativeMailEditable)
+                                    {
+                                        <input type="button" value="Изменить" onclick="ChangeAltMail(@doc.UserId)"/>
+                                    }
+                                    </td>
+                                    <td><span id="@(doc.UserId+"Phone")">@doc.Phone</span>
+                                    @if(Model.IsPhoneEditable)
+                                    {
+                                        <input type="button" value="Изменить" onclick="ChangePhone(@doc.UserId)"/>
+                                    }
+                                    </td>
                                 </tr>
                                 i++;
                             }
@@ -199,18 +213,76 @@
     </table> 
 }
 
-
+<div style="visibility:hidden">
+<input type="hidden" id="TargetUserId" />
+<div id="AddEmailDialog" title="Добавление дополнительного адреса почты">
+    <div><label>E-mail:</label>
+    <input type="text" id="AlterMail" />
+    </div>
+    <input type="button" onclick="AddMail();" value="Ок"/>
+</div>
+<div id="AddPhoneDialog" title="Добавление телефона">
+    <div><label>Телефон:</label>    
+    <input type="text" id="UserPhone" />
+    </div>
+    <input type="button" onclick="AddPhone();" value="Ок"/>
+</div>
+</div>
 
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    function ChangeAltMail(userid)
+    {
+        $('#TargetUserId').val(userid);
+        $('#AddEmailDialog').dialog('open');
+    }
+    function ChangePhone(userid)
+    {
+        $('#TargetUserId').val(userid);
+        $('#AddPhoneDialog').dialog('open');
+    }
+    function AddMail() {
+        $('#AddEmailDialog').dialog('close');
+        $.ajax(
+        {   
+            type: "POST",
+            url: "/Account/AddAlternativeEmailToUser",
+            data: {Email:$('#AlterMail').val(), UserId:$('#TargetUserId').val() },
+            success: function(data)
+            {
+                
+                alert(data.message);                
+            },
+            error: function(data){ alert('При отправке данных произошла ошибка.');}
+        }
+        );
+    }
+    function AddPhone() {
+        $('#AddPhoneDialog').dialog('close');
+        $.ajax(
+        {   
+            type: "POST",
+            url: "/Account/AddPhoneToUser",
+            data: {Phone:$('#UserPhone').val(), UserId:$('#TargetUserId').val() },
+            success: function(data)
+            {
+                var phoneselector = '#'+$('#TargetUserId').val()+'Phone';
+                $(phoneselector).text($('#UserPhone').val());
+                alert(data.message);
+            },
+            error: function(data){ alert('При отправке данных произошла ошибка.');}
+        }
+        );
+    }
     $(document).ready(function () {
         //$("#BeginDate").datepicker({changeMonth: true, changeYear: true});
         //$("#EndDate").datepicker({changeMonth: true, changeYear: true});
         //$(".hasDatepicker").width("75px");
         
         $(".loading").removeClass("loading");
-
+        $("#AddEmailDialog").dialog({ autoOpen: false });
+        $("#AddPhoneDialog").dialog({ autoOpen: false });
         if(($("#SortBy").val() != 0) && ($("#SortDescending").val() != ''))
         {
             if($("#SortDescending").val() == 'True')

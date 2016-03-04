@@ -7278,9 +7278,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region AccessGroupsList
+        private void SetFlagsState(AccessGroupsListModel model)
+        {
+            if ((CurrentUser.UserRole & (UserRole.PersonnelManager | UserRole.Manager | UserRole.ConsultantOutsourcing)) > 0)
+            {
+                model.IsPhoneEditable = true;
+                model.IsAlternativeMailEditable = true;
+            }
+        }
         public AccessGroupsListModel GetAccessGroupsListModel()
         {
             AccessGroupsListModel model = new AccessGroupsListModel();
+            SetFlagsState(model);
             model.AccessGroups = AccessGroupDao.GetAccessGroups().ToList().ConvertAll(x => new SelectListItem { Value = x.Code, Text = x.Name }).OrderBy(x => x.Value);
             return model;
         }
@@ -7293,6 +7302,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             var user=UserDao.Load(CurrentUser.Id);
             model.AccessGroups = AccessGroupDao.GetAccessGroups().ToList().ConvertAll(x => new SelectListItem { Value = x.Code, Text = x.Name }).OrderBy(x => x.Value);
             model.AccessGroupList = AccessGroupDao.GetAccessGroupList(user,dep, model.AccessGroupCode, model.UserName, model.Manager6, model.Manager5, model.Manager4, model.IsManagerShow, model.SortBy, model.SortDescending);
+            SetFlagsState(model);
             return model;
         }
         #endregion

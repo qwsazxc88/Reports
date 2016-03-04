@@ -33,6 +33,8 @@ namespace Reports.Presenters.UI.ViewModel
         public IList<AccessGroupListDto> AccessGroupList { get; set; }
         public int SortBy { get; set; }
         public bool SortDescending { get; set; }
+        public bool IsPhoneEditable { get; set; }
+        public bool IsAlternativeMailEditable { get; set; }
         
     }
 }

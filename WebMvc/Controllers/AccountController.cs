@@ -102,6 +102,11 @@ namespace WebMvc.Controllers
             BaseBl.AddAlternativeMail(UserId, Email);
             return Json(new { result = "Ok.", message = "На указанный адрес отправлено письмо с подтверждением." });
         }
+        public JsonResult AddPhoneToUser(int UserId, string Phone)
+        {
+            BaseBl.AddPhone(UserId, Phone);
+            return Json(new { result = "Ok.", message = "Телефон добавлен." });
+        }
         [HttpGet]
         public ContentResult Confirm(Guid key)
         {

@@ -161,9 +161,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             var user = UserDao.Load(UserId);
             MailConfirm confirm = new MailConfirm { Mail = Email, User = user };
             MailConfirmDao.SaveAndFlush(confirm);
-            string confirmation = String.Format("Кто-то указал ваш адрес почты на Кадровом портале. Для подтверждения адреса почты пройдите по ссылке https://ruscount.com:8002/Account/Confirm?key={0}", confirm.Id.ToString());
+            string confirmation = String.Format("Кто-то указал ваш адрес почты на Кадровом портале. Для подтверждения адреса почты пройдите по ссылке: <a href='https://ruscount.com:8002/Account/Confirm?key={0}'>Подтвердить</a>", confirm.Id.ToString());
             SendEmail(Email, "Подтверждение адреса почты", confirmation);
             return String.Format("https://ruscount.com:8002/Account/Confirm?key={0}",confirm.Id.ToString());
+        }
+        public void AddPhone(int UserId, string Phone)
+        {
+            var user = UserDao.Load(UserId);
+            user.Phone = Phone;
+            UserDao.SaveAndFlush(user);
         }
         /// <summary>
         /// DEPRECATED. Отключено.

@@ -160,6 +160,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("SaldoAdditional",NHibernateUtil.Decimal)
                 .AddScalar("DateAccept",NHibernateUtil.DateTime)
                 .AddScalar("AlternativeMail",NHibernateUtil.String)
+                .AddScalar("Phone", NHibernateUtil.String)
                 ;
             return query;
         }
@@ -217,6 +218,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 14:
                     orderBy = "u.AlternativeMail";
+                    break;
+                case 15:
+                    orderBy = "u.Phone";
                     break;
                 default:
                     orderBy = "ag.UserName";

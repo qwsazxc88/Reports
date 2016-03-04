@@ -76,7 +76,7 @@ namespace Reports.Core.Domain
         //    set { _department = value; }
         //}
         #endregion
-
+        public virtual string Phone { get; set; }
         public virtual bool IsFirstTimeLogin { get; set; }
         //{
         //    get { return _isFirstTimeLogin; }
