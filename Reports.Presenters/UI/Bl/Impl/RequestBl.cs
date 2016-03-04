@@ -2168,7 +2168,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         // а также 182-Н и 2-НДФЛ для ознакомления сотрудником
                         model.IsF182NAllowed = true;
                         model.IsF2NDFLAllowed = true;
-
+                        model.IsT2Allowed = !(model.T2ScanAttachmentId>0);
+                        model.IsDismissalAgreementAllowed = !(model.DismissalAgreementScanAttachmentId > 0);
                         // Кадровик имеет право на просмотр документов с ограничениями просмотра
                         model.IsViewDismissalAgreementAllowed = true;
                         model.IsViewF182NAllowed = true;
@@ -7274,9 +7275,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region AccessGroupsList
+        private void SetFlagsState(AccessGroupsListModel model)
+        {
+            if ((CurrentUser.UserRole & (UserRole.PersonnelManager | UserRole.Manager | UserRole.ConsultantOutsourcing)) > 0)
+            {
+                model.IsPhoneEditable = true;
+                model.IsAlternativeMailEditable = true;
+            }
+        }
         public AccessGroupsListModel GetAccessGroupsListModel()
         {
             AccessGroupsListModel model = new AccessGroupsListModel();
+            SetFlagsState(model);
             model.AccessGroups = AccessGroupDao.GetAccessGroups().ToList().ConvertAll(x => new SelectListItem { Value = x.Code, Text = x.Name }).OrderBy(x => x.Value);
             return model;
         }
@@ -7289,6 +7299,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             var user=UserDao.Load(CurrentUser.Id);
             model.AccessGroups = AccessGroupDao.GetAccessGroups().ToList().ConvertAll(x => new SelectListItem { Value = x.Code, Text = x.Name }).OrderBy(x => x.Value);
             model.AccessGroupList = AccessGroupDao.GetAccessGroupList(user,dep, model.AccessGroupCode, model.UserName, model.Manager6, model.Manager5, model.Manager4, model.IsManagerShow, model.SortBy, model.SortDescending);
+            SetFlagsState(model);
             return model;
         }
         #endregion

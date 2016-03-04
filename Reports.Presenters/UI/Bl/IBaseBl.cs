@@ -15,6 +15,7 @@ namespace Reports.Presenters.UI.Bl
         void AddComment(MessagesDto message);
         string AddAlternativeMail(string Email);
         string AddAlternativeMail(int UserId, string Email);
+        void AddPhone(int UserId, string Phone);
         Result ConfirmMail(Guid key);
         DepartmentTreeDto GetDepartmentTree();
     }
