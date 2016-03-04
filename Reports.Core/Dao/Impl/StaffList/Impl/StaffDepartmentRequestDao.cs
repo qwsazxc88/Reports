@@ -45,41 +45,48 @@ namespace Reports.Core.Dao.Impl
         /// <param name="SortBy">Номер колонки для сортировки</param>
         /// <param name="SortDescending">Признак направления сортировки.</param>
         /// <param name="RequestTypeId">Id вида заявки</param>
+        /// <param name="BFGId">Id принадлежности подразделения</param>
         /// <returns></returns>
-        public IList<DepartmentRequestListDto> GetDepartmentRequestList(User curUser, UserRole role, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending, int RequestTypeId)
+        public IList<DepartmentRequestListDto> GetDepartmentRequestList(User curUser, UserRole role, int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, int SortBy, bool? SortDescending, int RequestTypeId, int BFGId)
         {
-            string SqlQuery = @"SELECT A.Id, 
-                                       A.DateRequest, 
-                                       B.Name as RequestTypeName, 
-                                       A.RequestTypeId,
-                                       A.DepartmentId,
-                                       A.ParentId,
-                                       A.BFGId,
-                                       F.Name as AccessoryName,
-                                       isnull(Dep2.Name, case when A.ItemLevel = 2 then A.Name else null end) as Dep2Name, 
-                                       isnull(Dep3.Name, case when A.ItemLevel = 3 then A.Name else null end) as Dep3Name, 
-                                       isnull(Dep4.Name, case when A.ItemLevel = 4 then A.Name else null end) as Dep4Name, 
-                                       isnull(Dep5.Name, case when A.ItemLevel = 5 then A.Name else null end) as Dep5Name, 
-                                       isnull(Dep6.Name, case when A.ItemLevel = 6 then A.Name else null end) as Dep6Name, 
-                                       case when A.ItemLevel = 7 then A.Name else null end as Dep7Name, 
-                                       Dep2.Path as Dep2Path, 
-                                       Dep3.Path as Dep3Path, 
-                                       Dep4.Path as Dep4Path, 
-                                       Dep5.Path as Dep5Path, 
-                                       Dep6.Path as Dep6Path, 
-                                       A.OrderNumber, 
-                                       A.OrderDate, 
-                                       D.Id as PersonId, 
-                                       D.Name as Surname, 
-                                       E.Name as PositionName,
-                                       case when A.DeleteDate is not null then 'Отклонено'
-                                            when A.DateSendToApprove is null then 'Черновик'
-						                    when A.DateSendToApprove is not null and A.DateState is null and A.DeleteDate is null then 'На согласовании'
-						                    when A.DateState is not null and A.DeleteDate is null then 'Утверждено' end as Status,
-			                           case when A.DeleteDate is not null then 4
-                                            when A.DateSendToApprove is null then 1
-						                    when A.DateSendToApprove is not null and A.DateState is null and A.DeleteDate is null then 2
-						                    when A.DateState is not null and A.DeleteDate is null then 3 end as StatusId
+            string SqlQuery = @"SELECT A.Id 
+                                       ,A.DateRequest
+                                       ,B.Name as RequestTypeName
+                                       ,A.RequestTypeId
+                                       ,A.DepartmentId
+                                       ,A.ParentId
+                                       ,A.BFGId
+                                       ,F.Name as AccessoryName
+                                       ,isnull(Dep2.Name, case when A.ItemLevel = 2 then A.Name else null end) as Dep2Name
+                                       ,isnull(Dep3.Name, case when A.ItemLevel = 3 then A.Name else null end) as Dep3Name 
+                                       ,isnull(Dep4.Name, case when A.ItemLevel = 4 then A.Name else null end) as Dep4Name 
+                                       ,isnull(Dep5.Name, case when A.ItemLevel = 5 then A.Name else null end) as Dep5Name 
+                                       ,isnull(Dep6.Name, case when A.ItemLevel = 6 then A.Name else null end) as Dep6Name 
+                                       ,case when A.ItemLevel = 7 then A.Name else null end as Dep7Name
+                                       ,Dep2.Path as Dep2Path
+                                       ,Dep3.Path as Dep3Path 
+                                       ,Dep4.Path as Dep4Path 
+                                       ,Dep5.Path as Dep5Path 
+                                       ,Dep6.Path as Dep6Path 
+                                       ,A.OrderNumber
+                                       ,A.OrderDate
+                                       ,D.Id as PersonId
+                                       ,D.Name as Surname
+                                       ,E.Name as PositionName
+                                       ,case when A.DeleteDate is not null then 'Отклонено'
+							                        when A.DateSendToApprove is null and K.DocId is null then 'Черновик'
+							                        when A.DateSendToApprove is not null and A.DateState is null and A.DeleteDate is null and isnull(K.Number, 0) = 1 then 'Заявка создана'
+																			when A.DateSendToApprove is not null and A.DateState is null and A.DeleteDate is null and isnull(K.Number, 0) = 2 then 'Заявка проверена куратором'
+																			when A.DateSendToApprove is not null and A.DateState is null and A.DeleteDate is null and isnull(K.Number, 0) = 3 then 'Заявка проверена кадровиком'
+																			when A.DateSendToApprove is not null and A.DateState is null and A.DeleteDate is null and isnull(K.Number, 0) = 4 then 'Заявка согласована высшим руководителем'
+							                        when A.DateState is not null and A.DeleteDate is null then 'Заявка утверждена' end as Status
+				                        ,case when A.DeleteDate is not null then 7
+							                        when A.DateSendToApprove is null and K.DocId is null then 1
+							                        when A.DateSendToApprove is not null and A.DateState is null and A.DeleteDate is null and isnull(K.Number, 0) = 1 then 2
+																			when A.DateSendToApprove is not null and A.DateState is null and A.DeleteDate is null and isnull(K.Number, 0) = 2 then 3
+																			when A.DateSendToApprove is not null and A.DateState is null and A.DeleteDate is null and isnull(K.Number, 0) = 3 then 4
+																			when A.DateSendToApprove is not null and A.DateState is null and A.DeleteDate is null and isnull(K.Number, 0) = 4 then 5
+							                        when A.DateState is not null and A.DeleteDate is null then 6 end as StatusId
                                 FROM StaffDepartmentRequest as A
                                 INNER JOIN StaffDepartmentRequestTypes as B ON B.Id = A.RequestTypeId
                                 LEFT JOIN Department as C ON C.Id = A.ParentId
@@ -90,7 +97,9 @@ namespace Reports.Core.Dao.Impl
                                 LEFT JOIN Department as Dep6 ON C.Path like Dep6.Path + N'%' and Dep6.ItemLevel = 6
                                 LEFT JOIN Users as D ON D.Id = A.CreatorID
                                 LEFT JOIN Position as E ON E.Id = D.PositionId
-                                LEFT JOIN StaffDepartmentAccessory as F ON F.Id = A.BFGId";
+                                LEFT JOIN StaffDepartmentAccessory as F ON F.Id = A.BFGId
+                                LEFT JOIN (SELECT DocId, MAX(Number) as Number FROM DocumentApproval 
+						    	            WHERE ApprovalType = 1 and Number <= 4 GROUP BY DocId) as K ON K.DocId = A.Id";
 
             
 
@@ -101,7 +110,7 @@ namespace Reports.Core.Dao.Impl
             SqlQuery += GetWhereForUserRole(curUser, role);
 
             string sqlWhere = string.Empty;
-            sqlWhere = GetWhereForParameters(DepartmentId, Id, Surname, DateBegin, DateEnd, StatusId, ref sqlWhere, RequestTypeId);
+            sqlWhere = GetWhereForParameters(DepartmentId, Id, Surname, DateBegin, DateEnd, StatusId, ref sqlWhere, RequestTypeId, BFGId);
             sqlWhere = (string.IsNullOrEmpty(sqlWhere) ? "" : " WHERE " + sqlWhere);
             SqlQuery += sqlWhere + GetOrderByForSqlQuery(SortBy, SortDescending);
 
@@ -134,6 +143,7 @@ namespace Reports.Core.Dao.Impl
             if (SqlQuery.Contains(":DateEnd")) query.SetDateTime("DateEnd", DateEnd.Value.AddDays(1));
             if (SqlQuery.Contains(":StatusId")) query.SetInt32("StatusId", StatusId);
             if (SqlQuery.Contains(":RequestTypeId")) query.SetInt32("RequestTypeId", RequestTypeId);
+            if (SqlQuery.Contains(":BFGId")) query.SetInt32("BFGId", BFGId);
 
             return query.SetResultTransformer(Transformers.AliasToBean<DepartmentRequestListDto>()).List<DepartmentRequestListDto>();
         }
@@ -186,7 +196,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="DateBegin">Начало периода</param>
         /// <param name="DateEnd">Конец периода</param>
         /// <returns></returns>
-        protected string GetWhereForParameters(int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, ref string sqlWhere, int RequestTypeId)
+        protected string GetWhereForParameters(int DepartmentId, int Id, string Surname, DateTime? DateBegin, DateTime? DateEnd, int StatusId, ref string sqlWhere, int RequestTypeId, int BFGId)
         {
             //string SqlWhere = string.Empty;
             if (DepartmentId != 0)
@@ -221,6 +231,9 @@ namespace Reports.Core.Dao.Impl
 
             if (RequestTypeId != 0)
                 sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "A.RequestTypeId = :RequestTypeId";
+
+            if (BFGId != 0)
+                sqlWhere += (!string.IsNullOrEmpty(sqlWhere) ? " and " : "") + "A.BFGId = :BFGId";
             
             return sqlWhere;
         }

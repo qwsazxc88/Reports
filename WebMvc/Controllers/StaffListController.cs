@@ -93,7 +93,7 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
                 model = StaffListBl.SetStaffDepartmentRequestList(model);
             else
-                model.Statuses = StaffListBl.GetDepRequestStatuses();
+                model.Statuses = StaffListBl.GetRequestStatuses();
             return View(model);
         }
         /// <summary>
@@ -268,7 +268,7 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
                 model = StaffListBl.SetStaffEstablishedPostRequestList(model);
             else
-                model.Statuses = StaffListBl.GetDepRequestStatuses();
+                model.Statuses = StaffListBl.GetRequestStatuses();
 
             //ModelState.AddModelError("MessageStr", "В разработке");
             //model.Statuses = StaffListBl.GetDepRequestStatuses();
