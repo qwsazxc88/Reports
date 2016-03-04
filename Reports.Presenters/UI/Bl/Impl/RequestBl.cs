@@ -2171,7 +2171,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         // а также 182-Н и 2-НДФЛ для ознакомления сотрудником
                         model.IsF182NAllowed = true;
                         model.IsF2NDFLAllowed = true;
-
+                        model.IsT2Allowed = !(model.T2ScanAttachmentId>0);
+                        model.IsDismissalAgreementAllowed = !(model.DismissalAgreementScanAttachmentId > 0);
                         // Кадровик имеет право на просмотр документов с ограничениями просмотра
                         model.IsViewDismissalAgreementAllowed = true;
                         model.IsViewF182NAllowed = true;
