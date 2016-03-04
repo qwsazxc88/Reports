@@ -281,7 +281,11 @@ namespace Reports.Core.Dao.Impl
                                 RequestStatusStandardSelector + @",
                                 u.ExperienceIn1C as UserExperienceIn1C,
                                 v.IsOriginalSended as IsOriginalSended,
-                                v.IsOriginalReceived as IsOriginalReceived
+                                v.IsOriginalReceived as IsOriginalReceived,
+                                v.IsOriginalFilled as IsOriginalFilled,
+                                v.OriginalFilledDate as OriginalFilledDate,
+                                v.OriginalReceivedDate as OriginalReceivedDate,
+                                v.OriginalSendDate as OriginalSendDate
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
@@ -329,6 +333,8 @@ namespace Reports.Core.Dao.Impl
                                 sqlPositionStandartSelector+
                                 sqlDepartamentStandartSelector+
                                 RequestStatusStandardSelector + @",
+                                v.OriginalReceivedDate as OriginalReceivedDate,
+                                v.OriginalRequestReceivedDate as OriginalRequestReceivedDate,
                                 v.IsOriginalReceived as IsOriginalReceived,
                                 v.IsOriginalRequestReceived as IsOriginalRequestReceived
                                 from {4} v
@@ -363,6 +369,8 @@ namespace Reports.Core.Dao.Impl
                                 sqlPositionStandartSelector+
                                 sqlDepartamentStandartSelector+
                                 RequestStatusStandardSelector + @",
+                                v.OriginalReceivedDate as OriginalReceivedDate,
+                                v.OriginalRequestReceivedDate as OriginalRequestReceivedDate,
                                 v.IsOriginalReceived as IsOriginalReceived,
                                 v.IsOriginalRequestReceived as IsOriginalRequestReceived
                                 from {4} v
@@ -389,6 +397,9 @@ namespace Reports.Core.Dao.Impl
                                 RequestStatusStandardSelector + @",
                                 v.IsOriginalReceived as IsOriginalReceived,
                                 v.IsOriginalRequestReceived as IsOriginalRequestReceived,
+                                v.PersonnelFileArchiveDate as PersonnelFileArchiveDate,
+                                v.OriginalRequestReceivedDate as OriginalRequestReceivedDate,
+                                v.OriginalReceivedDate as OriginalReceivedDate,
                                 v.IsPersonnelFileSentToArchive as IsPersonnelFileSentToArchive
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
@@ -766,6 +777,23 @@ namespace Reports.Core.Dao.Impl
             }
             return whereString;
         }
+        public virtual string GetDatesWhere(string whereString, string datefield,  DateTime? beginDate,
+            DateTime? endDate)
+        {
+            if (beginDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.["+datefield+"] >= :"+datefield+"beginDate ";
+            }
+            if (endDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.["+datefield+"] < :"+datefield+"endDate ";
+            }
+            return whereString;
+        }
         public virtual void AddDatesToQuery( IQuery query,DateTime? beginDate,
             DateTime? endDate,string userName)
         {
@@ -776,7 +804,14 @@ namespace Reports.Core.Dao.Impl
             if (!string.IsNullOrEmpty(userName))
                 query.SetString("userName", "%"+userName.ToLower()+"%");
         }
-
+        public virtual void AddDatesToQuery(IQuery query, string dateField, DateTime? beginDate,
+            DateTime? endDate)
+        {
+            if (beginDate.HasValue)
+                query.SetDateTime(dateField+"beginDate", beginDate.Value);
+            if (endDate.HasValue)
+                query.SetDateTime(dateField+"endDate", endDate.Value.AddDays(1));
+        }
         public virtual string GetPositionWhere(string whereString, int positionId)
         {
             if (positionId != 0)
@@ -992,6 +1027,21 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 17:
                     sqlQuery += @" order by IsOriginalRequestReceived";
+                    break;
+                case 18:
+                    sqlQuery += @" order by IsOriginalSended";
+                    break;
+                case 19:
+                    sqlQuery += @" order by IsOriginalFilled";
+                    break;
+                case 20:
+                    sqlQuery += @" order by OriginalReceivedDate";
+                    break;
+                case 21:
+                    sqlQuery += @" order by OriginalSendDate";
+                    break;
+                case 22:
+                    sqlQuery += @" order by OriginalFilledDate";
                     break;
             }
             if (sortDescending.Value)

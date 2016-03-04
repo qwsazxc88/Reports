@@ -21,7 +21,8 @@ namespace Reports.Core.Domain
         public virtual int? ChildrenCount { get; set; }
         public virtual bool IsFirstChild { get; set; }
         public virtual DateTime? PaidToDate1 { get; set; }
-
+        public virtual DateTime? OriginalReceivedDate { get; set; }
+        public virtual DateTime? OriginalRequestReceivedDate { get; set; }
         public virtual int Number { get; set; }
         //public virtual string Comment { get; set; }
         

@@ -228,6 +228,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("IsOriginalReceived", NHibernateUtil.Boolean).
                 AddScalar("IsOriginalRequestReceived", NHibernateUtil.Boolean).
                 AddScalar("IsPersonnelFileSentToArchive", NHibernateUtil.Boolean).
+                AddScalar("OriginalReceivedDate", NHibernateUtil.DateTime).
+                AddScalar("OriginalRequestReceivedDate", NHibernateUtil.DateTime).
+                AddScalar("PersonnelFileArchiveDate", NHibernateUtil.DateTime).
                 AddScalar("Dep7Name",NHibernateUtil.String).
                 AddScalar("Dep3Name",NHibernateUtil.String).
                 AddScalar("Position",NHibernateUtil.String);

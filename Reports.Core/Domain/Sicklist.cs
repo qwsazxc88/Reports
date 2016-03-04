@@ -39,7 +39,10 @@ namespace Reports.Core.Domain
         public virtual bool IsAddToFullPayment { get; set; }
         public virtual bool IsOriginalReceived { get; set; }
         public virtual bool IsOriginalSended { get; set; }
-       
+        public virtual bool IsOriginalFilled { get; set; }
+        public virtual DateTime? OriginalFilledDate {get;set;}
+        public virtual DateTime? OriginalReceivedDate { get; set; }
+        public virtual DateTime? OriginalSendDate { get; set; }
 
       
         public virtual TimesheetStatus TimesheetStatus { get; set; }

@@ -61,6 +61,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("RequestStatus", NHibernateUtil.String).
                 AddScalar("IsOriginalReceived", NHibernateUtil.Boolean).
                 AddScalar("IsOriginalRequestReceived", NHibernateUtil.Boolean).
+                AddScalar("OriginalReceivedDate", NHibernateUtil.DateTime).
+                AddScalar("OriginalRequestReceivedDate", NHibernateUtil.DateTime).
                 AddScalar("Dep7Name",NHibernateUtil.String).
                 AddScalar("Dep3Name",NHibernateUtil.String).
                 AddScalar("Position",NHibernateUtil.String).

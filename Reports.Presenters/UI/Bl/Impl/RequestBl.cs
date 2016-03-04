@@ -670,6 +670,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 0,
                 model.BeginDate,
                 model.EndDate,
+                new DateTime?(),
+                new DateTime?(),
+                new DateTime?(),
+                new DateTime?(),
+                new DateTime?(),
+                new DateTime?(),
                 model.UserName,
                 null,
                 model.SortBy, model.SortDescending, model.Number).ToList().ConvertAll(x => new AllRequestDto
@@ -1879,6 +1885,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<Dismissal> entities = DismissalDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
             foreach (Dismissal entity in entities)
             {
+                if (!entity.IsOriginalReceived)
+                    entity.OriginalReceivedDate = DateTime.Now;
                 entity.IsOriginalReceived = true;
                 DismissalDao.SaveAndFlush(entity);
             }
@@ -1888,6 +1896,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<Dismissal> entities = DismissalDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
             foreach (Dismissal entity in entities)
             {
+                if (!entity.IsOriginalRequestReceived)
+                    entity.OriginalRequestReceivedDate = DateTime.Now;
                 entity.IsOriginalRequestReceived = true;
                 DismissalDao.SaveAndFlush(entity);
             }
@@ -1897,6 +1907,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<Dismissal> entities = DismissalDao.LoadForIdsList(idsToApplyPersonnelFileSentToArchive).ToList();
             foreach (Dismissal entity in entities)
             {
+                if (!entity.IsPersonnelFileSentToArchive)
+                    entity.PersonnelFileArchiveDate = DateTime.Now;
                 entity.IsPersonnelFileSentToArchive = true;
                 DismissalDao.SaveAndFlush(entity);
             }
@@ -3818,8 +3830,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsOriginalReceivedModified = false;
                     List<int> idsToApplyReceivedOriginals = model.Documents.Where(x => x.IsOriginalReceived).Select(x => x.Id).ToList();
                     List<int> idsToApplySendedOriginals = model.Documents.Where(x => x.IsOriginalSended).Select(x => x.Id).ToList();
+                    List<int> idsToApplyFilledOriginals = model.Documents.Where(x => x.IsOriginalFilled).Select(x => x.Id).ToList();
                     ApplyReceivedOriginals(model, idsToApplyReceivedOriginals);
                     ApplySendedOriginals(model, idsToApplySendedOriginals);
+                    ApplyFilledOriginals(model, idsToApplyFilledOriginals);
                 }
                 SetDocumentsToModel(model, user);
             }
@@ -3830,6 +3844,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<Sicklist> entities = SicklistDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
             foreach (Sicklist entity in entities)
             {
+                if (!entity.IsOriginalReceived)
+                {
+                    entity.OriginalReceivedDate = DateTime.Now;
+                }
                 entity.IsOriginalReceived = true;
                 SicklistDao.SaveAndFlush(entity);
             }
@@ -3839,7 +3857,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<Sicklist> entities = SicklistDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
             foreach (Sicklist entity in entities)
             {
+                if (!entity.IsOriginalSended)
+                {
+                    entity.OriginalSendDate = DateTime.Now;
+                }
                 entity.IsOriginalSended = true;
+                SicklistDao.SaveAndFlush(entity);
+            }
+        }
+        protected void ApplyFilledOriginals(SicklistListModel model, List<int> idsToApplyReceivedOriginals)
+        {
+            List<Sicklist> entities = SicklistDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
+            foreach (Sicklist entity in entities)
+            {
+                if (!entity.IsOriginalFilled)
+                {
+                    entity.OriginalFilledDate = DateTime.Now;
+                }
+                entity.IsOriginalFilled = true;
                 SicklistDao.SaveAndFlush(entity);
             }
         }
@@ -3865,6 +3900,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 0,
                 model.BeginDate,
                 model.EndDate,
+                model.Receive.BeginDate,
+                model.Receive.EndDate,
+                model.Send.BeginDate,
+                model.Send.EndDate,
+                model.Filled.BeginDate,
+                model.Filled.EndDate,
                 model.UserName,
                 model.SicklistNumber,
                 model.SortBy,
@@ -3874,7 +3915,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         protected void SetFlagsState(User user, SicklistListModel model)
         {
-            if ((user.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager)
+            if ((user.UserRole & (UserRole.PersonnelManager | UserRole.ConsultantOutsourcing))>0)
             {
                 model.IsOriginalReceivedEditable = true;
             }
@@ -5273,6 +5314,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<Vacation> entities = VacationDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
             foreach (Vacation entity in entities)
             {
+                if (!entity.IsOriginalReceived) entity.OriginalReceivedDate = DateTime.Now;
                 entity.IsOriginalReceived = true;
                 VacationDao.SaveAndFlush(entity);
             }
@@ -5282,6 +5324,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<Vacation> entities = VacationDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
             foreach (Vacation entity in entities)
             {
+                if (!entity.IsOriginalRequestReceived) entity.OriginalRequestReceivedDate = DateTime.Now;
                 entity.IsOriginalRequestReceived = true;
                 VacationDao.SaveAndFlush(entity);
             }
@@ -6698,6 +6741,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<ChildVacation> entities = ChildVacationDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
             foreach (ChildVacation entity in entities)
             {
+                if (!entity.IsOriginalReceived)
+                    entity.OriginalReceivedDate = DateTime.Now;
                 entity.IsOriginalReceived = true;
                 ChildVacationDao.SaveAndFlush(entity);
             }
@@ -6707,6 +6752,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<ChildVacation> entities = ChildVacationDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
             foreach (ChildVacation entity in entities)
             {
+                if (!entity.IsOriginalRequestReceived)
+                {
+                    entity.OriginalRequestReceivedDate = DateTime.Now;
+                }
                 entity.IsOriginalRequestReceived = true;
                 ChildVacationDao.SaveAndFlush(entity);
             }

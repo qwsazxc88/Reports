@@ -35,6 +35,10 @@ namespace Reports.Presenters.UI.ViewModel
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? EndDate { get; set; }
 
+        public BeginEnd Receive { get; set; }
+        public BeginEnd Send { get; set; }
+        public BeginEnd Filled { get; set; }
+
         [Display(Name = "Статус заявки")]
         public int StatusId { get; set; }
         public IList<IdNameDto> Statuses;

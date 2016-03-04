@@ -232,9 +232,11 @@
                                 <td style="text-align: center">
                                     @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck" })
                                     <input type="hidden" id="Documents[@(i - 1)].Id" name="Documents[@(i - 1)].Id" value="@doc.Id" />
+                                    @Html.DisplayFor(m=>m.Documents[i-1].OriginalReceivedDate)
                                 </td>
                                 <td style="text-align: center">
                                     @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalRequestReceived, new { @class = "selcheckRequest" })                                    
+                                    @Html.DisplayFor(m=>m.Documents[i-1].OriginalRequestReceivedDate)
                                 </td>
                             }
                         </tr>
