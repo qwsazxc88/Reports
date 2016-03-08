@@ -50,7 +50,10 @@
 	
 	<body>
 		<div class="header" width=100%>
-			<img style="width: 250px; height: 50px;" alt="" src="@(Request.Url.Port == 8002 ? Url.Content("~/Content/logo.gif") : Url.Content("~/Content/testlogo.png"))"/>
+			<img style="width: 250px; height: 50px;" alt="" src="@(Request.Url.Port == 8002 ? 
+													Url.Content("~/Content/logo.gif") 
+													:
+													Url.Content("~/Content/testlogo.png"))"/>
 		</div>
 		
 		<div id="header">
@@ -99,7 +102,7 @@
 								case "SurchargeNote": @Html.Partial("_SubMenuSurchargeNote");
 								break;
 								case "Account": @Html.Partial("_SubMenuTable");
-								break;									
+								break;
 								case "Admin": @Html.Partial("_SubMenuTable");
 								break;
 								case "Employee": @Html.Partial("_SubMenuTable");
