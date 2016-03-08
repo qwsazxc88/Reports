@@ -13,7 +13,7 @@ namespace WebMvc.Controllers
     [HandleError(View = "Error")]
     public class BaseController : Controller
     {
-        public const int MaxFileSize = 20 * 1024 * 1024;//исправил с 5 на 10 Загрязкин О.
+        public const int MaxFileSize = 20 * 1024 * 1024;//исправил с 10 на 20 Загрязкин О.
         public const string StrFileSizeError = "Размер прикрепленного файла не может превышать {0} Мб.";
         #region Fields
 
