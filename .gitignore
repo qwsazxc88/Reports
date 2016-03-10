@@ -3,6 +3,8 @@ _ReSharper.*
 *.ReSharper.*
 bin
 obj
+.vs/*
+Backup/*
 *.suo
 *.csproj.user
 *.rptproj.user
@@ -18,3 +20,11 @@ WebMvc/Attachments/*
 # mstest test results
 TestResults
 
+# NuGet Packages
+*.nupkg
+# The packages folder can be ignored because of Package Restore
+**/packages/*
+# except build/, which is used as an MSBuild target.
+!**/packages/build/
+# Uncomment if necessary however generally it will be regenerated when needed
+#!**/packages/repositories.config
