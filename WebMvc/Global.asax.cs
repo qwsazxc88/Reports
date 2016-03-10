@@ -242,8 +242,10 @@ namespace WebMvc
             log4net.LogManager.GetLogger(GetType()).Error("Error occured: ", ex);
             string source =  Environment.NewLine + Request.ServerVariables["ALL_RAW"].ToString();
             
-            var usr = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
-            string usrname = "";
+            var usr = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData); /*"System.Security.Principal.GenericIdentity" к типу "System.Web.Security.FormsIdentity".
+																													http://stackoverflow.com/questions/20400855/unable-to-cast-object-of-type-system-security-principal-genericidentity-to-typ
+																													*/
+			string usrname = "";
             if (usr != null)
             {
                 usrname = String.Format("{0} {1} {2} {3}", usr.Id, usr.Login, usr.Name, usr.UserRole);
