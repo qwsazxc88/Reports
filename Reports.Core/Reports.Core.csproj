@@ -89,6 +89,7 @@
   <ItemGroup>
     <Compile Include="Attributes\ngRowAttribute.cs" />
     <Compile Include="CoreContainer.cs" />
+    <Compile Include="Dao\IMenuDao.cs" />
     <Compile Include="Dao\DictionariesDaoInterfaces.cs" />
     <Compile Include="Dao\IAnalyticalStatementDao.cs" />
     <Compile Include="Dao\IAssistansDao.cs" />
@@ -230,6 +231,7 @@
     <Compile Include="Dao\Impl\MailConfirmDao.cs" />
     <Compile Include="Dao\Impl\MailListDao.cs" />
     <Compile Include="Dao\Impl\ManualDeductionDao.cs" />
+    <Compile Include="Dao\Impl\MenuDao.cs" />
     <Compile Include="Dao\Impl\MissionHotelsDao.cs" />
     <Compile Include="Dao\Impl\ManualRoleRecordDao.cs" />
     <Compile Include="Dao\Impl\HelpFaqDao.cs" />
@@ -526,6 +528,7 @@
     <Compile Include="Domain\BugReport.cs" />
     <Compile Include="Domain\DirectorsRight.cs" />
     <Compile Include="Domain\DocumentApproval.cs" />
+    <Compile Include="Domain\Menu.cs" />
     <Compile Include="Domain\PartialTypes.cs" />
     <Compile Include="Domain\DocumentMovements\DocumentMovements.cs" />
     <Compile Include="Domain\DocumentMovements\DocumentMovementsRoleRecords.cs" />
@@ -831,6 +834,7 @@
     <Compile Include="Dto\ItemUsedDto.cs" />
     <Compile Include="Dto\DateDto.cs" />
     <Compile Include="Dto\ManualDeductionDto.cs" />
+    <Compile Include="Dto\MenuDto.cs" />
     <Compile Include="Dto\MessagesDto.cs" />
     <Compile Include="Dto\MinMaxDate.cs" />
     <Compile Include="Dto\MissionHotelsDto.cs" />
@@ -1532,6 +1536,7 @@
     <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovements_DocTypes.hbm.xml" />
     <EmbeddedResource Include="Domain\DirectorsRight.hbm.xml" />
     <EmbeddedResource Include="Domain\BugReport.hbm.xml" />
+    <Content Include="Domain\Menu.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
   </ItemGroup>

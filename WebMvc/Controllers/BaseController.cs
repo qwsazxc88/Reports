@@ -6,8 +6,13 @@ using System.Web.Mvc;
 using log4net;
 using Reports.Core;
 using Reports.Core.Dto;
-using Reports.Presenters.Services;
 using Newtonsoft.Json;
+using System.Web.Security;
+using Reports.Presenters.Services;
+
+
+
+
 namespace WebMvc.Controllers
 {
     [HandleError(View = "Error")]
@@ -23,48 +28,15 @@ namespace WebMvc.Controllers
 
         #endregion
 
-        protected virtual void OnActionExecuting(ActionExecutingContext filterContext)
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             //https://msdn.microsoft.com/ru-ru/library/system.web.mvc.controller.onactionexecuting%28v=vs.118%29.aspx
-            //setMainActiveMenuItem( "li" + "@this.ViewContext.RouteData.Values["controller"].ToString()" )
             //if ( ( (dto.UserRole & UserRole.Accountant) == 0 ) || ( (dto.UserRole & UserRole.Archivist) == 0 ) )
             //http://sqlperformance.com/2012/08/t-sql-queries/dry-principle-bitwise-operations
-            var controllerName = filterContext.RouteData.Values["controller"] ;
-            // var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
-            var dto = UserDto.Deserialize(filterContext.HttpContext.User.Identity.Ticket.UserData);
-            int userRole = dto.
-            var menuList = GetMenuForRole();
-        }
-        /*
-            public IList<GpdPermissionDto> GetPermission(UserRole role)
-        {
-            string sqlQuery = @"SELECT * FROM [dbo].[GpdPermission] WHERE RoleID = " + (int)role + " and MenuID = 3";
-            IQuery query = CreatePermissionQuery(sqlQuery);
-            IList<GpdPermissionDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdPermissionDto))).List<GpdPermissionDto>();
-            return documentList;
-        }
-        public virtual IQuery CreatePermissionQuery(string sqlQuery)
-        {
-            return Session.CreateSQLQuery(sqlQuery).
-                AddScalar("IsCreate", NHibernateUtil.Boolean).
-                AddScalar("IsDraft", NHibernateUtil.Boolean).
-                AddScalar("IsWrite", NHibernateUtil.Boolean).
-                AddScalar("IsCancel", NHibernateUtil.Boolean).
-                AddScalar("IsComment", NHibernateUtil.Boolean).
-                AddScalar("IsCreateAct", NHibernateUtil.Boolean);
-        }
-        */
-        
-        protected IList<MenuDto/*TODO: MenuDto*/> GetMenuForRole(int roleId)
-        {   /*  SELECT Menu.Name, Menu.LinkController, Menu.LinkAction, Menu.Parent 
-                FORM MenuForRole 
-                JOIN Menu ON MenuForRole.MenuId=Menu.id 
-                WHERE (RoleId=1 AND Menu.IsVisible=1 AND MenuForRole.NotAllow=0);
-            */
-            string sqlQuery = @"SELECT Menu.Name, Menu.LinkController, Menu.LinkAction, Menu.Parent FORM MenuForRole JOIN Menu ON MenuForRole.MenuId=Menu.id "
-            IQuery query = Session.CreateSQLQuery(sqlQuery).AddScalar(AAAAAAAAAA) //TODO: FIXME //WHERE (RoleId=1 AND Menu.IsVisible=1 AND MenuForRole.NotAllow=0);"
-            IList<MenuDto> menuList = query.SetResultTransformer(Transformers.AliasToBean(typeof(MenuDto))).List<MenuDto>();
-            return menuList;
+            var controllerName = filterContext.RouteData.Values["controller"];
+
+            var userRole = AuthenticationService.CurrentUser.UserRole;
+            var menuList = GetMenuForRole(userRole);
         }
 
         public const int MaxCommentLength = 256;

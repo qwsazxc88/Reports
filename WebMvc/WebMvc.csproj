@@ -320,7 +320,6 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_LogOnPartial.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -347,9 +346,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\_SimpleLayout.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\_MenuPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Employee\Index.cshtml" />
@@ -577,15 +573,7 @@
     <Content Include="Views\Template\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\_LayoutTemplate.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialTemplate.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Deduction\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\_LayoutDeduction.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialDeduction.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Account\ChangeRole.cshtml" />
@@ -603,18 +591,7 @@
     <Content Include="Views\Deduction\PrintDeductionList.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\ErrorMenuPartial.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Info\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\_LayoutInfo.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialInfo.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\_LayoutGraphics.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialGraphics.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Graphics\Index.cshtml" />
@@ -636,10 +613,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Graphics\EpDialogError.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\_LayoutMissionOrder.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialMissionOrder.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\MissionOrder\Index.cshtml" />
@@ -744,12 +717,6 @@
     <Content Include="Views\MissionOrder\PrintReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\_MenuPartialAppointment.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\_LayoutAppointment.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Appointment\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -765,6 +732,7 @@
     <Content Include="Views\Home\AddCommentDialog.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Content\files\Памятка - командировки.doc" />
     <Content Include="Views\Appointment\AppointmentReportEdit.cshtml" />
     <Content Include="Views\Appointment\PrintLoginForm.cshtml" />
@@ -783,8 +751,6 @@
     <Content Include="Views\Employment\Roster.cshtml" />
     <Content Include="Views\Employment\CustomReport.cshtml" />
     <Content Include="Views\Employment\Signers.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialEmployment.cshtml" />
-    <Content Include="Views\Shared\_LayoutEmployment.cshtml" />
     <Content Include="Views\MissionOrder\PrintArchivistAddressDialog.cshtml" />
     <Content Include="Views\MissionOrder\PrintArchivistAddressDialogError.cshtml" />
     <Content Include="Views\MissionOrder\PrintArchivistAddress.cshtml" />
@@ -799,8 +765,6 @@
     <Content Include="Views\MissionOrder\MissionHotels.cshtml" />
     <Content Include="Views\MissionOrder\MissionHotelsEdit.cshtml" />
     <Content Include="Views\GPD\Index.cshtml" />
-    <Content Include="Views\Shared\_LayoutGPD.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialGPD.cshtml" />
     <Content Include="Views\GPD\GpdRefDetail.cshtml" />
     <Content Include="Views\GPD\GpdRefDetailEdit.cshtml" />
     <Content Include="Views\GPD\GpdContractEdit.cshtml" />
@@ -820,7 +784,6 @@
     <Content Include="Views\UserRequest\ClearanceChecklistEditPartial.cshtml" />
     <Content Include="Views\Help\Index.cshtml" />
     <Content Include="Views\Shared\_HelpInfo.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialHelp.cshtml" />
     <Content Include="Views\Help\Version.cshtml" />
     <Content Include="Views\Help\VersionPartial.cshtml" />
     <Content Include="Views\Help\EditVersionDialog.cshtml" />
@@ -869,7 +832,6 @@
     <Content Include="Views\Employment\PrintT2.cshtml" />
     <Content Include="Views\Surcharge\Index.cshtml" />
     <Content Include="Views\Surcharge\IndexPartial.cshtml" />
-    <Content Include="Views\Shared\_LayoutSurcharge.cshtml" />
     <Content Include="Views\Employment\PrintInstructionOfSecret.cshtml" />
     <Content Include="Views\Employment\PrintInstructionEnsuringSafety.cshtml" />
     <Content Include="Views\GPD\GPDAnalyticalStatement.cshtml" />
@@ -882,8 +844,6 @@
     <Content Include="Views\Employment\Instruction.cshtml" />
     <Content Include="Views\Appointment\Note.cshtml" />
     <Content Include="Views\UserRequest\AccessGroupsList.cshtml" />
-    <Content Include="Views\Shared\_LayoutStaffList.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialStaffList.cshtml" />
     <None Include="Content\uigrid\ui-grid.eot">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -915,8 +875,6 @@
     <Content Include="Views\StaffList\Address.cshtml" />
     <Content Include="Views\SurchargeNote\SurchargeNoteEdit.cshtml" />
     <Content Include="Views\SurchargeNote\SurchargeNoteList.cshtml" />
-    <Content Include="Views\Shared\_LayoutSurchargeNote.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialSurchargeNote.cshtml" />
     <Content Include="Views\Info\Comments.cshtml" />
     <Content Include="Views\Employment\ScanOriginalDocuments.cshtml" />
     <Content Include="Views\MissionOrder\MissionOrderFullDepts.cshtml" />
@@ -925,8 +883,6 @@
     <Content Include="Views\UserRequest\TerrapointDepartment.cshtml" />
     <Content Include="Views\UserRequest\DepartmentTerrapoint.cshtml" />
     <Content Include="Views\StaffMovements\StaffMovementsCreate.cshtml" />
-    <Content Include="Views\Shared\_LayoutStaffMovements.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialStaffMovements.cshtml" />
     <Content Include="Views\StaffList\StaffList.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentRequest.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\UserInfo.cshtml" />
@@ -954,7 +910,6 @@
     <Content Include="Views\StaffList\StaffDepartmentSoftGroupLinks.cshtml" />
     <Content Include="Views\DocumentMovements\DocumentMovementsList.cshtml" />
     <Content Include="Views\DocumentMovements\DocumentMovementsEdit.cshtml" />
-    <Content Include="Views\Shared\_LayoutModern.cshtml" />
     <Content Include="Views\DocumentMovements\CreateWithoutSend.cshtml" />
     <Content Include="Views\Deduction\DeductionEditAdmin.cshtml" />
     <Content Include="Views\StaffList\SelectMovementType.cshtml" />
@@ -969,6 +924,18 @@
     <Content Include="Views\Home\BugReportEdit.cshtml" />
     <Content Include="Views\Home\BugReportList.cshtml" />
     <Content Include="Views\UserRequest\PersonnelFileList.cshtml" />
+    <Content Include="Views\Shared\_SubMenuAppointment.cshtml" />
+    <Content Include="Views\Shared\_SubMenuDeduction.cshtml" />
+    <Content Include="Views\Shared\_SubMenuEmployment.cshtml" />
+    <Content Include="Views\Shared\_SubMenuGPD.cshtml" />
+    <Content Include="Views\Shared\_SubMenuGraphics.cshtml" />
+    <Content Include="Views\Shared\_SubMenuHelp.cshtml" />
+    <Content Include="Views\Shared\_SubMenuInfo.cshtml" />
+    <Content Include="Views\Shared\_SubMenuMissionOrder.cshtml" />
+    <Content Include="Views\Shared\_SubMenuStaffList.cshtml" />
+    <Content Include="Views\Shared\_SubMenuStaffMovements.cshtml" />
+    <Content Include="Views\Shared\_SubMenuSurchargeNote.cshtml" />
+    <Content Include="Views\Shared\_SubMenuTable.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
