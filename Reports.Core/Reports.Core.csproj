@@ -526,14 +526,23 @@
     <Compile Include="Domain\Assistans.cs" />
     <Compile Include="Domain\AssistantPartialLinks.cs" />
     <Compile Include="Domain\BugReport.cs" />
+    <Compile Include="Domain\CoreContainer.cs" />
     <Compile Include="Domain\DirectorsRight.cs" />
     <Compile Include="Domain\DocumentApproval.cs" />
+    <Compile Include="Domain\Ioc.cs" />
     <Compile Include="Domain\Menu.cs" />
+    <Compile Include="Domain\MenuForRole.cs" />
+    <Compile Include="Domain\MenuForUser.cs" />
+    <Compile Include="Domain\NHibernateHelper.cs" />
     <Compile Include="Domain\PartialTypes.cs" />
     <Compile Include="Domain\DocumentMovements\DocumentMovements.cs" />
     <Compile Include="Domain\DocumentMovements\DocumentMovementsRoleRecords.cs" />
     <Compile Include="Domain\DocumentMovements\DocumentMovements_DocTypes.cs" />
     <Compile Include="Domain\DocumentMovements\DocumentMovements_SelectedDocs.cs" />
+    <Compile Include="Domain\Question.cs" />
+    <Compile Include="Domain\Report.cs" />
+    <Compile Include="Domain\Resources.Designer.cs" />
+    <Compile Include="Domain\Roles.cs" />
     <Compile Include="Domain\StaffList\StaffDepartmentAccessory.cs" />
     <Compile Include="Domain\MailConfirm.cs" />
     <Compile Include="Domain\StaffList\StaffEstablishedPostUserLinks.cs" />
@@ -740,6 +749,7 @@
     <Compile Include="Domain\StaffList\StaffPostChargeLinks.cs" />
     <Compile Include="Domain\StaffList\StaffProgramCodes.cs" />
     <Compile Include="Domain\StaffList\StaffProgramReference.cs" />
+    <Compile Include="Domain\StringHelper.cs" />
     <Compile Include="Domain\Surcharge.cs" />
     <Compile Include="Domain\SurchargeNote.cs" />
     <Compile Include="Domain\TerraGraphic.cs" />
@@ -756,10 +766,12 @@
     <Compile Include="Domain\UserRequest\refVacationReturnStatus.cs" />
     <Compile Include="Domain\UserRequest\refVacationReturnTypes.cs" />
     <Compile Include="Domain\UserRequest\VacationReturn.cs" />
+    <Compile Include="Domain\UserToDepartment.cs" />
     <Compile Include="Domain\Vacation.cs" />
     <Compile Include="Domain\VacationComment.cs" />
     <Compile Include="Domain\VacationSaldo.cs" />
     <Compile Include="Domain\VacationType.cs" />
+    <Compile Include="Domain\Validate.cs" />
     <Compile Include="Domain\WorkingCalendar.cs" />
     <Compile Include="Domain\WorkingGraphic.cs" />
     <Compile Include="Domain\WorkingDaysConstant.cs" />
@@ -934,6 +946,7 @@
     <Compile Include="Validate.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\Resources.resx" />
     <EmbeddedResource Include="Domain\SicklistPaymentPercent.hbm.xml" />
     <EmbeddedResource Include="Resources.resx">
       <SubType>Designer</SubType>
@@ -1452,6 +1465,7 @@
     <EmbeddedResource Include="Domain\HelpPersonnelBillingRequest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Domain\UserToDepartment.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffTemporaryReleaseVacancyRequest.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffLongAbsencesTypes.hbm.xml" />
     <EmbeddedResource Include="Domain\StaffList\StaffReplacementReasons.hbm.xml" />
@@ -1536,7 +1550,15 @@
     <EmbeddedResource Include="Domain\DocumentMovements\DocumentMovements_DocTypes.hbm.xml" />
     <EmbeddedResource Include="Domain\DirectorsRight.hbm.xml" />
     <EmbeddedResource Include="Domain\BugReport.hbm.xml" />
-    <Content Include="Domain\Menu.hbm.xml" />
+    <Content Include="Domain\HelpFaq.hbm.xml" />
+    <Content Include="Domain\HelpVersion.hbm.xml" />
+    <Content Include="Domain\Menu.hbm.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Domain\MenuForRole.hbm.xml" />
+    <Content Include="Domain\MenuForUser.hbm.xml" />
+    <Content Include="Domain\Question.hbm.xml" />
+    <Content Include="Domain\Report.hbm.xml" />
     <Content Include="Domain\SicklistPaymentType.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpBillingTitle.hbm.xml" />
   </ItemGroup>

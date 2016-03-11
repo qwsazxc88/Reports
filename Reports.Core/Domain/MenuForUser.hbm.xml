@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="Reports.Core" namespace="Reports.Core.Domain" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="Menuforuser" table="MenuForUser" lazy="true" >
+    <id name="Id" column="id">
+      <generator class="identity" />
+    </id>
+    <many-to-one name="Users">
+      <column name="UserId" sql-type="int" not-null="true" />
+    </many-to-one>
+    <many-to-one name="Menu">
+      <column name="MenuId" sql-type="int" not-null="true" />
+    </many-to-one>
+    <property name="Notallow">
+      <column name="Notallow" sql-type="bit" not-null="false" />
+    </property>
+  </class>
+</hibernate-mapping>
