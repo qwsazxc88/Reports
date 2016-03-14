@@ -1,0 +1,20 @@
+﻿@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@{
+	var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+}
+
+@if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0 || (dto.UserRole & UserRole.Estimator) > 0)
+{
+	<div class="menuitem" id="moContract">@Html.ActionLink("Договор", "Index", "GPD")</div>
+	<div class="menuitem" id="moAct">@Html.ActionLink("Акт", "GpdActList", "GPD")</div>
+	<!--
+	<div class="menuitem" id="moReception">@Html.ActionLink("Прием", "", "GPD")</div>
+	-->
+	<div class="menuitem" id="moGpdRefDetail">@Html.ActionLink("Справочник реквизитов", "GpdRefDetail", "GPD")</div>
+	<div class="menuitem" id="moAnalyticalStatement">@Html.ActionLink("Аналитическая ведомость", "GpdAnalyticalStatement", "GPD")</div>
+}
+@if ((dto.UserRole & UserRole.Manager) > 0)
+{
+	<div class="menuitem" id="moAnalyticalStatement">@Html.ActionLink("Аналитическая ведомость", "GpdAnalyticalStatement", "GPD")</div>
+}

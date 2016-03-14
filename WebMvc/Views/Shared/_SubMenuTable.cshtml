@@ -1,0 +1,120 @@
+﻿@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@{
+	var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+}
+@*            </tr>*@
+	@*            <tr style="border-top:1px solid">
+	<td colspan="3">
+	<table style="width:100%">
+<tr>*@
+@if ((dto.UserRole & UserRole.Admin) > 0)
+{
+	<div class="menuitem" id="adminUsers" >@Html.ActionLink("Пользователи", "UserList", "Admin")</div>
+	<div class="menuitem" id="adminSettings" >@Html.ActionLink("Настройки", "Settings", "Admin")</div>
+	<div class="menuitem" id="adminInfo" >@Html.ActionLink("Информация", "InformationsList", "Admin")</div>
+}
+else if ((dto.UserRole & UserRole.Chief) > 0)
+{
+	<div class="menuitem" id="userTimesheet">@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</div>
+}
+else if ((dto.UserRole & UserRole.Employee) > 0 || (dto.UserRole & UserRole.Manager) > 0
+|| (dto.UserRole & UserRole.PersonnelManager) > 0
+|| (dto.UserRole & UserRole.ConsultantPersonnel) > 0
+|| (dto.UserRole & UserRole.Inspector) > 0
+|| (dto.UserRole & UserRole.Estimator) > 0
+|| (dto.UserRole & UserRole.OutsourcingManager) > 0
+|| (dto.UserRole & UserRole.ConsultantOutsourcing) > 0)
+{
+	if ((dto.UserRole & UserRole.Employee) == 0)
+	{
+		<div class="menuitem" id="userAllRequest">@Html.ActionLink("Все заявки", "AllRequestList", "UserRequest")</div>
+	}
+	<div class="menuitem" id="userSicklist">@Html.ActionLink("Больничные", "SicklistList", "UserRequest")</div>
+	
+	<div class="menuitem" id="userMission">@Html.ActionLink("Командировки (табель)", "MissionList", "UserRequest")</div>
+	@*<div class="menuitem" id="userTimesheetCorrection">@Html.ActionLink("Корректировки", "TimesheetCorrectionList", "UserRequest")</div>*@
+	<div class="menuitem" id="userAbsence">@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</div>
+	<div class="menuitem" id="userVacation">@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</div>
+	<div class="menuitem" id="userChildVacation">@Html.ActionLink("Отпуска по уходу за ребенком", "ChildVacationList", "UserRequest")</div>
+	@*<div class="menuitem" id="VacationReturn">@Html.ActionLink("Отзыв из отпуска", "VacationReturnList", "UserRequest")</div>*@
+	<div class="menuitem" id="userDismissal">@Html.ActionLink("Увольнения", "DismissalList", "UserRequest")</div>
+	<div class="menuitem" id="userClearanceChecklistList">@Html.ActionLink("Обходные листы", "ClearanceChecklistList", "UserRequest")</div>
+	
+	if ((dto.UserRole & UserRole.Inspector) == 0)
+	{
+		<div class="menuitem" id="userTimesheet">@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</div>
+		<div class="menuitem" id="userYearTimesheet">@Html.ActionLink("Табель за период", "TimesheetYearList", "Employee", new { managerId = dto.Id }, null)</div>
+	}
+	if ((dto.UserRole & UserRole.PersonnelManager) > 0
+	|| (dto.UserRole & UserRole.Manager) > 0
+	|| (dto.UserRole & UserRole.Estimator) > 0
+	|| (dto.UserRole & UserRole.OutsourcingManager) > 0)
+	{
+		<div class="menuitem" id="userAccept">@Html.ActionLink("Контроль ввода", "AcceptRequests", "UserRequest")</div>
+	}
+	@*                        if (dto.UserRole == UserRole.PersonnelManager)
+		{
+		<div class="menuitem" id="constantList">@Html.ActionLink("Константы", "ConstantList", "UserRequest")</div>
+	}*@
+	if ((dto.UserRole & UserRole.PersonnelManager) > 0
+	|| (dto.UserRole & UserRole.OutsourcingManager) > 0
+	|| (dto.UserRole & UserRole.Estimator) > 0
+	|| (dto.UserRole & UserRole.Manager) > 0)
+	{
+		<div class="menuitem" id="userAcceptGroup">@Html.ActionLink("Организационная страница", "AccessGroupsList", "UserRequest")</div>
+	}
+	<div class="menuitem" id="documentMovements">@Html.ActionLink("Документооборот", "Index", "DocumentMovements")</div>
+	
+	@*                        if (dto.UserRole == UserRole.PersonnelManager)
+		{
+		<div class="menuitem" id="constantList">@Html.ActionLink("Константы", "ConstantList", "UserRequest")</div>
+	}*@
+}
+@if ((dto.UserRole & (UserRole.ConsultantPersonnel | UserRole.ConsultantOutsourcing | UserRole.OutsourcingManager | UserRole.TaxCollector | UserRole.Accountant | UserRole.Manager | UserRole.PersonnelManager | UserRole.Employee)) > 0)
+{
+	<div class="menuitem" id="UserPersonnelDataInn">@Html.ActionLink("ИНН физ.лица", "UserPersonnelDataList", "UserRequest")</div>
+}
+@*<div class="menuitem" id="UserPersonnelFile">@Html.ActionLink("Личное дело", "PersonnelFileList", "UserRequest")</div>*@
+@*<div class="menuitem" id="templatesList">@Html.ActionLink("Шаблоны документов", "TemplatesList", "UserRequest")</div>*@
+
+
+
+
+@*                </tr>
+	</table>
+	</div>
+	</tr>
+	</table>*@
+	@*<ul class="menu" id="menu">
+	@if (dto.UserRole == UserRole.Admin)
+	{
+	<li>@Html.ActionLink("Пользователи", "UserList", "Admin")</li>
+	<li>@Html.ActionLink("Настройки", "Settings", "Admin")</li>
+	<li>@Html.ActionLink("Информация", "InformationsList", "Admin")</li>
+	}
+	else if (dto.UserRole == UserRole.Employee || dto.UserRole == UserRole.Manager || dto.UserRole == UserRole.PersonnelManager
+	|| dto.UserRole == UserRole.Inspector || dto.UserRole == UserRole.Chief)
+	{
+	if (dto.UserRole != UserRole.Employee)
+	{
+	<li>@Html.ActionLink("Все заявки", "AllRequestList", "UserRequest")</li>
+	}
+	<li>@Html.ActionLink("Больничные", "SicklistList", "UserRequest")</li>
+	<li>@Html.ActionLink("Командировки", "MissionList", "UserRequest")</li>
+	<li>@Html.ActionLink("Корректировки", "TimesheetCorrectionList", "UserRequest")</li>
+	<li>@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</li>
+	<li>@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</li>
+	<li>@Html.ActionLink("Увольнения", "DismissalList", "UserRequest")</li>
+	if (dto.UserRole != UserRole.Inspector)
+	{
+	<li>@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</li>
+	}
+	if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.Manager)
+	{
+	<li>@Html.ActionLink("Контроль ввода", "AcceptRequests", "UserRequest")</li>
+	}
+	}
+	<li></li>
+	<li>@Html.ActionLink("На главную страницу", "Index", "Home")</li>
+</ul>*@	

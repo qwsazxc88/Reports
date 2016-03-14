@@ -1,0 +1,12 @@
+﻿@*@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@{
+	var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+}*@
+<div class="menuitem" id="moSurchargeNoteList0">@Html.ActionLink("Служебная записка на оплату выходных дней", "SurchargeNoteList", "SurchargeNote", new { type=0 },null)</div>
+<div class="menuitem" id="moSurchargeNoteList1">@Html.ActionLink("Служебная записка на оплату праздничных дней", "SurchargeNoteList", "SurchargeNote", new { type=1 },null)</div>
+<div class="menuitem" id="moSurchargeNoteList2">@Html.ActionLink("Служебная записка на сохраняемый средний заработок беременным сотрудникам", "SurchargeNoteList", "SurchargeNote", new { type = 2 }, null)</div>
+<div class="menuitem" id="moSurchargeNoteList3">@Html.ActionLink("Служебная записка на включение в доход сотруднику", "SurchargeNoteList", "SurchargeNote", new { type =3 }, null)</div>
+<div class="menuitem" id="moSurchargeNoteList4">@Html.ActionLink("Служебная записка на найм помещения #1605", "SurchargeNoteList", "SurchargeNote", new { type = 4 }, null)</div>
+@*<div class="menuitem" id="moSurchargeNoteList5">@Html.ActionLink("Служебная записка «Среднемесячный заработок при увольнении»", "SurchargeNoteList", "SurchargeNote", new { type = 5 }, null)</div> *@
+<div class="menuitem" id="moSurchargeNoteList6">@Html.ActionLink("Служебная записка на доплату за совмещение должностей", "SurchargeNoteList", "SurchargeNote", new { type = 6 }, null)</div>

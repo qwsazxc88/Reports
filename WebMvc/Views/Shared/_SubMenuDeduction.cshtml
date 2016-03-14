@@ -1,0 +1,6 @@
+﻿@*@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@{
+	var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+}*@
+<div class="on" id="deductionsAll" >@Html.ActionLink("Все заявки", "Index", "Deduction")</div>
