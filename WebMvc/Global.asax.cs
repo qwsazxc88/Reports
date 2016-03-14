@@ -241,8 +241,12 @@ namespace WebMvc
 
             log4net.LogManager.GetLogger(GetType()).Error("Error occured: ", ex);
             string source =  Environment.NewLine + Request.ServerVariables["ALL_RAW"].ToString();
-            
-            var usr = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+
+            IUser usr = null;
+            if (HttpContext.Current.User != null && HttpContext.Current.User.Identity is FormsIdentity)
+            {
+                usr = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+            }
             string usrname = "";
             if (usr != null)
             {

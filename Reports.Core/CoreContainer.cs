@@ -615,10 +615,18 @@ namespace Reports.Core
                .ImplementedBy<HelpBillingExecutorTaskDao>()
                .LifeStyle.Is(type));
 
-            Register(Component.For(typeof(ISessionFactory))
-                    .Named("ISessionFactory")
-                    .Instance(SessionFactory)
-                    .LifeStyle.Is(LifestyleType.Singleton));
+            try
+            {
+                Register(Component.For(typeof(ISessionFactory))
+                           .Named("ISessionFactory")
+                           .Instance(SessionFactory)
+                           .LifeStyle.Is(LifestyleType.Singleton));
+            }
+            catch (System.Exception e)
+            {
+                //System.Console.WriteLine(e);
+                //throw;
+            }
 			//Kernel.AddComponentInstance("ISessionFactory", typeof(ISessionFactory), SessionFactory);
 
             Register(Component.For<IKladrDao>()
