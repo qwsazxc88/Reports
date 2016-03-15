@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -7,13 +8,20 @@
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{19F754EE-BF8D-42B6-8A87-54249595935E}</ProjectGuid>
-    <ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WebMvc</RootNamespace>
     <AssemblyName>WebMvc</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
+    <MvcProjectUpgradeChecked>true</MvcProjectUpgradeChecked>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,6 +31,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +40,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core">
@@ -52,6 +62,10 @@
     <Reference Include="Microsoft.Office.Interop.Word, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MVCControlsToolkit">
       <HintPath>..\Lib\MVCControlsToolkit.dll</HintPath>
     </Reference>
@@ -67,27 +81,47 @@
     <Reference Include="NHibernate.Mapping.Attributes">
       <HintPath>..\Lib\NHibernate.Mapping.Attributes.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Mvc, Version=3.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="System.Web.WebPages" />
-    <Reference Include="System.Web.Helpers" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_GlobalResources\Resources.Designer.cs">
@@ -320,8 +354,9 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_LogOnPartial.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Web.config" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -347,9 +382,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\_SimpleLayout.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\_MenuPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Employee\Index.cshtml" />
@@ -577,15 +609,7 @@
     <Content Include="Views\Template\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\_LayoutTemplate.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialTemplate.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Deduction\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\_LayoutDeduction.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialDeduction.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Account\ChangeRole.cshtml" />
@@ -603,18 +627,7 @@
     <Content Include="Views\Deduction\PrintDeductionList.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\ErrorMenuPartial.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Info\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\_LayoutInfo.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialInfo.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\_LayoutGraphics.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialGraphics.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Graphics\Index.cshtml" />
@@ -636,10 +649,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Graphics\EpDialogError.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\_LayoutMissionOrder.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialMissionOrder.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\MissionOrder\Index.cshtml" />
@@ -744,12 +753,6 @@
     <Content Include="Views\MissionOrder\PrintReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\_MenuPartialAppointment.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\_LayoutAppointment.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Appointment\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -783,8 +786,6 @@
     <Content Include="Views\Employment\Roster.cshtml" />
     <Content Include="Views\Employment\CustomReport.cshtml" />
     <Content Include="Views\Employment\Signers.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialEmployment.cshtml" />
-    <Content Include="Views\Shared\_LayoutEmployment.cshtml" />
     <Content Include="Views\MissionOrder\PrintArchivistAddressDialog.cshtml" />
     <Content Include="Views\MissionOrder\PrintArchivistAddressDialogError.cshtml" />
     <Content Include="Views\MissionOrder\PrintArchivistAddress.cshtml" />
@@ -799,8 +800,6 @@
     <Content Include="Views\MissionOrder\MissionHotels.cshtml" />
     <Content Include="Views\MissionOrder\MissionHotelsEdit.cshtml" />
     <Content Include="Views\GPD\Index.cshtml" />
-    <Content Include="Views\Shared\_LayoutGPD.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialGPD.cshtml" />
     <Content Include="Views\GPD\GpdRefDetail.cshtml" />
     <Content Include="Views\GPD\GpdRefDetailEdit.cshtml" />
     <Content Include="Views\GPD\GpdContractEdit.cshtml" />
@@ -819,8 +818,6 @@
     <Content Include="Views\Employment\PrintEmploymentOrder.cshtml" />
     <Content Include="Views\UserRequest\ClearanceChecklistEditPartial.cshtml" />
     <Content Include="Views\Help\Index.cshtml" />
-    <Content Include="Views\Shared\_HelpInfo.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialHelp.cshtml" />
     <Content Include="Views\Help\Version.cshtml" />
     <Content Include="Views\Help\VersionPartial.cshtml" />
     <Content Include="Views\Help\EditVersionDialog.cshtml" />
@@ -869,7 +866,6 @@
     <Content Include="Views\Employment\PrintT2.cshtml" />
     <Content Include="Views\Surcharge\Index.cshtml" />
     <Content Include="Views\Surcharge\IndexPartial.cshtml" />
-    <Content Include="Views\Shared\_LayoutSurcharge.cshtml" />
     <Content Include="Views\Employment\PrintInstructionOfSecret.cshtml" />
     <Content Include="Views\Employment\PrintInstructionEnsuringSafety.cshtml" />
     <Content Include="Views\GPD\GPDAnalyticalStatement.cshtml" />
@@ -882,8 +878,6 @@
     <Content Include="Views\Employment\Instruction.cshtml" />
     <Content Include="Views\Appointment\Note.cshtml" />
     <Content Include="Views\UserRequest\AccessGroupsList.cshtml" />
-    <Content Include="Views\Shared\_LayoutStaffList.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialStaffList.cshtml" />
     <None Include="Content\uigrid\ui-grid.eot">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -915,8 +909,6 @@
     <Content Include="Views\StaffList\Address.cshtml" />
     <Content Include="Views\SurchargeNote\SurchargeNoteEdit.cshtml" />
     <Content Include="Views\SurchargeNote\SurchargeNoteList.cshtml" />
-    <Content Include="Views\Shared\_LayoutSurchargeNote.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialSurchargeNote.cshtml" />
     <Content Include="Views\Info\Comments.cshtml" />
     <Content Include="Views\Employment\ScanOriginalDocuments.cshtml" />
     <Content Include="Views\MissionOrder\MissionOrderFullDepts.cshtml" />
@@ -925,8 +917,6 @@
     <Content Include="Views\UserRequest\TerrapointDepartment.cshtml" />
     <Content Include="Views\UserRequest\DepartmentTerrapoint.cshtml" />
     <Content Include="Views\StaffMovements\StaffMovementsCreate.cshtml" />
-    <Content Include="Views\Shared\_LayoutStaffMovements.cshtml" />
-    <Content Include="Views\Shared\_MenuPartialStaffMovements.cshtml" />
     <Content Include="Views\StaffList\StaffList.cshtml" />
     <Content Include="Views\StaffList\StaffDepartmentRequest.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\UserInfo.cshtml" />
@@ -969,9 +959,27 @@
     <Content Include="Views\Home\BugReportEdit.cshtml" />
     <Content Include="Views\Home\BugReportList.cshtml" />
     <Content Include="Views\UserRequest\PersonnelFileList.cshtml" />
+    <Content Include="packages.config" />
+    <Content Include="Views\Shared\_SubMenuAppointment.cshtml" />
+    <Content Include="Views\Shared\_SubMenuDeduction.cshtml" />
+    <Content Include="Views\Shared\_SubMenuEmployment.cshtml" />
+    <Content Include="Views\Shared\_SubMenuGPD.cshtml" />
+    <Content Include="Views\Shared\_SubMenuGraphics.cshtml" />
+    <Content Include="Views\Shared\_SubMenuHelp.cshtml" />
+    <Content Include="Views\Shared\_SubMenuInfo.cshtml" />
+    <Content Include="Views\Shared\_SubMenuMissionOrder.cshtml" />
+    <Content Include="Views\Shared\_SubMenuStaffList.cshtml" />
+    <Content Include="Views\Shared\_SubMenuStaffMovements.cshtml" />
+    <Content Include="Views\Shared\_SubMenuSurchargeNote.cshtml" />
+    <Content Include="Views\Shared\_SubMenuTable.cshtml" />
   </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
