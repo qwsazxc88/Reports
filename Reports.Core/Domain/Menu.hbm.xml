@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="Reports.Core" namespace="Reports.Core.Domain" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="Menu" table="Menu" lazy="true" >
+    <id name="Id" column="id">
+      <generator class="identity" />
+    </id>
+    <property name="Name">
+      <column name="Name" sql-type="nvarchar" not-null="true" />
+    </property>
+    <property name="Parent">
+      <column name="Parent" sql-type="int" not-null="false" />
+    </property>
+    <property name="Isvisible">
+      <column name="IsVisible" sql-type="bit" not-null="true" />
+    </property>
+    <property name="Sortorder">
+      <column name="SortOrder" sql-type="int" not-null="false" />
+    </property>
+    <property name="Link">
+      <column name="Link" sql-type="nvarchar" not-null="false" />
+    </property>
+    <bag name="Menuforrole" inverse="true">
+      <key column="MenuId" />
+      <one-to-many class="Menuforrole" />
+    </bag>
+    <bag name="Menuforuser" inverse="true">
+      <key column="MenuId" />
+      <one-to-many class="Menuforuser" />
+    </bag>
+  </class>
+</hibernate-mapping>
