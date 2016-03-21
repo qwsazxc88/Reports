@@ -18,3 +18,5 @@ WebMvc/Attachments/*
 # mstest test results
 TestResults
 
+packages/*
+.vs/*
